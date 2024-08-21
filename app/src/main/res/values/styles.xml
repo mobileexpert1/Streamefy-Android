@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="filson_regular_21_whiteTV">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/filsonpro_regular</item>
+        <item name="android:textSize">@dimen/_8sdp</item>
+    </style>
+
+    <style name="filson_14_whiteTV">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/filsonpro_regular</item>
+        <item name="android:textSize">@dimen/_5sdp</item>
+    </style>
+    <style name="filson_regular_12_whiteTV">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/filsonpro_regular</item>
+        <item name="android:textSize">@dimen/_4sdp</item>
+    </style>
+
+        <style name="TransparentDialogTheme" parent="Theme.AppCompat.Dialog">
+            <item name="android:background">@android:color/transparent</item>
+            <item name="android:windowBackground">@android:color/transparent</item>
+            <item name="android:windowNoTitle">true</item>
+        </style>
+    <style name="CustomSeekBar" parent="Widget.AppCompat.SeekBar">
+        <item name="colorAccent">@color/white</item> <!-- Progress color -->
+        <item name="android:progressDrawable">@drawable/dr_video_progress</item> <!-- Custom drawable -->
+    </style>
+</resources>

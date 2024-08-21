@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".component.ui.video.VideoFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primary"
+        >
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:use_controller="false"
+            app:resize_mode="zoom"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivBack"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:src="@drawable/ic_backtovideo"
+            app:layout_constraintEnd_toEndOf="@+id/llTools"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llTools"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_20sdp"
+            android:background="@drawable/video_bottom_border"
+            android:paddingHorizontal="@dimen/_15sdp"
+            android:paddingVertical="@dimen/_5sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent">
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSkipBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_skip_back"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:src="@drawable/ic_video_play"
+
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSkipForward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:src="@drawable/ic_skip_forward"
+
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCurrentLenght"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="@dimen/_17sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:text="00:00"
+                />
+
+
+               <androidx.appcompat.widget.AppCompatSeekBar
+                   android:id="@+id/sbVideoSeek"
+                   android:layout_width="@dimen/_180sdp"
+                   android:layout_height="wrap_content"
+                   android:layout_marginEnd="@dimen/_5sdp"
+                   android:progress="90"
+                   android:progressTint="@color/red"
+                   android:thumb="@drawable/seekbar_thumb"
+                   />
+
+               <androidx.appcompat.widget.AppCompatTextView
+                   android:id="@+id/tvDuration"
+                   style="@style/filson_14_whiteTV"
+                   android:layout_width="@dimen/_17sdp"
+                   android:fontFamily="@font/filsonpro_light"
+                   android:text="00:00"
+                   android:layout_marginEnd="@dimen/_20sdp"
+                   />
+
+
+               <androidx.appcompat.widget.AppCompatImageView
+                   android:id="@+id/ivSetting"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginEnd="@dimen/_10sdp"
+                   android:src="@drawable/ic_video_settings"
+                   />
+
+
+               <androidx.appcompat.widget.AppCompatImageView
+                   android:id="@+id/ivVolume"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginEnd="@dimen/_5sdp"
+                   android:src="@drawable/ic_video_volume"
+                   />
+
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/sbVolumeSeek"
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:progress="90"
+                android:progressTint="@color/red"
+                android:thumb="@drawable/seekbar_thumb"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivZoom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:src="@drawable/ic_video_zoom"
+               />
+
+           </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -9,32 +9,24 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.streamefy.R
+import com.streamefy.component.base.BaseFragment
+import com.streamefy.data.KoinCompo
 import com.streamefy.databinding.FragmentLoginBinding
 
-class LoginFragment : Fragment(), View.OnClickListener {
+class LoginFragment : BaseFragment<FragmentLoginBinding>(), View.OnClickListener {
 
-    private val binding: FragmentLoginBinding by lazy { FragmentLoginBinding.inflate(layoutInflater) }
-    private lateinit var viewmodel: LoginViewmodel
+  //  private val binding: FragmentLoginBinding by lazy { FragmentLoginBinding.inflate(layoutInflater) }
+     var viewmodel= KoinCompo().loginVM
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return binding.root
-    }
+    override fun bindView(): Int =R.layout.fragment_login
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initClickListeners()
-        init()
 
     }
 
-    private fun init() {
-        viewmodel = ViewModelProvider(this).get(LoginViewmodel::class.java)
-    }
 
     private fun initClickListeners() {
         binding.apply {

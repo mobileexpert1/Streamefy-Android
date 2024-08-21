@@ -7,6 +7,10 @@
     <color name="default_background">#3d3d3d</color>
     <color name="primary">#3d3d3d</color>
     <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
     <color name="black">#000000</color>
+    <color name="semi_white">#0F0F0F</color>
+    <color name="purple">#941AF2</color>
+    <color name="semi_transparent">#633D3D3D</color>
     <color name="light_gray">#EFEBEB</color>
 </resources>

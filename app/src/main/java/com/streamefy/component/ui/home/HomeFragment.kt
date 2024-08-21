@@ -125,6 +125,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                drawerLayout.closeDrawer(GravityCompat.END)
 
                 findNavController().navigate(R.id.videofragment)
+//                        findNavController().navigate(R.id.dynamicplayer)
+
 
             }
 

@@ -28,6 +28,15 @@ navigationfragment = "androidx.navigation:navigation-fragment-ktx:2.3.5"
 navigationui = "androidx.navigation:navigation-ui-ktx:2.3.5"
 sdp = "com.intuit.sdp:sdp-android:1.0.6"
 koin = "io.insert-koin:koin-android:3.2.2"
+exoplayer = "com.google.android.exoplayer:exoplayer:2.18.0"
+
+autoimageslider = "com.github.smarteist:autoimageslider:1.4.0"
+drawerlayout = "androidx.drawerlayout:drawerlayout:1.1.1"
+retrofit = "com.squareup.retrofit2:retrofit:2.6.0"
+gson = "com.squareup.retrofit2:converter-gson:2.6.0"
+interceptor = "com.squareup.okhttp3:logging-interceptor:3.4.1"
+coroutines = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -40,6 +49,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

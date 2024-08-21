@@ -77,6 +77,15 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.exoplayer)
+    implementation(libs.autoimageslider)
+    implementation(libs.drawerlayout)
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.interceptor)
+    implementation(libs.coroutines)
+
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

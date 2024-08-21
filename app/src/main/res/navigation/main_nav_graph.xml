@@ -3,18 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/splashScreen">
 
-<fragment
-    android:name="com.streamefy.component.ui.homefragment.HomeFragment"
-    android:id="@+id/homefragment"
-    android:label="homefragment"
-    tools:layout="@layout/fragment_home"
- />
+    <fragment
+        android:name="com.streamefy.component.ui.splash.SplashScreen"
+        android:id="@+id/splashScreen"
+        android:label="splashScreen"
+        tools:layout="@layout/fragment_splash_screen"
+        />
+    <fragment
+        android:id="@+id/homefragment"
+        android:name="com.streamefy.component.ui.home.HomeFragment"
+        android:label="homefragment"
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.streamefy.component.ui.login.LoginFragment"
-        android:label="LoginFragment" >
+        android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_otpFragment"
             app:destination="@id/otpFragment" />
@@ -22,7 +27,7 @@
     <fragment
         android:id="@+id/otpFragment"
         android:name="com.streamefy.component.ui.otp.OtpFragment"
-        android:label="OtpFragment" >
+        android:label="OtpFragment">
         <action
             android:id="@+id/action_otpFragment_to_pinAuthenticationFragment"
             app:destination="@id/pinAuthenticationFragment" />
@@ -30,10 +35,16 @@
     <fragment
         android:id="@+id/pinAuthenticationFragment"
         android:name="com.streamefy.component.ui.pin_authentication.PinAuthenticationFragment"
-        android:label="PinAuthenticationFragment" >
+        android:label="PinAuthenticationFragment">
         <action
             android:id="@+id/action_pinAuthenticationFragment_to_homefragment"
             app:destination="@id/homefragment" />
     </fragment>
 
+    <fragment
+        android:name="com.streamefy.component.ui.video.VideoFragment"
+        android:id="@+id/videofragment"
+        android:label="videofragment"
+        tools:layout="@layout/fragment_video"
+        />
 </navigation>

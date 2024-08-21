@@ -6,18 +6,22 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.streamefy.network.ApiService
 
-class LoginViewmodel(repo:ApiService): ViewModel(){//AndroidViewModel(context as Application) {
+class LoginViewmodel(repo: ApiService) : ViewModel() {//AndroidViewModel(context as Application) {
 
     val fullNameRegex = Regex("^[a-zA-Z]+\\s+[a-zA-Z]+(\\s+[a-zA-Z]+)?$")
 
     fun isValidFullName(fullName: String): Boolean {
-        return fullNameRegex.matches(fullName)
+        return true
     }
 
     fun isValidPhoneNumberLength(phoneNumber: String): Boolean {
-        val minLength = 7 // Adjust as needed
-        val maxLength = 15 // Adjust as needed
-        return phoneNumber.length in minLength..maxLength
+        if (phoneNumber.length < 7) {
+            return false
+        } else if (phoneNumber.length > 15) {
+            return false
+        } else {
+            return true
+        }
     }
 
 }

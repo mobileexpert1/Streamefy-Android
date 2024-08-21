@@ -11,21 +11,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.streamefy.R
+import com.streamefy.component.base.BaseFragment
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.databinding.FragmentOtpBinding
 
-class OtpFragment : Fragment(), View.OnClickListener {
+class OtpFragment :BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
-    private val binding: FragmentOtpBinding by lazy { FragmentOtpBinding.inflate(layoutInflater) }
-    private lateinit var completeOtp: String
+   // private val binding: FragmentOtpBinding by lazy { FragmentOtpBinding.inflate(layoutInflater) }
+   var completeOtp="000000"
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return binding.root
-    }
+    override fun bindView(): Int =R.layout.fragment_otp
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

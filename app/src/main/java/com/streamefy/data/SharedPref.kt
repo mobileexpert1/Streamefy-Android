@@ -3,39 +3,41 @@ package com.streamefy.data
 import android.content.Context
 import android.content.SharedPreferences
 
-class SharedPref(private val context: Context) {
+object SharedPref {
 
-    companion object {
-        private const val PREF_NAME = "lumakin_preference"
+    private const val PREF_NAME = "lumakin_preference"
+
+    private lateinit var sharedPreferences: SharedPreferences
+
+    // Initialize the SharedPreferences
+    fun init(context: Context) {
+        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
-    private val sharedPreferences: SharedPreferences
-        get() = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
     // Save String value
-    fun setString(varName: String, varValue: String) {
+    fun setString(key: String, value: String) {
         with(sharedPreferences.edit()) {
-            putString(varName, varValue)
+            putString(key, value)
             apply()
         }
     }
 
     // Get String value
-    fun getString(varName: String): String? {
-        return sharedPreferences.getString(varName, "")
+    fun getString(key: String): String? {
+        return sharedPreferences.getString(key, "")
     }
 
     // Save Boolean value
-    fun setBoolean(varName: String, varValue: Boolean) {
+    fun setBoolean(key: String, value: Boolean) {
         with(sharedPreferences.edit()) {
-            putBoolean(varName, varValue)
+            putBoolean(key, value)
             apply()
         }
     }
 
     // Get Boolean value
-    fun getBoolean(varName: String): Boolean {
-        return sharedPreferences.getBoolean(varName, false)
+    fun getBoolean(key: String): Boolean {
+        return sharedPreferences.getBoolean(key, false)
     }
 
     // Clear all data
@@ -48,34 +50,33 @@ class SharedPref(private val context: Context) {
 
     // Uncomment and use the following methods if you need them
     /*
-    fun saveArrayList(key: String, customArrayList: ArrayList<String>) {
+    fun saveArrayList(key: String, list: ArrayList<String>) {
         val editor = sharedPreferences.edit()
         val gson = Gson()
-        val json = gson.toJson(customArrayList)
+        val json = gson.toJson(list)
         editor.putString(key, json)
         editor.apply()
     }
 
     fun getArrayList(key: String): ArrayList<String>? {
-        val json = sharedPreferences.getString(key, "")
+        val json = sharedPreferences.getString(key, null)
         val type = object : TypeToken<ArrayList<String>>() {}.type
         return Gson().fromJson(json, type)
     }
 
-    fun saveMyDataList(myDataList: List<IntervalModel>) {
+    fun saveMyDataList(key: String, list: List<IntervalModel>) {
         val gson = Gson()
-        val json = gson.toJson(myDataList)
+        val json = gson.toJson(list)
         with(sharedPreferences.edit()) {
-            putString(KEY_MY_DATA_LIST, json)
+            putString(key, json)
             apply()
         }
     }
 
-    fun getMyDataList(): List<IntervalModel>? {
-        val json = sharedPreferences.getString(KEY_MY_DATA_LIST, "")
+    fun getMyDataList(key: String): List<IntervalModel>? {
+        val json = sharedPreferences.getString(key, null)
         val type = object : TypeToken<List<IntervalModel>>() {}.type
         return Gson().fromJson(json, type)
     }
     */
-
 }

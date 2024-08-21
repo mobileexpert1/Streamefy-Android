@@ -11,7 +11,6 @@ import androidx.viewbinding.ViewBinding
 abstract class BaseFragment<B : ViewBinding> : Fragment() {
     lateinit var binding: B
 
-    //    lateinit var circularProgress: CircularProgressDialog
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

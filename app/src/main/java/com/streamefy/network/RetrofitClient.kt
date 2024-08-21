@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
     fun retrofit(context: Context): Retrofit {
-        var pref = MyApp().pref
         val gson = GsonBuilder().setLenient().create()
         var okHttpClient = OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.MINUTES)

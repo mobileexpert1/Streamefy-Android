@@ -43,6 +43,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 Log.e("amcdanc", "sknmcjiadnc  $it")
             }
             imageSlider.setSliderAdapter(adapter)
+
+
+            customIndicator.setIndicatorCount(images.size, 0)
+
+            imageSlider.setCurrentPageListener {
+                Log.e("aggggg", "sknmcjiadnc  $it")
+                customIndicator.updateIndicator(it)
+            }
+
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
                 isMenuOpened = false
@@ -125,9 +134,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                drawerLayout.closeDrawer(GravityCompat.END)
 
                 findNavController().navigate(R.id.videofragment)
-//                        findNavController().navigate(R.id.dynamicplayer)
-
-
+//                        findNavController().navigate(R.id.dynamicscreen)
             }
 
             adapter = draAdapter

@@ -23,7 +23,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var getLengthOnce = true
     var isEnded = false
     private lateinit var volumeManager: VolumeManager
-
+//  var videoUrl="https://iframe.mediadelivery.net/embed/280659/22796632-8018-4073-9b19-8cd5c74a6fdc?token=6e69240e7a31ffdd0cb3e1d6c4f896bc0db1dfcf323d5d915af12091b134bb1f&expires=1724316142"
+   var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -31,7 +32,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             ivBack.setOnClickListener { findNavController().popBackStack() }
 
             playerHandler = PlayerHandler(requireActivity(), playerView)
-            playerHandler.setMediaUri("https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4")
+            playerHandler.setMediaUri(videoUrl)
             ivPlay.setOnClickListener {
                 if (playerHandler.isPlaying()!!) {
                     playerHandler.pause()

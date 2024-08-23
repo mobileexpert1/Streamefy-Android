@@ -31,7 +31,26 @@
                 app:sliderIndicatorRadius="@dimen/_3sdp"
                 app:sliderIndicatorUnselectedColor="@color/primary"
                 app:sliderScrollTimeInSec="3"
-                app:sliderStartAutoCycle="true" />
+                app:sliderStartAutoCycle="true"
+                app:sliderIndicatorEnabled="false"
+                />
+
+
+            <com.streamefy.component.ui.home.adapter.CustomIndicator
+                android:id="@+id/customIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@drawable/indecator_bg"
+                android:paddingHorizontal="@dimen/_3sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_50sdp"
+                android:paddingVertical="@dimen/_5sdp"
+
+                />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/applogo"

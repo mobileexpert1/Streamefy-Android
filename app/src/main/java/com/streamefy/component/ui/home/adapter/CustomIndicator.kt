@@ -54,14 +54,12 @@ class CustomIndicator(context: Context, attrs: AttributeSet) : LinearLayout(cont
             } else {
                 resources.getDimensionPixelSize(R.dimen.indicator_size_unselected)
             }
-
             dot.background = if (i == selectedPosition) selectedDrawable else unselectedDrawable
             val layoutParams = dot.layoutParams as LayoutParams
             layoutParams.width = size
             layoutParams.height = size
             layoutParams.gravity=Gravity.CENTER
             dot.layoutParams = layoutParams
-
         }
     }
 }

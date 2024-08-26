@@ -27,7 +27,7 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
         super.onViewCreated(view, savedInstanceState)
         isLogin = SharedPref.getBoolean(Constants.isLogin)
         lifecycleScope.launch {
-            delay(500)
+            delay(2000)
             navigateToHome()
         }
 

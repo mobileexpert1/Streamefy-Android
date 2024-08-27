@@ -30,5 +30,7 @@
     <string name="phone_number">Phone Number</string>
     <string name="get_otp">GET OTP</string>
     <string name="powered_by">Powered by:</string>
+    <string name="pin_description">Enter a 4-digit PIN to to unlock your event videos</string>
+    <string name="pin_title">Welcome Vijay! We are thrilled to have you here</string>
 
 </resources>

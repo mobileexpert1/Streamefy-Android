@@ -12,8 +12,11 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.data.KoinCompo
+import com.streamefy.data.KoinCompo.otpVm
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.databinding.FragmentOtpBinding
+import com.streamefy.network.MyResource
 import com.streamefy.utils.setupNextFocusOnDigit
 
 class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
@@ -22,6 +25,18 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
+        observeData()
+    }
+
+    private fun observeData() {
+        otpVm.otpLiveData.observe(requireActivity()){
+            when(it){
+                is MyResource.isLoading->{}
+                is MyResource.isSuccess->{}
+                is MyResource.isError->{}
+                else->{}
+            }
+        }
     }
 
     private fun initClickListeners() {

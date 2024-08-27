@@ -12,16 +12,18 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.data.KoinCompo
 import com.streamefy.databinding.FragmentLoginBinding
+import com.streamefy.error.ErrorCodeManager
+import com.streamefy.error.ShowError
 import com.streamefy.utils.showMessage
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>(){
-    var viewmodel = KoinCompo().loginVM
+    var viewmodel = KoinCompo.loginVM
     override fun bindView(): Int = R.layout.fragment_login
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
-
+        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
 
 
@@ -31,7 +33,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(){
                 if (viewmodel.isValidPhoneNumberLength(binding.etPhoneNumber.text.toString())) {
                     findNavController().navigate(R.id.action_loginFragment_to_otpFragment)
                 } else {
-                    requireActivity().showMessage("Invalid Phone number!")
+                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                 }
             } else {
                 requireActivity().showMessage("Please enter valid name")

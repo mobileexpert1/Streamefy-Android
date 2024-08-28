@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.data.KoinCompo.pinVm
 import com.streamefy.databinding.FragmentPinAuthenticationBinding
+import com.streamefy.network.MyResource
 import com.streamefy.utils.setupNextFocusOnDigit
 
 class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>() {
@@ -23,9 +25,20 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             et1.setupNextFocusOnDigit(et2)
             et2.setupNextFocusOnDigit(et3)
             et3.setupNextFocusOnDigit(et4)
-
         }
 
+        pinVm.getPin(requireActivity())
+        observe()
+    }
+
+    private fun observe() {
+        pinVm.pinData.observe(requireActivity()) {
+            when (it) {
+                is MyResource.isLoading -> {}
+                is MyResource.isSuccess -> {}
+                is MyResource.isError -> {}
+            }
+        }
     }
 
 }

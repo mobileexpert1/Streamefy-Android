@@ -2,6 +2,7 @@ package com.streamefy.data
 
 import com.streamefy.component.ui.login.LoginViewmodel
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
+import com.streamefy.component.ui.pin_authentication.PinVM
 import com.streamefy.error.ErrorHandler
 import com.streamefy.network.ApiService
 import com.streamefy.network.RetrofitClient
@@ -16,5 +17,6 @@ var appModule= module {
     single <ApiService> { RetrofitClient.retrofit(androidContext()).create(ApiService::class.java) }
     viewModel { LoginViewmodel(get()) }
     viewModel { OTPVM(get()) }
+    viewModel { PinVM(get()) }
 
 }

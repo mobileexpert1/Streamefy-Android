@@ -1,14 +1,19 @@
 package com.streamefy.network
 
+import com.streamefy.component.ui.login.model.LoginRequest
+import com.streamefy.component.ui.login.model.LoginResponse
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
+
 interface ApiService {
 
 //
-//    //@Header("authorization": "Basic YWRtaW46cGFzc3dvcmQ=")
-//    @POST(ServerUrls.URL_LOGIN)
-//    suspend fun login(
-//        @Header("Authorization") authorization: String,
-//        @Body login: LoginRequest
-//    ): BaseData<LoginResponseData>
+    //@Header("authorization": "Basic YWRtaW46cGFzc3dvcmQ=")
+    @POST(ServerUrls.login)
+    suspend fun login(
+    @Body login: LoginRequest
+    ): Response<LoginResponse>
 //
 //    @POST(ServerUrls.URl_PHONE_NUMBER_EXISTS)
 //    suspend fun phoneNumberRequest(

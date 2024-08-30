@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.interceptor)
     implementation(libs.coroutines)
+    implementation("junit:junit:4.12")
 
 
     androidTestImplementation(platform(libs.androidx.compose.bom))

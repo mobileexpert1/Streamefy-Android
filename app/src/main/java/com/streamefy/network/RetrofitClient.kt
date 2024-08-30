@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.streamefy.component.base.MyApp
+import com.streamefy.data.SharedPref
 import com.streamefy.network.Constants.dummy_token
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,14 +21,18 @@ object RetrofitClient {
             .writeTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
 
-       // val token = if (!pref?.getBoolean(Constants.isLogin)) "" else pref?.getString(Constants.TOKEN)
+        val token = if (!SharedPref.getBoolean(Constants.isLogin)) "" else SharedPref.getString(Constants.TOKEN)
 
         okHttpClient.addInterceptor { chain ->
             var origin = chain.request()
             var newRequest = origin.newBuilder()
-                .addHeader("Authorization", "Bearer $dummy_token")
-//              .addHeader("Authorization", "Bearer ${token}")
-                .method(origin.method(), origin.body())
+                .addHeader("accept", "text/plain")
+                .addHeader("Content-Type", "application/json")
+                .apply {
+                    if (token?.isNotEmpty()!!) {
+                        addHeader("Authorization", "Bearer $token")
+                    }
+                }                .method(origin.method(), origin.body())
                 .build()
             chain.proceed(newRequest)
         }

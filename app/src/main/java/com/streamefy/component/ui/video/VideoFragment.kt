@@ -10,11 +10,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
+import android.widget.TextView
+import androidx.compose.ui.graphics.Color
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.databinding.FragmentVideoBinding
+import com.streamefy.utils.gone
+import com.streamefy.utils.visible
 
 
 class VideoFragment : BaseFragment<FragmentVideoBinding>() {
@@ -23,8 +29,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var getLengthOnce = true
     var isEnded = false
     private lateinit var volumeManager: VolumeManager
-//  var videoUrl="https://iframe.mediadelivery.net/embed/280659/22796632-8018-4073-9b19-8cd5c74a6fdc?token=6e69240e7a31ffdd0cb3e1d6c4f896bc0db1dfcf323d5d915af12091b134bb1f&expires=1724316142"
-   var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+    var videoUrl =
+        "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=39Pr4HZEbPaAI66HI09oZEZExebJ6NK9TE4lcHrtUIg&expires=1725368264&token_path=%2F92a87eaa-7b93-4fc1-a83c-59ac60331112%2F/92a87eaa-7b93-4fc1-a83c-59ac60331112/playlist.m3u8"
+
+    //   var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -49,13 +57,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             }
             ivSkipForward.setOnClickListener {
-                var current=playerHandler.player?.currentPosition
-                var duration=playerHandler.player?.duration
-                var count= current!! + 10000
+                var current = playerHandler.player?.currentPosition
+                var duration = playerHandler.player?.duration
+                var count = current!! + 10000
 
-                if (duration!! > count){
+                if (duration!! > count) {
                     playerHandler.seekTo(count)
-                }else{
+                } else {
                     playerHandler.seekTo(duration)
                 }
 
@@ -65,14 +73,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.seekBackward(10)
 
             }
-
-
             ivZoom.setOnClickListener {
                 playerHandler.toggleFullScreen()
             }
-
-
-
             playerHandler.player?.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     if (playbackState == Player.STATE_READY) {
@@ -81,15 +84,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             tvDuration.setText(playerHandler.getTotalLength())
                             getLengthOnce = false
                         }
-                        isEnded=false
+                        isEnded = false
                         updateProgressBar()
                     } else if (playbackState == Player.STATE_ENDED) {
                         ivPlay.setImageResource(R.drawable.ic_video_play)
-                        isEnded=true
+                        isEnded = true
                     }
                 }
             })
-
             sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekBar: SeekBar?,
@@ -119,7 +121,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
             }
-
             sbVolumeSeek.max = 100
             sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
             sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -136,13 +137,59 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
-
+            quality()
         }
         volume()
 
     }
 
-    private fun volume()= with(binding) {
+    private fun quality() = with(binding) {
+        val qualityButtons: List<TextView> = listOf(
+            tv360p,
+            tv480p,
+            tv720p,
+            tv1080p,
+            tv1440p,
+            tv4K
+        )
+        ivSetting.setOnClickListener {
+            if (clSettingsMenu.isVisible) {
+                clSettingsMenu.gone()
+            } else {
+                clSettingsMenu.visible()
+            }
+        }
+
+        qualityButtons.forEachIndexed { index, textView ->
+            textView.setOnClickListener {
+                clSettingsMenu.gone()
+                playerHandler.setQuality(textView.text.toString())
+
+                qualityButtons.forEachIndexed { subindex, subText ->
+                    if (index == subindex) {
+                        subText.setBackgroundColor(
+                            ContextCompat.getColor(
+                                requireActivity(),
+                                R.color.light_gray
+                            )
+                        )
+                    } else {
+                        subText.setBackgroundColor(
+                            ContextCompat.getColor(
+                                requireActivity(),
+                                R.color.white
+                            )
+                        )
+                    }
+                }
+
+
+            }
+        }
+
+    }
+
+    private fun volume() = with(binding) {
         volumeManager = VolumeManager(requireActivity())
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->

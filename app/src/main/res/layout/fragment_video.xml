@@ -7,41 +7,40 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/primary"
-        >
+        android:background="@color/primary">
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:use_controller="false"
             app:resize_mode="zoom"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
+            app:use_controller="false" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_30sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:src="@drawable/ic_backtovideo"
             app:layout_constraintEnd_toEndOf="@+id/llTools"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="@dimen/_10sdp"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llTools"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_20sdp"
             android:background="@drawable/video_bottom_border"
+            android:gravity="center"
+            android:orientation="horizontal"
             android:paddingHorizontal="@dimen/_15sdp"
             android:paddingVertical="@dimen/_5sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:gravity="center"
-            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent">
 
 
@@ -49,8 +48,7 @@
                 android:id="@+id/ivSkipBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_skip_back"
-                />
+                android:src="@drawable/ic_skip_back" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivPlay"
@@ -76,46 +74,41 @@
                 android:layout_width="@dimen/_17sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:fontFamily="@font/filsonpro_light"
-                android:text="00:00"
-                />
+                android:text="00:00" />
 
 
-               <androidx.appcompat.widget.AppCompatSeekBar
-                   android:id="@+id/sbVideoSeek"
-                   android:layout_width="@dimen/_180sdp"
-                   android:layout_height="wrap_content"
-                   android:layout_marginEnd="@dimen/_5sdp"
-                   android:progress="90"
-                   android:progressTint="@color/red"
-                   android:thumb="@drawable/seekbar_thumb"
-                   />
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/sbVideoSeek"
+                android:layout_width="@dimen/_180sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:progress="90"
+                android:progressTint="@color/red"
+                android:thumb="@drawable/seekbar_thumb" />
 
-               <androidx.appcompat.widget.AppCompatTextView
-                   android:id="@+id/tvDuration"
-                   style="@style/filson_14_whiteTV"
-                   android:layout_width="@dimen/_17sdp"
-                   android:fontFamily="@font/filsonpro_light"
-                   android:text="00:00"
-                   android:layout_marginEnd="@dimen/_20sdp"
-                   />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvDuration"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="@dimen/_17sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:text="00:00" />
 
 
-               <androidx.appcompat.widget.AppCompatImageView
-                   android:id="@+id/ivSetting"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginEnd="@dimen/_10sdp"
-                   android:src="@drawable/ic_video_settings"
-                   />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:src="@drawable/ic_video_settings" />
 
 
-               <androidx.appcompat.widget.AppCompatImageView
-                   android:id="@+id/ivVolume"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginEnd="@dimen/_5sdp"
-                   android:src="@drawable/ic_video_volume"
-                   />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivVolume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:src="@drawable/ic_video_volume" />
 
 
             <androidx.appcompat.widget.AppCompatSeekBar
@@ -125,19 +118,98 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:progress="90"
                 android:progressTint="@color/red"
-                android:thumb="@drawable/seekbar_thumb"
-                />
+                android:thumb="@drawable/seekbar_thumb" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivZoom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:src="@drawable/ic_video_zoom"
-               />
+                android:src="@drawable/ic_video_zoom" />
 
-           </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+        <!--       settings-->
+        <LinearLayout
+            android:id="@+id/clSettingsMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/_110sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:background="@drawable/bg_round_rect_stroke_gray"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_2sdp"
+            android:paddingVertical="@dimen/_5sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/llTools"
+            app:layout_constraintEnd_toEndOf="@+id/llTools">
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv4K"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingVertical="@dimen/_1sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="4K"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv1440p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingVertical="@dimen/_1sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="1440p"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv1080p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
+
+                android:text="1080p"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv720p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
+
+                android:text="720p"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv480p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
+                android:text="480p"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv360p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
+                android:fontFamily="@font/filsonpro_light"
+                android:text="360p"
+                android:textColor="@color/black" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.interceptor)
     implementation(libs.coroutines)
     implementation("junit:junit:4.12")
+    implementation(libs.androidx.media3.exoplayer.hls)
 
 
     androidTestImplementation(platform(libs.androidx.compose.bom))

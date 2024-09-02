@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 
 class PlayerHandler(
     private val context: Context,
@@ -30,9 +33,35 @@ class PlayerHandler(
     }
 
     fun setMediaUri(uri: String) {
-        val mediaItem = MediaItem.fromUri(Uri.parse(uri))
-        player?.setMediaItem(mediaItem)
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        val mediaSource: MediaSource = com.google.android.exoplayer2.source.hls.HlsMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri))
+
+//        val mediaItem = MediaItem.fromUri(Uri.parse(uri))
+//        player?.setMediaItem(mediaItem)
+        player?.setMediaSource(mediaSource)
+
         player?.prepare()
+    }
+
+     fun setQuality(resolution: String) {
+        val trackSelector = player?.trackSelector as DefaultTrackSelector
+        val dimensions = when (resolution) {
+            "360p" -> Pair(640, 360)
+            "480p" -> Pair(854, 480)
+            "720p" -> Pair(1280, 720)
+            "1080p" -> Pair(1920, 1080)
+            "1440p" -> Pair(2560, 1440)
+            "4K" -> Pair(3840, 2160)
+            else -> return
+        }
+
+        val (width, height) = dimensions
+        val trackSelectionParameters = trackSelector.buildUponParameters()
+            .setMaxVideoSize(width, height)
+            .build()
+
+        trackSelector.setParameters(trackSelectionParameters)
     }
 
     fun play() {

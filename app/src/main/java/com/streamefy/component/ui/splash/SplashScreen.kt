@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.MyApp
+import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentSplashScreenBinding
 import com.streamefy.network.Constants
@@ -25,12 +26,11 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     var isLogin = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isLogin = SharedPref.getBoolean(Constants.isLogin)
+        isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         lifecycleScope.launch {
             delay(2000)
             navigateToHome()
         }
-
     }
 
     private fun navigateToHome() {

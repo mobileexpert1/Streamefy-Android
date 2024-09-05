@@ -22,6 +22,7 @@ import com.streamefy.component.ui.home.adapter.SliderAdapter
 import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.databinding.ExitDialogBinding
 import com.streamefy.databinding.FragmentHomeBinding
+import java.util.Collections
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
@@ -43,8 +44,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 Log.e("amcdanc", "sknmcjiadnc  $it")
             }
             imageSlider.setSliderAdapter(adapter)
-
-
             customIndicator.setIndicatorCount(images.size, 0)
 
             imageSlider.setCurrentPageListener {

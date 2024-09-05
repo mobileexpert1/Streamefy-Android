@@ -66,6 +66,31 @@ fun nameAndPassword(name: String, password: String) = when {
         true
     }
 }
+fun nameWithNumber(name: String, number: String) = when {
+
+   name.isEmpty() -> {
+        ErrorCodeManager.NAME_EMPTY
+    }
+
+    name.length < 3 -> {
+        ErrorCodeManager.NAME_MIN_LENGTH
+    }
+
+    name.length > 25 -> {
+        ErrorCodeManager.NAME_MAX_LENGTH
+    }
+    number.isEmpty() -> {
+        ErrorCodeManager.PHONE_EMPTY
+    }
+
+    number.length< 8 || number.length > 10  -> {
+        ErrorCodeManager.PHONE_LENGTH
+    }
+
+    else -> {
+        true
+    }
+}
 
 fun passwordValidation(password: String) = when {
     password.isEmpty() -> {

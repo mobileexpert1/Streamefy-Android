@@ -19,8 +19,14 @@ object ErrorCodeManager {
     const val NAME_MAX_LENGTH=10
     const val PASSWORD_EMPTY=11
     const val PASSWORD_MIN_MAX=12
-    const val INVALID_CHAR=13
-    const val INVALID_PASSWORD_FORMAT=14
+
+    const val OTP_EMPTY=13
+    const val OTP_LENGTH=14
+
+    const val INVALID_CHAR=15
+    const val INVALID_PASSWORD_FORMAT=16
+    const val PHONE_EMPTY=17
+    const val PHONE_LENGTH=18
 
     private val errorMessages = mapOf(
         LOGIN_FAIL to "Server error, please try again later.",
@@ -37,7 +43,10 @@ object ErrorCodeManager {
         PASSWORD_EMPTY to   "Please enter password",
         PASSWORD_MIN_MAX to  "Password length should be 8-10 characters",
         INVALID_PASSWORD_FORMAT to  "Invalid password format e.g Test123@",
-
+        OTP_EMPTY to  "Please enter otp",
+        OTP_LENGTH to  "Invalid OTP size",
+        PHONE_EMPTY to  "Please enter phone number",
+        PHONE_LENGTH to  "Invalid phone number",
         UNKNOWN_ERROR to "Unknown error, please try again later.",
         NETWORK_ISSUE to "Please check your internet connection"
     )

@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.streamefy.data.KoinCompo.progress
 
 abstract class BaseFragment<B : ViewBinding> : Fragment() {
     lateinit var binding: B
+
+    lateinit var progressDialog:CircularProgressDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -17,9 +20,15 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
+        progressDialog= CircularProgressDialog(requireContext())
         return binding.root
     }
 
-
+     fun showProgress(){
+         progressDialog.show()
+     }
+    fun dismissProgress(){
+        progressDialog.dismiss()
+    }
     abstract fun bindView(): Int
 }

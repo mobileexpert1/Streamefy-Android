@@ -63,7 +63,7 @@
                 android:background="@drawable/bg_round_stroke_gray"
                 android:drawableStart="@drawable/ic_phone"
                 android:drawablePadding="@dimen/_5sdp"
-                android:hint="@string/password"
+                android:hint="@string/phone_number"
                 android:paddingHorizontal="@dimen/_6sdp"
                 android:paddingVertical="@dimen/_4sdp"
                 android:textColorHint="@color/black"

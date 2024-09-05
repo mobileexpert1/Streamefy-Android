@@ -1,5 +1,7 @@
 package com.streamefy.data
 
+import com.streamefy.component.base.CircularProgressDialog
+import com.streamefy.component.ui.home.viewmodel.HomeVm
 import com.streamefy.component.ui.login.LoginViewmodel
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.component.ui.pin_authentication.PinVM
@@ -9,7 +11,10 @@ import org.koin.core.component.inject
 
 object KoinCompo:KoinComponent {
     val handleError: ErrorHandler by inject()
+    val progress: CircularProgressDialog by inject()
+
     val loginVM: LoginViewmodel by inject()
     val otpVm: OTPVM by inject()
     val pinVm: PinVM by inject()
+    val homeVm: HomeVm by inject()
 }

@@ -26,7 +26,7 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     var isLogin = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
+       // isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         lifecycleScope.launch {
             delay(2000)
             navigateToHome()
@@ -40,8 +40,10 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 //        findNavController().navigate(R.id.loginFragment, null, navOptions)
         Log.e("sjndjsn", "sknks $isLogin")
         if (isLogin) {
+            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
             findNavController().navigate(R.id.homefragment, null, navOptions)
         } else {
+//            SharedPref.setBoolean(PrefConstent.ISAUTH,true)
             findNavController().navigate(R.id.loginFragment, null, navOptions)
         }
     }

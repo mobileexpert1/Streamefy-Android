@@ -74,7 +74,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             }
             ivZoom.setOnClickListener {
-                playerHandler.toggleFullScreen()
+              //  playerHandler.toggleFullScreen()
             }
             playerHandler.player?.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
@@ -130,7 +130,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     fromUser: Boolean
                 ) {
 //                    playerHandler.setVolume(progress / 100.0f)
-
                     volumeManager.setVolumePercentage(progress)
                 }
 

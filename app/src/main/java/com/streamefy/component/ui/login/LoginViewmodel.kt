@@ -12,12 +12,13 @@ import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.ApiService
+import com.streamefy.network.AuthService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage.logeMe
 import com.streamefy.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
-class LoginViewmodel(var repo: ApiService) : ViewModel() {
+class LoginViewmodel(var repo: AuthService) : ViewModel() {
 
 
     var loginLiveData = SingleLiveEvent<MyResource<LoginResponse>>()
@@ -42,6 +43,4 @@ class LoginViewmodel(var repo: ApiService) : ViewModel() {
             }
         }
     }
-
-
 }

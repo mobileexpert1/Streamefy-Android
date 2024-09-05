@@ -8,11 +8,12 @@ import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.ApiService
+import com.streamefy.network.AuthService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
-class PinVM(repo: ApiService) : ViewModel() {
+class PinVM(repo: AuthService) : ViewModel() {
 
     var pinData = SingleLiveEvent<MyResource<String>>()
 

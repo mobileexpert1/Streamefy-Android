@@ -15,6 +15,8 @@ class ErrorHandler(var context: Context) {
         }
     }
 
+
+
     fun handleError(errorCode: Int, action: () -> Unit) {
         val errorMessage = ErrorCodeManager.getErrorMessage(errorCode)
         context.showMessage(errorMessage)

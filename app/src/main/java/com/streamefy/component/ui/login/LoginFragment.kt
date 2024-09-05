@@ -21,6 +21,7 @@ import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
 import com.streamefy.utils.nameAndPassword
 import com.streamefy.utils.nameValidation
+import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.showMessage
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
@@ -30,23 +31,31 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
-        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
+//        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
             var validate =
-                nameAndPassword("appsdev096@gmail.com", "Appsdev096#")
-//                nameAndPassword(etFullname.text.toString(), etPhoneNumber.text.toString())
+//                nameAndPassword("appsdev096@gmail.com", "Appsdev096#")
+                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
             if (!validate.equals(true)) {
                 ShowError.handleError.handleError(validate as Int)
             } else {
-                viewmodel.login(
-                    requireActivity(),
-                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-                )
-                observe()
+                SharedPref.setBoolean(PrefConstent.ISAUTH,true)
+
+//                viewmodel.login(
+//                    requireActivity(),
+//                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+//                )
+//                observe()
+
+                var bundle=Bundle()
+                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
+                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
+                findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
+
             }
         }
     }
@@ -65,7 +74,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         SharedPref.setString(PrefConstent.REFRESH_TOKEN,refreshToken)
                         SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                     }
-                    findNavController().navigate(R.id.action_loginFragment_to_otpFragment)
+                    var bundle=Bundle()
+                    bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
+                    findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
                 }
                 is MyResource.isError -> {}
                 else -> {}

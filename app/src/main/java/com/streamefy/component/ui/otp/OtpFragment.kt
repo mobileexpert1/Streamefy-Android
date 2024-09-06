@@ -35,8 +35,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
-            phone=getString(PrefConstent.PHONE_NUMBER).toString()
-            name=getString(PrefConstent.FULL_NAME).toString()
+            phone = getString(PrefConstent.PHONE_NUMBER).toString()
+            name = getString(PrefConstent.FULL_NAME).toString()
         }
         initClickListeners()
 
@@ -72,22 +72,23 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             R.id.tvProceed -> {
                 binding.apply {
 
-                var otp=et1.text.toString().trim()+
-                        et2.text.toString().trim()+
-                        et3.text.toString().trim()+
-                        et4.text.toString().trim()+
-                        et5.text.toString().trim()+
-                        et6.text.toString().trim()
+                    var otp = et1.text.toString().trim() +
+                            et2.text.toString().trim() +
+                            et3.text.toString().trim() +
+                            et4.text.toString().trim() +
+                            et5.text.toString().trim() +
+                            et6.text.toString().trim()
 
-                        if (otp.isEmpty()){
-                            ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
-                        }else if (otp.length<6){
-                            ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
-                        }else {
-//                            otpVm.otpVerification(
-//                                requireActivity(),
-//                                VerificationRequest(phone, binding.))
-//                            verificationObserv()
+                    if (otp.isEmpty()) {
+                        ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
+                    } else if (otp.length < 6) {
+                        ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
+                    } else {
+//                        otpVm.otpVerification(
+//                            requireActivity(),
+//                            VerificationRequest(phone, otp)
+//                        )
+//                        verificationObserv()
 
                             var bundle=Bundle()
                             bundle.putString(PrefConstent.PHONE_NUMBER,phone)
@@ -96,8 +97,9 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                             findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
 
-                        }
-            }}
+                    }
+                }
+            }
         }
     }
 
@@ -139,12 +141,15 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 is MyResource.isSuccess -> {
                     it.data?.run {
                         if (isSuccess) {
-                            var bundle=Bundle()
-                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
-                            bundle.putString(PrefConstent.FULL_NAME,name)
-                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
+                            var bundle = Bundle()
+                            bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                            bundle.putString(PrefConstent.FULL_NAME, name)
+                            SharedPref.setBoolean(PrefConstent.ISAUTH, false)
 
-                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
+                            findNavController().navigate(
+                                R.id.action_otpFragment_to_pinAuthenticationFragment,
+                                bundle
+                            )
 
                         }
                     }

@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Streamefy"
         android:usesCleartextTraffic="true"
+
         >
         <activity
             android:name=".MainActivity"

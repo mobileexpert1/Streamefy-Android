@@ -19,10 +19,12 @@ class HomeVm(var repo: ApiService) : ViewModel() {
     var homeLiveData = SingleLiveEvent<MyResource<HomeResponse>>()
 
 
-    fun getUserVideos(context: Context, page:Int,
-               itemsPerPage:Int,
-               userPin:String,
-               phoneNumber:String,) {
+    fun getUserVideos(
+        context: Context, page: Int,
+        itemsPerPage: Int,
+        userPin: String,
+        phoneNumber: String,
+    ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 homeLiveData.value = MyResource.isLoading()

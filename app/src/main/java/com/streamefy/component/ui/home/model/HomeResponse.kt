@@ -49,8 +49,8 @@ data class MediaItem(@SerializedName("size")
                      val description: String = "",
                      @SerializedName("bunnyId")
                      val bunnyId: String = "",
-                     @SerializedName("thumbnailId")
-                     val thumbnailId: String = "",
+                     @SerializedName("thumbnailS3bucketId")
+                     val thumbnailS3bucketId: String = "",
                      @SerializedName("id")
                      val id: Int = 0)
 
@@ -73,7 +73,7 @@ data class EventsItem(@SerializedName("eventId")
                       val eventId: Int = 0,
                       @SerializedName("eventTitle")
                       val eventTitle: String = "",
-                      @SerializedName("media")
+                      @SerializedName("medias")
                       val media: List<MediaItem>?,
                       @SerializedName("userName")
                       val userName: String = "",

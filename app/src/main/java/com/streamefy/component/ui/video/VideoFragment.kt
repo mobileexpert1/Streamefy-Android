@@ -1,23 +1,20 @@
 package com.streamefy.component.ui.video
 
 import VolumeManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
 import com.streamefy.utils.visible
@@ -29,13 +26,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var getLengthOnce = true
     var isEnded = false
     private lateinit var volumeManager: VolumeManager
-    var videoUrl =
-        "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=39Pr4HZEbPaAI66HI09oZEZExebJ6NK9TE4lcHrtUIg&expires=1725368264&token_path=%2F92a87eaa-7b93-4fc1-a83c-59ac60331112%2F/92a87eaa-7b93-4fc1-a83c-59ac60331112/playlist.m3u8"
 
-    //   var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+//       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+// var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
+// var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
+// var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
+// var videoUrl="https://vz-057e4b99-b5a.b-cdn.net/bcdn_token=Mrrup8-VOHUJLHRp2AMFBw&expires=1725632241&token_path=%2Fa8fd227f-e7b9-4ff3-ae6b-0ee02db9616d%2F/a8fd227f-e7b9-4ff3-ae6b-0ee02db9616d/playlist.m3u8"
+ var videoUrl=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        arguments?.run {
+            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+           Log.e("ckdanmcn","mkadnc $videoUrl")
+        }
         binding.apply {
             ivBack.setOnClickListener { findNavController().popBackStack() }
 
@@ -74,7 +77,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             }
             ivZoom.setOnClickListener {
-              //  playerHandler.toggleFullScreen()
+                //  playerHandler.toggleFullScreen()
             }
             playerHandler.player?.addListener(object : Player.Listener {
                 override fun onPlaybackStateChanged(playbackState: Int) {
@@ -90,6 +93,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         ivPlay.setImageResource(R.drawable.ic_video_play)
                         isEnded = true
                     }
+                }
+                override fun onPlayerError(error: PlaybackException) {
+                    Log.e("ExoPlayerError", "Playback error: " + error.message, error)
                 }
             })
             sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

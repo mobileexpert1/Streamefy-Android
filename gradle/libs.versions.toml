@@ -29,7 +29,7 @@ navigationfragment = "androidx.navigation:navigation-fragment-ktx:2.3.5"
 navigationui = "androidx.navigation:navigation-ui-ktx:2.3.5"
 sdp = "com.intuit.sdp:sdp-android:1.0.6"
 koin = "io.insert-koin:koin-android:3.2.2"
-exoplayer = "com.google.android.exoplayer:exoplayer:2.18.0"
+exoplayer = "com.google.android.exoplayer:exoplayer:2.18.5"
 
 autoimageslider = "com.github.smarteist:autoimageslider:1.4.0"
 drawerlayout = "androidx.drawerlayout:drawerlayout:1.1.1"

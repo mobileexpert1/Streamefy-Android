@@ -17,18 +17,20 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.streamefy.R
 import com.streamefy.component.ui.home.categoryModel.CateModel
+import com.streamefy.component.ui.home.model.MediaItem
+import com.streamefy.utils.loadUrl
 
 
-class DrawerAdapter(private val context: Activity, private val cateList: List<CateModel>, var callBack:(Int)->Unit) :
+class DrawerAdapter(private val context: Activity, private val mediaList: ArrayList<MediaItem>, var callBack:(Int)->Unit) :
     RecyclerView.Adapter<DrawerAdapter.DrawerView>() {
 lateinit var binding: DrawerItemBinding
 
     override fun onBindViewHolder(viewHolder: DrawerView, position: Int) {
-        var data = cateList[position]
+        var data = mediaList[position]
         binding.apply {
-            lpVideoProgres.progress=data.progress
-            tvSubtitle.text=data.subTitle
-            ivCate.setImageResource(data.image)
+            lpVideoProgres.progress=40
+            tvSubtitle.text=data.description
+            ivCate.loadUrl(data.thumbnailS3bucketId)
 
             if (position%2==0){
                 clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
@@ -53,5 +55,5 @@ lateinit var binding: DrawerItemBinding
         return DrawerView(binding)
     }
 
-    override fun getItemCount(): Int=cateList.size
+    override fun getItemCount(): Int=mediaList.size
 }

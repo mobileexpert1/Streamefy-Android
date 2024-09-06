@@ -36,25 +36,21 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
-            var validate =
-//                nameAndPassword("appsdev096@gmail.com", "Appsdev096#")
-                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
+            var validate = nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
             if (!validate.equals(true)) {
                 ShowError.handleError.handleError(validate as Int)
             } else {
-                SharedPref.setBoolean(PrefConstent.ISAUTH,true)
+                viewmodel.login(
+                    requireActivity(),
+                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+                )
+                observe()
 
-//                viewmodel.login(
-//                    requireActivity(),
-//                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-//                )
-//                observe()
-
-                var bundle=Bundle()
-                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
-                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
-                findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
+//                var bundle=Bundle()
+//                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
+//                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
+//                findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
 
             }
         }
@@ -67,21 +63,35 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 is MyResource.isLoading -> {
                     ///loading
                 }
+
                 is MyResource.isSuccess -> {
-                    var data= it.data?.response
+                    var data = it.data?.response
                     data?.run {
-                        SharedPref.setString(PrefConstent.TOKEN,accessToken)
-                        SharedPref.setString(PrefConstent.REFRESH_TOKEN,refreshToken)
-                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
+                        SharedPref.setString(PrefConstent.TOKEN, accessToken)
+                        SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
+                        SharedPref.setString(
+                            PrefConstent.PHONE_NUMBER,
+                            binding.etPhoneNumber.text.toString()
+                        )
+                        SharedPref.setString(
+                            PrefConstent.FULL_NAME,
+                            binding.etFullname.text.toString()
+                        )
+//                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                     }
-                    var bundle=Bundle()
-                    bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
-                    findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
+                    var bundle = Bundle()
+                    bundle.putString(
+                        PrefConstent.PHONE_NUMBER,
+                        binding.etPhoneNumber.text.toString()
+                    )
+                    findNavController().navigate(R.id.action_loginFragment_to_otpFragment, bundle)
                 }
+
                 is MyResource.isError -> {}
                 else -> {}
             }
         }
     }
+
 
 }

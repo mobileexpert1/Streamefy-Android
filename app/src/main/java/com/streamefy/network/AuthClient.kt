@@ -20,9 +20,11 @@ object AuthClient {
             .writeTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
 
-        val token = if (!SharedPref.getBoolean(Constants.isLogin)) "" else SharedPref.getString(Constants.TOKEN)
+        val token = if (!SharedPref.getBoolean(PrefConstent.ISLOGIN)) "" else SharedPref.getString(
+            PrefConstent.TOKEN
+        )
 
-        Log.e("sjkdnskjnf","sknbcksj$token")
+        Log.e("sjkdnskjnf", "sknbcksj$token")
 
         okHttpClient.addInterceptor { chain ->
             var origin = chain.request()
@@ -31,9 +33,9 @@ object AuthClient {
                 .addHeader("Content-Type", "application/json")
                 .apply {
                     if (token?.isNotEmpty()!!) {
-                        addHeader("Authorization", "Bearer ${PrefConstent.dummy_token}")
+                        addHeader("Authorization", "Bearer ${token}")
                     }
-                }                .method(origin.method(), origin.body())
+                }.method(origin.method(), origin.body())
                 .build()
             chain.proceed(newRequest)
         }

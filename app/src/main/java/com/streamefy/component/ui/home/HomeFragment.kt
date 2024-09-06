@@ -20,8 +20,16 @@ import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
 import com.streamefy.component.ui.home.adapter.SliderAdapter
 import com.streamefy.component.ui.home.categoryModel.CateModel
+import com.streamefy.component.ui.home.model.EventsItem
+import com.streamefy.component.ui.home.model.HomeResponse
+import com.streamefy.component.ui.home.model.MediaItem
+import com.streamefy.data.KoinCompo
+import com.streamefy.data.KoinCompo.homeVm
+import com.streamefy.data.PrefConstent
+import com.streamefy.data.SharedPref
 import com.streamefy.databinding.ExitDialogBinding
 import com.streamefy.databinding.FragmentHomeBinding
+import com.streamefy.network.MyResource
 import java.util.Collections
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -35,10 +43,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     )
     var selectedTitle = ""
     var isMenuOpened = false
+    var auth_pin = "Z1U5"
+    var phone = ""
+    var page = 1
 
-    private val cateList = ArrayList<CateModel>()
+    private val eventList = ArrayList<EventsItem>()
+    private val mediaList = ArrayList<MediaItem>()
+    lateinit var eventAdapter: CategoryAdapter
+    lateinit var mediaAdapter: DrawerAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
+        phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
+        getUserData()
         binding.apply {
             val adapter = SliderAdapter(requireActivity(), images) {
                 Log.e("amcdanc", "sknmcjiadnc  $it")
@@ -57,7 +74,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
 
-        categoryview()
+        eventView()
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -67,6 +84,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     showCustomDialog()
                 }
             })
+
+    }
+
+    private fun getUserData() {
+        homeVm.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        observe()
     }
 
     private fun showCustomDialog() {
@@ -74,136 +97,168 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun drawerView() = with(binding) {
-        val draList = ArrayList<CateModel>()
+
         tvTitle.setText(selectedTitle)
-        draList.add(
-            CateModel(
-                title = "Mehendi ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Wedding ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Reception ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Dinner ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Pre wedding",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Dance",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        draList.add(
-            CateModel(
-                title = "Pre wedding",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
+//        draList.add(
+//            CateModel(
+//                title = "Mehendi ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Wedding ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Reception ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Dinner ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Pre wedding",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Dance",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        draList.add(
+//            CateModel(
+//                title = "Pre wedding",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
 
         rvDrawer.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
-            var draAdapter = DrawerAdapter(requireActivity(), draList) {
+            mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
-
-                findNavController().navigate(R.id.videofragment)
+                 var bundle=Bundle()
+                bundle.putString(PrefConstent.VIDEO_URL,mediaList[it].hlsPlaylistUrl)
+                findNavController().navigate(R.id.videofragment,bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
 
-            adapter = draAdapter
+            adapter = mediaAdapter
         }
     }
 
-    private fun categoryview() = with(binding) {
+    private fun eventView() = with(binding) {
 
-        cateList.add(
-            CateModel(
-                title = "Mehendi ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Wedding ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Reception ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Dinner ceremony",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Pre wedding",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Dance",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme
-            )
-        )
-        cateList.add(
-            CateModel(
-                title = "Pre wedding",
-                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-                image = R.drawable.home_theme, progress = 70
-            )
-        )
+//        cateList.add(
+//            CateModel(
+//                title = "Mehendi ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Wedding ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Reception ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Dinner ceremony",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Pre wedding",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Dance",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme
+//            )
+//        )
+//        cateList.add(
+//            CateModel(
+//                title = "Pre wedding",
+//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
+//                image = R.drawable.home_theme, progress = 70
+//            )
+//        )
 
         rvCategory.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
-            var catAdapter = CategoryAdapter(requireActivity(), cateList) {
-                selectedTitle = cateList[it].title
+            eventAdapter = CategoryAdapter(requireActivity(), eventList) {
+                selectedTitle = eventList[it].eventTitle
                 drawerLayout.openDrawer(GravityCompat.END)
+                eventList[it].media?.run {
+                    if(isNotEmpty()){
+                        mediaList.clear()
+                        mediaList.addAll(eventList[it].media as ArrayList<MediaItem>)
+                        drawerView()
+                    }
+                }
 
-                drawerView()
+
                 isMenuOpened = true
             }
 
-            adapter = catAdapter
+            adapter = eventAdapter
+        }
+    }
+
+
+    private fun observe() {
+        homeVm.homeLiveData.observe(requireActivity()) {
+            when (it) {
+                is MyResource.isLoading -> {
+                    showProgress()
+                }
+
+                is MyResource.isSuccess -> {
+                    dismissProgress()
+                    Log.e("feffefef", it.data?.data.toString())
+                    it.data?.data?.run {
+                        eventAdapter.update(events as ArrayList<EventsItem>)
+                    }
+
+                }
+
+                is MyResource.isError -> {
+                    dismissProgress()
+                }
+            }
         }
     }
 

@@ -4,15 +4,18 @@ import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.google.android.exoplayer2.upstream.HttpDataSource
+import com.streamefy.data.PrefConstent
+import java.util.Collections
+
 
 class PlayerHandler(
     private val context: Context,
@@ -36,15 +39,48 @@ class PlayerHandler(
         val dataSourceFactory = DefaultHttpDataSource.Factory()
         val mediaSource: MediaSource = com.google.android.exoplayer2.source.hls.HlsMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri))
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+
+
+//        val dataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(context)
+//
+//
+//        val mediaSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+//            .createMediaSource(MediaItem.fromUri(uri))
+//        player?.setMediaSource(mediaSource);
+//        player?.prepare();
+
+
+
+
+        // Initialize ExoPlayer
+
+        // Initialize ExoPlayer
+//        player = ExoPlayer.Builder(this).build()
+//        playerView.player = player
+
+        // Set the media source and prepare the player
+
+        // Set the media source and prepare the player
+//        player!!.setMediaSource(mediaSource)
+
+// Set the media item and prepare the player
+
+// Set the media item and prepare the player
+
+
+
 
 //        val mediaItem = MediaItem.fromUri(Uri.parse(uri))
+//
+//        // Prepare the player with the media item
 //        player?.setMediaItem(mediaItem)
-        player?.setMediaSource(mediaSource)
-
-        player?.prepare()
+//        player?.prepare()
     }
 
-     fun setQuality(resolution: String) {
+
+    fun setQuality(resolution: String) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
         val dimensions = when (resolution) {
             "360p" -> Pair(640, 360)
@@ -75,18 +111,20 @@ class PlayerHandler(
     fun seekTo(positionMs: Long) {
         player?.seekTo(positionMs)
     }
+
     fun seekBackward(seconds: Long) {
         player?.let { exoPlayer ->
             val currentPosition = exoPlayer.currentPosition
             val newPosition = (currentPosition - seconds * 1000)//.coerceAtLeast(0)
-            Log.e("xmksnc","mxksnc $currentPosition new $newPosition")
-            if (newPosition>(10*1000)) {
+            Log.e("xmksnc", "mxksnc $currentPosition new $newPosition")
+            if (newPosition > (10 * 1000)) {
                 exoPlayer.seekTo(newPosition)
-            }else{
+            } else {
                 exoPlayer.seekTo(0)
             }
         }
     }
+
     fun setPlaybackProgress(progress: Int) {
         val duration = player?.duration ?: 0L
         val position = (progress / 100.0 * duration).toLong()
@@ -100,20 +138,22 @@ class PlayerHandler(
     fun getVolume(): Float {
         return player?.volume ?: 1.0f
     }
+
     fun mute() {
         setVolume(0f)
-        isMuted=true
+        isMuted = true
     }
 
     fun unmute() {
         setVolume(1.0f)
-        isMuted=false
+        isMuted = false
     }
 
     fun isMuted(): Boolean {
         return isMuted
     }
-    fun isPlaying():Boolean?{
+
+    fun isPlaying(): Boolean? {
         return player?.isPlaying
     }
 
@@ -121,9 +161,15 @@ class PlayerHandler(
         // You can use your own logic to handle full-screen mode
         val isFullScreen = playerView.layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT
         playerView.layoutParams = if (isFullScreen) {
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 200) // Example size for non-fullscreen
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                200
+            ) // Example size for non-fullscreen
         } else {
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT) // Fullscreen
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            ) // Fullscreen
         }
         playerView.requestLayout()
     }
@@ -156,11 +202,13 @@ class PlayerHandler(
         // Format minutes and seconds to always show two digits
         return String.format("%02d:%02d", minutes, seconds)
     }
+
     var handler = Handler()
 
     fun stopHandler() {
         handler.removeMessages(0)
     }
+
     fun release() {
         player?.release()
         player = null

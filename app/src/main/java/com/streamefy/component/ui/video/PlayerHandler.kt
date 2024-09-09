@@ -2,19 +2,26 @@ package com.streamefy.component.ui.video
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.streamefy.data.PrefConstent
+import java.net.URLEncoder
+import java.util.Base64
 import java.util.Collections
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
 
 
 class PlayerHandler(
@@ -36,41 +43,23 @@ class PlayerHandler(
     }
 
     fun setMediaUri(uri: String) {
+
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
+            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
+        }
+
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-        val mediaSource: MediaSource = com.google.android.exoplayer2.source.hls.HlsMediaSource.Factory(dataSourceFactory)
+        val mediaSource: MediaSource = HlsMediaSource.Factory(httpDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri))
-        player?.setMediaSource(mediaSource)
-        player?.prepare()
+//        player?.setMediaSource(mediaSource)
+//        player?.prepare()
 
-
-//        val dataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(context)
-//
-//
-//        val mediaSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-//            .createMediaSource(MediaItem.fromUri(uri))
-//        player?.setMediaSource(mediaSource);
-//        player?.prepare();
-
-
-
-
-        // Initialize ExoPlayer
-
-        // Initialize ExoPlayer
-//        player = ExoPlayer.Builder(this).build()
-//        playerView.player = player
-
-        // Set the media source and prepare the player
-
-        // Set the media source and prepare the player
-//        player!!.setMediaSource(mediaSource)
-
-// Set the media item and prepare the player
-
-// Set the media item and prepare the player
-
-
-
+        player = ExoPlayer.Builder(context).build().apply {
+            setMediaSource(mediaSource)
+            prepare()
+          //  playWhenReady = true
+        }
+        playerView.player = player
 
 //        val mediaItem = MediaItem.fromUri(Uri.parse(uri))
 //
@@ -78,6 +67,24 @@ class PlayerHandler(
 //        player?.setMediaItem(mediaItem)
 //        player?.prepare()
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun generateSignedUrl(baseUrl: String, secretKey: String, expireTime: Long): String {
+        val encodedUrl = URLEncoder.encode(baseUrl, "UTF-8")
+        val expirationTime = expireTime.toString()
+        val stringToSign = "$encodedUrl|$expirationTime"
+
+        val mac = Mac.getInstance("HmacSHA1")
+        val secretKeySpec = SecretKeySpec(secretKey.toByteArray(), "HmacSHA1")
+        mac.init(secretKeySpec)
+        val signature = Base64.getEncoder().encodeToString(mac.doFinal(stringToSign.toByteArray()))
+
+        return "$baseUrl?expires=$expirationTime&signature=$signature"
+    }
+
+    val baseUrl = "https://your-bunny-cdn-url/your-file.mp4"
+    val secretKey = "your-secret-key"
+    val expireTime = System.currentTimeMillis() / 1000 + 3600 // URL valid for 1 hour
 
 
     fun setQuality(resolution: String) {

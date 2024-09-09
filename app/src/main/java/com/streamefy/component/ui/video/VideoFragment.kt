@@ -27,12 +27,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var isEnded = false
     private lateinit var volumeManager: VolumeManager
 
-//       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
 // var videoUrl="https://vz-057e4b99-b5a.b-cdn.net/bcdn_token=Mrrup8-VOHUJLHRp2AMFBw&expires=1725632241&token_path=%2Fa8fd227f-e7b9-4ff3-ae6b-0ee02db9616d%2F/a8fd227f-e7b9-4ff3-ae6b-0ee02db9616d/playlist.m3u8"
- var videoUrl=""
+// var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=UIKCsoA2Yllz_Q-Yv5nM0GGaXMTuw_Mmi4X-sq_zldQ&expires=1725970468&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {

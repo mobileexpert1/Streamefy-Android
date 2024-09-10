@@ -10,13 +10,11 @@ import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.HttpDataSource
-import com.streamefy.data.PrefConstent
 import java.net.URLEncoder
 import java.util.Base64
 import java.util.Collections
@@ -49,7 +47,7 @@ class PlayerHandler(
         }
 
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-        val mediaSource: MediaSource = HlsMediaSource.Factory(httpDataSourceFactory)
+        val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri))
 //        player?.setMediaSource(mediaSource)
 //        player?.prepare()
@@ -61,11 +59,29 @@ class PlayerHandler(
         }
         playerView.player = player
 
-//        val mediaItem = MediaItem.fromUri(Uri.parse(uri))
+        //new
+//        val baseUri = Uri.parse(uri)
+//        val playlistUrl = baseUri.buildUpon().path(baseUri.lastPathSegment).build().toString()
 //
-//        // Prepare the player with the media item
-//        player?.setMediaItem(mediaItem)
-//        player?.prepare()
+//        // Create a default HttpDataSource.Factory with custom user agent
+//        // Create a default HttpDataSource.Factory with custom user agent
+//        val dataSourceFactory: HttpDataSource.Factory = DefaultHttpDataSource.Factory()
+//            .setDefaultRequestProperties(
+//                Collections.singletonMap(
+//                    "User-Agent",
+//                    "YourUserAgentString"
+//                )
+//            )
+//
+//        // Create the HLS media source
+//
+//        // Create the HLS media source
+//        val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
+//            .createMediaSource(MediaItem.fromUri(playlistUrl))
+//
+//        player?.setMediaSource(mediaSource);
+//        player?.prepare();
+//        player?.play();
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

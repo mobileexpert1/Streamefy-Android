@@ -84,18 +84,18 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     } else if (otp.length < 6) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                     } else {
-                        otpVm.otpVerification(
-                            requireActivity(),
-                            VerificationRequest(phone, otp)
-                        )
-                        verificationObserv()
+//                        otpVm.otpVerification(
+//                            requireActivity(),
+//                            VerificationRequest(phone, otp)
+//                        )
+//                        verificationObserv()
 
-//                            var bundle=Bundle()
-//                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
-//                            bundle.putString(PrefConstent.FULL_NAME,name)
-//                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-//
-//                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
+                            var bundle=Bundle()
+                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
+                            bundle.putString(PrefConstent.FULL_NAME,name)
+                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
+
+                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
 
                     }
                 }

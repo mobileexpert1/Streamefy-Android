@@ -42,7 +42,11 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
             SharedPref.setBoolean(PrefConstent.ISAUTH,false)
             findNavController().navigate(R.id.homefragment, null, navOptions)
         } else {
-            findNavController().navigate(R.id.loginFragment, null, navOptions)
+//            findNavController().navigate(R.id.loginFragment, null, navOptions)
+            var bundle=Bundle()
+            bundle.putString(PrefConstent.VIDEO_URL,"")
+//            findNavController().navigate(R.id.videofragment,bundle)
+            findNavController().navigate(R.id.dynamicscreen)
         }
     }
 }

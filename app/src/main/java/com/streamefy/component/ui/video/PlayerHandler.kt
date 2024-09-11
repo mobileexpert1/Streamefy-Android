@@ -7,6 +7,8 @@ import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.media3.common.MimeTypes
+import androidx.media3.common.Player
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.MediaSource
@@ -42,46 +44,35 @@ class PlayerHandler(
 
     fun setMediaUri(uri: String) {
 
-        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
-            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
-        }
-
-        val dataSourceFactory = DefaultHttpDataSource.Factory()
-        val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(MediaItem.fromUri(uri))
-//        player?.setMediaSource(mediaSource)
-//        player?.prepare()
-
-        player = ExoPlayer.Builder(context).build().apply {
-            setMediaSource(mediaSource)
-            prepare()
-          //  playWhenReady = true
-        }
-        playerView.player = player
-
-        //new
-//        val baseUri = Uri.parse(uri)
-//        val playlistUrl = baseUri.buildUpon().path(baseUri.lastPathSegment).build().toString()
+//        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
+//            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
+//        }
 //
-//        // Create a default HttpDataSource.Factory with custom user agent
-//        // Create a default HttpDataSource.Factory with custom user agent
-//        val dataSourceFactory: HttpDataSource.Factory = DefaultHttpDataSource.Factory()
-//            .setDefaultRequestProperties(
-//                Collections.singletonMap(
-//                    "User-Agent",
-//                    "YourUserAgentString"
-//                )
-//            )
-//
-//        // Create the HLS media source
-//
-//        // Create the HLS media source
+//        val dataSourceFactory = DefaultHttpDataSource.Factory()
 //        val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
-//            .createMediaSource(MediaItem.fromUri(playlistUrl))
+//            .createMediaSource(MediaItem.fromUri(uri))
+////        player?.setMediaSource(mediaSource)
+////        player?.prepare()
 //
-//        player?.setMediaSource(mediaSource);
-//        player?.prepare();
-//        player?.play();
+//        player = ExoPlayer.Builder(context).build().apply {
+//            setMediaSource(mediaSource)
+//            prepare()
+//          //  playWhenReady = true
+//        }
+//        playerView.player = player
+
+
+
+            //Creating a media item of HLS Type
+            val mediaItem = MediaItem.Builder()
+                .setUri(uri)
+                .setMimeType(MimeTypes.APPLICATION_M3U8) //m3u8 is the extension used with HLS sources
+                .build()
+
+            player?.setMediaItem(mediaItem)
+            player?.prepare()
+            player?.play()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

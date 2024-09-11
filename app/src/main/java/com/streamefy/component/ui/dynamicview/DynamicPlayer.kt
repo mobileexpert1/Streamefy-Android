@@ -84,30 +84,88 @@ class DynamicPlayer : BaseFragment<FragmentDynamicPlayerBinding>() {
 //                    }
 //                }
 //            }
-            // Load the HTML content containing the iframe
-               var videoUrl="https://iframe.mediadelivery.net/embed/280659/22796632-8018-4073-9b19-8cd5c74a6fdc?token=6e69240e7a31ffdd0cb3e1d6c4f896bc0db1dfcf323d5d915af12091b134bb1f&expires=1724316142"
 
-            val iframeHtml = """
+//            old
+            // Load the HTML content containing the iframe
+//               var videoUrl="https://iframe.mediadelivery.net/embed/280659/22796632-8018-4073-9b19-8cd5c74a6fdc?token=6e69240e7a31ffdd0cb3e1d6c4f896bc0db1dfcf323d5d915af12091b134bb1f&expires=1724316142"
+//
+//            val iframeHtml = """
+//            <!DOCTYPE html>
+//            <html>
+//            <head>
+//                <title>Video Player</title>
+//                <style>
+//                    body { margin: 0; padding: 0; }
+//                    iframe { width: 100%; height: 100%; border: none; }
+//                </style>
+//            </head>
+//            <body>
+//                <iframe src="$videoUrl" allowfullscreen></iframe>
+//            </body>
+//            </html>
+//        """
+//
+//            webview.loadData(iframeHtml, "text/html", "UTF-8")
+////            webview.loadUrl(videoUrl)
+////
+
+//            javascripts()
+            iframe()
+        }
+    }
+
+    fun javascripts()= with(binding){
+        webview.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        WebView.setWebContentsDebuggingEnabled(true)
+
+        val htmlContent = """
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Video Player</title>
-                <style>
-                    body { margin: 0; padding: 0; }
-                    iframe { width: 100%; height: 100%; border: none; }
-                </style>
+                <script src="https://cdn.example.com/playerjs"></script> <!-- Ensure this URL is correct -->
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var player = new playerjs.Player('iframe');
+
+                        player.on('ready', function() {
+                            console.log('Player is ready');
+                            player.on('play', function() {
+                                console.log('play event triggered');
+                            });
+
+                            player.getDuration(function(duration) {
+                                console.log('Video duration:', duration);
+                            });
+
+                            if (player.supports('method', 'mute')) {
+                                player.mute();
+                            }
+
+                            player.play();
+                        });
+
+                        player.on('error', function(error) {
+                            console.error('Player error:', error);
+                        });
+                    });
+                </script>
             </head>
             <body>
-                <iframe src="$videoUrl" allowfullscreen></iframe>
+                <iframe id="iframe" src="https://iframe.mediadelivery.net/play/292623/06a93993-df8b-44c5-bf95-24d107ff5a95" width="640" height="360" frameborder="0" allowfullscreen></iframe>
             </body>
             </html>
         """
 
-            webview.loadData(iframeHtml, "text/html", "UTF-8")
-//            webview.loadUrl(videoUrl)
-//
-
-
-        }
+        // Load the HTML content into the WebView
+        webview.loadData(htmlContent, "text/html", "UTF-8")
     }
+
+    fun iframe(){
+        val url = "https://iframe.mediadelivery.net/embed/292623/06a93993-df8b-44c5-bf95-24d107ff5a95?token=2792dd697ee4b6184c421f65e99ded4a910692f1c84b401b71e6a857e4ce066c&expires=1726143915&autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+
+        // Load the URL into the WebView
+        binding.webview.loadUrl(url)
+    }
+
+
 }

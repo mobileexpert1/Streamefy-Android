@@ -35,7 +35,7 @@ object RetrofitClient {
                     if (token?.isNotEmpty()!!) {
                         addHeader("Authorization", "Bearer ${token}")
                     }
-                }.method(origin.method(), origin.body())
+                }.method(origin.method, origin.body)
                 .build()
             chain.proceed(newRequest)
         }

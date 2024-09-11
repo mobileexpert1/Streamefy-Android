@@ -124,8 +124,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                  var bundle=Bundle()
                 bundle.putString(PrefConstent.VIDEO_URL,mediaList[it].hlsPlaylistUrl)
-                findNavController().navigate(R.id.videofragment,bundle)
-//                        findNavController().navigate(R.id.dynamicscreen)
+//                findNavController().navigate(R.id.videofragment,bundle)
+                        findNavController().navigate(R.id.dynamicscreen)
             }
 
             adapter = mediaAdapter

@@ -30,12 +30,14 @@ navigationui = "androidx.navigation:navigation-ui-ktx:2.3.5"
 sdp = "com.intuit.sdp:sdp-android:1.0.6"
 koin = "io.insert-koin:koin-android:3.2.2"
 exoplayer = "com.google.android.exoplayer:exoplayer:2.18.5"
+#bitmovin = "com.bitmovin.player:player:3.80.0"
 
 autoimageslider = "com.github.smarteist:autoimageslider:1.4.0"
 drawerlayout = "androidx.drawerlayout:drawerlayout:1.1.1"
-retrofit = "com.squareup.retrofit2:retrofit:2.6.0"
+retrofit = "com.squareup.okhttp3:okhttp:4.10.0"
 gson = "com.squareup.retrofit2:converter-gson:2.6.0"
-interceptor = "com.squareup.okhttp3:logging-interceptor:3.4.1"
+interceptor = "com.squareup.okhttp3:logging-interceptor:4.10.0"
+
 coroutines = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }

@@ -84,8 +84,10 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.interceptor)
     implementation(libs.coroutines)
+//    implementation(libs.bitmovin)
+    implementation("com.bitmovin.player:player:3.82.0")
     implementation("junit:junit:4.12")
-    implementation(libs.androidx.media3.exoplayer.hls)
+//    implementation(libs.androidx.media3.exoplayer.hls)
 
 
     androidTestImplementation(platform(libs.androidx.compose.bom))

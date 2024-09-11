@@ -4,6 +4,7 @@ import VolumeManager
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
@@ -14,7 +15,6 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
 import com.streamefy.utils.visible
@@ -25,10 +25,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     lateinit var playerHandler: PlayerHandler
     var getLengthOnce = true
     var isEnded = false
+
     private lateinit var volumeManager: VolumeManager
 
 //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-       var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=g7ZkEtM3oL5kSNQpjxKMD7hZiRyUD-J4WPuqnPB_DwA&expires=1726058155&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
+       var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=Di6YAyG6unKXG0vW2Lap8_aMm2DfzZL1v3uUWm93nf4&expires=1726133736&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
@@ -147,6 +148,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         volume()
 
+   // bitPlayer()
+
+    }
+
+    private fun bitPlayer()= with(binding) {
+        binding.bitplayer.player=  BitmovinPlayer().bitPlayer(requireActivity(),bitplayer)
+
     }
 
     private fun quality() = with(binding) {
@@ -229,6 +237,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.pause()
             }
         }
+        binding.bitplayer.onPause()
     }
 
     override fun onDestroy() {
@@ -236,7 +245,27 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.pause()
         playerHandler.release()
         volumeManager.stopMonitoring()
-
+        binding. bitplayer.onDestroy()
     }
+
+
+
+    override fun onStart() {
+        super.onStart()
+        binding.bitplayer.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding. playerView.onResume()
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+        binding.bitplayer.onStop()
+    }
+
+
 
 }

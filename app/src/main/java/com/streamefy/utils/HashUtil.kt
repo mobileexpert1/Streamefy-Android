@@ -28,4 +28,24 @@ object HashUtil {
         val input = "$tokenSecurityKey$videoId$expiration"
         return sha256Hex(input)
     }
+
+
+    fun main() {
+        val signerObject = TokenSigner()
+        val securityKey = "229248f0-f007-4bf9-ba1f-bbf1b4ad9d40"
+        val expiry = "315569520" // in seconds
+        val pathAllowed = "/"
+        try {
+            System.out.println(
+                signerObject.signUrl(
+                    "https://token-tester.b-cdn.net/300kb.jpg", securityKey, expiry,
+                    null, false, pathAllowed, "CA", null
+                )
+            )
+        } catch (e: Exception) {
+            println("Failed to sign")
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.streamefy.component.ui.video
 
+import TokenAuthDataSource
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -7,23 +8,24 @@ import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.media3.common.MimeTypes
-import androidx.media3.common.Player
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.HttpDataSource
 import java.net.URLEncoder
 import java.util.Base64
-import java.util.Collections
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DataSource.Factory
+import com.google.android.exoplayer2.upstream.DataSpec
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import java.util.HashMap
 class PlayerHandler(
     private val context: Context,
     private val playerView: PlayerView
@@ -62,16 +64,74 @@ class PlayerHandler(
 //        playerView.player = player
 
 
+//new
+//            //Creating a media item of HLS Type
+//            val mediaItem = MediaItem.Builder()
+//                .setUri(uri)
+//                .setMimeType(MimeTypes.APPLICATION_M3U8) //m3u8 is the extension used with HLS sources
+//                .build()
+//
+//            player?.setMediaItem(mediaItem)
+//            player?.prepare()
+//            player?.play()
 
-            //Creating a media item of HLS Type
-            val mediaItem = MediaItem.Builder()
-                .setUri(uri)
-                .setMimeType(MimeTypes.APPLICATION_M3U8) //m3u8 is the extension used with HLS sources
-                .build()
 
-            player?.setMediaItem(mediaItem)
-            player?.prepare()
-            player?.play()
+//        val baseUrl = "https://example.com/path/to/playlist.m3u8"
+//        val token = "your-authentication-token" // Replace with your token
+//
+//
+//        // Append token to URL if needed
+//
+//        // Append token to URL if needed
+//        val uri = Uri.parse(uri).buildUpon()
+//            .appendQueryParameter("token", token)
+//            .build()
+//
+//        // Create media source
+//
+//        // Create media source
+//        val dataSourceFactory = DefaultHttpDataSource.Factory()
+//        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
+//            .createMediaSource(MediaItem.fromUri(uri))
+//
+//        // Prepare player with media source
+//
+//        // Prepare player with media source
+//        player!!.setMediaSource(mediaSource)
+//        player!!.prepare()
+//        player!!.play()
+
+        playTokenise()
+    }
+
+
+    fun playTokenise(){
+        val url = "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk&expires=1726208026&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
+
+        val token = "VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk"
+        val expires = 1726208026
+        val tokenPath = "/06a93993-df8b-44c5-bf95-24d107ff5a95/"
+        val playlistUrl = "https://vz-4aa86377-b82.b-cdn.net/$tokenPath/playlist.m3u8"
+
+        val upstreamDataSource = DefaultDataSourceFactory(context).createDataSource()
+
+        //  val tokenAuthDataSource = TokenAuthDataSource(token, upstreamDataSource)
+
+
+        val dataSourceFactory = object : Factory {
+            override fun createDataSource(): DataSource {
+                return TokenAuthDataSource(token,upstreamDataSource)
+            }
+        }
+
+        val mediaItem = MediaItem.fromUri(Uri.parse(playlistUrl))
+        val hlsMediaSource = HlsMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(mediaItem)
+
+        player?.setMediaSource(hlsMediaSource)
+        player?.prepare()
+        player?.play()
+
 
     }
 

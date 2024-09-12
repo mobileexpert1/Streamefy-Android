@@ -45,8 +45,8 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 //            findNavController().navigate(R.id.loginFragment, null, navOptions)
             var bundle=Bundle()
             bundle.putString(PrefConstent.VIDEO_URL,"")
-//            findNavController().navigate(R.id.videofragment,bundle)
-            findNavController().navigate(R.id.dynamicscreen)
+            findNavController().navigate(R.id.videofragment,bundle)
+//            findNavController().navigate(R.id.dynamicscreen)
         }
     }
 }

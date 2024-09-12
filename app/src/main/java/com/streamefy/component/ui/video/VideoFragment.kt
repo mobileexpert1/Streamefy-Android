@@ -228,6 +228,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+
+
+
     private lateinit var audioManager: AudioManager
 
     override fun onPause() {

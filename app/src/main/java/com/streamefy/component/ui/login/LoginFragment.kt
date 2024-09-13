@@ -80,10 +80,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                     }
                     var bundle = Bundle()
-                    bundle.putString(
-                        PrefConstent.PHONE_NUMBER,
-                        binding.etPhoneNumber.text.toString()
-                    )
+                    bundle.putString(PrefConstent.PHONE_NUMBER, binding.etPhoneNumber.text.toString())
                     findNavController().navigate(R.id.action_loginFragment_to_otpFragment, bundle)
                 }
 

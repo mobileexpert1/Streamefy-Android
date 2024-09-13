@@ -24,6 +24,7 @@ import com.streamefy.databinding.FragmentOtpBinding
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
+import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
 import com.streamefy.utils.showMessage
 
@@ -36,8 +37,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
-            name = getString(PrefConstent.FULL_NAME).toString()
         }
+        name=SharedPref.getString(PrefConstent.FULL_NAME).toString()
         initClickListeners()
 
         getOtp()
@@ -64,6 +65,15 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             et3.setupNextFocusOnDigit(et4)
             et4.setupNextFocusOnDigit(et5)
             et5.setupNextFocusOnDigit(et6)
+
+            // previous
+
+            et6.previousFocusOnDigit(et5)
+            et5.previousFocusOnDigit(et4)
+            et4.previousFocusOnDigit(et3)
+            et3.previousFocusOnDigit(et2)
+            et2.previousFocusOnDigit(et1)
+
         }
     }
 

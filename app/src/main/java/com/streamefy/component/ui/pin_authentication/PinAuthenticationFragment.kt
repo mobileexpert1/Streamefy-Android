@@ -20,6 +20,7 @@ import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.Constants
 import com.streamefy.network.MyResource
+import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
 
 class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>() {
@@ -53,6 +54,12 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             et1.setupNextFocusOnDigit(et2)
             et2.setupNextFocusOnDigit(et3)
             et3.setupNextFocusOnDigit(et4)
+
+            //previous
+            et4.previousFocusOnDigit(et3)
+            et3.previousFocusOnDigit(et2)
+            et2.previousFocusOnDigit(et1)
+
         }
         Log.e("sjanckjan", "cnjd ${SharedPref.getString(PrefConstent.TOKEN)}")
 

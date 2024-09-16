@@ -33,7 +33,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         initClickListeners()
 //        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
-
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
             var validate = nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
@@ -41,6 +40,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             if (!validate.equals(true)) {
                 ShowError.handleError.handleError(validate as Int)
             } else {
+                SharedPref.setString(PrefConstent.TOKEN, "")
                 viewmodel.login(
                     requireActivity(),
                     LoginRequest("appsdev096@gmail.com", "Appsdev096#")
@@ -80,7 +80,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                     }
                     var bundle = Bundle()
-                    bundle.putString(PrefConstent.PHONE_NUMBER, binding.etPhoneNumber.text.toString())
+                    bundle.putString(
+                        PrefConstent.PHONE_NUMBER,
+                        binding.etPhoneNumber.text.toString()
+                    )
                     findNavController().navigate(R.id.action_loginFragment_to_otpFragment, bundle)
                 }
 

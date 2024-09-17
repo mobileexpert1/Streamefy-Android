@@ -104,8 +104,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             bundle.putString(PrefConstent.PHONE_NUMBER,phone)
                             bundle.putString(PrefConstent.FULL_NAME,name)
                             SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-
                             findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
+
 
                     }
                 }

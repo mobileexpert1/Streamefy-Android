@@ -49,9 +49,6 @@ class CategoryAdapter(
                 tvMore.gone()
             }
 
-
-
-
         viewHolder.itemView.setOnClickListener {
             callBack.invoke(position)
         }

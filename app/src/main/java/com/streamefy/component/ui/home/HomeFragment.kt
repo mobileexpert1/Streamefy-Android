@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.annotations.SerializedName
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.CircularProgressDialog
@@ -108,15 +109,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private fun drawerView() = with(binding) {
 
         tvTitle.setText(selectedTitle)
-//
-//        draList.add(
-//            CateModel(
-//                title = "Pre wedding",
-//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-//                image = R.drawable.home_theme, progress = 70
-//            )
-//        )
-
+        // testing
+        for (i in 1 until 10){
+            var model1=MediaItem(
+                 size = "4",
+                 format = "jpj",
+                 hlsPlaylistUrl = "",
+                 description = "testing",
+                 bunnyId = "",
+                 thumbnailS3bucketId = "",
+                 id = 0)
+            mediaList.add(model1)
+        }
+////
         rvDrawer.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
@@ -142,6 +147,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //            )
 //        )
 
+        for (i in 1 until 4){
+            var model1=MediaItem(
+                size = "4",
+                format = "jpj",
+                hlsPlaylistUrl = "",
+                description = "testing",
+                bunnyId = "",
+                thumbnailS3bucketId = "",
+                id = 0)
+            mediaList.add(model1)
+        }
+// test case
+        for (i in 1 until 10){
+            var model1=EventsItem(
+                eventId = i,
+                eventTitle =  "Pre wedding No $i",
+                media = mediaList ,
+                userId = i,
+                userName = "streamify"
+            )
+            eventList.add(model1)
+        }
+
+
+
         rvCategory.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
@@ -149,11 +179,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 selectedTitle = eventList[it].eventTitle
                 drawerLayout.openDrawer(GravityCompat.END)
                 eventList[it].media?.run {
-                    if(isNotEmpty()){
+                   // if(isNotEmpty()){
                         mediaList.clear()
                         mediaList.addAll(eventList[it].media as ArrayList<MediaItem>)
                         drawerView()
-                    }
+                  //  }
                 }
 
 

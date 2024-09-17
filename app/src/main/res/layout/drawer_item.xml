@@ -8,11 +8,13 @@
     android:paddingHorizontal="@dimen/_10sdp"
     android:paddingVertical="@dimen/_3sdp">
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/clThumb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@drawable/selected_item"
         android:layout_marginVertical="@dimen/_5sdp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/_7sdp"
@@ -71,6 +73,10 @@
         android:drawablePadding="@dimen/_5sdp"
         android:paddingHorizontal="@dimen/_5sdp"
         android:paddingVertical="@dimen/_2sdp"
+
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+
         android:text="Download"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvDuration"

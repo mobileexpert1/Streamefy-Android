@@ -38,12 +38,14 @@
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_round_stroke_gray"
+                android:background="@drawable/inputfield_selector"
                 android:drawableStart="@drawable/ic_person"
                 android:drawablePadding="@dimen/_5sdp"
                 android:hint="@string/full_name"
                 android:maxLength="25"
                 android:maxLines="1"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:inputType="textPersonName"
                 android:paddingHorizontal="@dimen/_6sdp"
                 android:paddingVertical="@dimen/_4sdp"
@@ -60,7 +62,7 @@
                 android:maxLength="15"
                 android:maxLines="1"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/bg_round_stroke_gray"
+                android:background="@drawable/inputfield_selector"
                 android:drawableStart="@drawable/ic_phone"
                 android:drawablePadding="@dimen/_5sdp"
                 android:hint="@string/phone_number"
@@ -68,20 +70,26 @@
                 android:paddingVertical="@dimen/_4sdp"
                 android:textColorHint="@color/black"
                 android:textColor="@color/black"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etFullname" />
-
+<!--            android:background="@drawable/bg_round_gradient_purple_orange"-->
             <TextView
                 android:id="@+id/tvGetOtp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:background="@drawable/bg_round_gradient_purple_orange"
+
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_3sdp"
                 android:text="@string/get_otp"
                 android:textColor="@color/white"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:background="@drawable/ic_button_selector"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etPhoneNumber" />

@@ -110,17 +110,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         tvTitle.setText(selectedTitle)
         // testing
-        for (i in 1 until 10){
-            var model1=MediaItem(
-                 size = "4",
-                 format = "jpj",
-                 hlsPlaylistUrl = "",
-                 description = "testing",
-                 bunnyId = "",
-                 thumbnailS3bucketId = "",
-                 id = 0)
-            mediaList.add(model1)
-        }
+//        for (i in 1 until 10){
+//            var model1=MediaItem(
+//                 size = "4",
+//                 format = "jpj",
+//                 hlsPlaylistUrl = "",
+//                 description = "testing",
+//                 bunnyId = "",
+//                 thumbnailS3bucketId = "",
+//                 id = 0)
+//            mediaList.add(model1)
+//        }
 ////
         rvDrawer.apply {
             setHasFixedSize(true)
@@ -159,16 +159,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             mediaList.add(model1)
         }
 // test case
-        for (i in 1 until 10){
-            var model1=EventsItem(
-                eventId = i,
-                eventTitle =  "Pre wedding No $i",
-                media = mediaList ,
-                userId = i,
-                userName = "streamify"
-            )
-            eventList.add(model1)
-        }
+//        for (i in 1 until 10){
+//            var model1=EventsItem(
+//                eventId = i,
+//                eventTitle =  "Pre wedding No $i",
+//                media = mediaList ,
+//                userId = i,
+//                userName = "streamify"
+//            )
+//            eventList.add(model1)
+//        }
 
 
 
@@ -206,6 +206,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     dismissProgress()
                     Log.e("feffefef", it.data?.data.toString())
                     it.data?.data?.run {
+                        eventList.clear()
                         eventAdapter.update(events as ArrayList<EventsItem>)
                     }
 

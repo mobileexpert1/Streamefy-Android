@@ -47,12 +47,12 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                 } else {
 
-                    SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
-                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
-                    findNavController().navigate(R.id.homefragment)
+//                    SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
+//                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
+//                    findNavController().navigate(R.id.homefragment)
 
-//                    pinVm.setPin(requireActivity(), 1, 1, otp, phone)
-//                    observe()
+                    pinVm.setPin(requireActivity(), 1, 1, otp, phone)
+                    observe()
                 }
 
             }

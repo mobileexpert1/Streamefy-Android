@@ -26,7 +26,7 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     var isLogin = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       // isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
+        isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         lifecycleScope.launch {
             delay(2000)
             navigateToHome()

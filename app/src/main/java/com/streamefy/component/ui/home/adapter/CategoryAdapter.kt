@@ -15,6 +15,7 @@ import com.streamefy.R
 import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.utils.gone
+import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
 
@@ -43,10 +44,10 @@ class CategoryAdapter(
 
                     Log.e("kadncaldn","nkcda ${data.media!![0].thumbnailS3bucketId}")
                 } else {
-                    tvMore.gone()
+                    tvMore.invisible()
                 }
             }else{
-                tvMore.gone()
+                tvMore.invisible()
             }
 
         viewHolder.itemView.setOnClickListener {

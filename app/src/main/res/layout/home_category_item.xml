@@ -66,6 +66,7 @@
                 android:layout_marginTop="@dimen/_3sdp"
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_5sdp"
+                android:maxLines="2"
                 android:text="Lorem Ipsum is simply dummy text of the printing and"
                 app:layout_constraintStart_toStartOf="parent"
                 android:paddingBottom="@dimen/_1sdp"

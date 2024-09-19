@@ -41,4 +41,8 @@
         <item name="colorAccent">@color/white</item> <!-- Progress color -->
         <item name="android:progressDrawable">@drawable/dr_video_progress</item> <!-- Custom drawable -->
     </style>
+    <style name="otpinput">
+        <item name="android:inputType">text</item>
+    </style>
+
 </resources>

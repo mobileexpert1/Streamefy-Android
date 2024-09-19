@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
 import com.streamefy.utils.visible
@@ -29,7 +30,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     private lateinit var volumeManager: VolumeManager
 
 //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-       var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=Di6YAyG6unKXG0vW2Lap8_aMm2DfzZL1v3uUWm93nf4&expires=1726133736&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
+       var videoUrl="https://vz-356f31a1-aee.b-cdn.net/bcdn_token=_wpLb8x9oFoIfVwwc2kyvowQvMYeJ2j42s66Ekc7HRo&expires=1726830482&token_path=%2F43b5dbce-4ff1-42b5-9008-b991aca6500d%2F/43b5dbce-4ff1-42b5-9008-b991aca6500d/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
@@ -38,7 +39,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
-//            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+           // videoUrl = getString(PrefConstent.VIDEO_URL).toString()
            Log.e("ckdanmcn","mkadnc $videoUrl")
         }
         binding.apply {

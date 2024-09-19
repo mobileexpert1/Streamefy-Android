@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
 import com.streamefy.component.ui.home.adapter.SliderAdapter
 import com.streamefy.component.ui.home.categoryModel.CateModel
+import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.home.model.HomeResponse
 import com.streamefy.component.ui.home.model.MediaItem
@@ -36,13 +38,14 @@ import java.util.Collections
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
-    val images = listOf(
-        R.drawable.home_theme,
-        R.drawable.app_icon_your_company,
-        R.drawable.home_theme,
-        R.drawable.movie,
-        R.drawable.home_theme
-    )
+//    val images = listOf(
+//        R.drawable.home_theme,
+//        R.drawable.app_icon_your_company,
+//        R.drawable.home_theme,
+//        R.drawable.movie,
+//        R.drawable.home_theme
+//    )
+    val  images= ArrayList<BackgroundMediaItem>()
     var selectedTitle = ""
     var isMenuOpened = false
     var auth_pin = "Z1U5"
@@ -69,20 +72,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         eventView()
         binding.apply {
-            val adapter = SliderAdapter(requireActivity(), images) {
-                Log.e("amcdanc", "sknmcjiadnc  $it")
-            }
-            imageSlider.setSliderAdapter(adapter)
-            customIndicator.setIndicatorCount(images.size, 0)
 
-            imageSlider.setCurrentPageListener {
-                Log.e("aggggg", "sknmcjiadnc  $it")
-                customIndicator.updateIndicator(it)
-            }
+
 
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
                 isMenuOpened = false
+            }
+            ivLogout.setOnClickListener {
+                SharedPref.clearData()
+
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.loginFragment, true) // Set inclusive to true
+                    .build()
+
+                // Navigate to home fragment with the options
+                findNavController().navigate(R.id.loginFragment, null, navOptions)
+
             }
         }
 
@@ -97,6 +103,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
+    fun sliderInit()= with(binding){
+        val adapter = SliderAdapter(requireActivity(), images) {
+            Log.e("amcdanc", "sknmcjiadnc  $it")
+        }
+        imageSlider.setSliderAdapter(adapter)
+        imageSlider.startAutoCycle()
+        customIndicator.setIndicatorCount(images.size, 0)
+
+        imageSlider.setCurrentPageListener {
+            Log.e("aggggg", "sknmcjiadnc  $it")
+            customIndicator.updateIndicator(it)
+        }
+    }
     private fun getUserData() {
         homeVm.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
         observe()
@@ -129,8 +148,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                  var bundle=Bundle()
                 bundle.putString(PrefConstent.VIDEO_URL,mediaList[it].hlsPlaylistUrl)
-//                findNavController().navigate(R.id.videofragment,bundle)
-                        findNavController().navigate(R.id.dynamicscreen)
+                findNavController().navigate(R.id.videofragment,bundle)
+//                        findNavController().navigate(R.id.dynamicscreen)
             }
 
             adapter = mediaAdapter
@@ -147,17 +166,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //            )
 //        )
 
-        for (i in 1 until 4){
-            var model1=MediaItem(
-                size = "4",
-                format = "jpj",
-                hlsPlaylistUrl = "",
-                description = "testing",
-                bunnyId = "",
-                thumbnailS3bucketId = "",
-                id = 0)
-            mediaList.add(model1)
-        }
+//        for (i in 1 until 4){
+//            var model1=MediaItem(
+//                size = "4",
+//                format = "jpj",
+//                hlsPlaylistUrl = "",
+//                description = "testing",
+//                bunnyId = "",
+//                thumbnailS3bucketId = "",
+//                id = 0)
+//            mediaList.add(model1)
+//        }
 // test case
 //        for (i in 1 until 10){
 //            var model1=EventsItem(
@@ -208,6 +227,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     it.data?.data?.run {
                         eventList.clear()
                         eventAdapter.update(events as ArrayList<EventsItem>)
+                        this.backgroundMedia?.run {
+                            if (this.isNotEmpty()) {
+                                images.addAll(this as ArrayList<BackgroundMediaItem>)
+                                sliderInit()
+                            }
+                        }
+
                     }
 
                 }

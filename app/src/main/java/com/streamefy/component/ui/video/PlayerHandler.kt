@@ -90,18 +90,18 @@ class PlayerHandler(
 //        // Create media source
 //
 //        // Create media source
-//        val dataSourceFactory = DefaultHttpDataSource.Factory()
-//        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-//            .createMediaSource(MediaItem.fromUri(uri))
-//
-//        // Prepare player with media source
-//
-//        // Prepare player with media source
-//        player!!.setMediaSource(mediaSource)
-//        player!!.prepare()
-//        player!!.play()
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri))
 
-        playTokenise()
+        // Prepare player with media source
+
+        // Prepare player with media source
+        player!!.setMediaSource(mediaSource)
+        player!!.prepare()
+       // player!!.play()
+
+      //  playTokenise()
     }
 
 

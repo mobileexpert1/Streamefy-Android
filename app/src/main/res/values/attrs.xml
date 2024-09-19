@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomOTPView">
+        <attr name="otpFieldSize" format="dimension" />
+        <attr name="otpFieldBackground" format="reference" />
+        <attr name="otpFieldLength" format="integer" />
+    </declare-styleable>
+</resources>

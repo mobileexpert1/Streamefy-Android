@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.ui.otp.model.VerificationRequest
@@ -20,6 +21,7 @@ import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.Constants
 import com.streamefy.network.MyResource
+import com.streamefy.utils.hideKey
 import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
 
@@ -34,27 +36,37 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
         binding.apply {
+            pinView.requestFocusOTP()
+            pinView.otpListener = object : OTPListener {
+                override fun onInteractionListener() {
+                }
+
+                override fun onOTPComplete(otp: String) {
+                    requireActivity().hideKey()
+                }
+            }
 
             tvProceed.setOnClickListener {
                 otp = et1.text.toString().trim() +
                         et2.text.toString().trim() +
                         et3.text.toString().trim() +
                         et4.text.toString().trim()
-
-                if (otp.isEmpty()) {
-                    ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
-                } else if (otp.length < 4) {
-                    ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
-                } else {
+                otp.run {
+                    otp=this
+                    if (otp.isEmpty()) {
+                        ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
+                    } else if (otp.length < 4) {
+                        ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
+                    } else {
 
 //                    SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
 //                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
 //                    findNavController().navigate(R.id.homefragment)
 
-                    pinVm.setPin(requireActivity(), 1, 1, otp, phone)
-                    observe()
+                        pinVm.setPin(requireActivity(), 1, 1, otp, phone)
+                        observe()
+                    }
                 }
-
             }
             et1.setupNextFocusOnDigit(et2)
             et2.setupNextFocusOnDigit(et3)

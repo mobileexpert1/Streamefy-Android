@@ -10,9 +10,10 @@ import com.bumptech.glide.Glide
 
 import com.smarteist.autoimageslider.SliderViewAdapter
 import com.streamefy.R
+import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.utils.gone
 
-class SliderAdapter(private val context: Context, private val images: List<Int>,var callBack:(Int)->Unit) :
+class SliderAdapter(private val context: Context, private val images: ArrayList<BackgroundMediaItem>, var callBack:(Int)->Unit) :
     SliderViewAdapter<SliderAdapter.SliderAdapterVH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup): SliderAdapterVH {
@@ -24,9 +25,14 @@ class SliderAdapter(private val context: Context, private val images: List<Int>,
         var data = images[position]
 
             viewHolder.tvTitle.gone()
-            Glide.with(context)
-                .load(data)
-                .into(viewHolder.imageView)
+        data.hlsPlaylistUrl.run {
+            if (this.isNotEmpty()) {
+                Glide.with(context)
+                    .load(data.hlsPlaylistUrl)
+                    .into(viewHolder.imageView)
+            }
+        }
+
 
 
         viewHolder.itemView.setOnClickListener { callBack.invoke(position) }

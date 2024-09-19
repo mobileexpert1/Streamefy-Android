@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.ui.login.model.LoginRequest
@@ -24,6 +25,8 @@ import com.streamefy.databinding.FragmentOtpBinding
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
+import com.streamefy.utils.hideKey
+import com.streamefy.utils.hideSoftKeyboard
 import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
 import com.streamefy.utils.showMessage
@@ -59,20 +62,31 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
     private fun initClickListeners() {
         binding.apply {
+
+            otpView.requestFocusOTP()
+            otpView.otpListener = object : OTPListener {
+                override fun onInteractionListener() {
+                }
+
+                override fun onOTPComplete(otp: String) {
+                    requireActivity().hideKey()
+                }
+            }
+
             tvProceed.setOnClickListener(this@OtpFragment)
-            et1.setupNextFocusOnDigit(et2)
-            et2.setupNextFocusOnDigit(et3)
-            et3.setupNextFocusOnDigit(et4)
-            et4.setupNextFocusOnDigit(et5)
-            et5.setupNextFocusOnDigit(et6)
-
-            // previous
-
-            et6.previousFocusOnDigit(et5)
-            et5.previousFocusOnDigit(et4)
-            et4.previousFocusOnDigit(et3)
-            et3.previousFocusOnDigit(et2)
-            et2.previousFocusOnDigit(et1)
+//            et1.setupNextFocusOnDigit(et2)
+//            et2.setupNextFocusOnDigit(et3)
+//            et3.setupNextFocusOnDigit(et4)
+//            et4.setupNextFocusOnDigit(et5)
+//            et5.setupNextFocusOnDigit(et6)
+//
+//            // previous
+//
+//            et6.previousFocusOnDigit(et5)
+//            et5.previousFocusOnDigit(et4)
+//            et4.previousFocusOnDigit(et3)
+//            et3.previousFocusOnDigit(et2)
+//            et2.previousFocusOnDigit(et1)
 
         }
     }
@@ -82,32 +96,34 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             R.id.tvProceed -> {
                 binding.apply {
 
-                    var otp = et1.text.toString().trim() +
-                            et2.text.toString().trim() +
-                            et3.text.toString().trim() +
-                            et4.text.toString().trim() +
-                            et5.text.toString().trim() +
-                            et6.text.toString().trim()
+//                    var otp =
+//                        et1.text.toString().trim() +
+//                            et2.text.toString().trim() +
+//                            et3.text.toString().trim() +
+//                            et4.text.toString().trim() +
+//                            et5.text.toString().trim() +
+//                            et6.text.toString().trim()
 
-                    if (otp.isEmpty()) {
+                    otpView.otp?.run {
+                    if (this.isEmpty()) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
-                    } else if (otp.length < 6) {
+                    } else if (this.length < 6) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                     } else {
-                        otpVm.otpVerification(
-                            requireActivity(),
-                            VerificationRequest(phone, otp)
-                        )
-                        verificationObserv()
+//                        otpVm.otpVerification(
+//                            requireActivity(),
+//                            VerificationRequest(phone, this)
+//                        )
+//                        verificationObserv()
 
-//                            var bundle=Bundle()
-//                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
-//                            bundle.putString(PrefConstent.FULL_NAME,name)
-//                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-//                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
+                            var bundle=Bundle()
+                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
+                            bundle.putString(PrefConstent.FULL_NAME,name)
+                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
+                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
 
 
-                    }
+                    }}
                 }
             }
         }

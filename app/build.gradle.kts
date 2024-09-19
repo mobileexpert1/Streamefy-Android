@@ -89,6 +89,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.17.1")
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2.5")
     implementation("junit:junit:4.12")
+    implementation ("com.github.appsfeature:otp-view:1.1")
 //    implementation(libs.androidx.media3.exoplayer.hls)
 
 

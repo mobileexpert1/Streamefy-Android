@@ -5,4 +5,10 @@
         <attr name="otpFieldBackground" format="reference" />
         <attr name="otpFieldLength" format="integer" />
     </declare-styleable>
+
+    <declare-styleable name="OTPTextView">
+        <attr name="inputType" format="string" />
+        <!-- Add any other custom attributes you need -->
+    </declare-styleable>
+
 </resources>

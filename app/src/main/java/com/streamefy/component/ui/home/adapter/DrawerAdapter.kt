@@ -32,11 +32,11 @@ lateinit var binding: DrawerItemBinding
             tvSubtitle.text=data.description
             ivCate.loadUrl(data.thumbnailS3bucketId)
 
-            if (position%2==0){
-                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
-            }else{
-                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.semi_white))
-            }
+//            if (position%2==0){
+//                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
+//            }else{
+//                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.semi_white))
+//            }
             viewHolder.itemView.setOnClickListener {
                 callBack.invoke(position)
             }

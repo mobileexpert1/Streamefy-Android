@@ -7,7 +7,7 @@
     android:paddingHorizontal="@dimen/_10sdp"
     android:focusableInTouchMode="true"
     android:focusable="true"
-    android:background="@drawable/selected_item"
+    android:background="@drawable/ic_drawer_selector"
     android:paddingVertical="@dimen/_3sdp">
 
     <androidx.cardview.widget.CardView
@@ -25,7 +25,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_45sdp"
-            android:background="@color/black">
+            android:background="@drawable/selected_item"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:padding="@dimen/_1sdp"
+            android:focusableInTouchMode="true"
+            android:id="@+id/clVideoThumb"
+            >
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivCate"

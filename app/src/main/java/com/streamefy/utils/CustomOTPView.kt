@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.otpview.OTPTextView
 import com.streamefy.R
 
 class CustomOTPView @JvmOverloads constructor(
@@ -23,6 +24,8 @@ class CustomOTPView @JvmOverloads constructor(
     private val otpFieldSize: Float
     private val otpFieldBackground: Int
 
+
+
     init {
         val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.CustomOTPView)
         otpFieldSize = typedArray.getDimension(R.styleable.CustomOTPView_otpFieldSize, 40f)
@@ -32,6 +35,7 @@ class CustomOTPView @JvmOverloads constructor(
 
         orientation = HORIZONTAL
         createEditTexts()
+        OTPTextView
     }
 
     private fun createEditTexts() {

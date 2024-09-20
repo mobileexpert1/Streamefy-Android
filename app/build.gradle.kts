@@ -90,6 +90,7 @@ dependencies {
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2.5")
     implementation("junit:junit:4.12")
     implementation ("com.github.appsfeature:otp-view:1.1")
+    implementation ("com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0")
 //    implementation(libs.androidx.media3.exoplayer.hls)
 
 

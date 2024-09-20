@@ -99,7 +99,7 @@ class PlayerHandler(
         // Prepare player with media source
         player!!.setMediaSource(mediaSource)
         player!!.prepare()
-       // player!!.play()
+        player!!.play()
 
       //  playTokenise()
     }

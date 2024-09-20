@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +20,7 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.CircularProgressDialog
 import com.streamefy.component.base.ExitDialog
+import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
 import com.streamefy.component.ui.home.adapter.SliderAdapter
@@ -34,6 +36,8 @@ import com.streamefy.data.SharedPref
 import com.streamefy.databinding.ExitDialogBinding
 import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.Collections
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -67,7 +71,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         if (isFirst) {
             isFirst=false
-            getUserData()
+            //getUserData()
 
         }
         eventView()
@@ -178,32 +182,52 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //            mediaList.add(model1)
 //        }
 // test case
-//        for (i in 1 until 10){
-//            var model1=EventsItem(
-//                eventId = i,
-//                eventTitle =  "Pre wedding No $i",
-//                media = mediaList ,
-//                userId = i,
-//                userName = "streamify"
-//            )
-//            eventList.add(model1)
-//        }
+        for (i in 1 until 10){
+            var model1=EventsItem(
+                eventId = i,
+                eventTitle =  "Pre wedding No $i",
+                media = mediaList ,
+                userId = i,
+                userName = "streamify"
+            )
+            eventList.add(model1)
+        }
 
 
 
         rvCategory.apply {
+            requestFocus()
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
-            eventAdapter = CategoryAdapter(requireActivity(), eventList) {
-                selectedTitle = eventList[it].eventTitle
-                drawerLayout.openDrawer(GravityCompat.END)
-                eventList[it].media?.run {
-                   // if(isNotEmpty()){
-                        mediaList.clear()
-                        mediaList.addAll(eventList[it].media as ArrayList<MediaItem>)
-                        drawerView()
-                  //  }
-                }
+            eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos,type->
+                selectedTitle = eventList[pos].eventTitle
+
+                var bundle=Bundle()
+                bundle.putString(PrefConstent.VIDEO_URL,""
+                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
+                )
+                findNavController().navigate(R.id.videofragment,bundle)
+
+//                when(type){
+//                    StreamEnum.SINGLE->{
+//                        var bundle=Bundle()
+//                        bundle.putString(PrefConstent.VIDEO_URL,""
+//                            //eventList[pos].media?.get(0)?.hlsPlaylistUrl
+//                        )
+//                        findNavController().navigate(R.id.videofragment,bundle)
+//                    }
+//                    StreamEnum.MORE->{
+//                        drawerLayout.openDrawer(GravityCompat.END)
+//                        eventList[pos].media?.run {
+//                            // if(isNotEmpty()){
+//                            mediaList.clear()
+//                            mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
+//                            drawerView()
+//                            //  }
+//                        }
+//                    }
+//                }
+
 
 
                 isMenuOpened = true
@@ -227,6 +251,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     it.data?.data?.run {
                         eventList.clear()
                         eventAdapter.update(events as ArrayList<EventsItem>)
+
                         this.backgroundMedia?.run {
                             if (this.isNotEmpty()) {
                                 images.addAll(this as ArrayList<BackgroundMediaItem>)

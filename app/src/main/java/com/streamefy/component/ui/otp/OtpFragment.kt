@@ -2,6 +2,7 @@ package com.streamefy.component.ui.otp
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.otpview.OTPChildEditText
 import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -29,6 +31,7 @@ import com.streamefy.utils.hideKey
 import com.streamefy.utils.hideSoftKeyboard
 import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
+import com.streamefy.utils.showKeyboard
 import com.streamefy.utils.showMessage
 
 class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
@@ -62,7 +65,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
     private fun initClickListeners() {
         binding.apply {
-
+            requireActivity().showKeyboard(otpView.getChildAt(0))
             otpView.requestFocusOTP()
             otpView.otpListener = object : OTPListener {
                 override fun onInteractionListener() {
@@ -110,17 +113,17 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     } else if (this.length < 6) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                     } else {
-//                        otpVm.otpVerification(
-//                            requireActivity(),
-//                            VerificationRequest(phone, this)
-//                        )
-//                        verificationObserv()
+                        otpVm.otpVerification(
+                            requireActivity(),
+                            VerificationRequest(phone, this)
+                        )
+                        verificationObserv()
 
-                            var bundle=Bundle()
-                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
-                            bundle.putString(PrefConstent.FULL_NAME,name)
-                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
+//                            var bundle=Bundle()
+//                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
+//                            bundle.putString(PrefConstent.FULL_NAME,name)
+//                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
+//                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
 
 
                     }}

@@ -28,7 +28,7 @@ class SliderAdapter(private val context: Context, private val images: ArrayList<
         data.hlsPlaylistUrl.run {
             if (this.isNotEmpty()) {
                 Glide.with(context)
-                    .load(data.hlsPlaylistUrl)
+                    .load(data.thumbnailSBucketId)
                     .into(viewHolder.imageView)
             }
         }

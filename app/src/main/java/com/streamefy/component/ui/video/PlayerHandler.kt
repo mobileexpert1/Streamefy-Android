@@ -256,11 +256,20 @@ class PlayerHandler(
     fun getcurrent(): String {
         val durationMillis = player?.currentPosition ?: 0L
 
-        val minutes = (durationMillis / 1000) / 60
-        val seconds = (durationMillis / 1000) % 60
+        val totalSeconds = durationMillis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
 
-        // Format minutes and seconds to always show two digits
-        return String.format("%02d:%02d", minutes, seconds)
+        // Format hours, minutes, and seconds to always show two digits
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+
+//        val minutes = (durationMillis / 1000) / 60
+//        val seconds = (durationMillis / 1000) % 60
+//
+//        // Format minutes and seconds to always show two digits
+//        return String.format("%02d:%02d", minutes, seconds)
     }
 
     fun getDuration(): Long {
@@ -268,13 +277,24 @@ class PlayerHandler(
     }
 
     fun getTotalLength(): String {
+
         val durationMillis = player?.duration ?: 0L
 
-        val minutes = (durationMillis / 1000) / 60
-        val seconds = (durationMillis / 1000) % 60
+        val totalSeconds = durationMillis / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
 
-        // Format minutes and seconds to always show two digits
-        return String.format("%02d:%02d", minutes, seconds)
+        // Format hours, minutes, and seconds to always show two digits
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+//        val durationMillis = player?.duration ?: 0L
+//
+//        val minutes = (durationMillis / 1000) / 60
+//        val seconds = (durationMillis / 1000) % 60
+//
+//        // Format minutes and seconds to always show two digits
+//        return String.format("%02d:%02d", minutes, seconds)
     }
 
     var handler = Handler()

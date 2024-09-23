@@ -2,6 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="afterDescendants"
     tools:context=".component.ui.video.VideoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,9 +38,13 @@
             android:layout_width="@dimen/_80sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            android:src="@drawable/ic_backtovideo"
+            android:src="@drawable/ic_video_back_selector"
             app:layout_constraintEnd_toEndOf="@+id/llTools"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+
+            />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llTools"
@@ -56,35 +63,42 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivSkipBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_skip_back" />
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:src="@drawable/ic_video_backward_selector"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivPlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:src="@drawable/ic_video_play"
-
+                android:src="@drawable/ic_video_play_selector"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivSkipForward"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:src="@drawable/ic_skip_forward"
-
+                android:src="@drawable/ic_video_forward_selector"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCurrentLenght"
                 style="@style/filson_14_whiteTV"
-                android:layout_width="@dimen/_17sdp"
+                android:layout_width="@dimen/_25sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:fontFamily="@font/filsonpro_light"
-                android:text="00:00" />
+                android:text="00:00"
+
+                />
 
 
             <androidx.appcompat.widget.AppCompatSeekBar
@@ -99,7 +113,7 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDuration"
                 style="@style/filson_14_whiteTV"
-                android:layout_width="@dimen/_17sdp"
+                android:layout_width="wrap_content"
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:fontFamily="@font/filsonpro_light"
                 android:text="00:00" />
@@ -107,18 +121,26 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivSetting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:src="@drawable/ic_video_settings" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_setting_selector"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
 
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivVolume"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:src="@drawable/ic_video_volume" />
+                android:padding="@dimen/_1sdp"
+                android:src="@drawable/ic_video_volume"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
 
 
             <androidx.appcompat.widget.AppCompatSeekBar
@@ -128,13 +150,18 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:progress="90"
                 android:progressTint="@color/red"
-                android:thumb="@drawable/seekbar_thumb" />
+                android:thumb="@drawable/seekbar_thumb"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+
+                />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivZoom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:visibility="invisible"
                 android:src="@drawable/ic_video_zoom" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -150,6 +177,8 @@
             android:paddingHorizontal="@dimen/_2sdp"
             android:paddingVertical="@dimen/_5sdp"
             android:visibility="gone"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintBottom_toTopOf="@+id/llTools"
             app:layout_constraintEnd_toEndOf="@+id/llTools">
 
@@ -161,7 +190,10 @@
                 android:paddingVertical="@dimen/_1sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:text="4K"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv1440p"
@@ -172,7 +204,9 @@
                 android:paddingVertical="@dimen/_1sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:text="1440p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv1080p"
@@ -182,7 +216,8 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:text="1080p"
                 android:textColor="@color/black" />
 
@@ -194,7 +229,8 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:text="720p"
                 android:textColor="@color/black" />
 
@@ -207,7 +243,9 @@
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
                 android:text="480p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv360p"
@@ -218,7 +256,9 @@
                 android:paddingVertical="@dimen/_1sdp"
                 android:fontFamily="@font/filsonpro_light"
                 android:text="360p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

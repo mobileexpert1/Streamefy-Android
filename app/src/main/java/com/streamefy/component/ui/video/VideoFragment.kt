@@ -1,13 +1,17 @@
 package com.streamefy.component.ui.video
 
 import VolumeManager
+import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -30,7 +34,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     private lateinit var volumeManager: VolumeManager
 
 //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-       var videoUrl="https://vz-356f31a1-aee.b-cdn.net/bcdn_token=vYmLSk3zOw20z_jcCxJrdQ&expires=1726848524&token_path=%2Fbcb1598d-adc8-4d92-8f73-d674f38ec3f0%2F/bcb1598d-adc8-4d92-8f73-d674f38ec3f0/playlist.m3u8"
+       var videoUrl=""
+           //"https://vz-356f31a1-aee.b-cdn.net/bcdn_token=FmAWzCBl7_7DZ4gHHTZ8rg&expires=1727100940&token_path=%2Fa0520395-a4de-40f2-9f7f-48eacbb92b2f%2F/a0520395-a4de-40f2-9f7f-48eacbb92b2f/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
@@ -39,7 +44,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
-//            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
            Log.e("ckdanmcn","mkadnc $videoUrl")
         }
         binding.apply {
@@ -89,6 +94,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         if (getLengthOnce) {
                             tvDuration.setText(playerHandler.getTotalLength())
                             getLengthOnce = false
+                            ivPlay.setImageResource(R.drawable.ic_video_pause)
                         }
                         isEnded = false
                         updateProgressBar()
@@ -101,20 +107,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     Log.e("ExoPlayerError", "Playback error: " + error.message, error)
                 }
             })
-            sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-                    if (fromUser) {
-                        playerHandler.setPlaybackProgress(progress)
-                    }
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
+//            sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//                override fun onProgressChanged(
+//                    seekBar: SeekBar?,
+//                    progress: Int,
+//                    fromUser: Boolean
+//                ) {
+//                    if (fromUser) {
+//                        playerHandler.setPlaybackProgress(progress)
+//                    }
+//                }
+//
+//                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//            })
 
             // Volume control
             ivVolume.setOnClickListener {
@@ -150,6 +156,70 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volume()
 
    // bitPlayer()
+    selectorFocus()
+    }
+
+    fun selectorFocus()= with(binding){
+        ivPlay.requestFocus()
+        ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivSkipBack.layoutParams = params
+            } else {
+                val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivSkipBack.layoutParams = params
+            }
+        }
+        ivSkipForward.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivSkipForward.layoutParams = params
+                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
+            } else {
+                val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivSkipForward.layoutParams = params
+                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
+            }
+        }
+        ivPlay.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivPlay.layoutParams = params
+                ivPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.light_gray))
+            } else {
+                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivPlay.layoutParams = params
+                ivPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
+            }
+        }
+
+        ivSetting.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivSetting.layoutParams = params
+            } else {
+                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivSetting.layoutParams = params
+            }
+        }
+
+
 
     }
 
@@ -199,6 +269,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
 
+            }
+
+            textView.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    val params = textView.layoutParams as LinearLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                    textView.layoutParams = params
+                } else {
+                    val params = textView.layoutParams as LinearLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                    textView.layoutParams = params
+                }
             }
         }
 

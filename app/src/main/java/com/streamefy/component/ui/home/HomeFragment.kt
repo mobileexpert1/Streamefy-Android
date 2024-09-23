@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -39,6 +42,7 @@ import com.streamefy.network.MyResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Collections
+import java.util.jar.Attributes
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
@@ -55,6 +59,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var auth_pin = "Z1U5"
     var phone = ""
     var page = 1
+    var eventFocusPos=0
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
@@ -71,18 +76,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         if (isFirst) {
             isFirst=false
-            //getUserData()
+            getUserData()
 
         }
         eventView()
         binding.apply {
 
 
-
-            ivClose.setOnClickListener {
-                drawerLayout.closeDrawer(GravityCompat.END)
-                isMenuOpened = false
-            }
             ivLogout.setOnClickListener {
                 SharedPref.clearData()
 
@@ -94,6 +94,74 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 findNavController().navigate(R.id.loginFragment, null, navOptions)
 
             }
+            ivLogout.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Change size when focused
+                    val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                    ivLogout.layoutParams = params
+                    ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+                } else {
+                    // Revert size when not focused
+                    val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                    ivLogout.layoutParams = params
+                    ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+                }
+            }
+
+            ivClose.setOnClickListener {
+                drawerLayout.closeDrawer(GravityCompat.END)
+                isMenuOpened = false
+            }
+            ivClose.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    // Change size when focused
+                    val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                    ivClose.layoutParams = params
+                   // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+                } else {
+                    // Revert size when not focused
+                    val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                    ivClose.layoutParams = params
+                    //ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+                }
+            }
+
+
+
+            drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                    // Handle drawer slide if needed
+                }
+
+                override fun onDrawerOpened(drawerView: View) {
+                    // Set focus to the first item if needed
+                    drawerView.requestFocus()
+                    rvDrawer. post {
+                        rvDrawer. getChildAt(0)?.requestFocus()
+                    }
+                }
+
+                override fun onDrawerClosed(drawerView: View) {
+                    binding.rvCategory.apply {
+                        post {
+                            getChildAt(eventFocusPos)?.requestFocus()
+                        }
+                    }
+                }
+
+                override fun onDrawerStateChanged(newState: Int) {
+                    // Handle state change if needed
+                }
+            })
+
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -146,6 +214,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //        }
 ////
         rvDrawer.apply {
+
+                getChildAt(0)?.requestFocus()
+
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
@@ -175,59 +246,61 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                size = "4",
 //                format = "jpj",
 //                hlsPlaylistUrl = "",
-//                description = "testing",
+//                description = "testing Lorem Ipsum is simply dummy text of the printing and Lorem Ipsum is simply dummy text of the printing and ",
 //                bunnyId = "",
 //                thumbnailS3bucketId = "",
 //                id = 0)
 //            mediaList.add(model1)
 //        }
-// test case
-        for (i in 1 until 10){
-            var model1=EventsItem(
-                eventId = i,
-                eventTitle =  "Pre wedding No $i",
-                media = mediaList ,
-                userId = i,
-                userName = "streamify"
-            )
-            eventList.add(model1)
-        }
+//// test case
+//        for (i in 1 until 10){
+//            var model1=EventsItem(
+//                eventId = i,
+//                eventTitle =  "Pre wedding No $i",
+//                media = mediaList ,
+//                userId = i,
+//                userName = "streamify"
+//            )
+//            eventList.add(model1)
+//        }
 
 
 
         rvCategory.apply {
             requestFocus()
             setHasFixedSize(true)
+
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos,type->
                 selectedTitle = eventList[pos].eventTitle
 
-                var bundle=Bundle()
-                bundle.putString(PrefConstent.VIDEO_URL,""
-                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
-                )
-                findNavController().navigate(R.id.videofragment,bundle)
+//                var bundle=Bundle()
+//                bundle.putString(PrefConstent.VIDEO_URL,""
+//                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
+//                )
+//                findNavController().navigate(R.id.videofragment,bundle)
+                eventFocusPos=pos
+                when(type){
+                    StreamEnum.SINGLE->{
+                        var bundle=Bundle()
+                        bundle.putString(PrefConstent.VIDEO_URL,
+                            eventList[pos].media?.get(0)?.hlsPlaylistUrl
+                        )
+                        findNavController().navigate(R.id.videofragment,bundle)
+                    }
+                    StreamEnum.MORE->{
+                      //  drawerLayout.requestFocus()
+                        drawerLayout.openDrawer(GravityCompat.END)
 
-//                when(type){
-//                    StreamEnum.SINGLE->{
-//                        var bundle=Bundle()
-//                        bundle.putString(PrefConstent.VIDEO_URL,""
-//                            //eventList[pos].media?.get(0)?.hlsPlaylistUrl
-//                        )
-//                        findNavController().navigate(R.id.videofragment,bundle)
-//                    }
-//                    StreamEnum.MORE->{
-//                        drawerLayout.openDrawer(GravityCompat.END)
-//                        eventList[pos].media?.run {
-//                            // if(isNotEmpty()){
-//                            mediaList.clear()
-//                            mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
-//                            drawerView()
-//                            //  }
-//                        }
-//                    }
-//                }
-
+                        eventList[pos].media?.run {
+                             if(isNotEmpty()){
+                            mediaList.clear()
+                            mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
+                            drawerView()
+                              }
+                        }
+                    }
+                }
 
 
                 isMenuOpened = true
@@ -251,7 +324,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     it.data?.data?.run {
                         eventList.clear()
                         eventAdapter.update(events as ArrayList<EventsItem>)
-
+                        binding.rvCategory.apply {
+                            requestFocus()}
                         this.backgroundMedia?.run {
                             if (this.isNotEmpty()) {
                                 images.addAll(this as ArrayList<BackgroundMediaItem>)
@@ -275,6 +349,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         if (binding.drawerLayout.isVisible) {
             drawerView()
         }
+        binding.rvCategory.apply {
+            post {
+                getChildAt(eventFocusPos)?.requestFocus()
+            }
+        }
+
 
     }
 }

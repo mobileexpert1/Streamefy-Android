@@ -6,5 +6,11 @@
     <dimen name="indicator_margin">2dp</dimen>
     <dimen name="indicator_size_selected">11dp</dimen> <!-- Size for the selected indicator -->
     <dimen name="indicator_size_unselected">10dp</dimen>
+    <dimen name="_13sdp">13dp</dimen>
+    <dimen name="_14sdp">14dp</dimen>
+    <dimen name="_15sdp">15dp</dimen>
+    <dimen name="_20sdp">18dp</dimen>
+    <dimen name="_16sdp">16dp</dimen>
+    <dimen name="_17sdp">17dp</dimen>
 
 </resources>

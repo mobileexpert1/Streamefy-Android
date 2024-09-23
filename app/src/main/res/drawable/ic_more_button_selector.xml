@@ -3,9 +3,8 @@
     <item android:state_focused="true">
         <shape>
             <corners android:radius="@dimen/_3sdp" />
-            <solid android:color="@color/transparent" />
-            <stroke android:color="@color/light_gray"
-                android:width="@dimen/_1sdp"/>
+            <solid android:color="@color/light_gray" />
+
         </shape>
     </item>
     <item android:drawable="@color/transparent" />

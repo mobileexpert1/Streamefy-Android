@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
@@ -59,13 +61,39 @@ class CategoryAdapter(
                 tvMore.invisible()
             }
 
-            viewHolder.itemView.setOnClickListener {
+
+            clEvent.setOnFocusChangeListener { _, hasFocus ->
+//                if (hasFocus) {
+//                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.red ))
+//                } else {
+//                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gray))
+//                }
+
+                if (hasFocus) {
+                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
+                } else {
+                    itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                }
+
+            }
+
+            clEvent.setOnClickListener {
                 callBack.invoke(position,StreamEnum.SINGLE)
             }
 
-//            tvMore.setOnClickListener {
-//               // callBack.invoke(position,StreamEnum.MORE)
-//            }
+            tvMore.setOnClickListener {
+                callBack.invoke(position,StreamEnum.MORE)
+            }
+
+            tvMore.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                   // itemView.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
+                    tvMore.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
+                } else {
+                  //  itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                    tvMore.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                }
+            }
 
         }
 

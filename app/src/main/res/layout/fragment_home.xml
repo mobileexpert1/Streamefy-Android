@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/home_theme"
-
             android:gravity="center">
 
 
@@ -114,8 +113,10 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:background="@color/black"
-            android:orientation="vertical">
+            android:focusable="true"
+            android:focusableInTouchMode="true"
 
+            android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTitle"
@@ -128,7 +129,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/ivClose"
                 app:layout_constraintEnd_toStartOf="@+id/ivClose"
-
                 />
 
             <ImageView
@@ -148,6 +148,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTitle" />

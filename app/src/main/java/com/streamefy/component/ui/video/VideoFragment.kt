@@ -53,16 +53,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler = PlayerHandler(requireActivity(), playerView)
             playerHandler.setMediaUri(videoUrl)
             ivPlay.setOnClickListener {
+                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivPlay.layoutParams = params
                 if (playerHandler.isPlaying()!!) {
                     playerHandler.pause()
-                    ivPlay.setImageResource(R.drawable.ic_video_play)
+                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
                 } else {
                     if (isEnded) {
                         playerHandler.player?.seekTo(0)
                     } else {
                         playerHandler.play()
                     }
-                    ivPlay.setImageResource(R.drawable.ic_video_pause)
+                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
                     updateProgressBar()
                 }
 
@@ -127,11 +131,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 Log.e("sncsnc", "dndnv ${playerHandler.isMuted()}")
                 if (playerHandler.isMuted()) {
                     playerHandler.unmute()
-                    ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+//                    ivVolume.setImageResource(R.drawable.ic_video_volume)
                     sbVolumeSeek.max = 30
                 } else {
                     playerHandler.mute()
-                    ivVolume.setImageResource(R.drawable.ic_mute)
+                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+
+                    // ivVolume.setImageResource(R.drawable.ic_mute)
                     sbVolumeSeek.max = 0
                 }
 
@@ -160,7 +167,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun selectorFocus()= with(binding){
-        ivPlay.requestFocus()
+        ivSkipForward.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
@@ -180,13 +187,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSkipForward.layoutParams = params
-                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
+//                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
             } else {
                 val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivSkipForward.layoutParams = params
-                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
+//                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
             }
         }
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
@@ -195,14 +202,39 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivPlay.layoutParams = params
-                ivPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.light_gray))
+
+                if (playerHandler.isPlaying()!!) {
+                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                }else{
+                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+                }
             } else {
                 val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivPlay.layoutParams = params
-                ivPlay.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
+                if (playerHandler.isPlaying()!!) {
+                    ivPlay.setImageResource(R.drawable.ic_video_pause)
+                }else{
+                    ivPlay.setImageResource(R.drawable.ic_video_play)
+                }
+
             }
+
+
+//            if (playerHandler.isPlaying()!!) {
+//                playerHandler.pause()
+//                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+//            } else {
+//                if (isEnded) {
+//                    playerHandler.player?.seekTo(0)
+//                } else {
+//                    playerHandler.play()
+//                }
+//                ivPlay.setImageResource(R.drawable.ic_selected_pause)
+//                updateProgressBar()
+//            }
+
         }
 
         ivSetting.setOnFocusChangeListener { _, hasFocus ->
@@ -219,7 +251,41 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
 
+        ivVolume.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                val params = ivVolume.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+                ivVolume.layoutParams = params
 
+                if (playerHandler.isMuted()) {
+                    playerHandler.unmute()
+                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                    sbVolumeSeek.max = 30
+                } else {
+                    playerHandler.mute()
+                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                    sbVolumeSeek.max = 0
+                }
+
+            } else {
+                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivVolume.layoutParams = params
+
+                if (playerHandler.isMuted()) {
+                    playerHandler.unmute()
+                    ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    sbVolumeSeek.max = 30
+                } else {
+                    playerHandler.mute()
+                    ivVolume.setImageResource(R.drawable.ic_mute)
+                    sbVolumeSeek.max = 0
+                }
+
+            }
+        }
 
     }
 
@@ -267,21 +333,23 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         )
                     }
                 }
-
-
             }
 
             textView.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                    val params = textView.layoutParams as LinearLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                    textView.layoutParams = params
+                    textView.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.light_gray
+                        )
+                    )
                 } else {
-                    val params = textView.layoutParams as LinearLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                    textView.layoutParams = params
+                    textView.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.white
+                        )
+                    )
                 }
             }
         }

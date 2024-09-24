@@ -64,6 +64,23 @@ fun hideSoftKeyboard(activity: Activity, view: View) {
     view.setOnTouchListener { v, e -> gestureDetector.onTouchEvent(e) }
 }
 
+fun View.viewAnimate(){
+    this.visibility = View.VISIBLE
+    // this.animate().alpha(0.4f).setDuration(5000).startDelay = 1
+
+}
+fun View.goneAnimate(){
+//    this.visibility = View.GONE
+    var image=this
+//    this.animate()
+//        .alpha(0.4f)
+//        .setDuration(50)
+//        .startDelay = 1
+
+    this.postDelayed({ image.visibility = View.GONE },500L)
+
+
+}
 fun Activity.hideKey(){
     val inputMethodManager =
         this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

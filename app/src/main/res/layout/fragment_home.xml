@@ -17,23 +17,33 @@
             android:background="@drawable/home_theme"
             android:gravity="center">
 
-
-            <com.smarteist.autoimageslider.SliderView
-                android:id="@+id/imageSlider"
+            <com.streamefy.component.ui.home.background.VideoRecyclerView
+                android:id="@+id/rvBackgVideo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:sliderIndicatorGravity="end|center_vertical"
-                app:sliderIndicatorOrientation="vertical"
-                app:sliderIndicatorRadius="@dimen/_3sdp"
-                app:sliderIndicatorUnselectedColor="@color/primary"
-                app:sliderScrollTimeInSec="3"
-                app:sliderStartAutoCycle="true"
-                app:sliderIndicatorEnabled="false"
+
                 />
+
+
+<!--            <com.smarteist.autoimageslider.SliderView-->
+<!--                android:id="@+id/imageSlider"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_gravity="center"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:sliderIndicatorGravity="end|center_vertical"-->
+<!--                app:sliderIndicatorOrientation="vertical"-->
+<!--                app:sliderIndicatorRadius="@dimen/_3sdp"-->
+<!--                app:sliderIndicatorUnselectedColor="@color/primary"-->
+<!--                app:sliderScrollTimeInSec="3"-->
+<!--                app:sliderStartAutoCycle="true"-->
+<!--                app:sliderIndicatorEnabled="false"-->
+<!--                />-->
 
 
             <com.streamefy.component.ui.home.adapter.CustomIndicator
@@ -53,27 +63,63 @@
                 />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/applogo"
+                android:id="@+id/projectlogo"
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:src="@drawable/app_logo"
+                android:scaleType="fitStart"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="@dimen/_400sdp"
                 android:layout_height="match_parent"
                 android:background="@drawable/horizontal_opecity"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:paddingStart="@dimen/_30sdp"
+
+                app:layout_constraintTop_toTopOf="parent" >
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvProjectTitle"
+                   style="@style/filson_bold_66_whiteTV"
+                    tools:text="Riya and Vijay"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/_50sdp"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvProjectDesc"
+                    style="@style/filson_14_whiteTV"
+                    android:layout_width="@dimen/_170sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/filsonpro_light"
+                    android:maxLines="2"
+                    tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been "
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingBottom="@dimen/_1sdp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvProjectTitle" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingBottom="@dimen/_1sdp"
+                    app:layout_constraintTop_toBottomOf="@+id/tvProjectDesc"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:id="@+id/rvCreators"
+                    />
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivLogout"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:focusable="true"
                 android:clickable="true"
                 android:focusableInTouchMode="true"
@@ -89,7 +135,7 @@
                 android:paddingBottom="@dimen/_7sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/applogo">
+                app:layout_constraintStart_toStartOf="@+id/projectlogo">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:focusable="true"

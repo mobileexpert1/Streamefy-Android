@@ -122,6 +122,7 @@
                     android:layout_marginEnd="@dimen/_4sdp"
                     android:background="@drawable/ic_pin_selector"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:imeOptions="actionNext"
                     android:textColor="@color/black"
                     android:focusable="true"
@@ -141,6 +142,7 @@
                     android:background="@drawable/ic_pin_selector"
                     android:gravity="center"
                     android:imeOptions="actionNext"
+                    android:visibility="gone"
                     android:textColor="@color/black"
                     android:maxLength="1"
                     android:text=""
@@ -162,6 +164,7 @@
                     android:textColor="@color/black"
                     android:maxLength="1"
                     android:text=""
+                    android:visibility="gone"
 
                     android:focusable="true"
                     android:focusableInTouchMode="true"
@@ -181,13 +184,37 @@
                     android:textColor="@color/black"
                     android:maxLength="1"
                     android:text=""
-
+android:visibility="gone"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/et3"
                     app:layout_constraintTop_toTopOf="parent" />
+
+
+                <com.mukeshsolanki.OtpView
+                    android:id="@+id/otp_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:itemBackground="@drawable/ic_pin_selector"
+                    android:textAllCaps="true"
+                    android:textColor="@color/black"
+                    app:OtpHideLineWhenFilled="true"
+                    app:OtpItemCount="4"
+                    app:OtpItemSpacing="@dimen/_5sdp"
+                    app:OtpState_filled="true"
+                    app:OtpViewType="none"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:OtpItemWidth="@dimen/_20sdp"
+                    app:OtpItemHeight="@dimen/_20sdp"
+                    android:focusableInTouchMode="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

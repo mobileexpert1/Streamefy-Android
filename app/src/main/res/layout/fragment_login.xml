@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/inputfield_selector"
-                android:drawableStart="@drawable/ic_person"
+                android:drawableStart="@drawable/ic_user"
                 android:drawablePadding="@dimen/_5sdp"
                 android:hint="@string/full_name"
                 android:maxLength="25"

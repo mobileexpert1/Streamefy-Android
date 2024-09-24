@@ -17,6 +17,7 @@ import com.streamefy.network.AuthService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
 import com.streamefy.utils.isNetworkAvailable
+import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
 
 class OTPVM(var repo: AuthService) : ViewModel() {
@@ -33,7 +34,8 @@ class OTPVM(var repo: AuthService) : ViewModel() {
                     if (response.body()?.isSuccess!!) {
                         otpLiveData.value = MyResource.isSuccess(response.body())
                     } else {
-                        ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        //ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        context.showMessage(response.body()?.error?.userMessage.toString())
                         otpLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
@@ -58,7 +60,8 @@ class OTPVM(var repo: AuthService) : ViewModel() {
                     if (response.body()?.isSuccess!!) {
                         vericationData.value = MyResource.isSuccess(response.body())
                     } else {
-                        ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        context.showMessage(response.body()?.error?.userMessage.toString())
+                       // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
                         vericationData.value=MyResource.isError(response.body()?.error?.error!!)
                     }
                 } catch (e: Exception) {

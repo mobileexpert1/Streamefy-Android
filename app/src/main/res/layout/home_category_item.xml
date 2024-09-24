@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/_95sdp"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:paddingHorizontal="@dimen/_3sdp"
-    android:descendantFocusability="afterDescendants"
->
+    android:descendantFocusability="afterDescendants">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvTitle"
@@ -45,18 +45,18 @@
             android:orientation="vertical"
             android:padding="@dimen/_1sdp"
             android:paddingBottom="@dimen/_3sdp"
-            android:background="@drawable/selected_item"
+            tools:background="@drawable/selected_item"
             android:focusable="true"
             android:focusableInTouchMode="true"
            >
 
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ivCate"
+            <ImageView
+                android:id="@+id/ivThumb"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_55sdp"
-                android:background="@drawable/caegory_radious"
-                android:scaleType="centerCrop"
+                android:src="@drawable/home_theme"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toTopOf="@+id/lpVideoProgres"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,7 +68,7 @@
                 app:indicatorColor="@color/red"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivCate"
+                app:layout_constraintTop_toBottomOf="@+id/ivThumb"
                 app:trackColor="#ffffff"
                 app:trackThickness="@dimen/_1sdp" />
 

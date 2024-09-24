@@ -91,6 +91,8 @@ dependencies {
     implementation("junit:junit:4.12")
     implementation ("com.github.appsfeature:otp-view:1.1")
     implementation ("com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0")
+    implementation ("com.squareup.picasso:picasso:2.8")
+//    implementation ("io.github.chaosleung:pinview:1.4.4")
 //    implementation(libs.androidx.media3.exoplayer.hls)
 
 

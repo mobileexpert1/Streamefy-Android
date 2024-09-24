@@ -75,7 +75,7 @@
         android:drawablePadding="@dimen/_5sdp"
         android:paddingHorizontal="@dimen/_5sdp"
         android:paddingVertical="@dimen/_2sdp"
-
+        android:visibility="invisible"
         android:focusable="true"
         android:focusableInTouchMode="true"
 

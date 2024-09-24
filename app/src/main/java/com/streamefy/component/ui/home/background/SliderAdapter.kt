@@ -1,4 +1,4 @@
-package com.streamefy.component.ui.home.adapter
+package com.streamefy.component.ui.home.background
 
 import android.content.Context
 import android.view.LayoutInflater

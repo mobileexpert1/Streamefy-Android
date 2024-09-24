@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.squareup.picasso.Picasso
 import com.streamefy.R
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.categoryModel.CateModel
@@ -24,6 +26,7 @@ import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
+import com.streamefy.utils.visible
 
 
 class CategoryAdapter(
@@ -43,16 +46,16 @@ class CategoryAdapter(
             lpVideoProgres.progress = 40
             tvSubtitle.text = data.eventTitle
             tvTitle.text = data.eventTitle
-//            imageView.loadAny(data.image)
-
+            Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
             if (data.media != null) {
                 if (data.media?.isNotEmpty()!!) {
                     tvSubtitle.text = data.media!![0].description
                     tvMore.text = data.media?.size.toString() + " more video"
                     // imageView.loadUrl(data.media!![0].thumbnailS3bucketId)
-                    Glide.with(context)
-                        .load(R.drawable.ic_video_play)
-                        .into(imageView)
+                    thumb.visible()
+//                    Glide.with(context)
+//                        .load(R.drawable.ic_video_play)
+//                        .into(imageView)
                     Log.e("asfafaf", "nkcda ${data.media!![0].thumbnailS3bucketId}")
                 } else {
                     tvMore.invisible()
@@ -99,13 +102,13 @@ class CategoryAdapter(
 
     }
     class CategoriView(itemView: View) : ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.ivCate)
         val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tvTitle)
         val tvSubtitle: AppCompatTextView = itemView.findViewById(R.id.tvSubtitle)
         val lpVideoProgres: LinearProgressIndicator = itemView.findViewById(R.id.lpVideoProgres)
         val tvMore: AppCompatTextView = itemView.findViewById(R.id.tvMore)
         val clThumb: LinearLayout = itemView.findViewById(R.id.clThumb)
         val clEvent: ConstraintLayout = itemView.findViewById(R.id.clEvent)
+        val thumb: ImageView = itemView.findViewById(R.id.ivThumb)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoriView {

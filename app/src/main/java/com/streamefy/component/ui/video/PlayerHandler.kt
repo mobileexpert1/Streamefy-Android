@@ -101,6 +101,8 @@ class PlayerHandler(
         player!!.prepare()
         player!!.play()
 
+        Log.e("sjkcnsakjbc","akjcnkja play")
+
       //  playTokenise()
     }
 

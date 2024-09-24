@@ -118,12 +118,25 @@ data class Data(
     val totalEvents: Int = 0,
     @SerializedName("itemsPerPage")
     val itemsPerPage: Int = 0,
+    @SerializedName("logo")
+    val logo: String = "",
     @SerializedName("project")
     val project: List<ProjectItem>?,
     @SerializedName("currentPage")
     val currentPage: Int = 0,
     @SerializedName("events")
-    val events: List<EventsItem>?
+    val events: List<EventsItem>?,
+    @SerializedName("crewMembers")
+    val crewMembers: List<crewMembers>?
+)
+
+data class crewMembers(
+    @SerializedName("id")
+    val id: Int = 0,
+    @SerializedName("title")
+    val title: String = "",
+    @SerializedName("name")
+    val name: String = "",
 )
 
 

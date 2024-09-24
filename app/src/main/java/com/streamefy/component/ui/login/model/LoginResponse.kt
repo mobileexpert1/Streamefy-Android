@@ -17,9 +17,19 @@ data class LoginResponse(
     @SerializedName("response")
     val response: Response,
     @SerializedName("error")
-    val error: Any = "",
+    val error: error? = null,
     @SerializedName("isSuccess")
     val isSuccess: Boolean = false
+)
+
+
+data class error(
+    @SerializedName("error")
+    val error: String = "",
+    @SerializedName("errorLocation")
+    val errorLocation: String = "",
+    @SerializedName("userMessage")
+    val userMessage: String = ""
 )
 
 

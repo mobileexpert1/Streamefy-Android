@@ -1,22 +1,12 @@
 package com.streamefy.component.ui.home.adapter
 
-import androidx.viewbinding.ViewBinding
 import com.streamefy.databinding.DrawerItemBinding
 
 
 import android.app.Activity
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.streamefy.R
-import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.utils.loadUrl
 

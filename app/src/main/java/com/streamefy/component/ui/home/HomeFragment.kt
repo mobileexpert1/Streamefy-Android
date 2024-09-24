@@ -1,85 +1,80 @@
 package com.streamefy.component.ui.home
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.annotations.SerializedName
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.component.base.CircularProgressDialog
 import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.adapter.CategoryAdapter
+import com.streamefy.component.ui.home.adapter.CreatorsAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
-import com.streamefy.component.ui.home.adapter.SliderAdapter
-import com.streamefy.component.ui.home.categoryModel.CateModel
+import com.streamefy.component.ui.home.background.BackgroundAdpater
+import com.streamefy.component.ui.home.background.SliderAdapter
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.home.model.EventsItem
-import com.streamefy.component.ui.home.model.HomeResponse
 import com.streamefy.component.ui.home.model.MediaItem
-import com.streamefy.data.KoinCompo
+import com.streamefy.component.ui.home.model.crewMembers
 import com.streamefy.data.KoinCompo.homeVm
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
-import com.streamefy.databinding.ExitDialogBinding
 import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.util.Collections
-import java.util.jar.Attributes
+import com.streamefy.utils.loadUrl
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
-//    val images = listOf(
+
+    //    val images = listOf(
 //        R.drawable.home_theme,
 //        R.drawable.app_icon_your_company,
 //        R.drawable.home_theme,
 //        R.drawable.movie,
 //        R.drawable.home_theme
 //    )
-    val  images= ArrayList<BackgroundMediaItem>()
+    val images = ArrayList<BackgroundMediaItem>()
+    val crewList = ArrayList<crewMembers>()
     var selectedTitle = ""
     var isMenuOpened = false
     var auth_pin = "Z1U5"
     var phone = ""
     var page = 1
-    var eventFocusPos=0
+    var eventFocusPos = 0
+    var proTitle=""
+    var proDesc=""
+    var proLogo=""
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
     lateinit var eventAdapter: CategoryAdapter
     lateinit var mediaAdapter: DrawerAdapter
-    var isFirst=true
+    lateinit var creatorsAdapter: CreatorsAdapter
+    var isFirst = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-      //  progressDialog= CircularProgressDialog(requireContext())
+        //  progressDialog= CircularProgressDialog(requireContext())
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         if (isFirst) {
-            isFirst=false
             getUserData()
-
         }
         eventView()
+        creatorView()
         binding.apply {
 
 
@@ -87,7 +82,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 SharedPref.clearData()
 
                 val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.loginFragment, true) // Set inclusive to true
+                    .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
                     .build()
 
                 // Navigate to home fragment with the options
@@ -98,17 +93,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 if (hasFocus) {
                     // Change size when focused
                     val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    params.width =
+                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                     params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                     ivLogout.layoutParams = params
-                    ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+                    ivLogout.background =
+                        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
                 } else {
                     // Revert size when not focused
                     val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
                     params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                     params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                     ivLogout.layoutParams = params
-                    ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+                    ivLogout.background =
+                        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
                 }
             }
 
@@ -120,10 +118,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 if (hasFocus) {
                     // Change size when focused
                     val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    params.width =
+                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                     params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                     ivClose.layoutParams = params
-                   // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+                    // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
                 } else {
                     // Revert size when not focused
                     val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
@@ -144,8 +143,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onDrawerOpened(drawerView: View) {
                     // Set focus to the first item if needed
                     drawerView.requestFocus()
-                    rvDrawer. post {
-                        rvDrawer. getChildAt(0)?.requestFocus()
+                    rvDrawer.post {
+                        rvDrawer.getChildAt(0)?.requestFocus()
                     }
                 }
 
@@ -175,19 +174,45 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun sliderInit()= with(binding){
-        val adapter = SliderAdapter(requireActivity(), images) {
-            Log.e("amcdanc", "sknmcjiadnc  $it")
-        }
-        imageSlider.setSliderAdapter(adapter)
-        imageSlider.startAutoCycle()
-        customIndicator.setIndicatorCount(images.size, 0)
+    private fun creatorView() = with(binding) {
+        rvCreators.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireActivity())
+            creatorsAdapter = CreatorsAdapter(requireActivity(), crewList) {
 
-        imageSlider.setCurrentPageListener {
-            Log.e("aggggg", "sknmcjiadnc  $it")
-            customIndicator.updateIndicator(it)
+            }
+            adapter = creatorsAdapter
         }
     }
+
+    fun sliderInit() = with(binding) {
+
+        rvBackgVideo.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireActivity(),RecyclerView.HORIZONTAL,false)
+            setList(images)
+            var backgadapter = BackgroundAdpater(requireActivity(), images)
+            { index -> }
+            adapter = backgadapter
+            Log.e("sjncksjbc","smkcaks $images")
+        }
+
+        customIndicator.setIndicatorCount(images.size, 0)
+
+//        val adapter = SliderAdapter(requireActivity(), images) {
+//            Log.e("amcdanc", "sknmcjiadnc  $it")
+//        }
+//
+//        imageSlider.setSliderAdapter(adapter)
+//        imageSlider.startAutoCycle()
+//        customIndicator.setIndicatorCount(images.size, 0)
+//
+//        imageSlider.setCurrentPageListener {
+//            Log.e("aggggg", "sknmcjiadnc  $it")
+//            customIndicator.updateIndicator(it)
+//        }
+    }
+
     private fun getUserData() {
         homeVm.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
         observe()
@@ -215,15 +240,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 ////
         rvDrawer.apply {
 
-                getChildAt(0)?.requestFocus()
+            getChildAt(0)?.requestFocus()
 
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
-                 var bundle=Bundle()
-                bundle.putString(PrefConstent.VIDEO_URL,mediaList[it].hlsPlaylistUrl)
-                findNavController().navigate(R.id.videofragment,bundle)
+                var bundle = Bundle()
+                bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
+                findNavController().navigate(R.id.videofragment, bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
 
@@ -265,13 +290,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //        }
 
 
-
         rvCategory.apply {
             requestFocus()
             setHasFixedSize(true)
 
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
-            eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos,type->
+            eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos, type ->
                 selectedTitle = eventList[pos].eventTitle
 
 //                var bundle=Bundle()
@@ -279,25 +303,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
 //                )
 //                findNavController().navigate(R.id.videofragment,bundle)
-                eventFocusPos=pos
-                when(type){
-                    StreamEnum.SINGLE->{
-                        var bundle=Bundle()
-                        bundle.putString(PrefConstent.VIDEO_URL,
+                eventFocusPos = pos
+                when (type) {
+                    StreamEnum.SINGLE -> {
+                        var bundle = Bundle()
+                        bundle.putString(
+                            PrefConstent.VIDEO_URL,
                             eventList[pos].media?.get(0)?.hlsPlaylistUrl
                         )
-                        findNavController().navigate(R.id.videofragment,bundle)
+                        findNavController().navigate(R.id.videofragment, bundle)
                     }
-                    StreamEnum.MORE->{
-                      //  drawerLayout.requestFocus()
+
+                    StreamEnum.MORE -> {
+                        //  drawerLayout.requestFocus()
                         drawerLayout.openDrawer(GravityCompat.END)
 
                         eventList[pos].media?.run {
-                             if(isNotEmpty()){
-                            mediaList.clear()
-                            mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
-                            drawerView()
-                              }
+                            if (isNotEmpty()) {
+                                mediaList.clear()
+                                mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
+                                drawerView()
+                            }
                         }
                     }
                 }
@@ -319,20 +345,44 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 is MyResource.isSuccess -> {
-                    dismissProgress()
+
                     Log.e("feffefef", it.data?.data.toString())
                     it.data?.data?.run {
+
                         eventList.clear()
                         eventAdapter.update(events as ArrayList<EventsItem>)
-                        binding.rvCategory.apply {
-                            requestFocus()}
+                        binding.let {
+                            this.project?.get(0)?.run {
+                                proTitle=projectTitle.toString()
+                                proDesc=projectDescription.toString()
+                                it.tvProjectTitle.text = proTitle.toString()
+                                it.tvProjectDesc.text = proDesc.toString()
+                            }
+                            it.rvCategory.requestFocus()
+                            it.projectlogo.loadUrl(this.logo)
+                            proLogo=this.logo
+                        }
+
+                        /// background
                         this.backgroundMedia?.run {
                             if (this.isNotEmpty()) {
                                 images.addAll(this as ArrayList<BackgroundMediaItem>)
                                 sliderInit()
                             }
                         }
+                        crewList.clear()
+                        //  this.crewMembers?.let { it1 -> crewList.addAll(it1) }
 
+                        if (crewMembers != null && crewMembers.isNotEmpty()) {
+                            // crewList.addAll(crewMembers)
+                            creatorsAdapter.update(crewMembers as ArrayList<crewMembers>)
+                        }
+                        isFirst = false
+                        dismissProgress()
+                        Log.e(
+                            "dadaewed",
+                            crewList.toString() + "dhbdh \n" + this.crewMembers.toString()
+                        )
                     }
 
                 }
@@ -346,15 +396,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onResume() {
         super.onResume()
-        if (binding.drawerLayout.isVisible) {
-            drawerView()
-        }
-        binding.rvCategory.apply {
-            post {
-                getChildAt(eventFocusPos)?.requestFocus()
+
+        binding.apply {
+            tvProjectTitle.text = proTitle.toString()
+            tvProjectDesc.text = proDesc.toString()
+            projectlogo.loadUrl(proLogo)
+            if (drawerLayout.isVisible) {
+                drawerView()
+            }
+            rvCategory.apply {
+                post {
+                    getChildAt(eventFocusPos)?.requestFocus()
+                }
             }
         }
-
+        // background
+       sliderInit()
 
     }
 }

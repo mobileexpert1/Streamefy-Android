@@ -29,28 +29,33 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     override fun bindView(): Int = R.layout.fragment_pin_authentication
     var phone = ""
     var otp = ""
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         SharedPref.setBoolean(PrefConstent.ISAUTH, false)
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
+       var name= SharedPref.getString(PrefConstent.FULL_NAME)
+
         binding.apply {
+            textView2.setText("Welcome $name! We are thrilled to have you here")
+
             pinView.requestFocusOTP()
             pinView.otpListener = object : OTPListener {
                 override fun onInteractionListener() {
                 }
-
                 override fun onOTPComplete(otp: String) {
                     requireActivity().hideKey()
                 }
             }
 
             tvProceed.setOnClickListener {
-                otp = et1.text.toString().trim() +
-                        et2.text.toString().trim() +
-                        et3.text.toString().trim() +
-                        et4.text.toString().trim()
+//                otp = et1.text.toString().trim() +
+//                        et2.text.toString().trim() +
+//                        et3.text.toString().trim() +
+//                        et4.text.toString().trim()
+                otp=otpView.text.toString()
                 otp.run {
                     otp=this
                     if (otp.isEmpty()) {
@@ -68,15 +73,17 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     }
                 }
             }
-            et1.setupNextFocusOnDigit(et2)
-            et2.setupNextFocusOnDigit(et3)
-            et3.setupNextFocusOnDigit(et4)
-
-            //previous
-            et4.previousFocusOnDigit(et3)
-            et3.previousFocusOnDigit(et2)
-            et2.previousFocusOnDigit(et1)
-
+//            et1.setupNextFocusOnDigit(et2)
+//            et2.setupNextFocusOnDigit(et3)
+//            et3.setupNextFocusOnDigit(et4)
+//
+//            //previous
+//            et4.previousFocusOnDigit(et3)
+//            et3.previousFocusOnDigit(et2)
+//            et2.previousFocusOnDigit(et1)
+            otpView.setOtpCompletionListener {
+              requireActivity().hideKey()
+            }
         }
         Log.e("sjanckjan", "cnjd ${SharedPref.getString(PrefConstent.TOKEN)}")
 

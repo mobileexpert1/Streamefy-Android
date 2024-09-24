@@ -16,6 +16,7 @@ import com.streamefy.network.AuthService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage.logeMe
 import com.streamefy.utils.isNetworkAvailable
+import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
 
 class LoginViewmodel(var repo: AuthService) : ViewModel() {
@@ -32,7 +33,7 @@ class LoginViewmodel(var repo: AuthService) : ViewModel() {
                     if (response.body()?.isSuccess!!) {
                         loginLiveData.value = MyResource.isSuccess(response.body())
                     } else {
-                        ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        context.showMessage(response.body()?.error?.userMessage.toString())
                     }
                 } catch (e: Exception) {
                     logeMe(e.toString())

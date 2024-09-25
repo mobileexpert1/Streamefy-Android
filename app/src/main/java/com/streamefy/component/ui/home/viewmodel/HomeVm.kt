@@ -13,6 +13,7 @@ import com.streamefy.network.ApiService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
 import com.streamefy.utils.isNetworkAvailable
+import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
 
 class HomeVm(var repo: ApiService) : ViewModel() {
@@ -33,7 +34,8 @@ class HomeVm(var repo: ApiService) : ViewModel() {
                     if (response.body()?.isSuccess!!) {
                         homeLiveData.value = MyResource.isSuccess(response.body())
                     } else {
-                        ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                       // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        context.showMessage(response.body()?.error?.userMessage.toString())
                         homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {

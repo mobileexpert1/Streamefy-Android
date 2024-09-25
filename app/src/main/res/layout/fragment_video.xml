@@ -33,7 +33,7 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivBack"
-            android:layout_width="@dimen/_80sdp"
+            android:layout_width="@dimen/_60sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:src="@drawable/ic_video_back_selector"
@@ -54,6 +54,8 @@
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/_15sdp"
             android:paddingVertical="@dimen/_5sdp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -98,15 +100,28 @@
 
                 />
 
+         <LinearLayout
+             android:id="@+id/llSeek"
+             android:layout_width="@dimen/_180sdp"
+             android:layout_height="wrap_content"
+             android:focusable="true"
+             android:focusableInTouchMode="true"
+             android:paddingVertical="@dimen/_3sdp"
+             android:gravity="center"
+             android:background="@drawable/ic_linear_selector"
+             >
+             <androidx.appcompat.widget.AppCompatSeekBar
+                 android:id="@+id/sbVideoSeek"
+                 android:layout_width="@dimen/_180sdp"
+                 android:layout_height="wrap_content"
+                 android:layout_marginEnd="@dimen/_5sdp"
+                 android:progress="90"
+                 android:progressTint="@color/red"
+                 android:clickable="false"
+                 android:thumb="@drawable/seekbar_thumb"
+                 />
+         </LinearLayout>
 
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/sbVideoSeek"
-                android:layout_width="@dimen/_180sdp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:progress="90"
-                android:progressTint="@color/red"
-                android:thumb="@drawable/seekbar_thumb" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDuration"
@@ -142,7 +157,16 @@
                 />
 <!--            android:src="@drawable/ic_video_volume"-->
 
-
+            <LinearLayout
+                android:id="@+id/llVolumeSeek"
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:paddingVertical="@dimen/_3sdp"
+                android:gravity="center"
+                android:background="@drawable/ic_linear_selector"
+                >
             <androidx.appcompat.widget.AppCompatSeekBar
                 android:id="@+id/sbVolumeSeek"
                 android:layout_width="@dimen/_60sdp"
@@ -151,11 +175,9 @@
                 android:progress="90"
                 android:progressTint="@color/red"
                 android:thumb="@drawable/seekbar_thumb"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
 
                 />
-
+            </LinearLayout>
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ivZoom"
                 android:layout_width="wrap_content"

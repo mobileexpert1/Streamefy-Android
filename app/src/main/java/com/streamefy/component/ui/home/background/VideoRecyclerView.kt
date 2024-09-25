@@ -16,8 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.data.SharedPref
@@ -37,15 +41,12 @@ class VideoRecyclerView : RecyclerView {
     private var viewHolderParent: View? = null
     private var frameLayout: ConstraintLayout? = null
     private var videoSurfaceView: PlayerView? = null
-    var videoPlayer: SimpleExoPlayer? = null
 
     // vars
     var mediaObjects = ArrayList<BackgroundMediaItem>()
     private var viewContext: Context? = null
     var playPosition = 0
     private var isVideoViewAdded = false
-    private var postTypeId: String = ""
-    var subType: String = ""
     lateinit var playerHandler: PlayerHandler
 
     // controlling playback state
@@ -53,7 +54,9 @@ class VideoRecyclerView : RecyclerView {
     private var recyclerview: RecyclerView? = null
 
     lateinit var holder: BackgroundHolder
-    var mediaUrl = ""
+    var currentVideo = 0
+    lateinit var player: Player
+    var isfirst = true
 
 
     constructor(context: Context) : super(context) {
@@ -72,33 +75,41 @@ class VideoRecyclerView : RecyclerView {
     private fun init(context: Context) {
         this.viewContext = context.applicationContext
         recyclerview = this
-      //  videoSurfaceView = PlayerView(viewContext!!)
-       // playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
+        videoSurfaceView = PlayerView(viewContext!!)
+        playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
 
-//        videoPlayer = ExoplayerHandler.initPlayer(viewContext!!)
         // Bind the player to the view.
-     //   videoSurfaceView!!.useController = false
-//videoSurfaceView!!.player = videoPlayer
+//        videoSurfaceView!!.player = playerHandler.getPLayer()
+        player = playerHandler.getPLayer()!!
 
         addOnScrollListener(object : OnScrollListener() {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE) {
-                    Log.e("skncksnc","skcks ${mediaObjects.size} data $mediaObjects")
+                    Log.e("skncksnc", "skcks ${mediaObjects.size} data $mediaObjects")
                     if (!recyclerView.canScrollHorizontally(1)) {
                         if (mediaObjects.size > 1) {
-                            playTest(true) {}
+                            play() {}
+//                            initializer()
                         }
                     } else {
-                        playTest(false) {}
+//                        initializer()
+                        play() {}
                     }
                 }
             }
 
+            @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
+                if (isfirst) {
+                    // playVideo(false)
+                    Log.e("scsoddsvs", "is frst ")
+//                    initializer()
+                    play() {}
+                     isfirst = false
+                }
             }
         })
 
@@ -127,75 +138,60 @@ class VideoRecyclerView : RecyclerView {
         /// for snap the view left-right and vise-versa
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(this)
+
+        // add listener for player
+        videoSurfaceView!!.player?.addListener(object : Player.Listener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> {
+                        Log.e("jnjddc", " STATE_BUFFERING")
+                    }
+
+                    Player.STATE_ENDED -> {
+                        Log.e("jnjddc", " STATE_ENDED")
+                        scrollMe(currentVideo)
+                    }
+
+                    Player.STATE_IDLE -> {
+                        Log.e("jnjddc", " STATE_IDLE")
+
+                    }
+
+                    Player.STATE_READY -> {
+                        Log.e("jnjddc", " STATE_READY")
+
+                        if (!isVideoViewAdded) {
+                            try {
+                                addVideoView()
+                                updateDuration()
+                            } catch (e: Exception) {
+
+                            }
+                        }
+
+                    }
+
+                    else -> {
+                    }
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                super.onPlayerError(error)
+                Log.e("skcjnakjbc","kjcdabcv $error")
+            }
+
+
+        })
+
     }
 
-    //// update seekBar while playing the video
-
-    var currentPose = 0
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun playTest(isEndOfList: Boolean, callBack: (String) -> Unit) {
-//        viewInitialize{}
-        Log.e("skncksnc","playTest")
-     //   pauseVideo()
+    fun initializer() {
+       // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         currentPose = targetPosition
-        Log.e("skncksnc","targetPosition $targetPosition size ${mediaObjects.size}")
-        if (mediaObjects.size == 0) {
-            return
-        }
-        if (targetPosition == -1) {
-            return
-        }
-//        if (videoSurfaceView == null) {
-//            return
-//        }
-        Log.e("skncksnc","skck surface")
-
-        // if (subType == "video") {
-            removeVideoView(videoSurfaceView)
-      //  }
-
-        val currentPosition =
-            targetPosition - (Objects.requireNonNull(layoutManager) as LinearLayoutManager).findFirstVisibleItemPosition()
-        val child = getChildAt(currentPosition) ?: return
-        holder = child.tag as BackgroundHolder
-        if (holder == null) {
-            playPosition = -1
-            return
-        }
-        thumbnail = holder.binding.imageView
-        playerHandler = PlayerHandler(viewContext!!, holder.binding.videoview)
-// save next video in cache
-        holder.binding.apply {
-            // progressBar = progressbar
-            viewHolderParent = holder.itemView
-            frameLayout = videoContainer
-        }
-        mediaUrl=mediaObjects[targetPosition].hlsPlaylistUrl
-
-
-        Log.e("skncksnc","skcks $mediaUrl")
-        if (mediaUrl.isNotEmpty()) {
-            playerHandler.setMediaUri(mediaUrl)
-            thumbnail?.gone()
-        } else {
-            pauseVideo()
-        }
-        callBack.invoke(subType)
-    }
-
-    //*** load answer video
-
-
-    var targetPosition = 0
-    fun viewInitialize(callBack: (String) -> Unit) {
-        pauseVideo()
-        targetPosition =
-            (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-        currentPose = targetPosition
-
+        Log.e("sggdgdg", "targetPosition $targetPosition size ${mediaObjects.size}")
         if (mediaObjects.size == 0) {
             return
         }
@@ -205,14 +201,9 @@ class VideoRecyclerView : RecyclerView {
         if (videoSurfaceView == null) {
             return
         }
+        Log.e("sggdgdg", "skck surface")
 
-        //    var mediaUrl = ""
-
-
-        //  videoSurfaceView!!.invisible()
-       // if (subType == "video") {
-           // removeVideoView(videoSurfaceView)
-      //  }
+        removeVideoView(videoSurfaceView)
 
         val currentPosition =
             targetPosition - (Objects.requireNonNull(layoutManager) as LinearLayoutManager).findFirstVisibleItemPosition()
@@ -223,50 +214,109 @@ class VideoRecyclerView : RecyclerView {
             return
         }
         thumbnail = holder.binding.imageView
-        playerHandler = PlayerHandler(viewContext!!, holder.binding.videoview)
-// save next video in cache
+        holder.binding.videoview.gone()
         holder.binding.apply {
-            // progressBar = progressbar
             viewHolderParent = holder.itemView
             frameLayout = videoContainer
         }
-        mediaUrl=mediaObjects[targetPosition].hlsPlaylistUrl
-        Log.e("tstinghhj", "sncjsnjs $subType $mediaUrl")
+        playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
+        player = playerHandler.getPLayer()!!
+        if (homeFragment.mediaUrl.isEmpty()){
+            homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
+        }
 
-        callBack.invoke(subType)
+        playerHandler.seekWithInitialise(homeFragment.mediaUrl, homeFragment.currentVideoDuration)
+        //  playerHandler = holder.playerHandler
     }
 
-
-    fun playPause() {
-        if (videoPlayer != null) {
-            if (videoPlayer?.isPlaying!!) {
-//                ExoplayerHandler.pauseVideo()
-            } else {
-//                ExoplayerHandler.resume()
-            }
+    fun scrollMe(pos: Int) {
+        var mNewPos = pos + 1
+        Log.e("smcskmc","smcksnc $pos new $mNewPos size ${mediaObjects.size}")
+        if (mediaObjects.size >= mNewPos) {
+            recyclerview?.scrollToPosition(mNewPos)
+//            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
+        }else{
+            recyclerview?.scrollToPosition(0)
+            homeFragment.binding.rvBackgVideo.scrollToPosition(0)
         }
     }
 
 
-    fun volumeUpdates(callBack: (VolumeState) -> Unit) {
-        toggleVolume()
-        volumeState?.let { callBack.invoke(it) }
+    var targetPosition = 0
+    var currentPose = 0
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    fun play(callBack: (String) -> Unit) {
+        pauseVideo()
+        targetPosition =
+            (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+        currentPose = targetPosition
+        Log.e("skncksnc", "targetPosition $targetPosition size ${mediaObjects.size}")
+        if (mediaObjects.size == 0) {
+            return
+        }
+        if (targetPosition == -1) {
+            return
+        }
+        if (videoSurfaceView == null) {
+            return
+        }
+        Log.e("skncksnc", "skck surface")
+
+        removeVideoView(videoSurfaceView)
+
+        val currentPosition =
+            targetPosition - (Objects.requireNonNull(layoutManager) as LinearLayoutManager).findFirstVisibleItemPosition()
+        val child = getChildAt(currentPosition) ?: return
+        holder = child.tag as BackgroundHolder
+        if (holder == null) {
+            playPosition = -1
+            return
+        }
+        thumbnail = holder.binding.imageView
+        holder.binding.videoview.gone()
+        holder.binding.apply {
+            viewHolderParent = holder.itemView
+            frameLayout = videoContainer
+        }
+        homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
+        currentVideo = targetPosition
+        var videoDuration = homeFragment.currentVideoDuration
+
+//        videoSurfaceView!!.player = playerHandler.getPLayer()
+        player = playerHandler.getPLayer()!!
+        Log.e("skncksnc", "skcks $homeFragment.mediaUrl")
+        if (homeFragment.mediaUrl.isNotEmpty()) {
+            playerHandler.setMediaUri(homeFragment.mediaUrl)
+//            playerHandler.seekWithInitialise(mediaUrl,videoDuration)
+            // thumbnail?.gone()
+        } else {
+            pauseVideo()
+        }
+        playerHandler.mute()
     }
 
     fun pauseVideo() {
-        playerHandler.pause()
-//        ExoplayerHandler.pauseVideo()
+        if (::playerHandler.isInitialized)
+            playerHandler.pause()
+        homeFragment.currentVideoDuration = player.currentPosition
     }
 
+    private fun updateDuration() {
+        val position = player.currentPosition
+        homeFragment.currentVideoDuration = position
+        if (player.playWhenReady) {
+            playerHandler.handler.postDelayed({ updateDuration() }, 500)
+        } else {
+            playerHandler.stopHandler()
+        }
+    }
 
-    /**
-     * Returns the visible region of the video surface on the screen.
-     * if some is cut off, it will return less than the @videoSurfaceDefaultHeight
-     * @param playPosition
-     * @return
-     */
-
+    fun resumeVideo(pos: Long) {
+        Log.e("skncksnc", "$pos scmlcm ${homeFragment.mediaUrl}")
+      //  playerHandler.seekWithInitialise(homeFragment.mediaUrl, pos)
+        // playerHandler.seekTo(pos)
+    }
 
     // Remove the old player
     private fun removeVideoView(videoView: PlayerView?) {
@@ -289,8 +339,6 @@ class VideoRecyclerView : RecyclerView {
             videoSurfaceView!!.requestFocus()
             frameLayout!!.viewAnimate()
             videoSurfaceView!!.viewAnimate()
-//            videoSurfaceView!!.alpha = 1f
-            // thumbnail!!.visibility = View.GONE
             thumbnail?.goneAnimate()
         }
     }
@@ -305,121 +353,11 @@ class VideoRecyclerView : RecyclerView {
         }
     }
 
-    fun releasePlayer() {
-//        ExoplayerHandler.releasePlayer()
-        viewHolderParent = null
-    }
-
-//    fun volumeVisi() {
-//        if (videoPlayer != null) {
-//            if (volumeState == VolumeState.OFF) {
-//                volumeControl?.setImageResource(R.drawable.ic_volume_off_grey_24dp)
-//            } else if (volumeState == VolumeState.ON) {
-//                volumeControl?.setImageResource(R.drawable.ic_volume_up_grey_24dp)
-//            }
-//        }
-//    }
-
-
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    fun setVolume(context: Context) {
-//        // Initialize the ContentObserver
-//        Log.e("smcklsamc","kackdsnc")
-//        volumeObserver = object : ContentObserver(Handler()) {
-//            override fun onChange(selfChange: Boolean) {
-//
-//                Log.e("smcklsamc","kackdsnc $selfChange")
-//                super.onChange(selfChange)
-//                val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//                val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-//                if (currentVolume > 0) {
-//                    Log.d("Volume Controller", "Volume turned up")
-//                    setVolumeControl(VolumeState.ON)
-//                   // requestManager!!.load(R.drawable.ic_volume_up_grey_24dp).into(volumeControl!!)
-//                } else {
-//                    Log.d("Volume Controller", "Volume turned down or muted")
-//                    setVolumeControl(VolumeState.OFF)
-//                   // requestManager!!.load(R.drawable.ic_volume_off_grey_24dp).into(volumeControl!!)
-//                }
-//            }
-//        }
-
-
-//        volumeObserver = object : BroadcastReceiver() {
-//            override fun onReceive(context: Context, intent: Intent) {
-//                Log.e("smcklsamc","broadcast")
-//
-//                if (intent.action == "android.media.VOLUME_CHANGED_ACTION") {
-//                    val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//                    val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-//                    if (currentVolume > 0) {
-//                        Log.d("Volume Controller", "Volume turned up")
-//                        setVolumeControl(VolumeState.ON)
-////                        requestManager.load(R.drawable.ic_volume_up_grey_24dp).into(volumeControl)
-//                    } else {
-//                        Log.d("Volume Controller", "Volume turned down or muted")
-//                        setVolumeControl(VolumeState.OFF)
-////                        requestManager.load(R.drawable.ic_volume_off_grey_24dp).into(volumeControl)
-//                    }
-//                }
-//            }
-//        }
-//
-//        val filter = IntentFilter("android.media.VOLUME_CHANGED_ACTION")
-//        viewContext!!.registerReceiver(volumeObserver, filter)
-        // Register the observer
-//        val resolver = viewContext!!.contentResolver
-//        val volumeUri = android.provider.Settings.System.CONTENT_URI
-//        resolver.registerContentObserver(volumeUri, true, volumeObserver!!)
-
-
-
-    private fun toggleVolume() {
-      //  if (videoPlayer != null) {
-            if (volumeState == VolumeState.OFF) {
-                setVolumeControl(VolumeState.ON)
-            } else if (volumeState == VolumeState.ON) {
-                setVolumeControl(VolumeState.OFF)
-            }
-       // }
-    }
-
-    var isVolumeStateChanged = false
-
-    //// volume control
-    private fun setVolumeControl(state: VolumeState) {
-        volumeState = state
-        ///save volume state
-      //  if (videoPlayer != null) {
-            if (state == VolumeState.OFF) {
-                videoPlayer!!.volume = 0f
-//                pref?.setString(PrefConstents.volumeState, "0f")
-            } else if (state == VolumeState.ON) {
-                videoPlayer!!.volume = 1f
-//                pref?.setString(PrefConstents.volumeState, "1f")
-            }
-            animateVolumeControl() {}
-      //  }
-
-    }
-
-    ///// volume visibility
-    fun animateVolumeControl(callback: (VolumeState?) -> Unit) {
-//        if (volumeControl != null) {
-//            volumeControl!!.bringToFront()
-//            isVolumeStateChanged = false
-//            callback.invoke(volumeState)
-//        }
-    }
-
     fun setList(
         mediaObjects: ArrayList<BackgroundMediaItem>,
     ) {
         this.mediaObjects = mediaObjects
     }
-
-    var responseType = 0
-
 }
 
 

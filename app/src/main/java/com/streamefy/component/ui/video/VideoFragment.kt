@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
@@ -30,6 +31,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     lateinit var playerHandler: PlayerHandler
     var getLengthOnce = true
     var isEnded = false
+    var visibilityCount=0
 
     private lateinit var volumeManager: VolumeManager
 
@@ -48,122 +50,143 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
            Log.e("ckdanmcn","mkadnc $videoUrl")
         }
         binding.apply {
-            ivBack.setOnClickListener { findNavController().popBackStack() }
-
-            playerHandler = PlayerHandler(requireActivity(), playerView)
-            playerHandler.setMediaUri(videoUrl)
-            ivPlay.setOnClickListener {
-                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivPlay.layoutParams = params
-                if (playerHandler.isPlaying()!!) {
-                    playerHandler.pause()
-                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-                } else {
-                    if (isEnded) {
-                        playerHandler.player?.seekTo(0)
-                    } else {
-                        playerHandler.play()
-                    }
-                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                    updateProgressBar()
-                }
-
-            }
-            ivSkipForward.setOnClickListener {
-                var current = playerHandler.player?.currentPosition
-                var duration = playerHandler.player?.duration
-                var count = current!! + 10000
-
-                if (duration!! > count) {
-                    playerHandler.seekTo(count)
-                } else {
-                    playerHandler.seekTo(duration)
-                }
-
-            }
-            ivSkipBack.setOnClickListener {
-
-                playerHandler.seekBackward(10)
-
-            }
-            ivZoom.setOnClickListener {
-                //  playerHandler.toggleFullScreen()
-            }
-            playerHandler.player?.addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    if (playbackState == Player.STATE_READY) {
-                        binding.sbVideoSeek.max = 100
-                        if (getLengthOnce) {
-                            tvDuration.setText(playerHandler.getTotalLength())
-                            getLengthOnce = false
-                            ivPlay.setImageResource(R.drawable.ic_video_pause)
-                        }
-                        isEnded = false
-                        updateProgressBar()
-                    } else if (playbackState == Player.STATE_ENDED) {
-                        ivPlay.setImageResource(R.drawable.ic_video_play)
-                        isEnded = true
-                    }
-                }
-                override fun onPlayerError(error: PlaybackException) {
-                    Log.e("ExoPlayerError", "Playback error: " + error.message, error)
-                }
-            })
-//            sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//                override fun onProgressChanged(
-//                    seekBar: SeekBar?,
-//                    progress: Int,
-//                    fromUser: Boolean
-//                ) {
-//                    if (fromUser) {
-//                        playerHandler.setPlaybackProgress(progress)
-//                    }
-//                }
-//
-//                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//            })
-
-            // Volume control
-            ivVolume.setOnClickListener {
-                Log.e("sncsnc", "dndnv ${playerHandler.isMuted()}")
-                if (playerHandler.isMuted()) {
-                    playerHandler.unmute()
-                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
-//                    ivVolume.setImageResource(R.drawable.ic_video_volume)
-                    sbVolumeSeek.max = 30
-                } else {
-                    playerHandler.mute()
-                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-
-                    // ivVolume.setImageResource(R.drawable.ic_mute)
-                    sbVolumeSeek.max = 0
-                }
-
-            }
-            sbVolumeSeek.max = 100
-            sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
-            sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(
-                    seekBar: SeekBar?,
-                    progress: Int,
-                    fromUser: Boolean
-                ) {
-//                    playerHandler.setVolume(progress / 100.0f)
-                    volumeManager.setVolumePercentage(progress)
-                }
-
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-            })
+            clickme()
+            listener()
             quality()
         }
         volume()
 
    // bitPlayer()
     selectorFocus()
+    }
+
+    fun clickme()= with(binding){
+        ivBack.setOnClickListener { findNavController().popBackStack() }
+
+        playerHandler = PlayerHandler(requireActivity(), playerView)
+        playerHandler.setMediaUri(videoUrl)
+        ivPlay.setOnClickListener {
+            val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+            params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+            params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+            ivPlay.layoutParams = params
+            if (playerHandler.isPlaying()!!) {
+                playerHandler.pause()
+                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+            } else {
+                if (isEnded) {
+                    playerHandler.player?.seekTo(0)
+                } else {
+                    playerHandler.play()
+                }
+                ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                updateProgressBar()
+            }
+        }
+        ivSkipForward.setOnClickListener {
+            var current = playerHandler.player?.currentPosition
+            var duration = playerHandler.player?.duration
+            var count = current!! + 10000
+
+            if (duration!! > count) {
+                playerHandler.seekTo(count)
+            } else {
+                playerHandler.seekTo(duration)
+            }
+        }
+        ivSkipBack.setOnClickListener {
+
+            playerHandler.seekBackward(10)
+
+        }
+        ivZoom.setOnClickListener {
+            //  playerHandler.toggleFullScreen()
+        }
+        ivVolume.setOnClickListener {
+            Log.e("sncsnc", "dndnv ${playerHandler.isMuted()}")
+            if (playerHandler.isMuted()) {
+                playerHandler.unmute()
+                ivVolume.setImageResource(R.drawable.ic_selected_volume)
+//                    ivVolume.setImageResource(R.drawable.ic_video_volume)
+                sbVolumeSeek.max = 30
+            } else {
+                playerHandler.mute()
+                ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+
+                // ivVolume.setImageResource(R.drawable.ic_mute)
+                sbVolumeSeek.max = 0
+            }
+
+        }
+//        llVolumeSeek.setOnClickListener {
+//            sbVolumeSeek.requestFocus()
+//        }
+//        llSeek.setOnClickListener {
+//            sbVideoSeek.requestFocus()
+//        }
+    }
+    fun listener()= with(binding){
+        playerHandler.player?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    binding.sbVideoSeek.max = 100
+                    if (getLengthOnce) {
+                        tvDuration.setText(playerHandler.getTotalLength())
+                        getLengthOnce = false
+                        ivPlay.setImageResource(R.drawable.ic_video_pause)
+                    }
+                    isEnded = false
+                    updateProgressBar()
+                } else if (playbackState == Player.STATE_ENDED) {
+                    ivPlay.setImageResource(R.drawable.ic_video_play)
+                    isEnded = true
+                }
+            }
+            override fun onPlayerError(error: PlaybackException) {
+                Log.e("ExoPlayerError", "Playback error: " + error.message, error)
+            }
+        })
+//        sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(
+//                seekBar: SeekBar?,
+//                progress: Int,
+//                fromUser: Boolean
+//            ) {
+//                if (fromUser) {
+//                    playerHandler.setPlaybackProgress(progress)
+//                }
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//        })
+//
+//        // Volume control
+//        sbVolumeSeek.max = 100
+//        sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
+//        sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(
+//                seekBar: SeekBar?,
+//                progress: Int,
+//                fromUser: Boolean
+//            ) {
+////                    playerHandler.setVolume(progress / 100.0f)
+//                volumeManager.setVolumePercentage(progress)
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+//        })
+
+    }
+    private fun updateDuration() {
+//        val position = player.currentPosition
+//        HomeFragment.homeFragment.currentVideoDuration = position
+//        if (player.playWhenReady) {
+//            playerHandler.handler.postDelayed({ updateDuration() }, 500)
+//        } else {
+//            playerHandler.stopHandler()
+//        }
     }
 
     fun selectorFocus()= with(binding){
@@ -286,6 +309,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             }
         }
+//        llSeek.setOnFocusChangeListener { _, hasFocus ->
+//            if (hasFocus) {
+//                llSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),R.color.light_gray) )
+//            }else{
+//                llSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),
+//                    com.otpview.R.color.transparent) )
+//            }
+//        }
+//        llVolumeSeek.setOnFocusChangeListener { _, hasFocus ->
+//            if (hasFocus) {
+//                llVolumeSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),R.color.light_gray) )
+//            }else{
+//                llVolumeSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),
+//                    com.otpview.R.color.transparent) )
+//            }
+//        }
 
     }
 

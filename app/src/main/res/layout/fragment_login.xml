@@ -61,6 +61,8 @@
                 android:layout_width="match_parent"
                 android:maxLength="15"
                 android:maxLines="1"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/inputfield_selector"
                 android:drawableStart="@drawable/ic_phone"

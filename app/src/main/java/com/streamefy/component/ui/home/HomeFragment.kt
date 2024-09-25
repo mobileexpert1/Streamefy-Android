@@ -1,9 +1,11 @@
 package com.streamefy.component.ui.home
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -51,16 +53,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var phone = ""
     var page = 1
     var eventFocusPos = 0
-    var proTitle=""
-    var proDesc=""
-    var proLogo=""
+    var proTitle = ""
+    var proDesc = ""
+    var proLogo = ""
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
     lateinit var eventAdapter: CategoryAdapter
     lateinit var mediaAdapter: DrawerAdapter
     lateinit var creatorsAdapter: CreatorsAdapter
+    var currentVideoDuration: Long = 0
     var isFirst = true
+    var mediaUrl = ""
+
+    companion object {
+        lateinit var homeFragment: HomeFragment
+
+    }
+
+    var background_current_play_duration = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //  progressDialog= CircularProgressDialog(requireContext())
@@ -70,6 +82,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onViewCreated(view, savedInstanceState)
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
+        homeFragment = this
+
         if (isFirst) {
             getUserData()
         }
@@ -189,15 +203,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         rvBackgVideo.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireActivity(),RecyclerView.HORIZONTAL,false)
+            layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             setList(images)
             var backgadapter = BackgroundAdpater(requireActivity(), images)
             { index -> }
             adapter = backgadapter
-            Log.e("sjncksjbc","smkcaks $images")
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        Log.e("skncksnc", "skcks ${mediaObjects.size} data $mediaObjects")
+                        customIndicator.updateIndicator(rvBackgVideo.targetPosition)
+                    }
+                }
+            })
+
         }
 
         customIndicator.setIndicatorCount(images.size, 0)
+
+
 
 //        val adapter = SliderAdapter(requireActivity(), images) {
 //            Log.e("amcdanc", "sknmcjiadnc  $it")
@@ -353,14 +380,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         eventAdapter.update(events as ArrayList<EventsItem>)
                         binding.let {
                             this.project?.get(0)?.run {
-                                proTitle=projectTitle.toString()
-                                proDesc=projectDescription.toString()
+                                proTitle = projectTitle.toString()
+                                proDesc = projectDescription.toString()
                                 it.tvProjectTitle.text = proTitle.toString()
                                 it.tvProjectDesc.text = proDesc.toString()
                             }
                             it.rvCategory.requestFocus()
                             it.projectlogo.loadUrl(this.logo)
-                            proLogo=this.logo
+                            proLogo = this.logo
                         }
 
                         /// background
@@ -409,9 +436,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     getChildAt(eventFocusPos)?.requestFocus()
                 }
             }
+            //  rvBackgVideo.initializer()
+              rvBackgVideo.resumeVideo(currentVideoDuration)
         }
         // background
-       sliderInit()
+        sliderInit()
 
     }
+
+
+    override fun onPause() {
+        binding.rvBackgVideo.pauseVideo()
+        binding.rvBackgVideo.isfirst=true
+        super.onPause()
+    }
+
 }

@@ -26,6 +26,7 @@ import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import java.util.HashMap
+
 class PlayerHandler(
     private val context: Context,
     private val playerView: PlayerView
@@ -44,6 +45,7 @@ class PlayerHandler(
         playerView.player = player
     }
 
+    fun getPLayer() = playerView.player
     fun setMediaUri(uri: String) {
 
 //        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
@@ -101,14 +103,31 @@ class PlayerHandler(
         player!!.prepare()
         player!!.play()
 
-        Log.e("sjkcnsakjbc","akjcnkja play")
+        Log.e("sjkcnsakjbc", "akjcnkja play")
 
-      //  playTokenise()
+        //  playTokenise()
+    }
+
+    fun seekWithInitialise(uri: String, currentDuration: Long) {
+
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(uri))
+
+        // Prepare player with media source
+        player!!.setMediaSource(mediaSource)
+        player!!.prepare()
+//        player!!.seekTo(currentDuration)
+        player!!.play()
+
+        Log.e("sjkcnsakjbc", "akjcnkja play $uri kkkk")
+
     }
 
 
-    fun playTokenise(){
-        val url = "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk&expires=1726208026&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
+    fun playTokenise() {
+        val url =
+            "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk&expires=1726208026&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 
         val token = "VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk"
         val expires = 1726208026
@@ -122,7 +141,7 @@ class PlayerHandler(
 
         val dataSourceFactory = object : Factory {
             override fun createDataSource(): DataSource {
-                return TokenAuthDataSource(token,upstreamDataSource)
+                return TokenAuthDataSource(token, upstreamDataSource)
             }
         }
 
@@ -232,7 +251,6 @@ class PlayerHandler(
     fun isPlaying(): Boolean? {
         return player?.isPlaying
     }
-
     fun toggleFullScreen() {
         // You can use your own logic to handle full-screen mode
         val isFullScreen = playerView.layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT

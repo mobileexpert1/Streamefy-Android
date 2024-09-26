@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.otpview.OTPListener
 import com.streamefy.R
@@ -99,7 +100,18 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isSuccess -> {
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
-                    findNavController().navigate(R.id.homefragment)
+//                    findNavController().navigate(R.id.homefragment)
+
+                    val navOptions = NavOptions.Builder()
+//                        .setPopUpTo(R.id.splashScreen, true)
+//                        .setPopUpTo(R.id.loginFragment,true)
+//                        .setPopUpTo(R.id.otpFragment,true)
+                        .setPopUpTo(R.id.pinAuthenticationFragment,true)
+                       // .setLaunchSingleTop(true)
+                        // Set inclusive to true
+                        .build()
+                    // Navigate to home fragment with the options
+                    findNavController().navigate(R.id.homefragment, null, navOptions)
                     dismissProgress()
                 }
 

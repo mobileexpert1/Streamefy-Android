@@ -1,25 +1,22 @@
 package com.streamefy.component.ui.video
 
 import VolumeManager
-import android.content.res.ColorStateList
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.SeekBar
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
@@ -31,13 +28,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     lateinit var playerHandler: PlayerHandler
     var getLengthOnce = true
     var isEnded = false
-    var visibilityCount=0
+    var visibilityCount = 0
 
     private lateinit var volumeManager: VolumeManager
 
-//       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-       var videoUrl=""
-           //"https://vz-356f31a1-aee.b-cdn.net/bcdn_token=FmAWzCBl7_7DZ4gHHTZ8rg&expires=1727100940&token_path=%2Fa0520395-a4de-40f2-9f7f-48eacbb92b2f%2F/a0520395-a4de-40f2-9f7f-48eacbb92b2f/playlist.m3u8"
+    //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+    var videoUrl = ""
+
+    //"https://vz-356f31a1-aee.b-cdn.net/bcdn_token=FmAWzCBl7_7DZ4gHHTZ8rg&expires=1727100940&token_path=%2Fa0520395-a4de-40f2-9f7f-48eacbb92b2f%2F/a0520395-a4de-40f2-9f7f-48eacbb92b2f/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=-ScuHJWB2f7S8SIfnfWbvVgPPSJfm7Otiiy_QsGe6x8&expires=1725706058&token_path=%2Fe66c2d1a-9c6b-4fe1-8ca5-d314704eedc3%2F/e66c2d1a-9c6b-4fe1-8ca5-d314704eedc3/playlist.m3u8"
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=ofkhmBJ7r3GaillWe626UsrOeIOXpunm_5r6kGdsu0o&expires=1725714358&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
 // var videoUrl="https://vz-7615d1d2-22b.b-cdn.net/bcdn_token=QqUJlEQQSdWVkLpdT2ESJ8kDAvRx1ZMO8LNbCi5X-do&expires=1725714672&token_path=%2F2b8fc2cf-958d-4c59-8208-f523285b505e%2F/2b8fc2cf-958d-4c59-8208-f523285b505e/playlist.m3u8"
@@ -45,9 +43,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 // var videoUrl="https://vz-4aa86377-b82.b-cdn.net/bcdn_token=UIKCsoA2Yllz_Q-Yv5nM0GGaXMTuw_Mmi4X-sq_zldQ&expires=1725970468&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        handleKey(view)
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
-           Log.e("ckdanmcn","mkadnc $videoUrl")
+            Log.e("ckdanmcn", "mkadnc $videoUrl")
         }
         binding.apply {
             clickme()
@@ -56,18 +56,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         volume()
 
-   // bitPlayer()
-    selectorFocus()
+        // bitPlayer()
+        selectorFocus()
     }
 
-    fun clickme()= with(binding){
+    fun clickme() = with(binding) {
         ivBack.setOnClickListener { findNavController().popBackStack() }
 
         playerHandler = PlayerHandler(requireActivity(), playerView)
         playerHandler.setMediaUri(videoUrl)
         ivPlay.setOnClickListener {
             val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
-            params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+            params.width =
+                resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
             params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
             ivPlay.layoutParams = params
             if (playerHandler.isPlaying()!!) {
@@ -125,7 +126,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //            sbVideoSeek.requestFocus()
 //        }
     }
-    fun listener()= with(binding){
+
+    fun listener() = with(binding) {
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
@@ -142,6 +144,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     isEnded = true
                 }
             }
+
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayerError", "Playback error: " + error.message, error)
             }
@@ -179,6 +182,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //        })
 
     }
+
     private fun updateDuration() {
 //        val position = player.currentPosition
 //        HomeFragment.homeFragment.currentVideoDuration = position
@@ -189,12 +193,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //        }
     }
 
-    fun selectorFocus()= with(binding){
+    fun selectorFocus() = with(binding) {
         ivSkipForward.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
+                toShowBackButton()
                 val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSkipBack.layoutParams = params
             } else {
@@ -206,8 +212,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivSkipForward.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
+                toShowBackButton()
                 val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSkipForward.layoutParams = params
 //                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
@@ -221,14 +229,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
+                toShowBackButton()
                 val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivPlay.layoutParams = params
 
                 if (playerHandler.isPlaying()!!) {
                     ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                }else{
+                } else {
                     ivPlay.setImageResource(R.drawable.ic_seleceted_play)
                 }
             } else {
@@ -238,7 +248,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 ivPlay.layoutParams = params
                 if (playerHandler.isPlaying()!!) {
                     ivPlay.setImageResource(R.drawable.ic_video_pause)
-                }else{
+                } else {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                 }
 
@@ -262,8 +272,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivSetting.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
+                toShowBackButton()
                 val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSetting.layoutParams = params
             } else {
@@ -276,8 +288,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivVolume.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
+                toShowBackButton()
                 val params = ivVolume.layoutParams as LinearLayoutCompat.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivVolume.layoutParams = params
 
@@ -309,6 +323,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             }
         }
+
+        ivBack.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                toShowBackButton()
+            }
+        }
+
+
 //        llSeek.setOnFocusChangeListener { _, hasFocus ->
 //            if (hasFocus) {
 //                llSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),R.color.light_gray) )
@@ -328,8 +350,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
-    private fun bitPlayer()= with(binding) {
-        binding.bitplayer.player=  BitmovinPlayer().bitPlayer(requireActivity(),bitplayer)
+    private fun bitPlayer() = with(binding) {
+        binding.bitplayer.player = BitmovinPlayer().bitPlayer(requireActivity(), bitplayer)
 
     }
 
@@ -417,13 +439,60 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         if (playerHandler.isPlaying()!!) {
             playerHandler.handler.postDelayed({ updateProgressBar() }, 500)
         }
-
+        visibilityCount++
+        if (visibilityCount == 15) {
+            visibilityCount = 0
+            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+//            binding.ivBack.gone()
+        }
     }
 
 
-
+    fun toShowBackButton() {
+        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        visibilityCount=0
+//        binding.ivBack.visible()
+    }
 
     private lateinit var audioManager: AudioManager
+
+
+   fun handleKey(view: View) {
+       view.setFocusableInTouchMode(true)
+       view.requestFocus()
+       view.setOnKeyListener { v, keyCode, event ->
+           Log.e("dldfdfd","ddmv ")
+           if (event.action == KeyEvent.ACTION_DOWN) {
+               when (keyCode) {
+                   KeyEvent.KEYCODE_DPAD_UP -> {
+                       toShowBackButton()
+                       return@setOnKeyListener true
+                   }
+                   KeyEvent.KEYCODE_DPAD_DOWN -> {
+                       toShowBackButton()
+                       return@setOnKeyListener true
+                   }
+                   KeyEvent.KEYCODE_DPAD_LEFT -> {
+                       toShowBackButton()
+                       return@setOnKeyListener true
+                   }
+                   KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                       toShowBackButton()
+                       return@setOnKeyListener true
+                   }
+                   KeyEvent.KEYCODE_ENTER -> {
+                       toShowBackButton()
+                       return@setOnKeyListener true
+                   }
+               }
+           }
+           false
+       }
+//       MainActivity().onKeyDown()
+   }
+
 
     override fun onPause() {
         super.onPause()
@@ -440,9 +509,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.pause()
         playerHandler.release()
         volumeManager.stopMonitoring()
-        binding. bitplayer.onDestroy()
+        binding.bitplayer.onDestroy()
     }
-
 
 
     override fun onStart() {
@@ -452,7 +520,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onResume() {
         super.onResume()
-        binding. playerView.onResume()
+        binding.playerView.onResume()
     }
 
 
@@ -460,7 +528,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         super.onStop()
         binding.bitplayer.onStop()
     }
-
 
 
 }

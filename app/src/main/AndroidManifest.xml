@@ -36,7 +36,8 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="BITMOVIN_PLAYER_LICENSE_KEY" android:value="f25ecb76-d062-4edd-a2f3-298b3ba15202" />
+        <meta-data android:name="BITMOVIN_PLAYER_LICENSE_KEY"
+            android:value="f25ecb76-d062-4edd-a2f3-298b3ba15202" />
 
     </application>
 

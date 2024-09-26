@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="@dimen/_95sdp"
+    android:layout_width="@dimen/_90sdp"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:focusable="true"
@@ -15,6 +15,7 @@
         android:layout_marginBottom="@dimen/_5sdp"
         android:text="Mehendi ceremony"
         android:maxLines="1"
+        android:singleLine="true"
         app:layout_constraintBottom_toTopOf="@+id/clThumb"
         app:layout_constraintStart_toStartOf="parent"
 
@@ -23,7 +24,7 @@
         android:id="@+id/clThumb"
         app:layout_constraintBottom_toTopOf="@+id/tvMore"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_70sdp"
         android:background="@color/transparent"
         android:layout_marginBottom="@dimen/_5sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,7 +34,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         app:cardCornerRadius="@dimen/_7sdp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/transparent"
         android:backgroundTint="@color/black"
         >
@@ -43,7 +44,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_1sdp"
             android:paddingBottom="@dimen/_3sdp"
             tools:background="@drawable/selected_item"
             android:focusable="true"
@@ -54,7 +54,7 @@
             <ImageView
                 android:id="@+id/ivThumb"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:src="@drawable/home_theme"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toTopOf="@+id/lpVideoProgres"

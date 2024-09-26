@@ -93,14 +93,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
             ivLogout.setOnClickListener {
-                SharedPref.clearData()
-
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
-                    .build()
-
-                // Navigate to home fragment with the options
-                findNavController().navigate(R.id.loginFragment, null, navOptions)
+                LogoutDialog(requireContext()){
+                    SharedPref.clearData()
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+                        .build()
+                    // Navigate to home fragment with the options
+                    findNavController().navigate(R.id.loginFragment, null, navOptions)
+                }.show()
 
             }
             ivLogout.setOnFocusChangeListener { _, hasFocus ->
@@ -425,7 +425,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onResume()
 
         binding.apply {
-            tvProjectTitle.text = proTitle.toString()
+            tvProjectTitle.text = proTitle.toString()+"0.01"
             tvProjectDesc.text = proDesc.toString()
             projectlogo.loadUrl(proLogo)
             if (drawerLayout.isVisible) {

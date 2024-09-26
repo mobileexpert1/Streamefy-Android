@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.ui.login.model.LoginRequest
@@ -31,6 +33,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
+        requireActivity().onBackPressedDispatcher.addCallback {
+            MainActivity().exitApp()
+        }
+
 //        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
     private fun initClickListeners() = with(binding) {
@@ -92,6 +98,5 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
         }
     }
-
 
 }

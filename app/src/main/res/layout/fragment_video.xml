@@ -106,6 +106,7 @@
              android:layout_height="wrap_content"
              android:focusable="true"
              android:focusableInTouchMode="true"
+             android:descendantFocusability="afterDescendants"
              android:paddingVertical="@dimen/_3sdp"
              android:gravity="center"
              android:background="@drawable/ic_linear_selector"
@@ -117,7 +118,6 @@
                  android:layout_marginEnd="@dimen/_5sdp"
                  android:progress="90"
                  android:progressTint="@color/red"
-                 android:clickable="false"
                  android:thumb="@drawable/seekbar_thumb"
                  />
          </LinearLayout>

@@ -74,8 +74,10 @@ class CategoryAdapter(
 
                 if (hasFocus) {
                     itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
+                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gray))
                 } else {
                     itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                    clEvent.setBackgroundColor(ContextCompat.getColor(context, com.otpview.R.color.transparent))
                 }
 
             }

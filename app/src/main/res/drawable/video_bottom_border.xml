@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item>
+    <item android:state_focused="true">
         <shape>
             <solid android:color="@color/primary"/>
-            <corners android:radius="@dimen/_10sdp"/>
+            <corners android:topRightRadius="@dimen/_10sdp" android:topLeftRadius="@dimen/_10sdp" />
         </shape>
     </item>
     <item android:top="@dimen/_1sdp" >
@@ -13,4 +13,4 @@
             <corners android:topRightRadius="@dimen/_10sdp" android:topLeftRadius="@dimen/_10sdp" />
         </shape>
     </item>
-</layer-list>
+</selector>

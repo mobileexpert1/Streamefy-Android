@@ -40,7 +40,7 @@ class HomeVm(var repo: ApiService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                   // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                     homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }

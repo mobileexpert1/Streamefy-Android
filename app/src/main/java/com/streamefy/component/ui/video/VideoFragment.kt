@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
@@ -14,12 +15,12 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
+import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 
 
@@ -119,12 +120,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
 
         }
-//        llVolumeSeek.setOnClickListener {
-//            sbVolumeSeek.requestFocus()
-//        }
-//        llSeek.setOnClickListener {
+        llVolumeSeek.setOnClickListener {
+            sbVolumeSeek.requestFocus()
+        }
+        llSeek.setOnClickListener {
 //            sbVideoSeek.requestFocus()
-//        }
+        }
     }
 
     fun listener() = with(binding) {
@@ -149,37 +150,42 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 Log.e("ExoPlayerError", "Playback error: " + error.message, error)
             }
         })
-//        sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(
-//                seekBar: SeekBar?,
-//                progress: Int,
-//                fromUser: Boolean
-//            ) {
-//                if (fromUser) {
-//                    playerHandler.setPlaybackProgress(progress)
-//                }
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//        })
+        sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
+                if (fromUser) {
+                    playerHandler.setPlaybackProgress(progress)
+                    Log.e("ExoPlayerError", "dkkkd $progress")
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                Log.e("ExoPlayerError", "dkkkd onStartTrackingTouch")
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                Log.e("ExoPlayerError", "dkkkd onStopTrackingTouch")
+            }
+        })
 //
 //        // Volume control
-//        sbVolumeSeek.max = 100
-//        sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
-//        sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(
-//                seekBar: SeekBar?,
-//                progress: Int,
-//                fromUser: Boolean
-//            ) {
-////                    playerHandler.setVolume(progress / 100.0f)
-//                volumeManager.setVolumePercentage(progress)
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//        })
+        sbVolumeSeek.max = 100
+        sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
+        sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(
+                seekBar: SeekBar?,
+                progress: Int,
+                fromUser: Boolean
+            ) {
+//                    playerHandler.setVolume(progress / 100.0f)
+                volumeManager.setVolumePercentage(progress)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
 
     }
 
@@ -193,8 +199,31 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //        }
     }
 
+    fun forward() {
+        if (::playerHandler.isInitialized) {
+
+//           binding. apply {
+//               val duration = playerHandler.getDuration()
+//               val currentPosition = playerHandler.getCurrentPosition()
+//               val progress = (currentPosition * 100 / duration.toDouble()).toInt()
+//               binding.sbVideoSeek.progress = progress
+//               Log.e("sslmv","dkdkkd $progress")
+//           }
+            var current = playerHandler.player?.currentPosition
+            var duration = playerHandler.player?.duration
+            var count = current!! + 10000
+
+            if (duration!! > count) {
+                playerHandler.seekTo(count)
+            } else {
+                playerHandler.seekTo(duration)
+            }
+        }
+    }
+
+
     fun selectorFocus() = with(binding) {
-        ivSkipForward.requestFocus()
+        llTools.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
@@ -330,15 +359,51 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
 
+        sbVideoSeek.setOnClickListener {
+            Log.e("kkdkdkdkd", "clicked")
+//            volumeManager.setVolumePercentage(progress)
+        }
 
-//        llSeek.setOnFocusChangeListener { _, hasFocus ->
-//            if (hasFocus) {
-//                llSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),R.color.light_gray) )
-//            }else{
-//                llSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),
-//                    com.otpview.R.color.transparent) )
-//            }
-//        }
+        sbVideoSeek.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                Log.e("kkdkdkdkd", "fosus")
+            } else {
+                Log.e("kkdkdkdkd", "disabled")
+            }
+        }
+        sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            Log.e("djhfjd", "shcudh $event")
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        ivSkipForward.requestFocus()
+                        return@OnKeyListener true // Consume the event
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        ivSetting.requestFocus()
+                        return@OnKeyListener true // Consume the event
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_UP -> {
+                        forward()
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        playerHandler.seekBackward(10)
+                        return@OnKeyListener true
+                    }
+                }
+            }
+            false // Don't consume other events
+        })
+        llTools.setOnClickListener { }
+        llTools.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                ivSkipBack.requestFocus()
+            }
+        }
 //        llVolumeSeek.setOnFocusChangeListener { _, hasFocus ->
 //            if (hasFocus) {
 //                llVolumeSeek.setBackgroundColor(ContextCompat.getColor(requireActivity(),R.color.light_gray) )
@@ -354,6 +419,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.bitplayer.player = BitmovinPlayer().bitPlayer(requireActivity(), bitplayer)
 
     }
+
 
     private fun quality() = with(binding) {
         val qualityButtons: List<TextView> = listOf(
@@ -423,6 +489,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
             sbVolumeSeek.progress = volumePercentage
+            if (volumePercentage <= 0) {
+                ivVolume.requestFocus()
+                ivVolume.setImageResource(R.drawable.ic_mute)
+            } else {
+                ivVolume.setImageResource(R.drawable.ic_video_volume)
+            }
         }
 
         volumeManager.startMonitoring()
@@ -442,56 +514,60 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         visibilityCount++
         if (visibilityCount == 15) {
             visibilityCount = 0
-            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+//            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+//            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
 //            binding.ivBack.gone()
         }
     }
 
 
     fun toShowBackButton() {
-        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
-        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
-        visibilityCount=0
+//        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
+//        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        visibilityCount = 0
 //        binding.ivBack.visible()
     }
 
     private lateinit var audioManager: AudioManager
 
 
-   fun handleKey(view: View) {
-       view.setFocusableInTouchMode(true)
-       view.requestFocus()
-       view.setOnKeyListener { v, keyCode, event ->
-           Log.e("dldfdfd","ddmv ")
-           if (event.action == KeyEvent.ACTION_DOWN) {
-               when (keyCode) {
-                   KeyEvent.KEYCODE_DPAD_UP -> {
-                       toShowBackButton()
-                       return@setOnKeyListener true
-                   }
-                   KeyEvent.KEYCODE_DPAD_DOWN -> {
-                       toShowBackButton()
-                       return@setOnKeyListener true
-                   }
-                   KeyEvent.KEYCODE_DPAD_LEFT -> {
-                       toShowBackButton()
-                       return@setOnKeyListener true
-                   }
-                   KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                       toShowBackButton()
-                       return@setOnKeyListener true
-                   }
-                   KeyEvent.KEYCODE_ENTER -> {
-                       toShowBackButton()
-                       return@setOnKeyListener true
-                   }
-               }
-           }
-           false
-       }
+    fun handleKey(view: View) {
+        view.setFocusableInTouchMode(true)
+        view.requestFocus()
+        view.setOnKeyListener { v, keyCode, event ->
+            Log.e("dldfdfd", "ddmv ")
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_UP -> {
+                        toShowBackButton()
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        toShowBackButton()
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        toShowBackButton()
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        toShowBackButton()
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_ENTER -> {
+                        toShowBackButton()
+                        return@setOnKeyListener true
+                    }
+                }
+            }
+            false
+        }
 //       MainActivity().onKeyDown()
-   }
+    }
 
 
     override fun onPause() {

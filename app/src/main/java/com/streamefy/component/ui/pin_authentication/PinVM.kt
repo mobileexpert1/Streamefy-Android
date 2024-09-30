@@ -33,15 +33,14 @@ class PinVM(var repo: ApiService) : ViewModel() {
                     if (response.body()?.isSuccess!!) {
                         pinData.value = MyResource.isSuccess(response.body())
                     } else {
-                        ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        ShowError.handleError.message(response.body()?.error?.userMessage.toString())
                         pinData.value =
                             MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    pinData.value =
-                        MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+                  //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    pinData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
             } else {

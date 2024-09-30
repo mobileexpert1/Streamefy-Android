@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -65,18 +66,36 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
     private fun initClickListeners() {
         binding.apply {
-            requireActivity().showKeyboard(otpView.getChildAt(0))
+           // requireActivity().showKeyboard(otpView.getChildAt(0))
             otpView.requestFocusOTP()
             otpView.otpListener = object : OTPListener {
                 override fun onInteractionListener() {
+                    Log.e("skmkscn","scklknc")
+                    tvProceed.clearFocus()
                 }
 
                 override fun onOTPComplete(otp: String) {
+                    tvProceed.requestFocus()
+                    tvProceed.isFocusableInTouchMode=true
                     requireActivity().hideKey()
+                    Log.e("skmkscn","complete $otp")
                 }
+
             }
+//            otpView.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+//                if (event.action==KeyEvent.ACTION_DOWN){
+//                    when(keyCode){
+//                        KeyEvent.KEYCODE_ENTER->{
+//                            Log.e("sncncsc","sjcnsjc enter")
+//                        }
+//                    }
+//                }
+//                false})
 
             tvProceed.setOnClickListener(this@OtpFragment)
+
+
+
 //            et1.setupNextFocusOnDigit(et2)
 //            et2.setupNextFocusOnDigit(et3)
 //            et3.setupNextFocusOnDigit(et4)
@@ -110,8 +129,11 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     otpView.otp?.run {
                     if (this.isEmpty()) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
+                        tvProceed.clearFocus()
                     } else if (this.length < 6) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
+                        tvProceed.clearFocus()
+
                     } else {
                         otpVm.otpVerification(
                             requireActivity(),

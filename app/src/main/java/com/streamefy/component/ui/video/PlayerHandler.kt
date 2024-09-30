@@ -178,12 +178,12 @@ class PlayerHandler(
     fun setQuality(resolution: String) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
         val dimensions = when (resolution) {
-            "360p" -> Pair(640, 360)
-            "480p" -> Pair(854, 480)
-            "720p" -> Pair(1280, 720)
-            "1080p" -> Pair(1920, 1080)
-            "1440p" -> Pair(2560, 1440)
-            "4K" -> Pair(3840, 2160)
+            "360p" -> Pair(640, 360)// Pair(352, 240)
+            "480p" -> Pair(854, 480)// Pair(640, 360)
+            "720p" -> Pair(1280, 720)// Pair(842, 480)
+            "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
+            "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
+            "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
             else -> return
         }
 
@@ -251,6 +251,7 @@ class PlayerHandler(
     fun isPlaying(): Boolean? {
         return player?.isPlaying
     }
+
     fun toggleFullScreen() {
         // You can use your own logic to handle full-screen mode
         val isFullScreen = playerView.layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT

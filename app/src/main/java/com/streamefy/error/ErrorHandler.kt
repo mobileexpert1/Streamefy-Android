@@ -15,7 +15,14 @@ class ErrorHandler(var context: Context) {
         }
     }
 
+    fun message(errorCode: String) {
+        try {
+            context.showMessage(errorCode)
 
+        } catch (e: Exception) {
+            context.showMessage("Error code failed")
+        }
+    }
 
     fun handleError(errorCode: Int, action: () -> Unit) {
         val errorMessage = ErrorCodeManager.getErrorMessage(errorCode)

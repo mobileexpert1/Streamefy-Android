@@ -47,16 +47,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 ShowError.handleError.handleError(validate as Int)
             } else {
                 SharedPref.setString(PrefConstent.TOKEN, "")
-                viewmodel.login(
-                    requireActivity(),
-                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-                )
-                observe()
+//                viewmodel.login(
+//                    requireActivity(),
+//                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+//                )
+//                observe()
 
-//                var bundle=Bundle()
-//                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
-//                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
-//                findNavController().navigate(R.id.action_loginFragment_to_otpFragment,bundle)
+                var bundle=Bundle()
+                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
+                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
+                findNavController().navigate(R.id.loginFragment,bundle)
 
             }
         }
@@ -68,9 +68,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             when (it) {
                 is MyResource.isLoading -> {
                     ///loading
+                    progressDialog.show()
                 }
 
                 is MyResource.isSuccess -> {
+                    progressDialog.dismiss()
                     var data = it.data?.response
                     data?.run {
                         SharedPref.setString(PrefConstent.TOKEN, accessToken)
@@ -93,8 +95,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     findNavController().navigate(R.id.action_loginFragment_to_otpFragment, bundle)
                 }
 
-                is MyResource.isError -> {}
-                else -> {}
+                is MyResource.isError -> {
+                    progressDialog.dismiss()
+                }
             }
         }
     }

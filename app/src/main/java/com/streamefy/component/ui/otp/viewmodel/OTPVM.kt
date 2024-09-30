@@ -40,7 +40,7 @@ class OTPVM(var repo: AuthService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                  //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                     otpLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
@@ -66,7 +66,7 @@ class OTPVM(var repo: AuthService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                   // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                     vericationData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }

@@ -37,10 +37,12 @@ class LoginViewmodel(var repo: AuthService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     logeMe(e.toString())
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                   // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
+                loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
             }
         }
     }

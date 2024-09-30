@@ -155,9 +155,7 @@
                 android:id="@+id/llVolumeSeek"
                 android:layout_width="@dimen/_60sdp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_linear_selector"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
+                android:focusable="false"
                 android:gravity="center"
                 android:paddingVertical="@dimen/_3sdp">
 
@@ -167,8 +165,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:focusable="true"
+                    android:background="@drawable/ic_seekbar_background_selector"
                     android:focusableInTouchMode="true"
-                    android:progress="90"
+                    android:progress="20"
                     android:progressTint="@color/red"
                     android:thumb="@drawable/seekbar_thumb" />
             </LinearLayout>
@@ -247,6 +246,7 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
+                android:background="@color/light_gray"
                 android:text="720p"
                 android:textColor="@color/black" />
 

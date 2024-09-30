@@ -44,10 +44,10 @@ object ErrorCodeManager {
         PASSWORD_MIN_MAX to  "Password length should be 8-10 characters",
         INVALID_PASSWORD_FORMAT to  "Invalid password format e.g Test123@",
         OTP_EMPTY to  "Please enter otp",
-        OTP_LENGTH to  "Invalid OTP size",
+        OTP_LENGTH to  "Invalid OTP",
         PHONE_EMPTY to  "Please enter phone number",
         PHONE_LENGTH to  "Invalid phone number",
-        UNKNOWN_ERROR to "Unknown error, please try again later.",
+        UNKNOWN_ERROR to "Something went wrong, please try again later.",
         NETWORK_ISSUE to "Please check your internet connection"
     )
 

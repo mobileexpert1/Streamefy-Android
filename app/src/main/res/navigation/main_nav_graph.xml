@@ -19,6 +19,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.streamefy.component.ui.login.LoginFragment"
+        tools:layout="@layout/fragment_login"
         android:label="LoginFragment">
         <action
             android:id="@+id/action_loginFragment_to_otpFragment"
@@ -27,6 +28,7 @@
     <fragment
         android:id="@+id/otpFragment"
         android:name="com.streamefy.component.ui.otp.OtpFragment"
+        tools:layout="@layout/fragment_otp"
         android:label="OtpFragment">
         <action
             android:id="@+id/action_otpFragment_to_pinAuthenticationFragment"
@@ -35,6 +37,7 @@
     <fragment
         android:id="@+id/pinAuthenticationFragment"
         android:name="com.streamefy.component.ui.pin_authentication.PinAuthenticationFragment"
+        tools:layout="@layout/fragment_pin_authentication"
         android:label="PinAuthenticationFragment">
         <action
             android:id="@+id/action_pinAuthenticationFragment_to_homefragment"

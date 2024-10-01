@@ -43,20 +43,20 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         tvGetOtp.setOnClickListener {
             var validate = nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
-            if (!validate.equals(true)) {
-                ShowError.handleError.handleError(validate as Int)
-            } else {
+            if (validate) {
+               // ShowError.handleError.handleError(validate as Int)
+         //   } else {
                 SharedPref.setString(PrefConstent.TOKEN, "")
-//                viewmodel.login(
-//                    requireActivity(),
-//                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-//                )
-//                observe()
+                viewmodel.login(
+                    requireActivity(),
+                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+                )
+                observe()
 
-                var bundle=Bundle()
-                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
-                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
-                findNavController().navigate(R.id.loginFragment,bundle)
+//                var bundle=Bundle()
+//                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
+//                bundle.putString(PrefConstent.FULL_NAME,binding.etFullname.text.toString())
+//                findNavController().navigate(R.id.otpFragment,bundle)
 
             }
         }
@@ -92,7 +92,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         PrefConstent.PHONE_NUMBER,
                         binding.etPhoneNumber.text.toString()
                     )
-                    findNavController().navigate(R.id.action_loginFragment_to_otpFragment, bundle)
+                    findNavController().navigate(R.id.otpFragment, bundle)
                 }
 
                 is MyResource.isError -> {

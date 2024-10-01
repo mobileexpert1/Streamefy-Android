@@ -51,7 +51,7 @@ class VideoRecyclerView : RecyclerView {
 
     // controlling playback state
     var volumeState: VolumeState? = null
-    private var recyclerview: RecyclerView? = null
+    private var recyclerview: VideoRecyclerView? = null
 
     lateinit var holder: BackgroundHolder
     var currentVideo = 0
@@ -231,16 +231,24 @@ class VideoRecyclerView : RecyclerView {
 
     fun scrollMe(pos: Int) {
         var mNewPos = pos + 1
-        Log.e("smcskmc","smcksnc $pos new $mNewPos size ${mediaObjects.size}")
-        if (mediaObjects.size >= mNewPos) {
+        Log.e("smcskmc","up $pos new $mNewPos size ${mediaObjects.size}")
+        if (mNewPos < mediaObjects.size ) {
             recyclerview?.scrollToPosition(mNewPos)
+            scrollPlay{}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         }else{
             recyclerview?.scrollToPosition(0)
             homeFragment.binding.rvBackgVideo.scrollToPosition(0)
         }
     }
-
+    fun backScroll(pos: Int) {
+        var mNewPos = 2
+        Log.e("smcskmc","back $pos new $mNewPos size ${mediaObjects.size}")
+        if (mNewPos>0 ) {
+            recyclerview?.scrollToPosition(mNewPos)
+            scrollPlay{}
+        }
+    }
 
     var targetPosition = 0
     var currentPose = 0
@@ -285,7 +293,7 @@ class VideoRecyclerView : RecyclerView {
 
 //        videoSurfaceView!!.player = playerHandler.getPLayer()
         player = playerHandler.getPLayer()!!
-        Log.e("skncksnc", "skcks $homeFragment.mediaUrl")
+        Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
             playerHandler.setMediaUri(homeFragment.mediaUrl)
 //            playerHandler.seekWithInitialise(mediaUrl,videoDuration)
@@ -294,6 +302,39 @@ class VideoRecyclerView : RecyclerView {
             pauseVideo()
         }
         playerHandler.mute()
+    }
+    fun scrollPlay(callBack: (String) -> Unit) {
+        pauseVideo()
+        Log.e("skncksnc", "scrollPlay surface $targetPosition")
+
+        removeVideoView(videoSurfaceView)
+
+//        val currentPosition =
+//            targetPosition - (Objects.requireNonNull(layoutManager) as LinearLayoutManager).findFirstVisibleItemPosition()
+        val child = getChildAt(targetPosition) ?: return
+        holder = child.tag as BackgroundHolder
+        if (holder == null) {
+            playPosition = -1
+            return
+        }
+        thumbnail = holder.binding.imageView
+        holder.binding.videoview.gone()
+        holder.binding.apply {
+            viewHolderParent = holder.itemView
+            frameLayout = videoContainer
+        }
+        homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
+        currentVideo = targetPosition
+        var videoDuration = homeFragment.currentVideoDuration
+        player = playerHandler.getPLayer()!!
+        Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
+        if (homeFragment.mediaUrl.isNotEmpty()) {
+            playerHandler.setMediaUri(homeFragment.mediaUrl)
+        } else {
+            pauseVideo()
+        }
+        playerHandler.mute()
+       // homeFragment.binding.rvBackgVideo.requestFocus()
     }
 
     fun pauseVideo() {

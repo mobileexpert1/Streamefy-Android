@@ -46,7 +46,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        handleKey(view)
+        handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
@@ -607,19 +607,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         visibilityCount++
         if (visibilityCount == 15) {
             visibilityCount = 0
-//            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-//            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.playerView.requestFocus()
+            binding.clSettingsMenu.gone()
 //            binding.ivBack.gone()
         }
     }
 
 
     fun toShowBackButton()= with(binding) {
-//        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
-//        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
         visibilityCount = 0
 //        binding.ivBack.visible()
         clSettingsMenu.gone()
+        binding.playerView.clearFocus()
     }
 
     private lateinit var audioManager: AudioManager
@@ -634,28 +637,28 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         toShowBackButton()
+                        binding.ivBack.requestFocus()
                         return@setOnKeyListener true
                     }
 
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         toShowBackButton()
+                        binding.ivSkipBack.requestFocus()
                         return@setOnKeyListener true
                     }
 
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
                         toShowBackButton()
+                        binding.ivSkipBack.requestFocus()
                         return@setOnKeyListener true
                     }
 
                     KeyEvent.KEYCODE_DPAD_RIGHT -> {
                         toShowBackButton()
+                        binding.ivVolume.requestFocus()
                         return@setOnKeyListener true
                     }
 
-                    KeyEvent.KEYCODE_ENTER -> {
-                        toShowBackButton()
-                        return@setOnKeyListener true
-                    }
                 }
             }
             false

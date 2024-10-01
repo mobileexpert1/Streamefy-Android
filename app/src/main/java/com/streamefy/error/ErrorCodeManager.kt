@@ -23,10 +23,14 @@ object ErrorCodeManager {
     const val OTP_EMPTY=13
     const val OTP_LENGTH=14
 
+
     const val INVALID_CHAR=15
     const val INVALID_PASSWORD_FORMAT=16
     const val PHONE_EMPTY=17
     const val PHONE_LENGTH=18
+
+    const val PIN_LENGTH=19
+    const val PIN_EMPTY=20
 
     private val errorMessages = mapOf(
         LOGIN_FAIL to "Server error, please try again later.",
@@ -46,6 +50,8 @@ object ErrorCodeManager {
         OTP_EMPTY to  "Please enter otp",
         OTP_LENGTH to  "Invalid OTP",
         PHONE_EMPTY to  "Please enter phone number",
+        PIN_EMPTY to "Please enter your PIN",
+        PIN_LENGTH to "Invalid PIN",
         PHONE_LENGTH to  "Invalid phone number",
         UNKNOWN_ERROR to "Something went wrong, please try again later.",
         NETWORK_ISSUE to "Please check your internet connection"

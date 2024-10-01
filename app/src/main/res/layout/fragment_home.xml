@@ -25,7 +25,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 />
 
 
@@ -55,12 +56,11 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:background="@drawable/indecator_bg"
+                android:background="@drawable/ic_indecator_selector"
                 android:paddingHorizontal="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:layout_marginBottom="@dimen/_50sdp"
                 android:paddingVertical="@dimen/_5sdp"
-
                 />
 
             <androidx.appcompat.widget.AppCompatImageView

@@ -1,6 +1,7 @@
 package com.streamefy.utils
 
 import com.streamefy.error.ErrorCodeManager
+import com.streamefy.error.ShowError
 
 
 val namePattern = Regex("^[A-Za-z\\s-]+$")
@@ -70,21 +71,34 @@ fun nameWithNumber(name: String, number: String) = when {
 
    name.isEmpty() -> {
         ErrorCodeManager.NAME_EMPTY
+       ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
+       false
     }
 
     name.length < 3 -> {
         ErrorCodeManager.NAME_MIN_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MIN_LENGTH)
+        false
     }
 
     name.length > 25 -> {
         ErrorCodeManager.NAME_MAX_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MAX_LENGTH)
+        false
+
     }
     number.isEmpty() -> {
         ErrorCodeManager.PHONE_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
+        false
+
     }
 
-    number.length< 8 || number.length > 10  -> {
+    number.length!= 10  -> {
         ErrorCodeManager.PHONE_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+        false
+
     }
 
     else -> {

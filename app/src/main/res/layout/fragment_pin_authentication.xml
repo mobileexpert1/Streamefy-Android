@@ -6,7 +6,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <ImageView
             android:id="@+id/imageView"
@@ -205,10 +206,11 @@ android:visibility="gone"
                     app:OtpItemCount="4"
                     app:OtpItemSpacing="@dimen/_5sdp"
                     app:OtpState_filled="true"
+                    android:fontFamily="@font/filsonpro_regular"
                     app:OtpViewType="none"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="J4PF"
+                    android:text="XMLD"
                     app:OtpItemWidth="@dimen/_20sdp"
                     app:OtpItemHeight="@dimen/_20sdp"
                     android:focusableInTouchMode="true"
@@ -271,7 +273,7 @@ android:visibility="gone"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:layout_width="@dimen/_60sdp"
+                android:layout_width="@dimen/_50sdp"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:src="@drawable/ic_logo"

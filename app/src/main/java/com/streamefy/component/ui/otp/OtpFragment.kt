@@ -71,12 +71,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             otpView.otpListener = object : OTPListener {
                 override fun onInteractionListener() {
                     Log.e("skmkscn","scklknc")
-                    tvProceed.clearFocus()
+                   // tvProceed.clearFocus()
                 }
 
                 override fun onOTPComplete(otp: String) {
-                    tvProceed.requestFocus()
-                    tvProceed.isFocusableInTouchMode=true
+//                    tvProceed.requestFocus()
+//                    tvProceed.isFocusableInTouchMode=true
                     requireActivity().hideKey()
                     Log.e("skmkscn","complete $otp")
                 }
@@ -129,10 +129,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     otpView.otp?.run {
                     if (this.isEmpty()) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
-                        tvProceed.clearFocus()
+                       // tvProceed.clearFocus()
                     } else if (this.length < 6) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
-                        tvProceed.clearFocus()
+                       // tvProceed.clearFocus()
 
                     } else {
                         otpVm.otpVerification(

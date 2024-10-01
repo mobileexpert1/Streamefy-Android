@@ -3,8 +3,10 @@ package com.streamefy.utils
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.widget.EditText
+import com.streamefy.component.base.StreamEnum
 
 fun View.visible() {
     visibility = View.VISIBLE
@@ -62,5 +64,28 @@ fun EditText.previousFocusOnDigit(nextEditText: EditText) {
                 nextEditText.requestFocus()
             }
         }
+    })
+}
+
+
+fun View.remoteKey(keyBack:(StreamEnum)->Unit) {
+    setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        if (event.action==KeyEvent.ACTION_DOWN){
+            when(keyCode){
+                KeyEvent.KEYCODE_DPAD_DOWN->{
+                    keyBack.invoke(StreamEnum.DOWN_DPAD_KEY)
+                    return@OnKeyListener true}
+                KeyEvent.KEYCODE_DPAD_UP->{
+                    keyBack.invoke(StreamEnum.UP_DPAD_KEY)
+                    return@OnKeyListener true }
+                KeyEvent.KEYCODE_DPAD_LEFT->{
+                    keyBack.invoke(StreamEnum.LEFT_DPAD_KEY)
+                    return@OnKeyListener true }
+                KeyEvent.KEYCODE_DPAD_RIGHT->{
+                    keyBack.invoke(StreamEnum.RIGHT_DPAD_KEY)
+                    return@OnKeyListener true}
+            }
+        }
+        false
     })
 }

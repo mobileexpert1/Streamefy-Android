@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.text.toUpperCase
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.otpview.OTPListener
@@ -22,6 +23,7 @@ import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.Constants
 import com.streamefy.network.MyResource
+import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.hideKey
 import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
@@ -37,12 +39,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
-       var name= SharedPref.getString(PrefConstent.FULL_NAME)
+       var name= SharedPref.getString(PrefConstent.FULL_NAME).toString()
+
 
         binding.apply {
-            textView2.setText("Welcome $name! We are thrilled to have you here")
+            textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
 
-            pinView.requestFocusOTP()
+//            pinView.requestFocusOTP()
+            pinView.requestFocus()
             pinView.otpListener = object : OTPListener {
                 override fun onInteractionListener() {
                 }
@@ -56,13 +60,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                        et2.text.toString().trim() +
 //                        et3.text.toString().trim() +
 //                        et4.text.toString().trim()
+
                 otp=otpView.text.toString()
                 otp.run {
                     otp=this
                     if (otp.isEmpty()) {
-                        ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
+                        ShowError.handleError.handleError(ErrorCodeManager.PIN_EMPTY)
                     } else if (otp.length < 4) {
-                        ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
+                        ShowError.handleError.handleError(ErrorCodeManager.PIN_LENGTH)
                     } else {
 
 //                    SharedPref.setBoolean(PrefConstent.ISLOGIN, true)

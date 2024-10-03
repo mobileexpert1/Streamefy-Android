@@ -15,7 +15,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/home_theme"
+            android:background="@color/primary"
             android:gravity="center">
 
             <com.streamefy.component.ui.home.background.VideoRecyclerView

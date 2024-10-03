@@ -42,6 +42,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
+    var isSmartRevision = false
 
      override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,6 +51,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager = VolumeManager(requireActivity())
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+            isSmartRevision = getBoolean(PrefConstent.SMART_REVISION)
             Log.e("ckdanmcn", "mkadnc $videoUrl")
         }
         binding.apply {
@@ -452,14 +454,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 
     private fun quality() = with(binding) {
-        val qualityButtons: List<TextView> = listOf(
-            tv360p,
-            tv480p,
-            tv720p,
-            tv1080p,
-            tv1440p,
-            tv4K
-        )
+        val qualityButtons= ArrayList<TextView>()
+        qualityButtons.clear()
+        if (isSmartRevision){
+            qualityButtons.add(tv480p)
+        }
+        else{
+            qualityButtons.add(tv480p)
+            qualityButtons.add(tv1080p)
+            qualityButtons.add(tv2080p)
+        }
+//        val qualityButtons: ArrayList<TextView> = listOf(
+//            tv480p,
+//            tv1080p,
+//            tv2080p,
+//        )
         ivSetting.setOnClickListener {
             if (clSettingsMenu.isVisible) {
                 clSettingsMenu.gone()

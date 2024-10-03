@@ -17,13 +17,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/white" />
 
+
+    <ImageView
+        android:id="@+id/ivBack"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginStart="@dimen/_30sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/bg_round_gradient_purple_orange"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:text="Back"
+        android:padding="@dimen/_3sdp"
+        android:textColor="@color/white"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+       />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_13sdp"
         android:background="@drawable/bg_round_corners"
-        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_15sdp"
         android:paddingVertical="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,9 +66,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_5sdp"
+            android:paddingVertical="@dimen/_3sdp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvInstruction">
-            <com.otpview.OTPTextView
+
+            <com.mukeshsolanki.OtpView
                 android:id="@+id/otp_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                app:OtpHideLineWhenFilled="true"
+                app:OtpItemCount="6"
+                app:OtpItemSpacing="@dimen/_4sdp"
+                android:itemBackground="@drawable/ic_otp_selecter"
+                app:OtpState_filled="true"
+                android:fontFamily="@font/filsonpro_regular"
+                app:OtpViewType="none"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:clickable="true"
+                android:text=""
+                app:OtpItemWidth="@dimen/_15sdp"
+                app:OtpItemHeight="@dimen/_15sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+
+            <com.otpview.OTPTextView
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_30sdp"
                 android:textColor="@android:color/black"
@@ -199,15 +245,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/ic_button_selector"
+            android:layout_marginTop="@dimen/_10sdp"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_3sdp"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:text="PROCEED"
-            android:textColor="@color/white"
+            android:textColor="@color/input_field_color_selector"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clOtp" />
+            app:layout_constraintTop_toBottomOf="@+id/clOtp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -249,7 +298,7 @@
             android:adjustViewBounds="true"
             android:src="@drawable/ic_logo"
             android:scaleType="fitXY"
-            android:layout_marginBottom="@dimen/_3sdp"
+            android:layout_marginBottom="@dimen/_6sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

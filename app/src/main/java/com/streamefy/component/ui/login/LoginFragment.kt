@@ -1,6 +1,7 @@
 package com.streamefy.component.ui.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.ui.login.model.LoginRequest
+import com.streamefy.component.ui.otp.OtpFragment
 import com.streamefy.data.KoinCompo
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
@@ -47,11 +49,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                // ShowError.handleError.handleError(validate as Int)
          //   } else {
                 SharedPref.setString(PrefConstent.TOKEN, "")
-                viewmodel.login(
-                    requireActivity(),
-                    LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-                )
-                observe()
+                if(isAdded) {
+                    viewmodel.login(
+                        requireActivity(),
+                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+                    )
+                    observe()
+                }else{
+                    onAttach(requireActivity())
+                    Log.e("OtpFragment", "Fragment is not added, navigation aborted.")
+                }
 
 //                var bundle=Bundle()
 //                bundle.putString(PrefConstent.PHONE_NUMBER,binding.etPhoneNumber.text.toString())
@@ -64,13 +71,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
 
     fun observe() {
-        viewmodel.loginLiveData.observe(requireActivity()) {
+        viewmodel.loginLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     ///loading
                     progressDialog.show()
                 }
-
                 is MyResource.isSuccess -> {
                     progressDialog.dismiss()
                     var data = it.data?.response
@@ -79,8 +85,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
                         SharedPref.setString(
                             PrefConstent.PHONE_NUMBER,
-                            binding.etPhoneNumber.text.toString()
-                        )
+                            binding.etPhoneNumber.text.toString())
                         SharedPref.setString(
                             PrefConstent.FULL_NAME,
                             binding.etFullname.text.toString()
@@ -92,7 +97,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         PrefConstent.PHONE_NUMBER,
                         binding.etPhoneNumber.text.toString()
                     )
-                    findNavController().navigate(R.id.otpFragment, bundle)
+                    if(isAdded) {
+                        findNavController().navigate(R.id.otpFragment, bundle)
+                    }else{
+                        progressDialog.dismiss()
+                    }
                 }
 
                 is MyResource.isError -> {

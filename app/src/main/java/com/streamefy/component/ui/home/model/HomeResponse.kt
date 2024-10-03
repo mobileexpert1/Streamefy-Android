@@ -58,6 +58,8 @@ data class MediaItem(
     val bunnyId: String = "",
     @SerializedName("thumbnailS3bucketId")
     val thumbnailS3bucketId: String = "",
+    @SerializedName("isSmartRevision")
+    val isSmartRevision: Boolean = false,
     @SerializedName("id")
     val id: Int = 0
 )
@@ -124,6 +126,9 @@ data class Data(
     val project: List<ProjectItem>?,
     @SerializedName("currentPage")
     val currentPage: Int = 0,
+    @SerializedName("resolutions")
+    val resolutions: List<Int>?,
+
     @SerializedName("events")
     val events: List<EventsItem>?,
     @SerializedName("crewMembers")

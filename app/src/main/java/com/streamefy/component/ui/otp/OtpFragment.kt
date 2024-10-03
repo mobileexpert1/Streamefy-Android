@@ -1,5 +1,6 @@
 package com.streamefy.component.ui.otp
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
@@ -11,6 +12,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import com.otpview.OTPChildEditText
 import com.otpview.OTPListener
@@ -67,21 +72,21 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     private fun initClickListeners() {
         binding.apply {
            // requireActivity().showKeyboard(otpView.getChildAt(0))
-            otpView.requestFocusOTP()
-            otpView.otpListener = object : OTPListener {
-                override fun onInteractionListener() {
-                    Log.e("skmkscn","scklknc")
-                   // tvProceed.clearFocus()
-                }
-
-                override fun onOTPComplete(otp: String) {
-//                    tvProceed.requestFocus()
-//                    tvProceed.isFocusableInTouchMode=true
-                    requireActivity().hideKey()
-                    Log.e("skmkscn","complete $otp")
-                }
-
-            }
+//            otpView.requestFocusOTP()
+//            otpView.otpListener = object : OTPListener {
+//                override fun onInteractionListener() {
+//                    Log.e("skmkscn","scklknc")
+//                   // tvProceed.clearFocus()
+//                }
+//
+//                override fun onOTPComplete(otp: String) {
+////                    tvProceed.requestFocus()
+////                    tvProceed.isFocusableInTouchMode=true
+//                    requireActivity().hideKey()
+//                    Log.e("skmkscn","complete $otp")
+//                }
+//
+//            }
 //            otpView.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
 //                if (event.action==KeyEvent.ACTION_DOWN){
 //                    when(keyCode){
@@ -91,8 +96,20 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //                    }
 //                }
 //                false})
-
+            otpView.setOtpCompletionListener {
+                requireActivity().hideKey()
+            }
+            otpView.cursorColor= ContextCompat.getColor(requireContext(),R.color.black)
+            otpView.addTextChangedListener {
+                var cursorIndex = otpView.selectionStart
+                Log.e("smskmc","$cursorIndex slxmskmc ${it.toString()}")
+//                otpView.setCursorColor(ContextCompat.getColor(requireContext(),R.color.red))
+                otpView.cursorColor= ContextCompat.getColor(requireContext(),R.color.black)
+//                otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.indecator_bg))
+//                otpView.otpViewItemCount
+            }
             tvProceed.setOnClickListener(this@OtpFragment)
+            ivBack.setOnClickListener(this@OtpFragment)
 
 
 
@@ -109,7 +126,31 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //            et4.previousFocusOnDigit(et3)
 //            et3.previousFocusOnDigit(et2)
 //            et2.previousFocusOnDigit(et1)
+            ivBack.setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+                    params.width =
+                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                    ivBack.layoutParams = params
+                } else {
+                    val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                    ivBack.layoutParams = params
 
+                }
+
+            }
+
+            requireActivity().onBackPressedDispatcher.addCallback(
+                viewLifecycleOwner,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        // Show the custom dialog when back is pressed
+                        findNavController().popBackStack()
+                    }
+                })
         }
     }
 
@@ -125,8 +166,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //                            et4.text.toString().trim() +
 //                            et5.text.toString().trim() +
 //                            et6.text.toString().trim()
-
-                    otpView.otp?.run {
+                   var otp=otpView.text.toString()
+                    otp.run {
                     if (this.isEmpty()) {
                         ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
                        // tvProceed.clearFocus()
@@ -135,11 +176,15 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                        // tvProceed.clearFocus()
 
                     } else {
-                        otpVm.otpVerification(
-                            requireActivity(),
-                            VerificationRequest(phone, this)
-                        )
-                        verificationObserv()
+                        if (isAdded) {
+                            otpVm.otpVerification(
+                                requireActivity(),
+                                VerificationRequest(phone, this)
+                            )
+                            verificationObserv()
+                        }else{
+                            onAttach(requireActivity())
+                        }
 
 //                            var bundle=Bundle()
 //                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
@@ -151,17 +196,22 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     }}
                 }
             }
+            R.id.ivBack->{
+                findNavController().popBackStack()
+            }
         }
     }
 
-
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+    }
     fun getOtp() {
         otpVm.getOtp(
             requireActivity(),
             OTPRequest(name, phone)
         )
 
-        otpVm.otpLiveData.observe(requireActivity()) {
+        otpVm.otpLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     ///loading
@@ -170,6 +220,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                 is MyResource.isSuccess -> {
                     var data = it.data?.response
+                    ShowError.handleError.message(data.toString())
                     dismissProgress()
                 }
 
@@ -192,6 +243,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 is MyResource.isSuccess -> {
                     it.data?.run {
                         if (isSuccess) {
+                            ShowError.handleError.message(this.response)
                             var bundle = Bundle()
                             bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                             bundle.putString(PrefConstent.FULL_NAME, name)

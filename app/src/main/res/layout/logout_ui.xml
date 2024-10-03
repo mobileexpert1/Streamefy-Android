@@ -61,7 +61,7 @@
                     android:paddingVertical="@dimen/_3sdp"
                     android:text="continue watching"
                     android:textAllCaps="true"
-                    android:textColor="@color/white"
+                    android:textColor="@color/input_field_color_selector"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:background="@drawable/ic_button_selector"

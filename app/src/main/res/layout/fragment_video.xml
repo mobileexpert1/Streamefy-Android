@@ -49,7 +49,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llTools"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_28sdp"
+            android:layout_height="@dimen/_33sdp"
             android:layout_marginHorizontal="@dimen/_20sdp"
             android:background="@drawable/video_bottom_border"
             android:focusable="true"
@@ -57,7 +57,8 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/_15sdp"
-            android:paddingVertical="@dimen/_5sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -201,7 +202,7 @@
             app:layout_constraintEnd_toEndOf="@+id/llTools">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv4K"
+                android:id="@+id/tv480p"
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:focusable="true"
@@ -209,20 +210,8 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
-                android:text="4K"
-                android:textColor="@color/black" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv1440p"
-                style="@style/filson_14_whiteTV"
-                android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_2sdp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:fontFamily="@font/filsonpro_light"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_1sdp"
-                android:text="1440p"
+                android:text="480p"
+                android:background="@color/light_gray"
                 android:textColor="@color/black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -239,7 +228,19 @@
                 android:textColor="@color/black" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv720p"
+                android:id="@+id/tv2080p"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
+                android:text="2080p"
+                android:textColor="@color/black" />
+
+            <androidx.appcompat.widget.AppCompatTextView
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_2sdp"
@@ -250,10 +251,10 @@
                 android:paddingVertical="@dimen/_1sdp"
                 android:background="@color/light_gray"
                 android:text="720p"
+                android:visibility="gone"
                 android:textColor="@color/black" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv480p"
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_2sdp"
@@ -262,11 +263,11 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
+                android:visibility="gone"
                 android:text="480p"
                 android:textColor="@color/black" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tv360p"
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_2sdp"
@@ -275,6 +276,7 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
+                android:visibility="gone"
                 android:text="360p"
                 android:textColor="@color/black" />
         </LinearLayout>

@@ -178,12 +178,14 @@ class PlayerHandler(
     fun setQuality(resolution: String) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
         val dimensions = when (resolution) {
-            "360p" -> Pair(640, 360)// Pair(352, 240)
+           // "360p" -> Pair(640, 360)// Pair(352, 240)
             "480p" -> Pair(854, 480)// Pair(640, 360)
-            "720p" -> Pair(1280, 720)// Pair(842, 480)
-            "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
-            "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
-            "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
+            "1080p" -> Pair(1920, 1080)// Pair(640, 360)
+            "2080p" -> Pair(3840, 2160)// Pair(640, 360)
+           // "720p" -> Pair(1280, 720)// Pair(842, 480)
+          //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
+           // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
+          //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
             else -> return
         }
 

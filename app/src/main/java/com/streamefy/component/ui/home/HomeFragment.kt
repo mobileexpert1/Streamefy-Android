@@ -349,6 +349,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
+                bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
                 findNavController().navigate(R.id.videofragment, bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
@@ -441,7 +442,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun observe() {
-        homeVm.homeLiveData.observe(requireActivity()) {
+        homeVm.homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()
@@ -503,7 +504,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onResume()
 
         binding.apply {
-            tvProjectTitle.text = proTitle.toString() + "1.0"
+            tvProjectTitle.text = proTitle.toString()
             tvProjectDesc.text = proDesc.toString()
             projectlogo.loadUrl(proLogo)
             if (drawerLayout.isVisible) {

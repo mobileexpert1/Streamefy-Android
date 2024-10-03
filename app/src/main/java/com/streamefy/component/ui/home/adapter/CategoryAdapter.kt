@@ -48,7 +48,7 @@ class CategoryAdapter(
             tvTitle.text = data.eventTitle
             Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
             if (data.media != null) {
-                if (data.media?.isNotEmpty()!!) {
+                if (data.media?.isNotEmpty()!! && data.media?.size!!>1) {
                     tvSubtitle.text = data.media!![0].description
                     tvMore.text = data.media?.size.toString() + " more video"
                     // imageView.loadUrl(data.media!![0].thumbnailS3bucketId)

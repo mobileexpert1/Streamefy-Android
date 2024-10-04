@@ -2,6 +2,7 @@ package com.streamefy.component.base
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -22,4 +23,11 @@ abstract class BaseDialog<T : ViewDataBinding>(
     }
 
     protected abstract fun setupViews()
+    override fun setOnDismissListener(listener: DialogInterface.OnDismissListener?) {
+        super.setOnDismissListener(listener)
+        dismiss()
+    }
+    fun clear(){
+        dismiss()
+    }
 }

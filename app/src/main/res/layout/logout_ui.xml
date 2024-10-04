@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
@@ -33,12 +32,12 @@
                 style="@style/filson_regular_21_whiteTV"
                 android:layout_marginStart="@dimen/_7sdp"
                 android:layout_marginTop="@dimen/_7sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:paddingHorizontal="@dimen/_5sdp"
                 android:paddingVertical="@dimen/_2sdp"
                 android:text="Are you sure you want to logout?"
                 android:textColor="@color/black"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ivClose" />
@@ -57,19 +56,36 @@
                     android:id="@+id/tvContinue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_button_selector"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:paddingHorizontal="@dimen/_10sdp"
                     android:paddingVertical="@dimen/_3sdp"
                     android:text="continue watching"
                     android:textAllCaps="true"
                     android:textColor="@color/input_field_color_selector"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:background="@drawable/ic_button_selector"
-                    android:layout_gravity="center"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/etPhoneNumber" />
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/ic_button_selector"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:paddingVertical="@dimen/_3sdp"
+                    android:text="LOGOUT"
+                    android:textAllCaps="true"
+                    android:textColor="@color/input_field_color_selector"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etPhoneNumber" />
 
                 <ImageView
                     android:id="@+id/tvLogout"

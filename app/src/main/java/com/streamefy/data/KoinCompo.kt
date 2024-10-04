@@ -13,8 +13,8 @@ object KoinCompo:KoinComponent {
     val handleError: ErrorHandler by inject()
     val progress: CircularProgressDialog by inject()
 
-    val loginVM: LoginViewmodel by inject()
-    val otpVm: OTPVM by inject()
-    val pinVm: PinVM by inject()
-    val homeVm: HomeVm by inject()
+//    val loginVM: LoginViewmodel by inject()
+    //val otpVm: OTPVM by inject()
+//    val pinVm: PinVM by inject()
+//    val homeVm: HomeVm by inject()
 }

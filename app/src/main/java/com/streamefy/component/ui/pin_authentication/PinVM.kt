@@ -1,6 +1,7 @@
 package com.streamefy.component.ui.pin_authentication
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class PinVM(var repo: ApiService) : ViewModel() {
 
-    var pinData = SingleLiveEvent<MyResource<HomeResponse>>()
+    var _pinData = SingleLiveEvent<MyResource<HomeResponse>>()
+    var pinData :LiveData<MyResource<HomeResponse>> =_pinData
 
     fun setPin(
         context: Context, page: Int,
@@ -27,25 +29,25 @@ class PinVM(var repo: ApiService) : ViewModel() {
     ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
-                pinData.value = MyResource.isLoading()
+                _pinData.value = MyResource.isLoading()
                 try {
                     var response = repo.getUserVideos(page, itemsPerPage, userPin, phoneNumber)
                     if (response.body()?.isSuccess!!) {
-                        pinData.value = MyResource.isSuccess(response.body())
+                        _pinData.value = MyResource.isSuccess(response.body())
                     } else {
                         ShowError.handleError.message(response.body()?.error?.userMessage.toString())
-                        pinData.value =
+                        _pinData.value =
                             MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
                   //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    pinData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+                    _pinData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
-                pinData.value =
+                _pinData.value =
                     MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
 
             }

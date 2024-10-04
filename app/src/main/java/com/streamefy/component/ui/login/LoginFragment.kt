@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.streamefy.MainActivity
@@ -27,37 +28,44 @@ import com.streamefy.utils.nameAndPassword
 import com.streamefy.utils.nameValidation
 import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.showMessage
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
-    var viewmodel = KoinCompo.loginVM
+    //    var viewmodel = KoinCompo.loginVM
+    val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
-        requireActivity().onBackPressedDispatcher.addCallback {
-            MainActivity().exitApp()
+//        requireActivity().onBackPressedDispatcher.addCallback {
+//            MainActivity().exitApp()
+//        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            (requireActivity() as MainActivity).exitApp()
         }
 
 //        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
+
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
             var validate = nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
             if (validate) {
-               // ShowError.handleError.handleError(validate as Int)
-         //   } else {
+                // ShowError.handleError.handleError(validate as Int)
+                //   } else {
                 SharedPref.setString(PrefConstent.TOKEN, "")
-                if(isAdded) {
+                if (isAdded) {
                     viewmodel.login(
                         requireActivity(),
                         LoginRequest("appsdev096@gmail.com", "Appsdev096#")
                     )
                     observe()
-                }else{
+                } else {
                     onAttach(requireActivity())
-                    Log.e("OtpFragment", "Fragment is not added, navigation aborted.")
+                    Log.e("login fragment", "Fragment is not added, navigation aborted.")
                 }
 
 //                var bundle=Bundle()
@@ -69,6 +77,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        binding.apply {
+            etFullname.setText("")
+            etPhoneNumber.setText("")
+        }
+
+    }
 
     fun observe() {
         viewmodel.loginLiveData.observe(viewLifecycleOwner) {
@@ -77,6 +94,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     ///loading
                     progressDialog.show()
                 }
+
                 is MyResource.isSuccess -> {
                     progressDialog.dismiss()
                     var data = it.data?.response
@@ -85,7 +103,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
                         SharedPref.setString(
                             PrefConstent.PHONE_NUMBER,
-                            binding.etPhoneNumber.text.toString())
+                            binding.etPhoneNumber.text.toString()
+                        )
                         SharedPref.setString(
                             PrefConstent.FULL_NAME,
                             binding.etFullname.text.toString()
@@ -97,9 +116,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         PrefConstent.PHONE_NUMBER,
                         binding.etPhoneNumber.text.toString()
                     )
-                    if(isAdded) {
+                    if (isAdded) {
                         findNavController().navigate(R.id.otpFragment, bundle)
-                    }else{
+                    } else {
                         progressDialog.dismiss()
                     }
                 }

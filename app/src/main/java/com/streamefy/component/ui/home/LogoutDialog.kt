@@ -2,6 +2,7 @@ package com.streamefy.component.ui.home
 import com.streamefy.component.base.BaseDialog
 
 import android.content.Context
+import android.content.DialogInterface
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.databinding.ExitDialogBinding
@@ -30,5 +31,10 @@ class LogoutDialog(context: Context,var callBack:()->Unit) :
                 dismiss()
             }
         }
+    }
+
+    override fun setOnDismissListener(listener: DialogInterface.OnDismissListener?) {
+        super.setOnDismissListener(listener)
+        dismiss()
     }
 }

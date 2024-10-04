@@ -26,6 +26,4 @@ var appModule= module {
     viewModel { PinVM(get()) }
     viewModel { HomeVm(get()) }
 
-
-
 }

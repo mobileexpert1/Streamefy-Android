@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streamefy.component.ui.login.model.LoginRequest
@@ -22,27 +23,28 @@ import kotlinx.coroutines.launch
 class LoginViewmodel(var repo: AuthService) : ViewModel() {
 
 
-    var loginLiveData = SingleLiveEvent<MyResource<LoginResponse>>()
+    var _loginLiveData = SingleLiveEvent<MyResource<LoginResponse>>()
+    var loginLiveData : LiveData<MyResource<LoginResponse>> =_loginLiveData
 
     fun login(context: Context, login: LoginRequest) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
-                loginLiveData.value = MyResource.isLoading()
+                _loginLiveData.value = MyResource.isLoading()
                 try {
                     var response = repo.login(login)
                     if (response.body()?.isSuccess!!) {
-                        loginLiveData.value = MyResource.isSuccess(response.body())
+                        _loginLiveData.value = MyResource.isSuccess(response.body())
                     } else {
                         context.showMessage(response.body()?.error?.userMessage.toString())
                     }
                 } catch (e: Exception) {
                     logeMe(e.toString())
                    // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+                    _loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
-                loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
+                _loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
             }
         }
     }

@@ -15,7 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.data.KoinCompo.pinVm
+import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentPinAuthenticationBinding
@@ -24,6 +24,7 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.hideKey
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>() {
@@ -31,6 +32,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     var phone = ""
     var otp = ""
 
+    private val viewModel: PinVM by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,7 +56,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                }
 //            }
             ivBack.setOnClickListener {
-                findNavController().popBackStack()
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.splashScreen, true)
+                    .build()
+                findNavController().navigate(R.id.loginFragment, null, navOptions)
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
@@ -91,7 +96,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
 //                    findNavController().navigate(R.id.homefragment)
 
-                        pinVm.setPin(requireActivity(), 1, 1, otp, phone)
+                        viewModel.setPin(requireActivity(), 1, 1, otp, phone)
                         observe()
                     }
                 }
@@ -153,14 +158,17 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        findNavController().popBackStack()
+                        val navOptions = androidx.navigation.NavOptions.Builder()
+                            .setPopUpTo(R.id.splashScreen, true)
+                            .build()
+                            findNavController().navigate(R.id.loginFragment, null, navOptions)
                     }
                 })
         }
     }
 
     private fun observe() {
-        pinVm.pinData.observe(viewLifecycleOwner) {
+        viewModel.pinData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()

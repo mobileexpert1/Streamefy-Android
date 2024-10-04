@@ -24,8 +24,8 @@ import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.VerificationRequest
+import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.data.KoinCompo
-import com.streamefy.data.KoinCompo.otpVm
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentLoginBinding
@@ -39,12 +39,15 @@ import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.setupNextFocusOnDigit
 import com.streamefy.utils.showKeyboard
 import com.streamefy.utils.showMessage
-
+import org.koin.androidx.viewmodel.ext.android.viewModel
 class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var completeOtp = "000000"
     override fun bindView(): Int = R.layout.fragment_otp
     var phone: String = "6280830819"
     var name: String = "appdev096"
+
+    private val viewModel: OTPVM by viewModel()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
@@ -59,7 +62,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     }
 
     private fun observeData() {
-        otpVm.otpLiveData.observe(requireActivity()) {
+        viewModel.otpLiveData.observe(requireActivity()) {
             when (it) {
                 is MyResource.isLoading -> {}
                 is MyResource.isSuccess -> {}
@@ -148,7 +151,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        findNavController().popBackStack()
+                        findNavController().navigateUp()
                     }
                 })
         }
@@ -177,12 +180,14 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                     } else {
                         if (isAdded) {
-                            otpVm.otpVerification(
-                                requireActivity(),
+                            viewModel.otpVerification(
+                                requireContext(),
                                 VerificationRequest(phone, this)
                             )
                             verificationObserv()
                         }else{
+                            Log.e("otpfragment", "Fragment is not added, navigation aborted.")
+
                             onAttach(requireActivity())
                         }
 
@@ -206,12 +211,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         super.onAttach(context)
     }
     fun getOtp() {
-        otpVm.getOtp(
+        viewModel.getOtp(
             requireActivity(),
             OTPRequest(name, phone)
         )
 
-        otpVm.otpLiveData.observe(viewLifecycleOwner) {
+        viewModel.otpLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     ///loading
@@ -233,7 +238,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     }
 
     fun verificationObserv() {
-        otpVm.vericationData.observe(requireActivity()) {
+        viewModel.vericationData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     ///loading
@@ -261,10 +266,20 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                 is MyResource.isError -> {
                     dismissProgress()
-                    requireActivity().showMessage(it.error)
+                   // requireActivity().showMessage(it.error)
                 }
 
             }
+        }
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        binding.apply {
+           otpView.setText("")
         }
 
     }

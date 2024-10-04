@@ -1,6 +1,7 @@
 package com.streamefy.component.ui.home.viewmodel
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streamefy.component.ui.home.model.HomeResponse
@@ -17,7 +18,8 @@ import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
 
 class HomeVm(var repo: ApiService) : ViewModel() {
-    var homeLiveData = SingleLiveEvent<MyResource<HomeResponse>>()
+    var _homeLiveData = SingleLiveEvent<MyResource<HomeResponse>>()
+    var homeLiveData:LiveData<MyResource<HomeResponse>> =_homeLiveData
 
 
     fun getUserVideos(
@@ -28,25 +30,25 @@ class HomeVm(var repo: ApiService) : ViewModel() {
     ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
-                homeLiveData.value = MyResource.isLoading()
+                _homeLiveData.value = MyResource.isLoading()
                 try {
                     var response = repo.getUserVideos(page,itemsPerPage,userPin,phoneNumber)
                     if (response.body()?.isSuccess!!) {
-                        homeLiveData.value = MyResource.isSuccess(response.body())
+                        _homeLiveData.value = MyResource.isSuccess(response.body())
                     } else {
                        // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
                         context.showMessage(response.body()?.error?.userMessage.toString())
-                        homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                        _homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
                    // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+                    _homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
-                homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
+                _homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
 
             }
         }

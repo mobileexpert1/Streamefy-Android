@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-<item android:drawable="@drawable/ic_exit_close"/>
-    <item>
-        <shape android:shape="oval">
-            <stroke android:width="@dimen/_1sdp"
-                android:color="@color/black"/>
-        </shape>
-    </item>
+    <item android:drawable="@drawable/bg_round_gradient_purple_orange"/>
+    <item android:top="@dimen/_1sdp" android:bottom="@dimen/_1sdp"
+        android:left="@dimen/_1sdp" android:right="@dimen/_1sdp"
+        android:drawable="@drawable/ic_exit_close"/>
 </layer-list>

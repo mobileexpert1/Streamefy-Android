@@ -48,7 +48,7 @@ class CategoryAdapter(
             tvTitle.text = data.eventTitle
             Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
             if (data.media != null) {
-                if (data.media?.isNotEmpty()!! && data.media?.size!!>1) {
+                if (data.media?.isNotEmpty()!! && data.media?.size!! > 1) {
                     tvSubtitle.text = data.media!![0].description
                     tvMore.text = data.media?.size.toString() + " more video"
                     // imageView.loadUrl(data.media!![0].thumbnailS3bucketId)
@@ -74,28 +74,33 @@ class CategoryAdapter(
 
                 if (hasFocus) {
                     itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
-                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gray))
+                    clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
                     itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
-                    clEvent.setBackgroundColor(ContextCompat.getColor(context, com.otpview.R.color.transparent))
+                    clEvent.setBackgroundColor(
+                        ContextCompat.getColor(
+                            context,
+                            com.otpview.R.color.transparent
+                        )
+                    )
                 }
 
             }
 
             clEvent.setOnClickListener {
-                callBack.invoke(position,StreamEnum.SINGLE)
+                callBack.invoke(position, StreamEnum.SINGLE)
             }
 
             tvMore.setOnClickListener {
-                callBack.invoke(position,StreamEnum.MORE)
+                callBack.invoke(position, StreamEnum.MORE)
             }
 
             tvMore.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
-                   // itemView.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
+                    // itemView.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
                     tvMore.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
                 } else {
-                  //  itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                    //  itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
                     tvMore.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
                 }
             }
@@ -103,6 +108,7 @@ class CategoryAdapter(
         }
 
     }
+
     class CategoriView(itemView: View) : ViewHolder(itemView) {
         val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tvTitle)
         val tvSubtitle: AppCompatTextView = itemView.findViewById(R.id.tvSubtitle)
@@ -119,7 +125,7 @@ class CategoryAdapter(
     }
 
     fun update(newlist: ArrayList<EventsItem>) {
-       // eventList.clear()
+        // eventList.clear()
         eventList.addAll(newlist)
         notifyDataSetChanged()
     }

@@ -13,6 +13,10 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.databinding.ExitDialogBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ExitDialog(context: Context) :
     BaseDialog<ExitDialogBinding>(context, R.layout.exit_dialog, R.style.TransparentDialogTheme) {
@@ -20,7 +24,11 @@ class ExitDialog(context: Context) :
     override fun setupViews() {
         binding.apply {
             tvExit.setOnClickListener {
-                MainActivity().exitApp()
+                dismiss()
+                CoroutineScope(Dispatchers.Main).launch {
+                    delay(300)
+                    MainActivity().exitApp()
+                }
             }
             ivClose.setOnClickListener { dismiss() }
             tvContinue.setOnClickListener {

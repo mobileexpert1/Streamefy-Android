@@ -31,4 +31,12 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         progressDialog.dismiss()
     }
     abstract fun bindView(): Int
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        //unregister listener here
+//        onBackPressedCallback.isEnabled = false
+//        onBackPressedCallback.remove()
+    }
+
 }

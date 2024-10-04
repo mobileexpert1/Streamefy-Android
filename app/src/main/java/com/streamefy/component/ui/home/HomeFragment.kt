@@ -23,21 +23,23 @@ import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.CreatorsAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
 import com.streamefy.component.ui.home.background.BackgroundAdpater
-import com.streamefy.component.ui.home.background.SliderAdapter
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.component.ui.home.model.crewMembers
-import com.streamefy.data.KoinCompo.homeVm
+import com.streamefy.component.ui.home.viewmodel.HomeVm
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.visible
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
+    private val viewModel: HomeVm by viewModel()
 
     //    val images = listOf(
 //        R.drawable.home_theme,
@@ -198,38 +200,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    rvBackgVideo.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-
-        rvBackgVideo.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-
-//                    if (rvBackgVideo.targetPosition == 0) {
-//                        ivLogout.requestFocus()
-//                    } else {
-                   // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
-                    rvBackgVideo.requestFocus()
-                    //  }
-//                    customIndicator.updateIndicator(rvBackgVideo.targetPosition)
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    // if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size) {
-                    //rvBackgVideo.scrollMe(rvBackgVideo.targetPosition)
-                    rvBackgVideo.requestFocus()
-//                    } else {
-//
-//                    }
-                    // customIndicator.updateIndicator(rvBackgVideo.targetPosition)
+//                    rvBackgVideo.requestFocus()
+                    rvCategory.requestFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                    rvCategory.requestFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
@@ -240,25 +216,85 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
 
-        rvBackgVideo.setOnFocusChangeListener { v, hasFocus ->
-            Log.e("cnsknc", "skcsk $hasFocus")
+        rvCategory.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+//                    rvBackgVideo.requestFocus()
+                    ivLogout.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        rvCategory.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                customIndicator.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.light_gray
-                    )
-                )
-            } else {
-                customIndicator.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.black
-                    )
-                )
+                rvCategory.apply {
+                    post {
+                        getChildAt(eventFocusPos)?.requestFocus()
+                    }
+                }
             }
 
         }
+
+//        rvBackgVideo.remoteKey {
+//            when (it) {
+//                StreamEnum.UP_DPAD_KEY -> {
+//
+////                    if (rvBackgVideo.targetPosition == 0) {
+////                        ivLogout.requestFocus()
+////                    } else {
+//                   // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
+//                    rvBackgVideo.requestFocus()
+//                    //  }
+////                    customIndicator.updateIndicator(rvBackgVideo.targetPosition)
+//                }
+//
+//                StreamEnum.DOWN_DPAD_KEY -> {
+//                    // if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size) {
+//                    //rvBackgVideo.scrollMe(rvBackgVideo.targetPosition)
+//                    rvBackgVideo.requestFocus()
+////                    } else {
+////
+////                    }
+//                    // customIndicator.updateIndicator(rvBackgVideo.targetPosition)
+//                }
+//
+//                StreamEnum.LEFT_DPAD_KEY -> {
+//                    ivLogout.requestFocus()
+//                }
+//
+//                StreamEnum.RIGHT_DPAD_KEY -> {
+//                    rvCategory.requestFocus()
+//                }
+//
+//                else -> {}
+//            }
+//        }
+
+//        rvBackgVideo.setOnFocusChangeListener { v, hasFocus ->
+//            Log.e("cnsknc", "skcsk $hasFocus")
+//            if (hasFocus) {
+//                customIndicator.setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.light_gray
+//                    )
+//                )
+//            } else {
+//                customIndicator.setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.black
+//                    )
+//                )
+//            }
+//
+//        }
 
 
     }
@@ -299,7 +335,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         customIndicator.setIndicatorCount(images.size, 0)
 
-
+        //  binding.ivLogout.visible()
 //        val adapter = SliderAdapter(requireActivity(), images) {
 //            Log.e("amcdanc", "sknmcjiadnc  $it")
 //        }
@@ -315,7 +351,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun getUserData() {
-        homeVm.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
         observe()
     }
 
@@ -442,7 +478,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun observe() {
-        homeVm.homeLiveData.observe(viewLifecycleOwner) {
+        viewModel.homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()
@@ -454,6 +490,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     it.data?.data?.run {
 
                         eventList.clear()
+
+                        binding.ivLogout.visible()
                         eventAdapter.update(events as ArrayList<EventsItem>)
                         binding.let {
                             this.project?.get(0)?.run {
@@ -466,6 +504,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                            it. rvBackgVideo.requestFocus()
                             it.projectlogo.loadUrl(this.logo)
                             proLogo = this.logo
+
+
                         }
 
                         /// background
@@ -473,6 +513,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             if (this.isNotEmpty()) {
                                 images.addAll(this as ArrayList<BackgroundMediaItem>)
                                 sliderInit()
+                                if (this.size > 1) {
+                                    binding.customIndicator.visible()
+                                }
                             }
                         }
 
@@ -507,9 +550,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             tvProjectTitle.text = proTitle.toString()
             tvProjectDesc.text = proDesc.toString()
             projectlogo.loadUrl(proLogo)
+            if (tvProjectTitle.text.toString().isNotEmpty()) {
+                ivLogout.visible()
+            }
             if (drawerLayout.isVisible) {
                 drawerView()
             }
+//            rvCategory.requestFocus()
             rvCategory.apply {
                 post {
                     getChildAt(eventFocusPos)?.requestFocus()

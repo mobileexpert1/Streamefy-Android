@@ -36,7 +36,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var visibilityCount = 0
     var volumeCount = 20
     var isOpenSettingFirst=false
-    var videoQualityIndex=2
+    var videoQualityIndex=0
 
     private lateinit var volumeManager: VolumeManager
 
@@ -171,6 +171,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             Log.e("djhfjd", "shcudh $event")
+            toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -198,6 +199,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         })
         sbVolumeSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             Log.e("djhfjd", "shcudh $event $volumeCount")
+            toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
@@ -546,9 +548,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             textView.setOnKeyListener { v, keyCode, event ->
                 Log.e("hdhhdhdhd", "ddmv ${event}")
+                visibilityCount = 0
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
-                        KeyEvent.KEYCODE_DPAD_UP -> {
+                        KeyEvent.KEYCODE_DPAD_DOWN  -> {
                             if (index+1<qualityButtons.size) {
                                 qualityButtons[index + 1].requestFocus()
                             }else{
@@ -557,7 +560,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             return@setOnKeyListener true
                         }
 
-                        KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        KeyEvent.KEYCODE_DPAD_UP -> {
                             if (index-1>=0) {
                                 qualityButtons[index - 1].requestFocus()
                             }else{
@@ -580,6 +583,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
             Log.e("scbshbc", "scbabc $volumePercentage")
+            toShowBackButton()
             lifecycleScope.launch(Dispatchers.Main) { sbVolumeSeek.setProgress(volumePercentage) }
             if (ivVolume.requestFocus()) {
                 if (volumePercentage <= 0) {

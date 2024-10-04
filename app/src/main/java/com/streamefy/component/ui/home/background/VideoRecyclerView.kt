@@ -302,6 +302,7 @@ class VideoRecyclerView : RecyclerView {
             pauseVideo()
         }
         playerHandler.mute()
+//        homeFragment.binding.rvCategory.requestFocus()
     }
     fun scrollPlay(callBack: (String) -> Unit) {
         pauseVideo()
@@ -335,6 +336,7 @@ class VideoRecyclerView : RecyclerView {
         }
         playerHandler.mute()
        // homeFragment.binding.rvBackgVideo.requestFocus()
+
     }
 
     fun pauseVideo() {

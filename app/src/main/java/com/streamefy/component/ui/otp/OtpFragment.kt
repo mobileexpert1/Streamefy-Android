@@ -2,43 +2,27 @@ package com.streamefy.component.ui.otp
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
-import android.view.KeyEvent
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
-import com.otpview.OTPChildEditText
-import com.otpview.OTPListener
+
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.VerificationRequest
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
-import com.streamefy.data.KoinCompo
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
-import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.databinding.FragmentOtpBinding
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.hideKey
-import com.streamefy.utils.hideSoftKeyboard
-import com.streamefy.utils.previousFocusOnDigit
-import com.streamefy.utils.setupNextFocusOnDigit
-import com.streamefy.utils.showKeyboard
-import com.streamefy.utils.showMessage
 import org.koin.androidx.viewmodel.ext.android.viewModel
 class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var completeOtp = "000000"
@@ -99,6 +83,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //                    }
 //                }
 //                false})
+            otpView.requestFocus()
+
             otpView.setOtpCompletionListener {
                 requireActivity().hideKey()
             }
@@ -187,7 +173,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             verificationObserv()
                         }else{
                             Log.e("otpfragment", "Fragment is not added, navigation aborted.")
-
                             onAttach(requireActivity())
                         }
 
@@ -196,8 +181,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //                            bundle.putString(PrefConstent.FULL_NAME,name)
 //                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
 //                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
-
-
                     }}
                 }
             }

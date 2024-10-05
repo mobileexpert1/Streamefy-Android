@@ -2,6 +2,7 @@ import android.content.Context
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 
 class VolumeManager(private val context: Context) {
 
@@ -39,6 +40,8 @@ class VolumeManager(private val context: Context) {
             onVolumeChanged(volumePercentage)
             currentVolume = newVolume
         }
+
+     //   Log.e("hdhhdhds", "newVolume $newVolume gdgrgr $currentVolume   volumePercentage" )
     }
 
     private fun onVolumeChanged(volumePercentage: Int) {
@@ -48,6 +51,9 @@ class VolumeManager(private val context: Context) {
 
     fun setVolumePercentage(percentage: Int) {
         val volume = (percentage / 100f * maxVolume).toInt()
+
+        Log.e("hdhhdhds", "percentage $percentage gdgrgr $volume" )
+
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
     }
 }

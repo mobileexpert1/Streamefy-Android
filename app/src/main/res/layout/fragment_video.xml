@@ -113,7 +113,7 @@
                     android:layout_width="@dimen/_180sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:progress="90"
+                    android:progress="0"
                     android:background="@drawable/ic_seekbar_background_selector"
                     android:progressTint="@color/red"
                     android:focusable="true"

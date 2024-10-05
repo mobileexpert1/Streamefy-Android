@@ -21,12 +21,14 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
+import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.data.SharedPref
 import com.streamefy.utils.gone
 import com.streamefy.utils.goneAnimate
+import com.streamefy.utils.remoteKey
 import com.streamefy.utils.viewAnimate
 import java.util.Objects
 
@@ -225,7 +227,8 @@ class VideoRecyclerView : RecyclerView {
             homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         }
 
-        playerHandler.seekWithInitialise(homeFragment.mediaUrl, homeFragment.currentVideoDuration)
+//        playerHandler.seekWithInitialise(homeFragment.mediaUrl, homeFragment.currentVideoDuration)
+        resumeVideo(homeFragment.currentVideoDuration)
         //  playerHandler = holder.playerHandler
     }
 
@@ -356,9 +359,9 @@ class VideoRecyclerView : RecyclerView {
     }
 
     fun resumeVideo(pos: Long) {
-        Log.e("skncksnc", "$pos scmlcm ${homeFragment.mediaUrl}")
-      //  playerHandler.seekWithInitialise(homeFragment.mediaUrl, pos)
-        // playerHandler.seekTo(pos)
+        Log.e("bxbxb", "$pos scmlcm ${homeFragment.mediaUrl}")
+//        playerHandler.seekWithInitialise(homeFragment.mediaUrl, pos)
+         playerHandler.seekTo(pos)
     }
 
     // Remove the old player
@@ -374,7 +377,7 @@ class VideoRecyclerView : RecyclerView {
             viewHolderParent!!.setOnClickListener(null)
         }
     }
-
+//
     private fun addVideoView() {
         if (videoSurfaceView != null) {
             frameLayout!!.addView(videoSurfaceView)
@@ -383,6 +386,10 @@ class VideoRecyclerView : RecyclerView {
             frameLayout!!.viewAnimate()
             videoSurfaceView!!.viewAnimate()
             thumbnail?.goneAnimate()
+
+//            videoSurfaceView?.isFocusable = false
+//            videoSurfaceView?.isFocusableInTouchMode = false
+            homeFragment.eventFocus()
         }
     }
 

@@ -26,6 +26,7 @@ import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
+import com.streamefy.utils.remoteKey
 import com.streamefy.utils.visible
 
 
@@ -86,6 +87,20 @@ class CategoryAdapter(
                 }
 
             }
+
+//            clEvent.remoteKey {
+//                when(it){
+//                    StreamEnum.UP_DPAD_KEY->{
+//                        callBack.invoke(position,StreamEnum.UP_DPAD_KEY)
+//                    }
+//                    StreamEnum.DOWN_DPAD_KEY->{
+//                        tvMore.requestFocus()
+//                    }
+//
+//                    else->{
+//                    }
+//                }
+//            }
 
             clEvent.setOnClickListener {
                 callBack.invoke(position, StreamEnum.SINGLE)

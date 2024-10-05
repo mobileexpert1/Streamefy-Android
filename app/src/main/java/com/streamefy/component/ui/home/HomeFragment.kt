@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +36,8 @@ import com.streamefy.network.MyResource
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.visible
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -56,6 +59,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var phone = ""
     var page = 1
     var eventFocusPos = 0
+    var drawerItemFocus = 0
     var proTitle = ""
     var proDesc = ""
     var proLogo = ""
@@ -68,7 +72,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var currentVideoDuration: Long = 0
     var isFirst = true
     var mediaUrl = ""
-
+    var isDrawerOpen=false
+    var isFirstVideo=false
     companion object {
         lateinit var homeFragment: HomeFragment
 
@@ -160,17 +165,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 override fun onDrawerOpened(drawerView: View) {
                     // Set focus to the first item if needed
-                    drawerView.requestFocus()
+                    Log.e("dndjvn","drawer open")
+//                    drawerView.requestFocus()
+                    isDrawerOpen=true
+                    rvCategory.apply {
+                        post {
+                            getChildAt(eventFocusPos)?.clearFocus()
+                        }
+                    }
                     rvDrawer.post {
                         rvDrawer.getChildAt(0)?.requestFocus()
                     }
+
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
-                    binding.rvCategory.apply {
+                    Log.e("dndjvn","drawer close")
+                    isDrawerOpen=false
+                     rvCategory.apply {
                         post {
                             getChildAt(eventFocusPos)?.requestFocus()
                         }
+                    }
+                    rvDrawer.post {
+                        rvDrawer.getChildAt(0)?.clearFocus()
                     }
                 }
 
@@ -200,6 +218,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
+
+//                    rvBackgVideo.isFocusableInTouchMode = false
+//                    rvBackgVideo.isFocusable = false
 //                    rvBackgVideo.requestFocus()
                     rvCategory.requestFocus()
                 }
@@ -209,7 +230,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+//                    rvBackgVideo.requestFocus()
                 }
 
                 else -> {}
@@ -276,25 +297,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //            }
 //        }
 
-//        rvBackgVideo.setOnFocusChangeListener { v, hasFocus ->
-//            Log.e("cnsknc", "skcsk $hasFocus")
-//            if (hasFocus) {
-//                customIndicator.setBackgroundColor(
-//                    ContextCompat.getColor(
-//                        requireContext(),
-//                        R.color.light_gray
-//                    )
-//                )
-//            } else {
-//                customIndicator.setBackgroundColor(
-//                    ContextCompat.getColor(
-//                        requireContext(),
-//                        R.color.black
-//                    )
-//                )
-//            }
-//
-//        }
+        rvBackgVideo.setOnFocusChangeListener { v, hasFocus ->
+            Log.e("backgvideo", "skcsk $hasFocus")
+            if (hasFocus) {
+                customIndicator.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.light_gray
+                    )
+                )
+            } else {
+                customIndicator.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.black
+                    )
+                )
+            }
+
+        }
 
 
     }
@@ -335,6 +356,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         customIndicator.setIndicatorCount(images.size, 0)
 
+        if (images.size > 1) {
+            binding.customIndicator.visible()
+        }
         //  binding.ivLogout.visible()
 //        val adapter = SliderAdapter(requireActivity(), images) {
 //            Log.e("amcdanc", "sknmcjiadnc  $it")
@@ -383,6 +407,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
+                drawerItemFocus=it
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
@@ -464,7 +489,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             }
                         }
                     }
-
+                    StreamEnum.UP_DPAD_KEY->{
+                        ivLogout.requestFocus()
+                    }
                     else -> {}
                 }
 
@@ -492,6 +519,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         eventList.clear()
 
                         binding.ivLogout.visible()
+                        /// background
+                        this.backgroundMedia?.run {
+                            if (this.isNotEmpty()) {
+                                images.addAll(this as ArrayList<BackgroundMediaItem>)
+                                sliderInit()
+
+                            }
+                        }
+
+                        // event video
                         eventAdapter.update(events as ArrayList<EventsItem>)
                         binding.let {
                             this.project?.get(0)?.run {
@@ -508,16 +545,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                         }
 
-                        /// background
-                        this.backgroundMedia?.run {
-                            if (this.isNotEmpty()) {
-                                images.addAll(this as ArrayList<BackgroundMediaItem>)
-                                sliderInit()
-                                if (this.size > 1) {
-                                    binding.customIndicator.visible()
-                                }
-                            }
-                        }
 
                         crewList.clear()
                         //  this.crewMembers?.let { it1 -> crewList.addAll(it1) }
@@ -553,23 +580,58 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 ivLogout.visible()
             }
-            if (drawerLayout.isVisible) {
+            Log.e("dndjvn","$isFirstVideo ncdjknv ${isDrawerOpen}")
+            if (isDrawerOpen) {
                 drawerView()
-            }
-//            rvCategory.requestFocus()
-            rvCategory.apply {
-                post {
-                    getChildAt(eventFocusPos)?.requestFocus()
+                rvCategory.apply {
+                    post {
+                        getChildAt(eventFocusPos)?.clearFocus()
+                    }
+                }
+                rvDrawer.post {
+                    rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
             }
-            //  rvBackgVideo.initializer()
-            rvBackgVideo.resumeVideo(currentVideoDuration)
+//            else{
+////                rvCategory.apply {
+////                    post {
+////                        getChildAt(eventFocusPos)?.requestFocus()
+////                    }
+////                }
+//            }
+
+//            lifecycleScope.launch {
+//                delay(5000)
+//                rvCategory.apply {
+//                    post {
+//                        getChildAt(eventFocusPos)?.requestFocus()
+//                    }
+//                }
+//            }
+
+//              rvBackgVideo.initializer()
+            if (isFirstVideo) {
+                sliderInit()
+//                rvBackgVideo.initializer()
+//                rvBackgVideo.resumeVideo(currentVideoDuration)
+
+            }
+            isFirstVideo=true
         }
         // background
-        sliderInit()
+       //
 
     }
 
+    fun eventFocus()= with(binding){
+        lifecycleScope.launch {
+                rvCategory.apply {
+                    post {
+                        getChildAt(eventFocusPos)?.requestFocus()
+                    }
+                }
+            }
+    }
 
     override fun onPause() {
         binding.rvBackgVideo.pauseVideo()

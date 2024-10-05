@@ -242,7 +242,8 @@ class PlayerHandler(
     }
 
     fun unmute() {
-        setVolume(1.0f)
+        setVolume(0.05f)
+        //player?.volume = volume
         isMuted = false
     }
 

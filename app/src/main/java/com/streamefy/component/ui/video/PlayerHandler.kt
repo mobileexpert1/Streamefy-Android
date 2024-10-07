@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import java.util.HashMap
 
 class PlayerHandler(
@@ -101,6 +102,7 @@ class PlayerHandler(
         // Prepare player with media source
         player!!.setMediaSource(mediaSource)
         player!!.prepare()
+        player!!.seekTo(homeFragment.currentVideoDuration)
         player!!.play()
 
         Log.e("sjkcnsakjbc", "akjcnkja play")

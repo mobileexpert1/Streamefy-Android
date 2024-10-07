@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class HomeVm(var repo: ApiService) : ViewModel() {
     var _homeLiveData = SingleLiveEvent<MyResource<HomeResponse>>()
-    var homeLiveData:LiveData<MyResource<HomeResponse>> =_homeLiveData
+   // var homeLiveData:LiveData<MyResource<HomeResponse>> =_homeLiveData
 
 
     fun getUserVideos(

@@ -1,5 +1,6 @@
 package com.streamefy.component.ui.home
 
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -72,8 +73,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var currentVideoDuration: Long = 0
     var isFirst = true
     var mediaUrl = ""
-    var isDrawerOpen=false
-    var isFirstVideo=false
+    var isDrawerOpen = false
+    var isFirstVideo = false
+    var currentWidth = 0
+    var currentHeight = 0
+    var firstIndecator = true
+    var isEventPagination = false
+
+    var focusView = StreamEnum.BOTTOM_EVENT_VIEW
+
     companion object {
         lateinit var homeFragment: HomeFragment
 
@@ -91,7 +99,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         homeFragment = this
-
+        isEventPagination = false
         if (isFirst) {
             getUserData()
         }
@@ -112,50 +120,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }.show()
 
             }
-            ivLogout.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    // Change size when focused
-                    val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
-                    params.width =
-                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
-                    ivLogout.layoutParams = params
-                    ivLogout.background =
-                        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
-                } else {
-                    // Revert size when not focused
-                    val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                    ivLogout.layoutParams = params
-                    ivLogout.background =
-                        ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
-                }
-            }
+
 
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
                 isMenuOpened = false
             }
-            ivClose.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    // Change size when focused
-                    val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
-                    params.width =
-                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
-                    ivClose.layoutParams = params
-                    // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
-                } else {
-                    // Revert size when not focused
-                    val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                    ivClose.layoutParams = params
-                    //ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
-                }
-            }
-
 
 
             drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
@@ -165,9 +135,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 override fun onDrawerOpened(drawerView: View) {
                     // Set focus to the first item if needed
-                    Log.e("dndjvn","drawer open")
+                    Log.e("dndjvn", "drawer open")
 //                    drawerView.requestFocus()
-                    isDrawerOpen=true
+                    isDrawerOpen = true
                     rvCategory.apply {
                         post {
                             getChildAt(eventFocusPos)?.clearFocus()
@@ -180,9 +150,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
-                    Log.e("dndjvn","drawer close")
-                    isDrawerOpen=false
-                     rvCategory.apply {
+                    Log.e("dndjvn", "drawer close")
+                    isDrawerOpen = false
+                    rvCategory.apply {
                         post {
                             getChildAt(eventFocusPos)?.requestFocus()
                         }
@@ -199,8 +169,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     // Show the custom dialog when back is pressed
@@ -222,7 +191,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                    rvBackgVideo.isFocusableInTouchMode = false
 //                    rvBackgVideo.isFocusable = false
 //                    rvBackgVideo.requestFocus()
-                    rvCategory.requestFocus()
+                    customIndicator.requestFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -230,17 +199,37 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-//                    rvBackgVideo.requestFocus()
+                    customIndicator.requestFocus()
                 }
 
                 else -> {}
             }
         }
-
+        ivLogout.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                focusView = StreamEnum.LOGOUT_VIEW
+                // Change size when focused
+                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                ivLogout.layoutParams = params
+                ivLogout.background =
+                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+            } else {
+                // Revert size when not focused
+                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivLogout.layoutParams = params
+                ivLogout.background =
+                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+            }
+        }
         rvCategory.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                    customIndicator.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -253,6 +242,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         rvCategory.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
+                focusView = StreamEnum.BOTTOM_EVENT_VIEW
                 rvCategory.apply {
                     post {
                         getChildAt(eventFocusPos)?.requestFocus()
@@ -261,62 +251,94 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
 
         }
+        customIndicator.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
 
-//        rvBackgVideo.remoteKey {
-//            when (it) {
-//                StreamEnum.UP_DPAD_KEY -> {
-//
-////                    if (rvBackgVideo.targetPosition == 0) {
-////                        ivLogout.requestFocus()
-////                    } else {
-//                   // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
-//                    rvBackgVideo.requestFocus()
-//                    //  }
-////                    customIndicator.updateIndicator(rvBackgVideo.targetPosition)
-//                }
-//
-//                StreamEnum.DOWN_DPAD_KEY -> {
-//                    // if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size) {
-//                    //rvBackgVideo.scrollMe(rvBackgVideo.targetPosition)
-//                    rvBackgVideo.requestFocus()
-////                    } else {
-////
-////                    }
-//                    // customIndicator.updateIndicator(rvBackgVideo.targetPosition)
-//                }
-//
-//                StreamEnum.LEFT_DPAD_KEY -> {
-//                    ivLogout.requestFocus()
-//                }
-//
-//                StreamEnum.RIGHT_DPAD_KEY -> {
-//                    rvCategory.requestFocus()
-//                }
-//
-//                else -> {}
-//            }
-//        }
+                    if (rvBackgVideo.targetPosition == 0) {
+                        ivLogout.requestFocus()
+                    } else {
+                        // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
+                        val currenPos = rvBackgVideo.targetPosition - 1
+                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
 
-        rvBackgVideo.setOnFocusChangeListener { v, hasFocus ->
+                    }
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
+                        rvCategory.requestFocus()
+                    } else {
+                        val currenPos = rvBackgVideo.targetPosition + 1
+                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
+                    }
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    rvCategory.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        customIndicator.setOnFocusChangeListener { v, hasFocus ->
             Log.e("backgvideo", "skcsk $hasFocus")
             if (hasFocus) {
-                customIndicator.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.light_gray
-                    )
-                )
+                focusView = StreamEnum.INDECATOR_VIEW
+                customIndicator.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.gray))
+//                val params = customIndicator.layoutParams as ConstraintLayout.LayoutParams
+//
+//                if (firstIndecator) {
+//                    currentWidth = params.width
+//                    currentHeight = params.height
+//                    firstIndecator=false
+//                }
+//                val additionalSize = resources.getDimensionPixelSize(R.dimen._17sdp)
+//                params.height = currentHeight + additionalSize
+//                customIndicator.layoutParams = params
+
             } else {
-                customIndicator.setBackgroundColor(
+//                val params = customIndicator.layoutParams as ConstraintLayout.LayoutParams
+//                val decreaseSize = resources.getDimensionPixelSize(R.dimen._5sdp)
+//
+////                currentWidth = params.width
+////                currentHeight = params.height
+//                params.width = maxOf(0, currentWidth - decreaseSize)
+//                params.height = maxOf(0, currentHeight - decreaseSize)
+//                customIndicator.layoutParams = params
+
+                customIndicator.backgroundTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(
-                        requireContext(),
-                        R.color.black
+                        requireActivity(), R.color._8b000000
                     )
                 )
             }
-
         }
 
+        ivClose.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                focusView = StreamEnum.DRAWER_VIEW
+                // Change size when focused
+                val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                ivClose.layoutParams = params
+                // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+            } else {
+                // Revert size when not focused
+                val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivClose.layoutParams = params
+                //ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+            }
+        }
 
     }
 
@@ -324,9 +346,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         rvCreators.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
-            creatorsAdapter = CreatorsAdapter(requireActivity(), crewList) {
-
-            }
+            creatorsAdapter = CreatorsAdapter(requireActivity(), crewList) {}
             adapter = creatorsAdapter
         }
     }
@@ -337,8 +357,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             setList(images)
-            var backgadapter = BackgroundAdpater(requireActivity(), images)
-            { index -> }
+            var backgadapter = BackgroundAdpater(requireActivity(), images) { index -> }
             adapter = backgadapter
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -351,7 +370,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
                 }
             })
-
         }
 
         customIndicator.setIndicatorCount(images.size, 0)
@@ -407,7 +425,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
-                drawerItemFocus=it
+                drawerItemFocus = it
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
@@ -466,13 +484,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
 //                )
 //                findNavController().navigate(R.id.videofragment,bundle)
+
+                Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
                 when (type) {
                     StreamEnum.SINGLE -> {
                         var bundle = Bundle()
                         bundle.putString(
-                            PrefConstent.VIDEO_URL,
-                            eventList[pos].media?.get(0)?.hlsPlaylistUrl
+                            PrefConstent.VIDEO_URL, eventList[pos].media?.get(0)?.hlsPlaylistUrl
                         )
                         findNavController().navigate(R.id.videofragment, bundle)
                     }
@@ -489,9 +508,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             }
                         }
                     }
-                    StreamEnum.UP_DPAD_KEY->{
-                        ivLogout.requestFocus()
+
+                    StreamEnum.UP_DPAD_KEY -> {
+
+                        customIndicator.requestFocus()
                     }
+
+                    StreamEnum.PAGINATION -> {
+
+                        eventVideosMore()
+                    }
+
                     else -> {}
                 }
 
@@ -503,9 +530,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
+    fun eventVideosMore() {
+       // viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        Log.e("kfmvkfmvi", "last index ")
+    }
 
     private fun observe() {
-        viewModel.homeLiveData.observe(viewLifecycleOwner) {
+        viewModel._homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()
@@ -513,47 +544,61 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isSuccess -> {
 
-                    Log.e("feffefef", it.data?.data.toString())
+                    Log.e(
+                        "hfhddnub",
+                        "$isEventPagination page $page pagination" + it.data?.data.toString()
+                    )
                     it.data?.data?.run {
-
-                        eventList.clear()
-
-                        binding.ivLogout.visible()
-                        /// background
-                        this.backgroundMedia?.run {
-                            if (this.isNotEmpty()) {
-                                images.addAll(this as ArrayList<BackgroundMediaItem>)
-                                sliderInit()
-
+                        page++
+                        if (isEventPagination) {
+                            if (events != null && events.isNotEmpty()) {
+                                eventList.addAll(
+                                    eventList.size - 1,
+                                    events as ArrayList<EventsItem>
+                                )
+                                eventAdapter.pagination(events)
+                                isEventPagination = true
                             }
-                        }
+                        } else {
+                            isEventPagination = true
+                            eventList.clear()
+                            binding.ivLogout.visible()
+                            /// background
+                            this.backgroundMedia?.run {
+                                if (this.isNotEmpty()) {
+                                    images.addAll(this as ArrayList<BackgroundMediaItem>)
+                                    sliderInit()
 
-                        // event video
-                        eventAdapter.update(events as ArrayList<EventsItem>)
-                        binding.let {
-                            this.project?.get(0)?.run {
-                                proTitle = projectTitle.toString()
-                                proDesc = projectDescription.toString()
-                                it.tvProjectTitle.text = proTitle.toString()
-                                it.tvProjectDesc.text = proDesc.toString()
+                                }
                             }
-                            it.rvCategory.requestFocus()
+                            // event video
+                            eventAdapter.update(events as ArrayList<EventsItem>)
+                            binding.let {
+                                this.project?.get(0)?.run {
+                                    proTitle = projectTitle.toString()
+                                    proDesc = projectDescription.toString()
+                                    it.tvProjectTitle.text = proTitle.toString()
+                                    it.tvProjectDesc.text = proDesc.toString()
+                                }
+                                it.rvCategory.requestFocus()
 //                            it. rvBackgVideo.requestFocus()
-                            it.projectlogo.loadUrl(this.logo)
-                            proLogo = this.logo
+                                it.projectlogo.loadUrl(this.logo)
+                                proLogo = this.logo
 
 
+                            }
+                            crewList.clear()
+                            //  this.crewMembers?.let { it1 -> crewList.addAll(it1) }
+
+                            if (crewMembers != null && crewMembers.isNotEmpty()) {
+                                // crewList.addAll(crewMembers)
+                                creatorsAdapter.update(crewMembers as ArrayList<crewMembers>)
+                            }
+                            isFirst = false
                         }
 
 
-                        crewList.clear()
-                        //  this.crewMembers?.let { it1 -> crewList.addAll(it1) }
 
-                        if (crewMembers != null && crewMembers.isNotEmpty()) {
-                            // crewList.addAll(crewMembers)
-                            creatorsAdapter.update(crewMembers as ArrayList<crewMembers>)
-                        }
-                        isFirst = false
                         dismissProgress()
                         Log.e(
                             "dadaewed",
@@ -580,7 +625,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 ivLogout.visible()
             }
-            Log.e("dndjvn","$isFirstVideo ncdjknv ${isDrawerOpen}")
+            Log.e("dndjvn", "$isFirstVideo ncdjknv ${isDrawerOpen}")
             if (isDrawerOpen) {
                 drawerView()
                 rvCategory.apply {
@@ -616,21 +661,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                rvBackgVideo.resumeVideo(currentVideoDuration)
 
             }
-            isFirstVideo=true
+            isFirstVideo = true
         }
         // background
-       //
+        //
 
     }
 
-    fun eventFocus()= with(binding){
+    fun eventFocus() = with(binding) {
         lifecycleScope.launch {
+            Log.e("kdmcdkmc", "dmvdmv $focusView")
+            if (focusView == StreamEnum.INDECATOR_VIEW) {
+                customIndicator.requestFocus()
+            } else {
                 rvCategory.apply {
                     post {
                         getChildAt(eventFocusPos)?.requestFocus()
                     }
                 }
             }
+        }
+
     }
 
     override fun onPause() {

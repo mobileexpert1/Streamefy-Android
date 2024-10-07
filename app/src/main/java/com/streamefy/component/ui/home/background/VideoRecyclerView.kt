@@ -81,22 +81,18 @@ class VideoRecyclerView : RecyclerView {
         playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
 
         // Bind the player to the view.
-//        videoSurfaceView!!.player = playerHandler.getPLayer()
         player = playerHandler.getPLayer()!!
-
+        videoSurfaceView?.useController=false
         addOnScrollListener(object : OnScrollListener() {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == SCROLL_STATE_IDLE) {
-                    Log.e("skncksnc", "skcks ${mediaObjects.size} data $mediaObjects")
                     if (!recyclerView.canScrollHorizontally(1)) {
                         if (mediaObjects.size > 1) {
                             play() {}
-//                            initializer()
                         }
                     } else {
-//                        initializer()
                         play() {}
                     }
                 }
@@ -106,11 +102,9 @@ class VideoRecyclerView : RecyclerView {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (isfirst) {
-                    // playVideo(false)
                     Log.e("scsoddsvs", "is frst ")
-//                    initializer()
                     play() {}
-                     isfirst = false
+                    isfirst = false
                 }
             }
         })
@@ -180,7 +174,7 @@ class VideoRecyclerView : RecyclerView {
 
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
-                Log.e("skcjnakjbc","kjcdabcv $error")
+                Log.e("skcjnakjbc", "kjcdabcv $error")
             }
 
 
@@ -189,7 +183,7 @@ class VideoRecyclerView : RecyclerView {
     }
 
     fun initializer() {
-       // pauseVideo()
+        // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         currentPose = targetPosition
@@ -223,7 +217,7 @@ class VideoRecyclerView : RecyclerView {
         }
         playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
         player = playerHandler.getPLayer()!!
-        if (homeFragment.mediaUrl.isEmpty()){
+        if (homeFragment.mediaUrl.isEmpty()) {
             homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         }
 
@@ -234,22 +228,23 @@ class VideoRecyclerView : RecyclerView {
 
     fun scrollMe(pos: Int) {
         var mNewPos = pos + 1
-        Log.e("smcskmc","up $pos new $mNewPos size ${mediaObjects.size}")
-        if (mNewPos < mediaObjects.size ) {
-            recyclerview?.scrollToPosition(mNewPos)
-            scrollPlay{}
+        Log.e("smcskmc", "up $pos new $mNewPos size ${mediaObjects.size}")
+        if (pos < mediaObjects.size) {
+            recyclerview?.scrollToPosition(pos)
+            scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
-        }else{
+        } else {
             recyclerview?.scrollToPosition(0)
             homeFragment.binding.rvBackgVideo.scrollToPosition(0)
         }
     }
+
     fun backScroll(pos: Int) {
         var mNewPos = 2
-        Log.e("smcskmc","back $pos new $mNewPos size ${mediaObjects.size}")
-        if (mNewPos>0 ) {
+        Log.e("smcskmc", "back $pos new $mNewPos size ${mediaObjects.size}")
+        if (mNewPos > 0) {
             recyclerview?.scrollToPosition(mNewPos)
-            scrollPlay{}
+            scrollPlay {}
         }
     }
 
@@ -304,9 +299,10 @@ class VideoRecyclerView : RecyclerView {
         } else {
             pauseVideo()
         }
-        playerHandler.mute()
+        //playerHandler.mute()
 //        homeFragment.binding.rvCategory.requestFocus()
     }
+
     fun scrollPlay(callBack: (String) -> Unit) {
         pauseVideo()
         Log.e("skncksnc", "scrollPlay surface $targetPosition")
@@ -337,8 +333,8 @@ class VideoRecyclerView : RecyclerView {
         } else {
             pauseVideo()
         }
-        playerHandler.mute()
-       // homeFragment.binding.rvBackgVideo.requestFocus()
+        //  playerHandler.mute()
+        // homeFragment.binding.rvBackgVideo.requestFocus()
 
     }
 
@@ -361,7 +357,7 @@ class VideoRecyclerView : RecyclerView {
     fun resumeVideo(pos: Long) {
         Log.e("bxbxb", "$pos scmlcm ${homeFragment.mediaUrl}")
 //        playerHandler.seekWithInitialise(homeFragment.mediaUrl, pos)
-         playerHandler.seekTo(pos)
+        playerHandler.seekTo(pos)
     }
 
     // Remove the old player
@@ -377,7 +373,8 @@ class VideoRecyclerView : RecyclerView {
             viewHolderParent!!.setOnClickListener(null)
         }
     }
-//
+
+    //
     private fun addVideoView() {
         if (videoSurfaceView != null) {
             frameLayout!!.addView(videoSurfaceView)
@@ -389,7 +386,15 @@ class VideoRecyclerView : RecyclerView {
 
 //            videoSurfaceView?.isFocusable = false
 //            videoSurfaceView?.isFocusableInTouchMode = false
-            homeFragment.eventFocus()
+            homeFragment.apply {
+                // focusView = StreamEnum.INDECATOR_VIEW
+                binding.rvCategory.clearFocus()
+                if (focusView == StreamEnum.INDECATOR_VIEW) {
+                    binding.customIndicator.requestFocus()
+                } else {
+                    eventFocus()
+                }
+            }
         }
     }
 

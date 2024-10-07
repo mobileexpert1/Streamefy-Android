@@ -3,6 +3,7 @@ package com.streamefy.component.ui.home.adapter
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import com.streamefy.R
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 
 class CustomIndicator(context: Context, attrs: AttributeSet) : LinearLayout(context, attrs) {
     private val selectedDrawable = ContextCompat.getDrawable(context, R.drawable.ic_indicator_unselected)
@@ -39,6 +41,14 @@ class CustomIndicator(context: Context, attrs: AttributeSet) : LinearLayout(cont
                 }
                 background = if (i == selectedPosition) selectedDrawable else unselectedDrawable
                 gravity=Gravity.CENTER
+            }
+
+            dot.setOnClickListener {
+                Log.e("sjbjsbsd","click index $i")
+                homeFragment.binding.rvBackgVideo.post {
+                    homeFragment.binding.rvBackgVideo.smoothScrollToPosition(i)
+                }
+                //homeFragment.binding.rvBackgVideo.scrollToPosition(i)
             }
             addView(dot)
         }

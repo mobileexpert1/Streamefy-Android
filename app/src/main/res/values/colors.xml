@@ -13,4 +13,6 @@
     <color name="purple">#941AF2</color>
     <color name="semi_transparent">#633D3D3D</color>
     <color name="light_gray">#749F9F9F</color>
+    <color name="gray">#9F9F9F</color>
+    <color name="_8b000000">#8B000000</color>
 </resources>

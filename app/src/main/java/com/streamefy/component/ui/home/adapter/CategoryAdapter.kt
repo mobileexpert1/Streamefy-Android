@@ -3,6 +3,7 @@ package com.streamefy.component.ui.home.adapter
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.squareup.picasso.Picasso
 import com.streamefy.R
 import com.streamefy.component.base.StreamEnum
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.utils.gone
@@ -74,6 +76,8 @@ class CategoryAdapter(
 //                }
 
                 if (hasFocus) {
+
+                    homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
                     itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
@@ -86,21 +90,28 @@ class CategoryAdapter(
                     )
                 }
 
+
+
             }
 
-//            clEvent.remoteKey {
-//                when(it){
-//                    StreamEnum.UP_DPAD_KEY->{
-//                        callBack.invoke(position,StreamEnum.UP_DPAD_KEY)
-//                    }
-//                    StreamEnum.DOWN_DPAD_KEY->{
-//                        tvMore.requestFocus()
-//                    }
-//
-//                    else->{
-//                    }
-//                }
-//            }
+            clEvent.setOnKeyListener { v, keyCode, event ->
+                if (event.action== KeyEvent.ACTION_DOWN){
+                when(keyCode){
+                    KeyEvent.KEYCODE_DPAD_UP ->{
+                        callBack.invoke(position,StreamEnum.UP_DPAD_KEY)
+                    }
+                    KeyEvent.KEYCODE_DPAD_RIGHT->{
+                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){
+                            callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
+                        }
+                    }
+                    else->{
+                    }
+                }
+            }
+
+            false
+            }
 
             clEvent.setOnClickListener {
                 callBack.invoke(position, StreamEnum.SINGLE)
@@ -146,7 +157,7 @@ class CategoryAdapter(
     }
 
     fun pagination(newlist: ArrayList<EventsItem>) {
-        eventList.addAll(newlist)
+        eventList.addAll(eventList.size-1,newlist)
         notifyItemChanged(eventList.size - 1)
     }
 

@@ -531,8 +531,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun eventVideosMore() {
-       // viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
-        Log.e("kfmvkfmvi", "last index ")
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        observe()
     }
 
     private fun observe() {
@@ -546,20 +546,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                     Log.e(
                         "hfhddnub",
-                        "$isEventPagination page $page pagination" + it.data?.data.toString()
+                        "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString()
                     )
                     it.data?.data?.run {
-                        page++
+
                         if (isEventPagination) {
                             if (events != null && events.isNotEmpty()) {
-                                eventList.addAll(
-                                    eventList.size - 1,
-                                    events as ArrayList<EventsItem>
-                                )
-                                eventAdapter.pagination(events)
+                                eventAdapter.pagination(events as ArrayList<EventsItem>)
                                 isEventPagination = true
+                                page++
+                            }else{
+                                isEventPagination=false
                             }
+                            dismissProgress()
                         } else {
+                            page++
                             isEventPagination = true
                             eventList.clear()
                             binding.ivLogout.visible()
@@ -611,6 +612,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 is MyResource.isError -> {
                     dismissProgress()
                 }
+                else->{}
             }
         }
     }
@@ -625,14 +627,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 ivLogout.visible()
             }
-            Log.e("dndjvn", "$isFirstVideo ncdjknv ${isDrawerOpen}")
+            Log.e("dndjvn", "$isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
             if (isDrawerOpen) {
                 drawerView()
-                rvCategory.apply {
-                    post {
-                        getChildAt(eventFocusPos)?.clearFocus()
-                    }
-                }
+//                rvCategory.apply {
+//                    post {
+//                        getChildAt(eventFocusPos)?.clearFocus()
+//                    }
+//                }
                 rvDrawer.post {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
@@ -670,7 +672,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     fun eventFocus() = with(binding) {
         lifecycleScope.launch {
-            Log.e("kdmcdkmc", "dmvdmv $focusView")
+            Log.e("kdmcdkmc", "$eventFocusPos dmvdmv $focusView")
             if (focusView == StreamEnum.INDECATOR_VIEW) {
                 customIndicator.requestFocus()
             } else {

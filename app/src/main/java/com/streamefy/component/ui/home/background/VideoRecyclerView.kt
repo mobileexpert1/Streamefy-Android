@@ -229,13 +229,13 @@ class VideoRecyclerView : RecyclerView {
     fun scrollMe(pos: Int) {
         var mNewPos = pos + 1
         Log.e("smcskmc", "up $pos new $mNewPos size ${mediaObjects.size}")
-        if (pos < mediaObjects.size) {
-            recyclerview?.scrollToPosition(pos)
+        if (mNewPos < mediaObjects.size) {
+            homeFragment.binding.rvBackgVideo.smoothScrollToPosition(mNewPos)
             scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         } else {
-            recyclerview?.scrollToPosition(0)
-            homeFragment.binding.rvBackgVideo.scrollToPosition(0)
+          //  recyclerview?.scrollToPosition(0)
+            homeFragment.binding.rvBackgVideo.smoothScrollToPosition(0)
         }
     }
 

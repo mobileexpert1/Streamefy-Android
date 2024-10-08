@@ -76,8 +76,10 @@ class CategoryAdapter(
 //                }
 
                 if (hasFocus) {
-
-                    homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
+                    if (viewHolder.absoluteAdapterPosition==eventList.size-2 && homeFragment.isEventPagination){
+                        callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
+                    }
+                   // homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
                     itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
@@ -100,11 +102,11 @@ class CategoryAdapter(
                     KeyEvent.KEYCODE_DPAD_UP ->{
                         callBack.invoke(position,StreamEnum.UP_DPAD_KEY)
                     }
-                    KeyEvent.KEYCODE_DPAD_RIGHT->{
-                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){
-                            callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
-                        }
-                    }
+//                    KeyEvent.KEYCODE_DPAD_RIGHT->{
+//                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){
+//                            callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
+//                        }
+//                    }
                     else->{
                     }
                 }
@@ -157,8 +159,10 @@ class CategoryAdapter(
     }
 
     fun pagination(newlist: ArrayList<EventsItem>) {
+//        eventList.clear()
         eventList.addAll(eventList.size-1,newlist)
-        notifyItemChanged(eventList.size - 1)
+//        notifyItemChanged(eventList.size - 1)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = eventList.size

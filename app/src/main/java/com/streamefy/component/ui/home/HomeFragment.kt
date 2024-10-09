@@ -255,9 +255,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
 
-                    if (rvBackgVideo.targetPosition == 0) {
-                        ivLogout.requestFocus()
-                    } else {
+                    if (rvBackgVideo.targetPosition != 0) {
+                      //  ivLogout.requestFocus()
+                  //  } else {
                         // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
                         val currenPos = rvBackgVideo.targetPosition - 1
                         binding.rvBackgVideo.smoothScrollToPosition(currenPos)
@@ -266,9 +266,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
-                        rvCategory.requestFocus()
-                    } else {
+                    if (rvBackgVideo.targetPosition < rvBackgVideo.mediaObjects.size - 1) {
+                       // rvCategory.requestFocus()
+                   // } else {
                         val currenPos = rvBackgVideo.targetPosition + 1
                         binding.rvBackgVideo.smoothScrollToPosition(currenPos)
                     }
@@ -365,8 +365,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        Log.e("skncksnc", "skcks ${mediaObjects.size} data $mediaObjects")
-                        customIndicator.updateIndicator(rvBackgVideo.targetPosition)
+                       var  newPos =
+                            (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                        Log.e("skncksnc", "${rvBackgVideo.targetPosition} current $${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} ")
+                        customIndicator.updateIndicator(newPos)
                     }
                 }
             })

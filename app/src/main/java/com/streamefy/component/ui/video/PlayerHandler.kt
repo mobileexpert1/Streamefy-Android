@@ -34,7 +34,7 @@ class PlayerHandler(
 ) {
 
     var player: ExoPlayer? = null
-    private var isMuted: Boolean = false
+private var isMuted: Boolean = false
 
     init {
         initializePlayer()
@@ -102,7 +102,7 @@ class PlayerHandler(
         // Prepare player with media source
         player!!.setMediaSource(mediaSource)
         player!!.prepare()
-        player!!.seekTo(homeFragment.currentVideoDuration)
+      //  player!!.seekTo(homeFragment.currentVideoDuration)
         player!!.play()
 
         Log.e("sjkcnsakjbc", "akjcnkja play")

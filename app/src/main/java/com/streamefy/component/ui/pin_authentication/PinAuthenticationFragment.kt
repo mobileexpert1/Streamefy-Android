@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
@@ -24,6 +25,7 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.remoteKey
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -42,7 +44,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         }
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
 
-
+        otpFieldFocus()
         binding.apply {
             textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
 
@@ -111,7 +113,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //            et2.previousFocusOnDigit(et1)
             otpView.requestFocus()
             otpView.setOtpCompletionListener {
-                requireActivity().hideKey()
+                //requireActivity().hideKey()
             }
 
             otpView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
@@ -166,6 +168,110 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 })
         }
     }
+
+    private fun otpFieldFocus() = with(binding) {
+        et1.requestFocus()
+        et1.remoteKey {
+            when (it) {
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    et2.requestFocus()
+                }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                } else -> {}
+            }
+        }
+        et2.remoteKey {
+            when (it) {
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    et1.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    et3.requestFocus()
+                }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                } else -> {}
+            }
+        }
+        et3.remoteKey {
+            when (it) {
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    et2.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    et4.requestFocus()
+                }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                } else -> {}
+            }
+        }
+        et4.remoteKey {
+            when (it) {
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    et3.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }  else -> {}
+            }
+        }
+
+//
+//        et1.setOnClickListener {
+//            Log.e("dmclkdm","dkncldnv")
+//           // etHide.requestFocus()
+//            showKeyboard(etHide)
+//            //etHide.setOnClickListener {  }
+//
+//        }
+//        et2.setOnClickListener {
+//            requireActivity().showKeyboard(etHide)
+//        }
+
+//        et1.setupNextFocusOnDigit(et2)
+//        et2.setupNextFocusOnDigit(et3)
+//        et3.setupNextFocusOnDigit(et4)
+//        et4.setupNextFocusOnDigit(et5)
+//        et5.setupNextFocusOnDigit(et6)
+//
+//        // previous
+//
+//        et6.previousFocusOnDigit(et5)
+//        et5.previousFocusOnDigit(et4)
+//        et4.previousFocusOnDigit(et3)
+//        et3.previousFocusOnDigit(et2)
+//        et2.previousFocusOnDigit(et1)
+
+    }
+
+
 
     private fun observe() {
         viewModel.pinData.observe(viewLifecycleOwner) {

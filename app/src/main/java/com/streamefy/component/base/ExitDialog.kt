@@ -13,6 +13,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.databinding.ExitDialogBinding
+import com.streamefy.utils.remoteKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -31,6 +32,20 @@ class ExitDialog(context: Context) :
                 }
             }
             ivClose.setOnClickListener { dismiss() }
+            ivClose.requestFocus()
+            ivClose.remoteKey {
+                when(it){
+                    StreamEnum.DOWN_DPAD_KEY->{
+                        tvContinue.requestFocus()
+                    }
+                    StreamEnum.UP_DPAD_KEY->{
+                        tvContinue.requestFocus()
+                    }
+                    else->{
+                    }
+                }
+            }
+
             tvContinue.setOnClickListener {
                 dismiss()
             }

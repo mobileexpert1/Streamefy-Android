@@ -53,7 +53,7 @@ class VideoRecyclerView : RecyclerView {
 
     // controlling playback state
     var volumeState: VolumeState? = null
-    private var recyclerview: VideoRecyclerView? = null
+    var recyclerview: VideoRecyclerView? = null
 
     lateinit var holder: BackgroundHolder
     var currentVideo = 0
@@ -177,6 +177,9 @@ class VideoRecyclerView : RecyclerView {
                 Log.e("skcjnakjbc", "kjcdabcv $error")
             }
 
+            override fun onPlayerErrorChanged(error: PlaybackException?) {
+                super.onPlayerErrorChanged(error)
+            }
 
         })
 

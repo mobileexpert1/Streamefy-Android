@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.GestureDetector
@@ -90,7 +91,26 @@ fun Activity.hideKey(){
 }
 
 fun Activity.showKeyboard(view: View) {
+//    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//    inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+
+    view.requestFocus() // Ensure the view is focused
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+
+}
+
+fun CountDownTimer.customTimer(duration:Long,countDown:Long){
+    val countDownTimer = object : CountDownTimer(duration, countDown) {
+        override fun onTick(millisUntilFinished: Long) {
+            val seconds = (millisUntilFinished / 1000).toLong()
+            onTick(seconds)
+        }
+
+        override fun onFinish() {
+            onFinish()
+        }
+    }
+    countDownTimer.start()
 }
 

@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -21,7 +23,7 @@ class CustomOTPView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : OtpView(context, attrs, defStyleAttr) {
 
-    var otpViewItemCount = 4
+    var otpViewItemCount = 3
     var otpViewItemSpacing = 10
     var otpViewItemHeight = 45
     var otpViewItemWidth = 45
@@ -44,8 +46,17 @@ class CustomOTPView @JvmOverloads constructor(
         textPaint.textAlign = Paint.Align.CENTER
         val typeface = ResourcesCompat.getFont(context, R.font.filsonpro_regular)
         textPaint.typeface = typeface
+        isFocusable = true
+        isFocusableInTouchMode = true
     }
-
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event?.action == MotionEvent.ACTION_UP) {
+            requestFocus()
+            val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        }
+        return super.onTouchEvent(event)
+    }
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -59,7 +70,7 @@ class CustomOTPView @JvmOverloads constructor(
             rectF.set(left.toFloat(), top, right.toFloat(), bottom)
 
             // Set background color
-            backgroundPaint.color = if (i < text?.length!!) {
+            backgroundPaint.color = if (i < text?.length ?: 0) {
                 ContextCompat.getColor(context, com.otpview.R.color.transparent)
             } else {
                 ContextCompat.getColor(context, com.otpview.R.color.transparent)
@@ -67,7 +78,7 @@ class CustomOTPView @JvmOverloads constructor(
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, backgroundPaint)
 
             // Draw border
-            borderPaint.color = if (i < text?.length!!) {
+            borderPaint.color = if (i < text?.length ?: 0) {
                 ContextCompat.getColor(context, R.color.light_gray)
             } else {
                 ContextCompat.getColor(context, R.color.purple)
@@ -75,8 +86,9 @@ class CustomOTPView @JvmOverloads constructor(
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, borderPaint)
 
             // Draw the character
-            val character = if (i < text?.length!!) text!![i].toString() else ""
-           // drawCenteredText(canvas, character, left.toFloat(), top, otpViewItemWidth, otpViewItemHeight)
+            val character = if (i < text?.length ?: 0) text!![i].toString() else ""
+            drawCenteredText(canvas, character, left.toFloat(), top, otpViewItemWidth, otpViewItemHeight)
+
         }
 
         // Draw cursor if it should be visible
@@ -113,11 +125,12 @@ class CustomOTPView @JvmOverloads constructor(
         }
     }
     private fun drawCenteredText(canvas: Canvas, text: String, left: Float, top: Float, width: Int, height: Int) {
-        val textWidth = textPaint.measureText(text)
-        val textX = left + (width / 2) // Center horizontally
-        val textY = top + (height / 2) - ((textPaint.descent() + textPaint.ascent()) / 2) // Center vertically
-
-        canvas.drawText(text, textX, textY, textPaint)
+        if (text.isNotEmpty()) {
+            val textWidth = textPaint.measureText(text)
+            val textX = left + (width / 2) // Center horizontally
+            val textY = top + (height / 2) - ((textPaint.descent() + textPaint.ascent()) / 2) // Center vertically
+            canvas.drawText(text, textX, textY, textPaint)
+        }
     }
     fun onOtpCompleted() {
         if (text?.length == otpViewItemCount) {

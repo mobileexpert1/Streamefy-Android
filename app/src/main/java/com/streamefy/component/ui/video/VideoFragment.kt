@@ -48,7 +48,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
@@ -230,6 +229,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         // volumeManager.setVolumePercentage(volumeCount)
                         binding.sbVolumeSeek.progress = volumeCount
 
+                        if (volumeCount <= 0) {
+                            //  ivVolume.requestFocus()
+                            ivVolume.setImageResource(R.drawable.ic_mute)
+                            //  playerHandler.isMuted=false
+                        } else {
+//                                unmute
+                            // playerHandler.isMuted=true
+                            ivVolume.setImageResource(R.drawable.ic_video_volume)
+                        }
+
                         return@OnKeyListener true
                     }
 
@@ -238,6 +247,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         volumeDown()
                         // volumeManager.setVolumePercentage(volumeCount)
                         binding.sbVolumeSeek.progress = volumeCount
+
+                        if (volumeCount <= 0) {
+                            //  ivVolume.requestFocus()
+                            ivVolume.setImageResource(R.drawable.ic_mute)
+                            // playerHandler.isMuted=false
+                        } else {
+                            ivVolume.setImageResource(R.drawable.ic_video_volume)
+                            // playerHandler.isMuted=true
+                        }
 
                         return@OnKeyListener true
                     }
@@ -250,21 +268,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     sbVolumeSeek.requestFocus()
-                   visibilityCount=0
+                    visibilityCount = 0
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     ivBack.requestFocus()
-                    visibilityCount=0
+                    visibilityCount = 0
                 }
+
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                    visibilityCount=0
+                    visibilityCount = 0
                 }
+
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     ivPlay.requestFocus()
-                    visibilityCount=0
+                    visibilityCount = 0
                 }
-                else->{}
+
+                else -> {}
             }
         }
 
@@ -272,13 +294,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     sbVolumeSeek.requestFocus()
-                    visibilityCount=0
+                    visibilityCount = 0
                 }
+
                 StreamEnum.UP_DPAD_KEY -> {
                     sbVolumeSeek.requestFocus()
-                    visibilityCount=0
+                    visibilityCount = 0
                 }
-                else->{}
+
+                else -> {}
             }
         }
 
@@ -435,11 +459,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivVolume.layoutParams = params
-
-                if (playerHandler.isMuted()) {
-                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-                } else {
-                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                if (playerHandler.player != null) {
+                    if (playerHandler.player?.volume == 0f) {
+//                if (playerHandler.isMuted()) {
+                        ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                    } else {
+                        ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                    }
                 }
 
             } else {
@@ -447,13 +473,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivVolume.layoutParams = params
-
-                if (playerHandler.isMuted()) {
-                    ivVolume.setImageResource(R.drawable.ic_mute)
-                } else {
-                    ivVolume.setImageResource(R.drawable.ic_video_volume)
+                if (playerHandler.player != null) {
+                    if (playerHandler.player?.volume!! > 0f) {
+//                if (playerHandler.isMuted()) {
+                        ivVolume.setImageResource(R.drawable.ic_mute)
+                    } else {
+                        ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    }
                 }
-
             }
         }
 
@@ -614,7 +641,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("hdhhdhds", "$volumeCount volume manager $volumePercentage")
 
             lifecycleScope.launch(Dispatchers.Main) {
-                volumeCount=volumePercentage
+                volumeCount = volumePercentage
                 toShowBackButton()
                 sbVolumeSeek.setProgress(volumeCount)
             }
@@ -644,7 +671,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         val currentPosition = playerHandler.getCurrentPosition()
         val progress = (currentPosition * 100 / duration.toDouble()).toInt()
         binding.sbVideoSeek.progress = progress
-        Log.e("ssknckscn", "$currentPosition sbcsjbc ${progress} ${playerHandler.getcurrent()}")
+        // Log.e("ssknckscn", "$currentPosition sbcsjbc ${progress} ${playerHandler.getcurrent()}")
         binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
 
         if (playerHandler.isPlaying()!!) {
@@ -670,7 +697,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         clSettingsMenu.gone()
         binding.playerView.clearFocus()
     }
-
 
 
     fun handleKey(view: View) {
@@ -738,6 +764,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onResume() {
         super.onResume()
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         binding.playerView.onResume()
         isOpenSettingFirst = false
     }

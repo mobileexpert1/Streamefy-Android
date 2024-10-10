@@ -145,6 +145,7 @@ class VideoRecyclerView : RecyclerView {
 
                     Player.STATE_ENDED -> {
                         Log.e("jnjddc", " STATE_ENDED")
+                       // playerHandler.release()
                         scrollMe(currentVideo)
                     }
 
@@ -256,6 +257,7 @@ class VideoRecyclerView : RecyclerView {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
+
         pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
@@ -296,7 +298,7 @@ class VideoRecyclerView : RecyclerView {
         player = playerHandler.getPLayer()!!
         Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
-            playerHandler.setMediaUri(homeFragment.mediaUrl)
+            playerHandler.setMediaUri(homeFragment.mediaUrl,0)
 //            playerHandler.seekWithInitialise(mediaUrl,videoDuration)
             // thumbnail?.gone()
         } else {
@@ -332,7 +334,7 @@ class VideoRecyclerView : RecyclerView {
         player = playerHandler.getPLayer()!!
         Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
-            playerHandler.setMediaUri(homeFragment.mediaUrl)
+            playerHandler.setMediaUri(homeFragment.mediaUrl,0)
         } else {
             pauseVideo()
         }

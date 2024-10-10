@@ -61,7 +61,9 @@ data class MediaItem(
     @SerializedName("isSmartRevision")
     val isSmartRevision: Boolean = false,
     @SerializedName("id")
-    val id: Int = 0
+    val id: Int = 0  ,
+    @SerializedName("playbackDuration")
+    var playbackDuration: String = ""
 )
 
 

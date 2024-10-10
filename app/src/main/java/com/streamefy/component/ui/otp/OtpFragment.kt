@@ -1,6 +1,7 @@
 package com.streamefy.component.ui.otp
 
 import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -32,6 +33,8 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.loadPicaso
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.previousFocusOnDigit
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.setupNextFocusOnDigit
@@ -47,6 +50,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     override fun bindView(): Int = R.layout.fragment_otp
     var phone: String = "6280830819"
     var name: String = "appdev096"
+    var applogo=""
+    var app_background=""
 
     private val viewModel: OTPVM by viewModel()
 
@@ -56,6 +61,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
         name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+
+        applogo=  SharedPref.getString(PrefConstent.APP_LOGO).toString()
+       // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        binding.ivApplogo.loadPicaso(applogo)
         initClickListeners()
         binding.tvResend.clearFocus()
         otpFieldFocus()
@@ -86,12 +95,16 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     et2.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
+
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                } else -> {}
+                }
+
+                else -> {}
             }
         }
         et2.remoteKey {
@@ -103,13 +116,16 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     et3.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                } else -> {}
+                }
+
+                else -> {}
             }
         }
         et3.remoteKey {
@@ -121,13 +137,16 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     et4.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                } else -> {}
+                }
+
+                else -> {}
             }
         }
         et4.remoteKey {
@@ -139,13 +158,16 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     et5.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                }  else -> {}
+                }
+
+                else -> {}
             }
         }
         et5.remoteKey {
@@ -166,6 +188,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
+
                 else -> {}
             }
         }
@@ -179,6 +202,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     tvProceed.requestFocus()
                 }
@@ -186,6 +210,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
+
                 else -> {}
             }
         }
@@ -198,31 +223,50 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //            }
 //        }
 
+//        et1.setOnClickListener {
+//           // etHide.requestFocus()
+//            etHide.requestFocus()
+//            val imm =
+//                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//            imm.showSoftInput(etHide, InputMethodManager.SHOW_IMPLICIT)
+//        }
+//        et1.setOnFocusChangeListener { v, hasFocus ->
+//            if (hasFocus) {
+//                etHide.setCursorVisible(false)
+//                val imm =
+//                    requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm.showSoftInput(etHide, InputMethodManager.SHOW_IMPLICIT)
+//            }
+//        }
         otpView.remoteKey {
-         when(it){
-             StreamEnum.UP_DPAD_KEY->{
-                 ivBack.requestFocus()
-             }
-             StreamEnum.DOWN_DPAD_KEY->{
-                 tvResend.requestFocus()
-             }
-             else->{
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }
 
-             }
-         }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                else -> {
+
+                }
+            }
         }
         tvResend.remoteKey {
-         when(it){
-             StreamEnum.UP_DPAD_KEY->{
-                 otpView.requestFocus()
-             }
-             StreamEnum.DOWN_DPAD_KEY->{
-                 tvProceed.requestFocus()
-             }
-             else->{
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    otpView.requestFocus()
+                }
 
-             }
-         }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                else -> {
+
+                }
+            }
         }
 
 //
@@ -268,22 +312,23 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 tvResend.apply {
                     text = "Resend OTP"
                     isEnabled = true
-                    setTextColor(ContextCompat.getColor(requireActivity(), R.color.blue))
-                  //  requestFocus()
+                    setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                    //  requestFocus()
                 }
             },
             onTick = { seconds ->
 
                 val formattedSeconds = seconds.toString().padStart(2, '0')
                 val params = tvResend.layoutParams as ConstraintLayout.LayoutParams
-                params.width = requireActivity().resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                params.width =
+                    requireActivity().resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 tvResend.layoutParams = params
 
                 if (formattedSeconds != "00") {
                     tvremains.visible()
                     tvResend.apply {
 //                        text = "Resend OTP in 00:" + formattedSeconds
-                        text="00:" + formattedSeconds
+                        text = "00:" + formattedSeconds
                         isEnabled = false
                         if (isAdded) {
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
@@ -313,7 +358,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             otpView.requestFocus()
 
             otpView.setOtpCompletionListener {
-               // requireActivity().hideKey()
+                // requireActivity().hideKey()
                 tvProceed.requestFocus()
             }
             otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
@@ -511,12 +556,11 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                         if (isSuccess) {
                             ShowError.handleError.message(this.response)
                             lifecycleScope.launch {
-                                delay(500)
+                                delay(3000)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                                 bundle.putString(PrefConstent.FULL_NAME, name)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
-
                                 findNavController().navigate(
                                     R.id.action_otpFragment_to_pinAuthenticationFragment,
                                     bundle

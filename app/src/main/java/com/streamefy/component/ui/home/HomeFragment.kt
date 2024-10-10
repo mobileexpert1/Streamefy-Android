@@ -30,6 +30,7 @@ import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.component.ui.home.model.crewMembers
 import com.streamefy.component.ui.home.viewmodel.HomeVm
+import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentHomeBinding
@@ -75,16 +76,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var mediaUrl = ""
     var isDrawerOpen = false
     var isFirstVideo = false
-    var currentWidth = 0
-    var currentHeight = 0
-    var firstIndecator = true
     var isEventPagination = false
 
     var focusView = StreamEnum.BOTTOM_EVENT_VIEW
 
     companion object {
         lateinit var homeFragment: HomeFragment
-
+        var videoduraion:Long=0
+        var mediaId:Int=0
+        var eventVideoIndex=0
+        var mediaIndex=0
     }
 
     var background_current_play_duration = 0
@@ -102,13 +103,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         isEventPagination = false
         if (isFirst) {
             getUserData()
+            //playbackObserver()
         }
         eventView()
         creatorView()
         foucusView()
         binding.apply {
-
-
             ivLogout.setOnClickListener {
                 LogoutDialog(requireContext()) {
                     SharedPref.clearData()
@@ -179,6 +179,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
+   fun savePlayback(){
+
+       if (videoduraion>=0) {
+           var request=PlayBackRequest()
+           request.number=phone
+           request.mediaId= mediaId
+           request.duration=videoduraion.toString()
+           viewModel.saveDuration(requireContext(), request)
+           durationObserve()
+       }
+   }
     private fun foucusView() = with(binding) {
         ivLogout.remoteKey {
             when (it) {
@@ -428,7 +439,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                 drawerItemFocus = it
+                mediaIndex=it
+                mediaId=mediaList[it].id
+
                 var bundle = Bundle()
+                bundle.putString(PrefConstent.PLAY_BACK_DURATION,mediaList[it].playbackDuration)
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
                 findNavController().navigate(R.id.videofragment, bundle)
@@ -489,13 +504,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
+                eventVideoIndex=pos
+                mediaIndex=0
                 when (type) {
                     StreamEnum.SINGLE -> {
-                        var bundle = Bundle()
-                        bundle.putString(
-                            PrefConstent.VIDEO_URL, eventList[pos].media?.get(0)?.hlsPlaylistUrl
-                        )
-                        findNavController().navigate(R.id.videofragment, bundle)
+                        eventList[pos].media?.get(0)?.run {
+                            mediaId=this.id
+                            val bundle = Bundle()
+                            bundle.putString(PrefConstent.VIDEO_URL,hlsPlaylistUrl)
+                            bundle.putString(PrefConstent.PLAY_BACK_DURATION,playbackDuration)
+                            bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
+                            findNavController().navigate(R.id.videofragment, bundle)
+                        }
+
+
                     }
 
                     StreamEnum.MORE -> {
@@ -617,6 +639,35 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 else->{}
             }
         }
+
+    }
+
+    fun durationObserve(){
+        viewModel._videoduraion.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                  //  showProgress()
+                }
+
+                is MyResource.isSuccess -> {
+                  //  dismissProgress()
+                    if (isDrawerOpen){
+                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
+                        mediaAdapter.updateDuration(mediaIndex, videoduraion)
+                    }
+                    else {
+                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
+                    }
+                    Log.e("videoback", "$eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}")
+                    videoduraion=0
+                }
+
+                is MyResource.isError -> {
+                   // dismissProgress()
+                }
+                else->{}
+            }
+        }
     }
 
     override fun onResume() {
@@ -629,52 +680,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 ivLogout.visible()
             }
-            Log.e("dndjvn", "$isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
+            Log.e("dndjvn", "videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
             if (isDrawerOpen) {
                 drawerView()
-//                rvCategory.apply {
-//                    post {
-//                        getChildAt(eventFocusPos)?.clearFocus()
-//                    }
-//                }
                 rvDrawer.post {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
             }
-//            else{
-////                rvCategory.apply {
-////                    post {
-////                        getChildAt(eventFocusPos)?.requestFocus()
-////                    }
-////                }
-//            }
 
-//            lifecycleScope.launch {
-//                delay(5000)
-//                rvCategory.apply {
-//                    post {
-//                        getChildAt(eventFocusPos)?.requestFocus()
-//                    }
-//                }
-//            }
-
-//              rvBackgVideo.initializer()
             if (isFirstVideo) {
                 sliderInit()
-//                rvBackgVideo.initializer()
-//                rvBackgVideo.resumeVideo(currentVideoDuration)
-
             }
             isFirstVideo = true
         }
-        // background
-        //
+        savePlayback()
 
     }
 
     fun eventFocus() = with(binding) {
         lifecycleScope.launch {
-            Log.e("kdmcdkmc", "$eventFocusPos dmvdmv $focusView")
+            Log.e("kdmcdkmc", "$eventFocusPos dmvdmv $focusView ")
             if (focusView == StreamEnum.INDECATOR_VIEW) {
                 customIndicator.requestFocus()
             } else {
@@ -689,7 +714,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     override fun onPause() {
-        binding.rvBackgVideo.pauseVideo()
+
+        binding.rvBackgVideo.apply {
+            pauseVideo()
+          //  playerHandler.pause()
+            playerHandler.release()
+        }
         binding.rvBackgVideo.isfirst = true
         super.onPause()
     }

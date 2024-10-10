@@ -45,5 +45,15 @@ lateinit var binding: DrawerItemBinding
         return DrawerView(binding)
     }
 
+    fun updateDuration(mediaIndex:Int,duraton:Long) {
+//        eventList.clear()
+        mediaList[mediaIndex].run {
+            playbackDuration=duraton.toString()
+        }
+        //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
+
+        notifyItemChanged(mediaIndex)
+    }
+
     override fun getItemCount(): Int=mediaList.size
 }

@@ -196,6 +196,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                             PrefConstent.FULL_NAME,
                             binding.etFullname.text.toString()
                         )
+
+                        SharedPref.setString(
+                            PrefConstent.APP_LOGO,
+                           data.logo
+                        )
+//                        data.profileImage?.run {
+//                            SharedPref.setString(
+//                                PrefConstent.AUTH_BACKGROUND,
+//                                data.profileImage
+//                            )
+//                        }
+
+
 //                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                     }
                     var bundle = Bundle()

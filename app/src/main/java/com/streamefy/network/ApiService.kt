@@ -6,9 +6,12 @@ import com.streamefy.component.ui.login.model.LoginResponse
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.OTPResponse
 import com.streamefy.component.ui.otp.model.VerificationRequest
+import com.streamefy.component.ui.video.model.PlayBackRequest
+import com.streamefy.component.ui.video.model.VideoPlaback
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -22,11 +25,13 @@ interface ApiService {
         @Query("PhoneNumber") phoneNumber: String,
     ): Response<HomeResponse>
 //
-//    @POST(ServerUrls.URl_PHONE_NUMBER_EXISTS)
-//    suspend fun phoneNumberRequest(
-//        @Header("Authorization") authorization: String,
-//        @Body phoneNumberExistsRequest: PhoneNumberRequest,
-//    ): BaseData<PhoneNumberExistsResponseData>
+    @POST(ServerUrls.PLAY_BACK)
+    suspend fun saveDuration(
+    @Body playback: PlayBackRequest,
+    ): Response<VideoPlaback>
+
+
+
 //
 //    @POST(ServerUrls.URL_USERNAME_EXISTS)
 //    suspend fun usernameRequest(

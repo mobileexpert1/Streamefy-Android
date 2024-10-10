@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.Player
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
+import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
@@ -39,7 +40,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var volumeCount = 20
     var isOpenSettingFirst = false
     var videoQualityIndex = 0
-
+    var playbackduration:Long=0
     private lateinit var volumeManager: VolumeManager
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
@@ -54,9 +55,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
             isSmartRevision = getBoolean(PrefConstent.SMART_REVISION)
+            playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
             Log.e("ckdanmcn", "$isSmartRevision mkadnc $videoUrl")
         }
         binding.apply {
+            playerHandler = PlayerHandler(requireActivity(), playerView)
+            playerHandler.setMediaUri(videoUrl,playbackduration)
+
+//            val progress = (playbackduration * 100 / duration.toDouble()).toInt()
+//            binding.sbVideoSeek.progress = progress
+
             clickme()
             listener()
             quality()
@@ -70,8 +78,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     fun clickme() = with(binding) {
         ivBack.setOnClickListener { findNavController().popBackStack() }
 
-        playerHandler = PlayerHandler(requireActivity(), playerView)
-        playerHandler.setMediaUri(videoUrl)
         ivPlay.setOnClickListener {
             val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
             params.width =
@@ -111,23 +117,24 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivVolume.setOnClickListener {
             Log.e("sncsnc", "dndnv $volumeCount ${playerHandler.isMuted()}")
             visibilityCount = 0
-            if (playerHandler.isMuted()) {
-                playerHandler.unmute()
-                volumeCount = 5
-                ivVolume.setImageResource(R.drawable.ic_selected_volume)
-                sbVolumeSeek.setProgress(volumeCount)
+            if(playerHandler.player!=null) {
+                if (playerHandler.player?.volume==0f) {
+                    playerHandler.unmute()
+                    volumeCount = 1
+                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                    sbVolumeSeek.setProgress(volumeCount)
 //                volumeManager.setVolumePercentage(volumeCount)
-                // volumeUp()
+                    // volumeUp()
 
-            } else {
-                playerHandler.mute()
-                ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-                sbVolumeSeek.setProgress(0)
+                } else {
+                    playerHandler.mute()
+                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                    sbVolumeSeek.setProgress(0)
 //                playerHandler.setVolume(0 / 100.0f)
-                volumeManager.setVolumePercentage(0)
-                volumeCount = 0
+                    volumeManager.setVolumePercentage(0)
+                    volumeCount = 0
+                }
             }
-
         }
         llVolumeSeek.setOnClickListener {
         }
@@ -231,6 +238,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                         if (volumeCount <= 0) {
                             //  ivVolume.requestFocus()
+                            playerHandler.mute()
                             ivVolume.setImageResource(R.drawable.ic_mute)
                             //  playerHandler.isMuted=false
                         } else {
@@ -250,6 +258,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                         if (volumeCount <= 0) {
                             //  ivVolume.requestFocus()
+                            playerHandler.mute()
                             ivVolume.setImageResource(R.drawable.ic_mute)
                             // playerHandler.isMuted=false
                         } else {
@@ -316,8 +325,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun volumeUp() {
         Log.e("hdhhdhds", "volume count UP $volumeCount")
-        if (volumeCount <= 95) {
-            volumeCount += 5
+        if (volumeCount <= 99) {
+            volumeCount += 1
             playerHandler.setVolume(volumeCount / 100.0f)
             volumeManager.setVolumePercentage(volumeCount)
         }
@@ -325,8 +334,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun volumeDown() {
         Log.e("hdhhdhds", "volume count Down $volumeCount")
-        if (volumeCount > 5) {
-            volumeCount -= 5
+        if (volumeCount > 1) {
+            volumeCount -= 1
             playerHandler.setVolume(volumeCount / 100.0f)
             volumeManager.setVolumePercentage(volumeCount)
         }
@@ -476,9 +485,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 if (playerHandler.player != null) {
                     if (playerHandler.player?.volume!! > 0f) {
 //                if (playerHandler.isMuted()) {
-                        ivVolume.setImageResource(R.drawable.ic_mute)
-                    } else {
                         ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    } else {
+                        ivVolume.setImageResource(R.drawable.ic_mute)
                     }
                 }
             }
@@ -773,6 +782,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onStop() {
         super.onStop()
+        if (playerHandler.player!=null){
+            playerHandler.player?.run {
+                HomeFragment.videoduraion=currentPosition
+            }
+
+            playerHandler.pause()
+            playerHandler.release()
+            volumeManager.stopMonitoring()
+        }
+
         binding.bitplayer.onStop()
     }
 

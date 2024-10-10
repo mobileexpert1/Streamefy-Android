@@ -21,6 +21,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.squareup.picasso.Picasso
 import com.streamefy.R
 import com.streamefy.component.base.StreamEnum
+import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.component.ui.home.model.EventsItem
@@ -164,6 +165,19 @@ class CategoryAdapter(
 //        notifyItemChanged(eventList.size - 1)
         notifyDataSetChanged()
     }
+
+    fun updateDuration(position: Int,mediaIndex:Int,duraton:Long) {
+//        eventList.clear()
+       // if (mediaIndex==0) {
+            eventList[position].media?.run {
+                get(mediaIndex).playbackDuration = duraton.toString()
+          //  }
+        }
+        //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
+
+       notifyItemChanged(position)
+    }
+
 
     override fun getItemCount(): Int = eventList.size
 }

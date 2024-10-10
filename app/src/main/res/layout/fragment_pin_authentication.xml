@@ -25,15 +25,15 @@
             android:focusableInTouchMode="true"
             />
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/ivApplogo"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_30sdp"
-            android:src="@drawable/app_logo"
+            tools:src="@drawable/app_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
+             />
 
         <View
             android:id="@+id/view2"
@@ -44,7 +44,7 @@
             android:background="@color/light_gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+            app:layout_constraintTop_toBottomOf="@+id/ivApplogo" />
 
         <TextView
             android:id="@+id/textView2"

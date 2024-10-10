@@ -25,6 +25,8 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.loadPicaso
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,7 +35,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     override fun bindView(): Int = R.layout.fragment_pin_authentication
     var phone = ""
     var otp = ""
-
+    var applogo=""
+    var app_background=""
     private val viewModel: PinVM by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +46,9 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
-
+        applogo=  SharedPref.getString(PrefConstent.APP_LOGO).toString()
+       // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        binding.ivApplogo.loadPicaso(applogo)
         otpFieldFocus()
         binding.apply {
             textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")

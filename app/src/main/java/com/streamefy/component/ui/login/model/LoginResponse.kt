@@ -9,7 +9,11 @@ data class Response(
     @SerializedName("accessToken")
     val accessToken: String = "",
     @SerializedName("refreshToken")
-    val refreshToken: String = ""
+    val refreshToken: String = "" ,
+    @SerializedName("logo")
+    val logo: String = "" ,
+//    @SerializedName("profileImage")
+//    val profileImage: Any = null
 )
 
 

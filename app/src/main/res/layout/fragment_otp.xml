@@ -9,15 +9,15 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/ivApplogo"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_35sdp"
             android:layout_marginTop="@dimen/_30sdp"
-            android:src="@drawable/app_logo"
+            tools:src="@drawable/app_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
+            />
 
 
         <ImageView
@@ -86,7 +86,6 @@
                     android:text=""
                     android:textAllCaps="true"
                     android:textColor="@color/black"
-
                     app:OtpHideLineWhenFilled="true"
                     app:OtpItemCount="6"
                     app:OtpItemHeight="@dimen/_15sdp"
@@ -138,7 +137,8 @@
                     />
 
 
-                <EditText
+                <TextView
+                    android:visibility="gone"
                     android:id="@+id/et1"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
@@ -151,13 +151,12 @@
                     android:inputType="number"
                     android:maxLength="1"
                     android:text=""
-                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/et2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
+                <TextView
                     android:visibility="gone"
                     android:id="@+id/et2"
                     android:layout_width="@dimen/_15sdp"
@@ -176,8 +175,9 @@
                     app:layout_constraintStart_toEndOf="@+id/et1"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
+                <TextView
                     android:visibility="gone"
+
                     android:id="@+id/et3"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
@@ -195,7 +195,7 @@
                     app:layout_constraintStart_toEndOf="@+id/et2"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
+                <TextView
                     android:visibility="gone"
                     android:id="@+id/et4"
                     android:layout_width="@dimen/_15sdp"
@@ -214,8 +214,9 @@
                     app:layout_constraintStart_toEndOf="@+id/et3"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
+                <TextView
                     android:visibility="gone"
+
                     android:id="@+id/et5"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
@@ -233,10 +234,9 @@
                     app:layout_constraintStart_toEndOf="@+id/et4"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/et6"
+                <TextView
                     android:visibility="gone"
-
+                    android:id="@+id/et6"
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_4sdp"
@@ -284,6 +284,7 @@
                     tools:text="00:00" />
 
                 <EditText
+                    android:visibility="gone"
                     android:id="@+id/etHide"
                     android:layout_width="@dimen/_120sdp"
                     android:layout_height="wrap_content"
@@ -292,7 +293,6 @@
                     android:focusableInTouchMode="true"
                     android:text="dsd"
                     android:textColor="@color/transparent"
-                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

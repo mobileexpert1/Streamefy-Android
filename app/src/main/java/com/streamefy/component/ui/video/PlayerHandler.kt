@@ -34,20 +34,26 @@ class PlayerHandler(
 ) {
 
     var player: ExoPlayer? = null
-private var isMuted: Boolean = false
+    private var isMuted: Boolean = false
 
     init {
         initializePlayer()
     }
 
     private fun initializePlayer() {
-        player = ExoPlayer.Builder(context).build()
+        try {
+            player = ExoPlayer.Builder(context).build()
 
-        playerView.player = player
+            playerView.player = player
+        } catch (e: Exception) {
+            Log.e("skcmskc", "initializeing error $e")
+        }
+
+
     }
 
     fun getPLayer() = playerView.player
-    fun setMediaUri(uri: String) {
+    fun setMediaUri(uri: String, lastDuration: Long) {
 
 //        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
 //            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
@@ -93,18 +99,19 @@ private var isMuted: Boolean = false
 //        // Create media source
 //
 //        // Create media source
-        val dataSourceFactory = DefaultHttpDataSource.Factory()
-        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(MediaItem.fromUri(uri))
+        try {
+            val dataSourceFactory = DefaultHttpDataSource.Factory()
+            val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(uri))
+            // Prepare player with media source
+            player!!.setMediaSource(mediaSource)
+            player!!.prepare()
+            player!!.seekTo(lastDuration)
+            player!!.play()
 
-        // Prepare player with media source
-
-        // Prepare player with media source
-        player!!.setMediaSource(mediaSource)
-        player!!.prepare()
-      //  player!!.seekTo(homeFragment.currentVideoDuration)
-        player!!.play()
-
+        } catch (e: Exception) {
+            Log.e("skcmskc", "video playing error $e")
+        }
         Log.e("sjkcnsakjbc", "akjcnkja play")
 
         //  playTokenise()
@@ -180,14 +187,14 @@ private var isMuted: Boolean = false
     fun setQuality(resolution: String) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
         val dimensions = when (resolution) {
-           // "360p" -> Pair(640, 360)// Pair(352, 240)
+            // "360p" -> Pair(640, 360)// Pair(352, 240)
             "480p" -> Pair(854, 480)// Pair(640, 360)
             "1080p" -> Pair(1920, 1080)// Pair(640, 360)
             "2080p" -> Pair(3840, 2160)// Pair(640, 360)
-           // "720p" -> Pair(1280, 720)// Pair(842, 480)
-          //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
-           // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
-          //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
+            // "720p" -> Pair(1280, 720)// Pair(842, 480)
+            //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
+            // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
+            //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
             else -> return
         }
 
@@ -244,7 +251,7 @@ private var isMuted: Boolean = false
     }
 
     fun unmute() {
-        setVolume(0.05f)
+        setVolume(0.001f)
         //player?.volume = volume
         isMuted = false
     }

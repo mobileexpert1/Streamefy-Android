@@ -85,7 +85,7 @@ dependencies {
     implementation(libs.interceptor)
     implementation(libs.coroutines)
 //    implementation(libs.bitmovin)
-    implementation("com.bitmovin.player:player:3.82.0")
+//    implementation("com.bitmovin.player:player:3.82.0")
     implementation("commons-codec:commons-codec:1.17.1")
     implementation("org.apache.httpcomponents.core5:httpcore5:5.2.5")
     implementation("junit:junit:4.12")

@@ -109,7 +109,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             false
         })
 
-
         tvGetOtp.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -153,6 +152,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 delay(100)
                 if (etPhoneNumber.text.isNotEmpty()) {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
+                    tvGetOtp.requestFocus()
                 } else {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
                 }
@@ -160,7 +160,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
             false
         }
-
 
     }
 

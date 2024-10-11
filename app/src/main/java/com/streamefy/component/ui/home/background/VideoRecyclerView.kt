@@ -155,14 +155,14 @@ class VideoRecyclerView : RecyclerView {
                     }
 
                     Player.STATE_READY -> {
-                        Log.e("jnjddc", " STATE_READY")
+                        Log.e("jnjddc", " STATE_READY $isVideoViewAdded")
 
                         if (!isVideoViewAdded) {
                             try {
                                 addVideoView()
                                 updateDuration()
                             } catch (e: Exception) {
-
+                                Log.e("jnjddc", " exception $e")
                             }
                         }
 
@@ -258,7 +258,7 @@ class VideoRecyclerView : RecyclerView {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
 
-        pauseVideo()
+       // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         currentPose = targetPosition

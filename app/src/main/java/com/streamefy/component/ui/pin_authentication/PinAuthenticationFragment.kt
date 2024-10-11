@@ -119,13 +119,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             otpView.requestFocus()
             otpView.setOtpCompletionListener {
                 //requireActivity().hideKey()
+                tvProceed.requestFocus()
             }
-
-            otpView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
-                }
-            }
+//
+//            otpView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+//                if (hasFocus) {
+//                    otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
+//                }
+//            }
             otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
 
             otpView.addTextChangedListener {
@@ -137,35 +138,12 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             }
 
 
-//            otpView.addTextChangedListener(object : TextWatcher {
-//                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//                    // No action needed here
-//                    otpView.cursorColor=ContextCompat.getColor(requireContext(),R.color.red)
-//                }
-//
-//                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                    // Get the current cursor position
-//                    val cursorIndex = otpView.selectionStart
-//
-//                    otpView.setCursorColor(ContextCompat.getColor(requireContext(),R.color.red))
-//                    otpView.cursorColor=ContextCompat.getColor(requireContext(),R.color.red)
-////                    otpView.setItemBackgroundResources(R.drawable.bg_round_gradient_purple_orange)
-//                    //otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.bg_round_gradient_purple_orange))
-//
-//                    // Set the cursor color
-//                }
-//
-//                override fun afterTextChanged(s: Editable?) {
-//
-//                }
-//            })
-
             requireActivity().onBackPressedDispatcher.addCallback(
                 viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        val navOptions = androidx.navigation.NavOptions.Builder()
+                        val navOptions = NavOptions.Builder()
                             .setPopUpTo(R.id.splashScreen, true)
                             .build()
                             findNavController().navigate(R.id.loginFragment, null, navOptions)
@@ -248,17 +226,16 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             }
         }
 
-//
-//        et1.setOnClickListener {
-//            Log.e("dmclkdm","dkncldnv")
-//           // etHide.requestFocus()
-//            showKeyboard(etHide)
-//            //etHide.setOnClickListener {  }
-//
-//        }
-//        et2.setOnClickListener {
-//            requireActivity().showKeyboard(etHide)
-//        }
+        otpView.setOnFocusChangeListener { v, hasFocus ->
+            Log.e("smskmc", "$hasFocus setOnFocusChangeListener")
+            if (hasFocus) {
+                otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.ic_selected_inputfiled))
+            }else{
+                otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.bg_round_stroke_gray))
+
+            }
+        }
+
 
 //        et1.setupNextFocusOnDigit(et2)
 //        et2.setupNextFocusOnDigit(et3)

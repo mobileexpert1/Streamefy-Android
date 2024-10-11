@@ -266,10 +266,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
 
-                    if (rvBackgVideo.targetPosition != 0) {
-                      //  ivLogout.requestFocus()
-                  //  } else {
-                        // rvBackgVideo.backScroll(rvBackgVideo.targetPosition)
+                    if (rvBackgVideo.targetPosition == 0) {
+                        ivLogout.requestFocus()
+                    } else {
                         val currenPos = rvBackgVideo.targetPosition - 1
                         binding.rvBackgVideo.smoothScrollToPosition(currenPos)
 
@@ -277,9 +276,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    if (rvBackgVideo.targetPosition < rvBackgVideo.mediaObjects.size - 1) {
-                       // rvCategory.requestFocus()
-                   // } else {
+                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
+                        rvCategory.requestFocus()
+                    } else {
                         val currenPos = rvBackgVideo.targetPosition + 1
                         binding.rvBackgVideo.smoothScrollToPosition(currenPos)
                     }
@@ -302,27 +301,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 focusView = StreamEnum.INDECATOR_VIEW
                 customIndicator.backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.gray))
-//                val params = customIndicator.layoutParams as ConstraintLayout.LayoutParams
-//
-//                if (firstIndecator) {
-//                    currentWidth = params.width
-//                    currentHeight = params.height
-//                    firstIndecator=false
-//                }
-//                val additionalSize = resources.getDimensionPixelSize(R.dimen._17sdp)
-//                params.height = currentHeight + additionalSize
-//                customIndicator.layoutParams = params
-
             } else {
-//                val params = customIndicator.layoutParams as ConstraintLayout.LayoutParams
-//                val decreaseSize = resources.getDimensionPixelSize(R.dimen._5sdp)
-//
-////                currentWidth = params.width
-////                currentHeight = params.height
-//                params.width = maxOf(0, currentWidth - decreaseSize)
-//                params.height = maxOf(0, currentHeight - decreaseSize)
-//                customIndicator.layoutParams = params
-
                 customIndicator.backgroundTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(
                         requireActivity(), R.color._8b000000
@@ -635,6 +614,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
+                    binding.ivLogout.visible()
                 }
                 else->{}
             }

@@ -53,6 +53,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var applogo=""
     var app_background=""
 
+    var isResend=false
     private val viewModel: OTPVM by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -301,7 +302,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         tvResend.isEnabled = false
 
         tvResend.startCountdownTimer(
-            duration = 30 * 1000,
+            duration = 60 * 1000,
             onFinish = {
                 val params = tvResend.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
@@ -321,7 +322,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 val formattedSeconds = seconds.toString().padStart(2, '0')
                 val params = tvResend.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
-                    requireActivity().resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+                    requireActivity().resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
                 tvResend.layoutParams = params
 
                 if (formattedSeconds != "00") {
@@ -339,6 +340,48 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             }
         )
     }
+//
+//
+//    private fun startOtpTimer() = with(binding) {
+//        tvResend.isEnabled = false
+//
+//        tvRemainNumber.startCountdownTimer(
+//            duration = 60 * 1000,
+//            onFinish = {
+//                tvResend.visible()
+//                  tvResend.gone()
+//                tvResend.apply {
+//                    text = "Resend OTP"
+//                    isEnabled = true
+//                    setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+//                    //  requestFocus()
+//                }
+//            },
+//            onTick = { seconds ->
+//
+//                val formattedSeconds = seconds.toString().padStart(2, '0')
+//                val params = tvResend.layoutParams as ConstraintLayout.LayoutParams
+//                params.width =
+//                    requireActivity().resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+//                tvResend.layoutParams = params
+//
+//                if (formattedSeconds != "00") {
+//                    tvResend.visible()
+//                    tvResend.text="Resend OTP in 00:"
+//
+//                    tvRemainNumber.apply {
+//                          visible()
+//                        text = formattedSeconds
+//                        isEnabled = false
+//                        if (isAdded) {
+//                            setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+//                        }
+//                        //clearFocus()
+//                    }
+//                }
+//            }
+//        )
+//    }
 
     private fun observeData() {
         viewModel.otpLiveData.observe(requireActivity()) {
@@ -396,7 +439,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             otpView.setOnFocusChangeListener { v, hasFocus ->
                 Log.e("smskmc", "$hasFocus setOnFocusChangeListener")
                 if (hasFocus) {
-                    // otpView.textCursorDrawable = ContextCompat.getDrawable(requireContext(),R.drawable.ic_lselected_logout)
+                    otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.ic_seleted_otp))
+                }else{
+                    otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.bg_round_rect_stroke_gray))
+
                 }
             }
 
@@ -530,7 +576,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                 is MyResource.isSuccess -> {
                     var data = it.data?.response
-                    ShowError.handleError.message(data.toString())
+                    if (isResend){
+                        ShowError.handleError.message("OTP resent successfully")
+                    }else {
+                        ShowError.handleError.message(data.toString())
+                    }
+                    isResend=true
                     startOtpTimer()
                     dismissProgress()
                 }
@@ -556,7 +607,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                         if (isSuccess) {
                             ShowError.handleError.message(this.response)
                             lifecycleScope.launch {
-                                delay(3000)
+                                delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                                 bundle.putString(PrefConstent.FULL_NAME, name)

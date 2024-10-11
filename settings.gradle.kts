@@ -22,9 +22,9 @@ dependencyResolutionManagement {
         maven {
             url = URI("https://jitpack.io")
         }
-        maven {
-            url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
-        }
+//        maven {
+//            url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
+//        }
 
     }
 }

@@ -26,4 +26,9 @@ var appModule= module {
     viewModel { PinVM(get()) }
     viewModel { HomeVm(get()) }
 
+
+//    factory { LoginViewmodel(get()) }
+//    factory { OTPVM(get()) }
+//    factory { PinVM(get()) }
+//    factory { HomeVm(get()) }
 }

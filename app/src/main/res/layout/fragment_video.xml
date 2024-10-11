@@ -26,13 +26,6 @@
             android:focusableInTouchMode="true"
             app:use_controller="false" />
 
-        <com.bitmovin.player.PlayerView
-            android:id="@+id/bitplayer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            app:initialize_player="false" />
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_60sdp"
@@ -172,7 +165,8 @@
                     android:focusableInTouchMode="true"
                     android:progress="20"
                     android:progressTint="@color/red"
-                    android:thumb="@drawable/seekbar_thumb" />
+                    android:thumb="@drawable/seekbar_thumb"
+                    />
             </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatImageView

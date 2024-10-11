@@ -5,9 +5,9 @@ buildscript {
         mavenCentral()
         jcenter() // Optional
         maven { url = uri("https://jitpack.io") }
-        maven {
-            url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
-        }
+//        maven {
+//            url = uri("https://artifacts.bitmovin.com/artifactory/public-releases")
+//        }
     }
     dependencies {
         // Add your classpath dependencies here

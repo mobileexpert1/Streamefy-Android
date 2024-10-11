@@ -528,10 +528,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
-    private fun bitPlayer() = with(binding) {
-        binding.bitplayer.player = BitmovinPlayer().bitPlayer(requireActivity(), bitplayer)
-
-    }
 
 
     private fun quality() = with(binding) {
@@ -754,7 +750,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.pause()
             }
         }
-        binding.bitplayer.onPause()
     }
 
     override fun onDestroy() {
@@ -762,13 +757,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.pause()
         playerHandler.release()
         volumeManager.stopMonitoring()
-        binding.bitplayer.onDestroy()
     }
 
 
     override fun onStart() {
         super.onStart()
-        binding.bitplayer.onStart()
     }
 
     override fun onResume() {
@@ -791,8 +784,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.release()
             volumeManager.stopMonitoring()
         }
-
-        binding.bitplayer.onStop()
     }
 
 

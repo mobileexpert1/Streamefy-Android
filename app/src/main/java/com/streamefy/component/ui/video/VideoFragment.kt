@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -23,6 +25,7 @@ import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
+import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
@@ -40,7 +43,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var volumeCount = 20
     var isOpenSettingFirst = false
     var videoQualityIndex = 0
-    var playbackduration:Long=0
+    var playbackduration: Long = 0
+    var thumbnailS3bucketId = ""
     private lateinit var volumeManager: VolumeManager
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
@@ -49,18 +53,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        handleKey(binding.playerView)
+         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+            thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
             isSmartRevision = getBoolean(PrefConstent.SMART_REVISION)
             playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
             Log.e("ckdanmcn", "$isSmartRevision mkadnc $videoUrl")
         }
         binding.apply {
+            ivVideoThumb.loadPicaso(thumbnailS3bucketId)
+
             playerHandler = PlayerHandler(requireActivity(), playerView)
-            playerHandler.setMediaUri(videoUrl,playbackduration)
+            playerHandler.setMediaUri(videoUrl, playbackduration)
 
 //            val progress = (playbackduration * 100 / duration.toDouble()).toInt()
 //            binding.sbVideoSeek.progress = progress
@@ -117,8 +124,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivVolume.setOnClickListener {
             Log.e("sncsnc", "dndnv $volumeCount ${playerHandler.isMuted()}")
             visibilityCount = 0
-            if(playerHandler.player!=null) {
-                if (playerHandler.player?.volume==0f) {
+            if (playerHandler.player != null) {
+                if (playerHandler.player?.volume == 0f) {
                     playerHandler.unmute()
                     volumeCount = 1
                     ivVolume.setImageResource(R.drawable.ic_selected_volume)
@@ -146,6 +153,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
+                    ivVideoThumb.animate()
+                        .alpha(0f)
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .setDuration(1500)
+                        .withEndAction {
+                            playerView.animate()
+                                .alpha(1f)
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setInterpolator(DecelerateInterpolator())// Scale to original size
+                                .setDuration(50)
+                                .start()
+//                            playerView.visible()
+//                            ivVideoThumb.gone()
+
+                        }
+                        .start()
                     binding.sbVideoSeek.max = 100
                     if (getLengthOnce) {
                         tvDuration.setText(playerHandler.getTotalLength())
@@ -529,7 +555,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
 
-
     private fun quality() = with(binding) {
         val qualityButtons = ArrayList<TextView>()
         qualityButtons.clear()
@@ -775,9 +800,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onStop() {
         super.onStop()
-        if (playerHandler.player!=null){
+        if (playerHandler.player != null) {
             playerHandler.player?.run {
-                HomeFragment.videoduraion=currentPosition
+                HomeFragment.videoduraion = currentPosition
             }
 
             playerHandler.pause()

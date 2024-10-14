@@ -72,7 +72,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         getOtp()
 
         observeData()
-
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -81,7 +80,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     findNavController().navigate(R.id.loginFragment)
                 }
             })
-
 
     }
 
@@ -619,7 +617,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             }
                         }
                     }
-                    dismissProgress()
+
                 }
 
                 is MyResource.isError -> {
@@ -641,5 +639,9 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         }
 
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("skcnmskncm","skcnsk destroyview")
+        dismissProgress()
+    }
 }

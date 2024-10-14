@@ -25,6 +25,7 @@ import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.categoryModel.CateModel
 import com.streamefy.component.ui.home.model.EventsItem
+import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
@@ -67,6 +68,20 @@ class CategoryAdapter(
             } else {
                 tvMore.invisible()
             }
+          //  tvMore.visible()
+            data.media?.run {
+                 if (this.isNotEmpty()) {
+                     this[0].run {
+                     if (totalVideoDuration.isNotEmpty()) {
+                         var totalDuration = convertToMillis(totalVideoDuration)
+
+                         val duration = playbackDuration.toDouble()
+                       //  val currentPosition = playerHandler.getCurrentPosition()
+                         val progress = (duration * 100 / totalDuration.toDouble()).toInt()
+                         lpVideoProgres.progress=progress
+                     }
+                 }}
+            }
 
 
             clEvent.setOnFocusChangeListener { _, hasFocus ->
@@ -81,7 +96,8 @@ class CategoryAdapter(
                         callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
                     }
                    // homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
-                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
+//                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
+                    itemView.animate().scaleX(1.09f).scaleY(1.05f).setDuration(200).start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
                     itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()

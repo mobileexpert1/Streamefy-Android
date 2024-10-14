@@ -63,7 +63,9 @@ data class MediaItem(
     @SerializedName("id")
     val id: Int = 0  ,
     @SerializedName("playbackDuration")
-    var playbackDuration: String = ""
+    var playbackDuration: String = "" ,
+    @SerializedName("totalVideoDuration")
+    var totalVideoDuration: String = ""
 )
 
 

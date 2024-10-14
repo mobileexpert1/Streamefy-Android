@@ -357,6 +357,14 @@ class VideoRecyclerView : RecyclerView {
         } else {
             playerHandler.stopHandler()
         }
+//        Log.e("updates", " duration $position")
+        if (position>=30000){
+            if (targetPosition == mediaObjects.size - 1) {
+                recyclerview?.smoothScrollToPosition(0)
+            }else{
+                recyclerview?.smoothScrollToPosition(targetPosition+1)
+            }
+        }
     }
 
     fun resumeVideo(pos: Long) {

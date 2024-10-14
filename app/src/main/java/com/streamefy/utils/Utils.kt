@@ -114,3 +114,12 @@ fun CountDownTimer.customTimer(duration:Long,countDown:Long){
     countDownTimer.start()
 }
 
+
+fun convertToMillis(duration: String): Long {
+    val parts = duration.split(":")
+    val hours = parts[0].toLong()
+    val minutes = parts[1].toLong()
+    val seconds = parts[2].toLong()
+
+    return (hours * 3600 + minutes * 60 + seconds) * 1000 // Convert to milliseconds
+}

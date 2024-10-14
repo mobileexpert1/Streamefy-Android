@@ -425,6 +425,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION,mediaList[it].playbackDuration)
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
+                bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
                 findNavController().navigate(R.id.videofragment, bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
@@ -493,6 +494,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             bundle.putString(PrefConstent.VIDEO_URL,hlsPlaylistUrl)
                             bundle.putString(PrefConstent.PLAY_BACK_DURATION,playbackDuration)
                             bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
+                            bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                             findNavController().navigate(R.id.videofragment, bundle)
                         }
 

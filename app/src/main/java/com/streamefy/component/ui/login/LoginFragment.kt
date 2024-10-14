@@ -182,7 +182,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 }
 
                 is MyResource.isSuccess -> {
-                    progressDialog.dismiss()
+
                     var data = it.data?.response
                     data?.run {
                         SharedPref.setString(PrefConstent.TOKEN, accessToken)
@@ -229,4 +229,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        Log.e("skcnmskncm","skcnsk onpause")
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("skcnmskncm","skcnsk destroyview")
+        progressDialog.dismiss()
+    }
 }

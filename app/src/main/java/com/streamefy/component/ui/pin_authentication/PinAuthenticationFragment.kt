@@ -278,7 +278,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                    findNavController().navigate(R.id.homefragment)
                     if (isAdded) {
                         findNavController().navigate(R.id.homefragment)
-                        dismissProgress()
+
                     }
                 }
 
@@ -289,4 +289,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         }
     }
 
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("skcnmskncm","skcnsk destroyview")
+        dismissProgress()
+    }
 }

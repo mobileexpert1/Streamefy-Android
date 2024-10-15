@@ -2,35 +2,56 @@ package com.streamefy.component.ui.home.background
 
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.PorterDuff
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestManager
-import com.google.android.exoplayer2.ExoPlaybackException
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.Transformation
+import com.bumptech.glide.load.engine.Resource
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.ResizeMode
 import com.google.android.exoplayer2.ui.PlayerView
+import com.streamefy.R
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.video.PlayerHandler
-import com.streamefy.data.SharedPref
 import com.streamefy.utils.gone
-import com.streamefy.utils.goneAnimate
-import com.streamefy.utils.remoteKey
+import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.viewAnimate
+import com.streamefy.utils.visible
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
 import java.util.Objects
+import kotlin.coroutines.coroutineContext
 
 
 class VideoRecyclerView : RecyclerView {
@@ -41,7 +62,9 @@ class VideoRecyclerView : RecyclerView {
     // ui
     private var thumbnail: ImageView? = null
     private var viewHolderParent: View? = null
+    private var tvTitle: TextView? = null
     private var frameLayout: ConstraintLayout? = null
+    private var clParant: ConstraintLayout? = null
     private var videoSurfaceView: PlayerView? = null
 
     // vars
@@ -83,11 +106,15 @@ class VideoRecyclerView : RecyclerView {
         // Bind the player to the view.
         player = playerHandler.getPLayer()!!
         videoSurfaceView?.useController=false
+//        videoSurfaceView?.resizeMode= RESIZE_MODE_FIT
         addOnScrollListener(object : OnScrollListener() {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                Log.e("scsoddsvs", "onScrollStateChanged $currentVideo target $targetPosition")
+
                 if (newState == SCROLL_STATE_IDLE) {
+                   // tvTitle?.visible()
                     if (!recyclerView.canScrollHorizontally(1)) {
                         if (mediaObjects.size > 1) {
                             play() {}
@@ -101,6 +128,8 @@ class VideoRecyclerView : RecyclerView {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+               // Log.e("scsoddsvs", "is frst $currentVideo target $targetPosition")
+
                 if (isfirst) {
                     Log.e("scsoddsvs", "is frst ")
                     play() {}
@@ -161,6 +190,49 @@ class VideoRecyclerView : RecyclerView {
                             try {
                                 addVideoView()
                                 updateDuration()
+                                //thumbnail?.gone()
+                                videoSurfaceView?.visible()
+                                tvTitle?.gone()
+////                                tvTitle?.run {
+////                                    animate()
+////                                        .alpha(0f)
+////                                        .scaleX(1f)
+////                                        .scaleY(1f)
+////                                        .setInterpolator(DecelerateInterpolator())// Scale to original size
+////                                        .setDuration(1500)
+////                                        .start()
+////                                }
+//                                thumbnail?.run {
+//                                    animate()
+//                                        .alpha(0f)
+//                                        .scaleX(1f)
+//                                        .scaleY(1f)
+//                                        .setInterpolator(AccelerateDecelerateInterpolator())
+//                                        .setDuration(1500)
+//                                        .withEndAction {
+//
+//                                        }
+//                                        .start()
+//                                }
+//
+//                                videoSurfaceView?.run {
+//                                    alpha = 0f
+//                                    visible()
+//                                    animate()
+//                                        .alpha(1f) // Animate to full visibility
+//                                        .scaleX(1f)
+//                                        .scaleY(1f)
+//                                        .setInterpolator(DecelerateInterpolator()) // Smooth transition
+//                                        .setDuration(1500) // Duration of the animation
+//                                        .start()
+//                                }
+//
+//                                val colorStateList = ColorStateList.valueOf(getResources().getColor(
+//                                    R.color.blur))
+//                                clParant?.backgroundTintMode= PorterDuff.Mode.SRC_OVER
+//                                clParant?.backgroundTintList=colorStateList
+                                thumbHide()
+
                             } catch (e: Exception) {
                                 Log.e("jnjddc", " exception $e")
                             }
@@ -214,7 +286,7 @@ class VideoRecyclerView : RecyclerView {
             return
         }
         thumbnail = holder.binding.imageView
-        holder.binding.videoview.gone()
+
         holder.binding.apply {
             viewHolderParent = holder.itemView
             frameLayout = videoContainer
@@ -257,7 +329,8 @@ class VideoRecyclerView : RecyclerView {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
-
+//        tvTitle?.visible()
+        thumbShow()
        // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
@@ -285,11 +358,73 @@ class VideoRecyclerView : RecyclerView {
             return
         }
         thumbnail = holder.binding.imageView
-        holder.binding.videoview.gone()
+        clParant = holder.binding.clParant
+        tvTitle = holder.binding.tvTitle
         holder.binding.apply {
             viewHolderParent = holder.itemView
             frameLayout = videoContainer
         }
+
+       // updateAll()
+        if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
+//            thumbnail?.visible()
+//            frameLayout?.gone()
+//            videoSurfaceView?.gone()
+            tvTitle?.visible()
+            thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
+//            videoSurfaceView?.visible()
+//            frameLayout?.visible()
+//            thumbnail?.visible()
+
+//            Glide.with(viewContext!!)
+//                .load(mediaObjects[targetPosition].thumbnailSBucketId)
+//                .into(object : CustomTarget<Drawable?>() {
+//                    override fun onResourceReady(
+//                        resource: Drawable,
+//                        transition: Transition<in Drawable?>?
+//                    )
+//                    {
+//                        clParant?.setBackground(resource)
+//                      //  clParant?.setBackground(resource)
+////                        videoSurfaceView?.run {
+////                            animate()
+////                                .alpha(1f)
+////                                .scaleX(1f)
+////                                .scaleY(1f)
+////                                .setInterpolator(AccelerateDecelerateInterpolator())
+////                                .setDuration(1500)
+////                                .withEndAction {
+////                                    frameLayout?.run {
+////                                        animate()
+////                                            .alpha(1f)
+////                                            .scaleX(1f)
+////                                            .scaleY(1f)
+////                                            .setInterpolator(DecelerateInterpolator())// Scale to original size
+////                                            .setDuration(10)
+////                                            .start()
+////                                    }
+////                                    thumbnail?.run {
+////                                        animate()
+////                                            .alpha(0f)
+////                                            .scaleX(1f)
+////                                            .scaleY(1f)
+////                                            .setInterpolator(DecelerateInterpolator())// Scale to original size
+////                                            .setDuration(10)
+////                                            .start()
+////                                    }
+////                                    //thumbnail?.gone()
+////
+//                                }
+//                               // .start()
+//
+//
+//                    override fun onLoadCleared(placeholder: Drawable?) {
+//                    }
+//                })
+        } else {
+            //thumbnail?.gone()
+        }
+
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         currentVideo = targetPosition
         var videoDuration = homeFragment.currentVideoDuration
@@ -308,6 +443,85 @@ class VideoRecyclerView : RecyclerView {
 //        homeFragment.binding.rvCategory.requestFocus()
     }
 
+    fun thumbShow(){
+        thumbnail?.visible()
+        videoSurfaceView?.visible()
+        thumbnail?.run {
+            alpha = 0f
+            visible()
+            animate()
+                .alpha(1f) // Animate to full visibility
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(DecelerateInterpolator()) // Smooth transition
+                .setDuration(50) // Duration of the animation
+                .start()
+        }
+        videoSurfaceView?.run {
+            alpha = 0f
+            visible()
+            animate()
+                .alpha(1f) // Animate to full visibility
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(DecelerateInterpolator()) // Smooth transition
+                .setDuration(50) // Duration of the animation
+                .start()
+        }
+    }
+    fun thumbHide(){
+        thumbnail?.run {
+            animate()
+                .alpha(0f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .setDuration(1500)
+                .withEndAction {
+
+                }
+                .start()
+        }
+
+        videoSurfaceView?.run {
+            alpha = 0f
+            visible()
+            animate()
+                .alpha(1f) // Animate to full visibility
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(DecelerateInterpolator()) // Smooth transition
+                .setDuration(1500) // Duration of the animation
+                .start()
+        }
+
+    }
+
+    private fun updateAll() {
+     //   CoroutineScope(Dispatchers.IO).launch {
+          //  delay(200)
+        val lastVisibleItemPosition = (layoutManager as? LinearLayoutManager)?.findLastVisibleItemPosition() ?: return
+
+        mediaObjects.forEachIndexed { index, backgroundMediaItem ->
+            val currentPosition = index - (layoutManager as LinearLayoutManager)?.findFirstVisibleItemPosition()!!
+                ?: return
+            val child = getChildAt(currentPosition) ?: return
+            val holder = child.tag as? BackgroundHolder
+
+            if (index == lastVisibleItemPosition) {
+                // Show title for the last visible item
+                holder?.binding?.tvTitle?.visible()
+                Log.e("sjncsjk", "Showing last visible item at position: $currentPosition")
+            } else {
+                // Hide titles for all other items
+                holder?.binding?.tvTitle?.visible()
+                Log.e("sjncsjk", "Hiding item at position: $currentPosition")
+            }
+        }
+
+
+    }
+
     fun scrollPlay(callBack: (String) -> Unit) {
         pauseVideo()
         Log.e("skncksnc", "scrollPlay surface $targetPosition")
@@ -323,7 +537,6 @@ class VideoRecyclerView : RecyclerView {
             return
         }
         thumbnail = holder.binding.imageView
-        holder.binding.videoview.gone()
         holder.binding.apply {
             viewHolderParent = holder.itemView
             frameLayout = videoContainer
@@ -393,9 +606,9 @@ class VideoRecyclerView : RecyclerView {
             frameLayout!!.addView(videoSurfaceView)
             isVideoViewAdded = true
             videoSurfaceView!!.requestFocus()
-            frameLayout!!.viewAnimate()
+           // frameLayout!!.viewAnimate()
             videoSurfaceView!!.viewAnimate()
-            thumbnail?.goneAnimate()
+          //  thumbnail?.goneAnimate()
 
 //            videoSurfaceView?.isFocusable = false
 //            videoSurfaceView?.isFocusableInTouchMode = false
@@ -411,13 +624,12 @@ class VideoRecyclerView : RecyclerView {
         }
     }
 
-
     private fun resetVideoView() {
         if (isVideoViewAdded) {
             removeVideoView(videoSurfaceView)
             playPosition = -1
             videoSurfaceView!!.visibility = View.INVISIBLE
-            thumbnail!!.visibility = View.GONE
+           // thumbnail!!.visibility = View.GONE
         }
     }
 

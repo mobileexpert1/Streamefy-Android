@@ -3,22 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/primary"
-    android:id="@+id/videoContainer"
+    android:id="@+id/clParant"
+
     >
-    <com.google.android.exoplayer2.ui.PlayerView
-        android:id="@+id/videoview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:resize_mode="zoom"
-        app:use_controller="false"
-        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/primary"
+        android:id="@+id/videoContainer"
         />
     <ImageView
         android:id="@+id/imageView"
@@ -26,9 +23,10 @@
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+
         android:scaleType="centerCrop"
-        android:visibility="gone"
         />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -38,8 +36,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:textSize="@dimen/_14sdp"
         android:textStyle="bold"
-        android:padding="@dimen/_20sdp"
         android:visibility="gone"
+        android:padding="@dimen/_20sdp"
+        android:background="@color/red"
+        android:textColor="@color/white"
         android:text="Entertainment"
         android:id="@+id/tvTitle"
         />

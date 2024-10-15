@@ -9,6 +9,7 @@ import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.databinding.ItemSliderBinding
 import com.streamefy.utils.gone
+import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.visible
 
@@ -28,15 +29,12 @@ class BackgroundHolder(var binding: ItemSliderBinding) : RecyclerView.ViewHolder
         this.oldAdapterPos = oldAdapterPos
         parent.setTag(this)
         binding.apply {
-
-
+           Log.e("nckdnvd","ncksdnc $thumbnailSBucketId")
             if (thumbnailSBucketId.isNotEmpty()) {
                 imageView.visible()
-                imageView.loadUrl(thumbnailSBucketId)
-                videoview.gone()
+                imageView.loadPicaso(thumbnailSBucketId)
             } else {
                 imageView.gone()
-
             }
 
 //

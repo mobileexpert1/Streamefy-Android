@@ -150,6 +150,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun listener() = with(binding) {
+        showProgress()
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
@@ -179,6 +180,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
                     }
                     isEnded = false
+                    dismissProgress()
                     updateProgressBar()
                 } else if (playbackState == Player.STATE_ENDED) {
                     ivPlay.setImageResource(R.drawable.ic_video_play)

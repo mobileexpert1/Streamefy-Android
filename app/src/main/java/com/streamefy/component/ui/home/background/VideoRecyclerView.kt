@@ -114,7 +114,6 @@ class VideoRecyclerView : RecyclerView {
                 Log.e("scsoddsvs", "onScrollStateChanged $currentVideo target $targetPosition")
 
                 if (newState == SCROLL_STATE_IDLE) {
-                   // tvTitle?.visible()
                     if (!recyclerView.canScrollHorizontally(1)) {
                         if (mediaObjects.size > 1) {
                             play() {}
@@ -190,47 +189,6 @@ class VideoRecyclerView : RecyclerView {
                             try {
                                 addVideoView()
                                 updateDuration()
-                                //thumbnail?.gone()
-                                videoSurfaceView?.visible()
-                                tvTitle?.gone()
-////                                tvTitle?.run {
-////                                    animate()
-////                                        .alpha(0f)
-////                                        .scaleX(1f)
-////                                        .scaleY(1f)
-////                                        .setInterpolator(DecelerateInterpolator())// Scale to original size
-////                                        .setDuration(1500)
-////                                        .start()
-////                                }
-//                                thumbnail?.run {
-//                                    animate()
-//                                        .alpha(0f)
-//                                        .scaleX(1f)
-//                                        .scaleY(1f)
-//                                        .setInterpolator(AccelerateDecelerateInterpolator())
-//                                        .setDuration(1500)
-//                                        .withEndAction {
-//
-//                                        }
-//                                        .start()
-//                                }
-//
-//                                videoSurfaceView?.run {
-//                                    alpha = 0f
-//                                    visible()
-//                                    animate()
-//                                        .alpha(1f) // Animate to full visibility
-//                                        .scaleX(1f)
-//                                        .scaleY(1f)
-//                                        .setInterpolator(DecelerateInterpolator()) // Smooth transition
-//                                        .setDuration(1500) // Duration of the animation
-//                                        .start()
-//                                }
-//
-//                                val colorStateList = ColorStateList.valueOf(getResources().getColor(
-//                                    R.color.blur))
-//                                clParant?.backgroundTintMode= PorterDuff.Mode.SRC_OVER
-//                                clParant?.backgroundTintList=colorStateList
                                 thumbHide()
 
                             } catch (e: Exception) {
@@ -329,7 +287,6 @@ class VideoRecyclerView : RecyclerView {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
-//        tvTitle?.visible()
         thumbShow()
        // pauseVideo()
         targetPosition =
@@ -359,7 +316,6 @@ class VideoRecyclerView : RecyclerView {
         }
         thumbnail = holder.binding.imageView
         clParant = holder.binding.clParant
-        tvTitle = holder.binding.tvTitle
         holder.binding.apply {
             viewHolderParent = holder.itemView
             frameLayout = videoContainer
@@ -367,14 +323,7 @@ class VideoRecyclerView : RecyclerView {
 
        // updateAll()
         if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
-//            thumbnail?.visible()
-//            frameLayout?.gone()
-//            videoSurfaceView?.gone()
-            tvTitle?.visible()
             thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
-//            videoSurfaceView?.visible()
-//            frameLayout?.visible()
-//            thumbnail?.visible()
 
 //            Glide.with(viewContext!!)
 //                .load(mediaObjects[targetPosition].thumbnailSBucketId)
@@ -447,16 +396,31 @@ class VideoRecyclerView : RecyclerView {
         thumbnail?.visible()
         videoSurfaceView?.visible()
         thumbnail?.run {
-            alpha = 0f
             visible()
             animate()
                 .alpha(1f) // Animate to full visibility
                 .scaleX(1f)
                 .scaleY(1f)
                 .setInterpolator(DecelerateInterpolator()) // Smooth transition
-                .setDuration(50) // Duration of the animation
+                .setDuration(20) // Duration of the animation
+                .withEndAction {
+                    videoSurfaceView?.run {
+                        gone()
+                        animate()
+                            .alpha(0f) // Animate to full visibility
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setInterpolator(DecelerateInterpolator()) // Smooth transition
+                            .setDuration(20) // Duration of the animation
+                            .start()
+                    }
+                }
                 .start()
         }
+
+    }
+    fun thumbHide(){
+
         videoSurfaceView?.run {
             alpha = 0f
             visible()
@@ -468,8 +432,7 @@ class VideoRecyclerView : RecyclerView {
                 .setDuration(50) // Duration of the animation
                 .start()
         }
-    }
-    fun thumbHide(){
+
         thumbnail?.run {
             animate()
                 .alpha(0f)
@@ -483,17 +446,7 @@ class VideoRecyclerView : RecyclerView {
                 .start()
         }
 
-        videoSurfaceView?.run {
-            alpha = 0f
-            visible()
-            animate()
-                .alpha(1f) // Animate to full visibility
-                .scaleX(1f)
-                .scaleY(1f)
-                .setInterpolator(DecelerateInterpolator()) // Smooth transition
-                .setDuration(1500) // Duration of the animation
-                .start()
-        }
+
 
     }
 
@@ -510,11 +463,9 @@ class VideoRecyclerView : RecyclerView {
 
             if (index == lastVisibleItemPosition) {
                 // Show title for the last visible item
-                holder?.binding?.tvTitle?.visible()
                 Log.e("sjncsjk", "Showing last visible item at position: $currentPosition")
             } else {
                 // Hide titles for all other items
-                holder?.binding?.tvTitle?.visible()
                 Log.e("sjncsjk", "Hiding item at position: $currentPosition")
             }
         }

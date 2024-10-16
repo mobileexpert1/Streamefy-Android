@@ -82,10 +82,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     companion object {
         lateinit var homeFragment: HomeFragment
-        var videoduraion:Long=0
-        var mediaId:Int=0
-        var eventVideoIndex=0
-        var mediaIndex=0
+        var videoduraion: Long = 0
+        var mediaId: Int = 0
+        var eventVideoIndex = 0
+        var mediaIndex = 0
     }
 
     var background_current_play_duration = 0
@@ -105,6 +105,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             getUserData()
             //playbackObserver()
         }
+
         eventView()
         creatorView()
         foucusView()
@@ -179,17 +180,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-   fun savePlayback(){
+    fun savePlayback() {
 
-       if (videoduraion>=0) {
-           var request=PlayBackRequest()
-           request.number=phone
-           request.mediaId= mediaId
-           request.duration=videoduraion.toString()
-           viewModel.saveDuration(requireContext(), request)
-           durationObserve()
-       }
-   }
+        if (videoduraion >= 0) {
+            var request = PlayBackRequest()
+            request.number = phone
+            request.mediaId = mediaId
+            request.duration = videoduraion.toString()
+            viewModel.saveDuration(requireContext(), request)
+            durationObserve()
+        }
+    }
+
     private fun foucusView() = with(binding) {
         ivLogout.remoteKey {
             when (it) {
@@ -355,9 +357,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                       var  newPos =
+                        var newPos =
                             (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                        Log.e("skncksnc", "${rvBackgVideo.targetPosition} current $${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} ")
+                        Log.e(
+                            "skncksnc",
+                            "${rvBackgVideo.targetPosition} current $${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
+                        )
                         customIndicator.updateIndicator(newPos)
                     }
                 }
@@ -418,11 +423,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                 drawerItemFocus = it
-                mediaIndex=it
-                mediaId=mediaList[it].id
+                mediaIndex = it
+                mediaId = mediaList[it].id
 
                 var bundle = Bundle()
-                bundle.putString(PrefConstent.PLAY_BACK_DURATION,mediaList[it].playbackDuration)
+                bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
                 bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
@@ -469,7 +474,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
         rvCategory.apply {
-            requestFocus()
+          //  requestFocus()
             setHasFixedSize(true)
 
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
@@ -484,15 +489,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
-                eventVideoIndex=pos
-                mediaIndex=0
+                eventVideoIndex = pos
+                mediaIndex = 0
                 when (type) {
                     StreamEnum.SINGLE -> {
                         eventList[pos].media?.get(0)?.run {
-                            mediaId=this.id
+                            mediaId = this.id
                             val bundle = Bundle()
-                            bundle.putString(PrefConstent.VIDEO_URL,hlsPlaylistUrl)
-                            bundle.putString(PrefConstent.PLAY_BACK_DURATION,playbackDuration)
+                            bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
+                            bundle.putString(PrefConstent.PLAY_BACK_DURATION, playbackDuration)
                             bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
                             bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                             findNavController().navigate(R.id.videofragment, bundle)
@@ -533,6 +538,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
             adapter = eventAdapter
         }
+        eventFocus()
+
     }
 
     fun eventVideosMore() {
@@ -560,8 +567,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                 eventAdapter.pagination(events as ArrayList<EventsItem>)
                                 isEventPagination = true
                                 page++
-                            }else{
-                                isEventPagination=false
+                            } else {
+                                isEventPagination = false
                             }
                             dismissProgress()
                         } else {
@@ -618,36 +625,40 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     dismissProgress()
                     binding.ivLogout.visible()
                 }
-                else->{}
+
+                else -> {}
             }
         }
 
     }
 
-    fun durationObserve(){
+    fun durationObserve() {
         viewModel._videoduraion.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                  //  showProgress()
+                    //  showProgress()
                 }
 
                 is MyResource.isSuccess -> {
-                  //  dismissProgress()
-                    if (isDrawerOpen){
+                    //  dismissProgress()
+                    if (isDrawerOpen) {
                         eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
                         mediaAdapter.updateDuration(mediaIndex, videoduraion)
-                    }
-                    else {
+                    } else {
                         eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
                     }
-                    Log.e("videoback", "$eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}")
-                    videoduraion=0
+                    Log.e(
+                        "videoback",
+                        "$eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}"
+                    )
+                    videoduraion = 0
                 }
 
                 is MyResource.isError -> {
-                   // dismissProgress()
+                    // dismissProgress()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }
@@ -662,14 +673,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 ivLogout.visible()
             }
-            Log.e("dndjvn", "videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
+            Log.e(
+                "dndjvn",
+                "videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
+            )
             if (isDrawerOpen) {
                 drawerView()
                 rvDrawer.post {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
             }
-
+          //  eventFocus()
             if (isFirstVideo) {
                 sliderInit()
             }
@@ -684,6 +698,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             Log.e("kdmcdkmc", "$eventFocusPos dmvdmv $focusView ")
             if (focusView == StreamEnum.INDECATOR_VIEW) {
                 customIndicator.requestFocus()
+            } else if (isDrawerOpen) {
+                rvDrawer.post {
+                    rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
+                }
             } else {
                 rvCategory.apply {
                     post {
@@ -699,7 +717,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         binding.rvBackgVideo.apply {
             pauseVideo()
-          //  playerHandler.pause()
+            //  playerHandler.pause()
             playerHandler.release()
         }
         binding.rvBackgVideo.isfirst = true

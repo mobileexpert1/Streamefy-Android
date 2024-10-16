@@ -48,7 +48,7 @@ class CategoryAdapter(
         viewHolder.apply {
             itemView.isFocusable = true
             itemView.isClickable = true
-            lpVideoProgres.progress = 40
+//            lpVideoProgres.progress = 40
             tvSubtitle.text = data.eventTitle
             tvTitle.text = data.eventTitle
             Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
@@ -95,9 +95,9 @@ class CategoryAdapter(
                     if (viewHolder.absoluteAdapterPosition==eventList.size-2 && homeFragment.isEventPagination){
                         callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
                     }
-                   // homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
+                    homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
 //                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
-                    itemView.animate().scaleX(1.09f).scaleY(1.05f).setDuration(200).start()
+                    itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200).start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
                     itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()

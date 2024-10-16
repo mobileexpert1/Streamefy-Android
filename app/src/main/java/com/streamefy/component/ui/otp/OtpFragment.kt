@@ -496,6 +496,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             }
 
             tvResend.setOnClickListener {
+                otpView.setText("")
                 viewModel.getOtp(
                     requireActivity(),
                     OTPRequest(name, phone)

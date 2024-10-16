@@ -91,7 +91,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_7sdp"
-        android:progress="50"
+        android:progress="0"
         app:indicatorColor="@color/red"
         app:layout_constraintEnd_toEndOf="@+id/tvMenu"
         app:layout_constraintStart_toStartOf="@+id/tvDuration"

@@ -18,4 +18,6 @@ object ServerUrls {
     const val OTP_VERIFY = "api/OTP/Verify"
     const val USER_VIDEOS = "api/BunnyVideo/GetUserVideos"
     const val PLAY_BACK = "api/BunnyVideo/Playback"
+    const val PIN_VERIFICATION = "api/BunnyVideo/Authorize/"
+
 }

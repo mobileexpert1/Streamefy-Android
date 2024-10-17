@@ -6,6 +6,7 @@ import com.streamefy.component.ui.login.model.LoginResponse
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.OTPResponse
 import com.streamefy.component.ui.otp.model.VerificationRequest
+import com.streamefy.component.ui.pin_authentication.PinResponse
 import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.VideoPlaback
 import retrofit2.Response
@@ -13,6 +14,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -24,6 +26,10 @@ interface ApiService {
         @Query("UserPin") userPin: String,
         @Query("PhoneNumber") phoneNumber: String,
     ): Response<HomeResponse>
+    @GET(ServerUrls.PIN_VERIFICATION+"{id}")
+    suspend fun verifyPin(
+        @Path("id") id: String,
+    ): Response<PinResponse>
 //
     @POST(ServerUrls.PLAY_BACK)
     suspend fun saveDuration(

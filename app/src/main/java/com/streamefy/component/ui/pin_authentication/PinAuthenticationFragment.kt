@@ -103,7 +103,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
 //                    findNavController().navigate(R.id.homefragment)
 
-                        viewModel.setPin(requireActivity(), 1, 1, otp, phone)
+                        viewModel.setPin(requireActivity(), otp)
                         observe()
                     }
                 }

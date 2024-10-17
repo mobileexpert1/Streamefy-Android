@@ -18,20 +18,19 @@ import kotlinx.coroutines.launch
 
 class PinVM(var repo: ApiService) : ViewModel() {
 
-    var _pinData = SingleLiveEvent<MyResource<HomeResponse>>()
-    var pinData :LiveData<MyResource<HomeResponse>> =_pinData
+    var _pinData = SingleLiveEvent<MyResource<PinResponse>>()
+    var pinData :LiveData<MyResource<PinResponse>> =_pinData
 
     fun setPin(
-        context: Context, page: Int,
-        itemsPerPage: Int,
+        context: Context,
         userPin: String,
-        phoneNumber: String,
+
     ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 _pinData.value = MyResource.isLoading()
                 try {
-                    var response = repo.getUserVideos(page, itemsPerPage, userPin, phoneNumber)
+                    var response = repo.verifyPin(userPin)
                     if (response.body()?.isSuccess!!) {
                         _pinData.value = MyResource.isSuccess(response.body())
                     } else {

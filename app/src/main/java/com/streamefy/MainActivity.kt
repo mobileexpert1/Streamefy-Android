@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlin.system.exitProcess
 
 
@@ -23,7 +25,16 @@ class MainActivity : AppCompatActivity() {
 
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
         navController = (navHostFragment as NavHostFragment).navController
+//        if (FirebaseApp.getApps(this).isEmpty()) {
+//            FirebaseApp.initializeApp(this)
+//
+//
+//        }else{
+//            Log.e("mdckld","slmclsmc not initialize")
+//        }
 
+
+        //crashApp()
     }
 
     fun exitApp() {
@@ -33,6 +44,12 @@ class MainActivity : AppCompatActivity() {
         exitProcess(0)
     }
 
+
+    fun crashApp() {
+        val crashlytics = FirebaseCrashlytics.getInstance()
+        crashlytics.log("Testing Crashlytics")
+        throw RuntimeException("Test Crash") // Force a crash
+    }
 
 //    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
 //        Log.e("dscmkldanc","saklcn")

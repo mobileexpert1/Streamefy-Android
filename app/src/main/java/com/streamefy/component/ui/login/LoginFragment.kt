@@ -9,6 +9,7 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.activity.addCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -19,6 +20,7 @@ import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
+import com.streamefy.utils.loadAny
 import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.remoteKey
 import kotlinx.coroutines.delay
@@ -37,17 +39,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
 //        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            (requireActivity() as MainActivity).exitApp()
-        }
-
+        binding.ivApplogo.loadAny(R.drawable.app_logo)
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                (requireActivity() as MainActivity).exitApp()
+            }
 //        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
-            var validate = nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
+
+
+            var validate =
+                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
             if (validate) {
                 // ShowError.handleError.handleError(validate as Int)
@@ -72,10 +76,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     onAttach(requireActivity())
                     Log.e("login fragment", "Fragment is not added, navigation aborted.")
                 }
-
 //
-
             }
+
         }
 
         etFullname.setOnFocusChangeListener { v, hasFocus ->
@@ -173,6 +176,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     }
 
+    val nullObject: String? = null
     fun observe() {
         viewmodel.loginLiveData.observe(viewLifecycleOwner) {
             when (it) {
@@ -182,24 +186,25 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 }
 
                 is MyResource.isSuccess -> {
+                    try {
 
-                    var data = it.data?.response
-                    data?.run {
-                        SharedPref.setString(PrefConstent.TOKEN, accessToken)
-                        SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
-                        SharedPref.setString(
-                            PrefConstent.PHONE_NUMBER,
-                            binding.etPhoneNumber.text.toString()
-                        )
-                        SharedPref.setString(
-                            PrefConstent.FULL_NAME,
-                            binding.etFullname.text.toString()
-                        )
+                        var data = it.data?.response
+                        data?.run {
+                            SharedPref.setString(PrefConstent.TOKEN, accessToken)
+                            SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
+                            SharedPref.setString(
+                                PrefConstent.PHONE_NUMBER,
+                                binding.etPhoneNumber.text.toString()
+                            )
+                            SharedPref.setString(
+                                PrefConstent.FULL_NAME,
+                                binding.etFullname.text.toString()
+                            )
 
-                        SharedPref.setString(
-                            PrefConstent.APP_LOGO,
-                           data.logo
-                        )
+                            SharedPref.setString(
+                                PrefConstent.APP_LOGO,
+                                data.logo
+                            )
 //                        data.profileImage?.run {
 //                            SharedPref.setString(
 //                                PrefConstent.AUTH_BACKGROUND,
@@ -209,17 +214,22 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
 
 //                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
+                        }
+                        var bundle = Bundle()
+                        bundle.putString(
+                            PrefConstent.PHONE_NUMBER,
+                            binding.etPhoneNumber.text.toString()
+                        )
+                        if (isAdded) {
+                            findNavController().navigate(R.id.otpFragment, bundle)
+                        } else {
+                            progressDialog.dismiss()
+                        }
+                    } catch (e: Exception) {
+                        FirebaseCrashlytics.getInstance().recordException(e)
+                        throw RuntimeException("login getotp")
                     }
-                    var bundle = Bundle()
-                    bundle.putString(
-                        PrefConstent.PHONE_NUMBER,
-                        binding.etPhoneNumber.text.toString()
-                    )
-                    if (isAdded) {
-                        findNavController().navigate(R.id.otpFragment, bundle)
-                    } else {
-                        progressDialog.dismiss()
-                    }
+
                 }
 
                 is MyResource.isError -> {
@@ -229,16 +239,28 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
     }
 
+    private fun causeNullPointerCrash() {
+        val nullObject: String? = null
+        // This will cause a NullPointerException
+        try {
+            val length = nullObject!!.length
+
+        } catch (e: Exception) {
+
+            logException(e)
+
+        }
+    }
     override fun onPause() {
         super.onPause()
 
-        Log.e("skcnmskncm","skcnsk onpause")
+        Log.e("skcnmskncm", "skcnsk onpause")
 
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e("skcnmskncm","skcnsk destroyview")
+        Log.e("skcnmskncm", "skcnsk destroyview")
         progressDialog.dismiss()
     }
 }

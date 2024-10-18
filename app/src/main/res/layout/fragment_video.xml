@@ -118,12 +118,17 @@
                     android:layout_width="@dimen/_180sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:progress="0"
+                    android:progress="20"
                     android:background="@drawable/ic_seekbar_background_selector"
                     android:progressTint="@color/red"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
-                    android:thumb="@drawable/seekbar_thumb" />
+                    android:thumb="@drawable/seekbar_thumb"
+                    app:trackColor="#ffffff"
+                    android:secondaryProgressTint="@color/white"
+                    android:secondaryProgress="@integer/slideEdgeStart"
+
+                    />
             </LinearLayout>
 
 
@@ -178,6 +183,9 @@
                     android:progress="20"
                     android:progressTint="@color/red"
                     android:thumb="@drawable/seekbar_thumb"
+                    app:trackColor="#ffffff"
+                    android:secondaryProgressTint="@color/white"
+                    android:secondaryProgress="@integer/slideEdgeStart"
                     />
             </LinearLayout>
 

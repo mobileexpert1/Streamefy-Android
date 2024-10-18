@@ -72,15 +72,23 @@ class CategoryAdapter(
             data.media?.run {
                  if (this.isNotEmpty()) {
                      this[0].run {
-                     if (totalVideoDuration.isNotEmpty()) {
+                     if (playbackDuration !="0") {
+                         lpVideoProgres.visible()
                          var totalDuration = convertToMillis(totalVideoDuration)
 
                          val duration = playbackDuration.toDouble()
                        //  val currentPosition = playerHandler.getCurrentPosition()
                          val progress = (duration * 100 / totalDuration.toDouble()).toInt()
                          lpVideoProgres.progress=progress
+                     }else{
+                         lpVideoProgres.gone()
                      }
-                 }}
+
+                 }
+
+                 }else{
+                     lpVideoProgres.gone()
+                 }
             }
 
 

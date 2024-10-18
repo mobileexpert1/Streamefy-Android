@@ -13,6 +13,7 @@ buildscript {
         // Add your classpath dependencies here
         classpath("com.android.tools.build:gradle:8.0.0")
         classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
 
     }
 }
@@ -20,4 +21,6 @@ buildscript {
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
+    alias(libs.plugins.googleService) apply false
+    alias(libs.plugins.crashlyticsFirebase) apply false
 }

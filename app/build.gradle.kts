@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+//    alias(libs.plugins.crashlyticsFirebase)
+    id("com.google.firebase.crashlytics")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -92,6 +95,12 @@ dependencies {
     implementation ("com.github.appsfeature:otp-view:1.1")
     implementation ("com.github.mukeshsolanki.android-otpview-pinview:otpview:3.1.0")
     implementation ("com.squareup.picasso:picasso:2.8")
+    implementation (platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation ("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics")
+//    implementation ("com.google.firebase:firebase-crashlytics-ktx:18.4.1")
+//    implementation("com.google.firebase:firebase-analytics:21.5.0")
+
 //    implementation ("io.github.chaosleung:pinview:1.4.4")
 //    implementation(libs.androidx.media3.exoplayer.hls)
 

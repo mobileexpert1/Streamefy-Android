@@ -96,7 +96,7 @@
         app:layout_constraintEnd_toEndOf="@+id/tvMenu"
         app:layout_constraintStart_toStartOf="@+id/tvDuration"
         app:layout_constraintTop_toBottomOf="@+id/tvDuration"
-        app:trackColor="#993E3D3D"
+        app:trackColor="#ffffff"
         app:trackThickness="@dimen/_1sdp" />
 
     <androidx.appcompat.widget.AppCompatTextView

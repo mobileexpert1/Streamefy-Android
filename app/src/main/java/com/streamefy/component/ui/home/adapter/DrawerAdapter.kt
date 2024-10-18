@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.utils.convertToMillis
+import com.streamefy.utils.gone
 import com.streamefy.utils.loadUrl
 
 
@@ -24,13 +25,15 @@ class DrawerAdapter(
         var data = mediaList[position]
         binding.apply {
             data?.run {
-                if (totalVideoDuration.isNotEmpty()) {
+                if (playbackDuration !="0") {
                     if (totalVideoDuration.isNotEmpty()) {
                         var totalDuration = convertToMillis(totalVideoDuration)
                         val duration = playbackDuration.toDouble()
                         val progress = (duration * 100 / totalDuration.toDouble()).toInt()
                         lpVideoProgres.progress = progress
                     }
+                }else{
+                    lpVideoProgres.gone()
                 }
             }
             var current = getcurrent(data.playbackDuration)

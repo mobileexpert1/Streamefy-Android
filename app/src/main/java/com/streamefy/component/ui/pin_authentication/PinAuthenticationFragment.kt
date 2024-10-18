@@ -25,6 +25,7 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
@@ -48,7 +49,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         applogo=  SharedPref.getString(PrefConstent.APP_LOGO).toString()
        // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.ivApplogo.loadPicaso(applogo)
+        binding.ivApplogo.loadAny(applogo)
         otpFieldFocus()
         binding.apply {
             textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")

@@ -11,7 +11,8 @@ lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
 composeBom = "2023.08.00"
 media3ExoplayerHls = "1.4.1"
-
+crashlytics="3.0.2"
+googledervice="4.4.2"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-leanback = { group = "androidx.leanback", name = "leanback", version.ref = "leanback" }
@@ -59,4 +60,7 @@ androidx-media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exop
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+crashlyticsFirebase = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+googleService = { id = "com.google.gms.google-services", version.ref = "googledervice" }
+
 

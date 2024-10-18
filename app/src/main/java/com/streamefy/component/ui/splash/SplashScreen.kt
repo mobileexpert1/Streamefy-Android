@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.window.SplashScreen
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.MyApp
@@ -29,8 +31,10 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         lifecycleScope.launch {
             delay(2000)
-            navigateToHome()
+            logException()
         }
+
+       // causeNullPointerCrash()
     }
 
     private fun navigateToHome() {
@@ -47,6 +51,32 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 //            bundle.putString(PrefConstent.VIDEO_URL,"")
 //            findNavController().navigate(R.id.videofragment,bundle)
 ////            findNavController().navigate(R.id.dynamicscreen)
+        }
+    }
+
+    fun logException() {
+        try {
+            navigateToHome()
+        } catch (e: Exception) {
+            val crashlytics = FirebaseCrashlytics.getInstance()
+            crashlytics.recordException(e) // Log the exception
+            throw RuntimeException("Splash screen navigation")
+        }
+    }
+
+
+    private fun causeNullPointerCrash() {
+        val nullObject: String? = null
+        // This will cause a NullPointerException
+        try {
+            val length = nullObject!!.length
+        } catch (e: Exception) {
+
+            val crashlytics = FirebaseCrashlytics.getInstance()
+            crashlytics.recordException(e) // Log the exception
+            throw RuntimeException("Splash Error 5")
+
+//            throwerror("Splash new")
         }
     }
 }

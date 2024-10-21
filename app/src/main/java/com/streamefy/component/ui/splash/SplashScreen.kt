@@ -34,19 +34,20 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
             logException()
         }
 
-       // causeNullPointerCrash()
+        // causeNullPointerCrash()
     }
 
     private fun navigateToHome() {
-        val navOptions = androidx.navigation.NavOptions.Builder()
-            .setPopUpTo(R.id.splashScreen, true)
-            .build()
+//        val navOptions = androidx.navigation.NavOptions.Builder()
+//            .setPopUpTo(R.id.splashScreen, true)
+//            .build()
         Log.e("sjndjsn", "sknks $isLogin")
         if (isLogin) {
-            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-            findNavController().navigate(R.id.homefragment, null, navOptions)
+
+//            findNavController().navigate(R.id.homefragment, null, navOptions)
+            findNavController().navigate(R.id.homefragment)
         } else {
-            findNavController().navigate(R.id.loginFragment, null, navOptions)
+            findNavController().navigate(R.id.loginFragment)
 //            var bundle=Bundle()
 //            bundle.putString(PrefConstent.VIDEO_URL,"")
 //            findNavController().navigate(R.id.videofragment,bundle)

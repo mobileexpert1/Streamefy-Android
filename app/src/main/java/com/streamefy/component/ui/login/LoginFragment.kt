@@ -43,7 +43,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 (requireActivity() as MainActivity).exitApp()
             }
-//        ShowError.handleError.handleError(ErrorCodeManager.LOGIN_FAIL)
     }
 
     private fun initClickListeners() = with(binding) {

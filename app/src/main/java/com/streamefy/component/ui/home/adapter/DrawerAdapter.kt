@@ -4,6 +4,7 @@ import com.streamefy.databinding.DrawerItemBinding
 
 
 import android.app.Activity
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -11,6 +12,7 @@ import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.loadUrl
+import com.streamefy.utils.visible
 
 
 class DrawerAdapter(
@@ -25,19 +27,25 @@ class DrawerAdapter(
         var data = mediaList[position]
         binding.apply {
             data?.run {
-                if (playbackDuration !="0") {
+                if (playbackDuration != "0") {
                     if (totalVideoDuration.isNotEmpty()) {
                         var totalDuration = convertToMillis(totalVideoDuration)
                         val duration = playbackDuration.toDouble()
                         val progress = (duration * 100 / totalDuration.toDouble()).toInt()
                         lpVideoProgres.progress = progress
+
+                        var remains = totalDuration - duration
+                        var left = getcurrent(remains.toInt().toString())
+                        tvDuration.text = "$left"
+                        tvDuration.visible()
                     }
-                }else{
+                } else {
                     lpVideoProgres.gone()
+                    tvDuration.gone()
                 }
             }
-            var current = getcurrent(data.playbackDuration)
-            tvDuration.text = "$current of ${data.totalVideoDuration}"
+//            var current = getcurrent(data.playbackDuration)
+//            tvDuration.text = "$current of ${data.totalVideoDuration}"
 
             tvSubtitle.text = data.description
             ivCate.loadUrl(data.thumbnailS3bucketId)
@@ -67,20 +75,24 @@ class DrawerAdapter(
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
         var total = "0"
-        if (hours == 0L) {
-            total="0"
+        if (hours != 0L) {
+            total = "$hours h"
         }
-        if (minutes == 0L) {
-            total="0"
+        if (minutes != 0L) {
+            total += "$minutes m"
         }
-        if (seconds == 0L) {
-            total="0"
-        }
-
-        if (total !="0"){
-            total = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        if (seconds != 0L) {
+            total += "$seconds s"
         }
 
+//        if (total !="0"){
+//            total = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+//        }
+
+        Log.e(
+            "sdknjkscn",
+            "dkcd $hours minuts $minutes seconds $seconds total $total durations $durationMillis"
+        )
         return total
 
     }

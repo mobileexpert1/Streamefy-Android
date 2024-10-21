@@ -772,7 +772,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onPause() {
         super.onPause()
-        if (playerHandler.isPlaying() != null) {
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                HomeFragment.videoduraion = currentPosition
+            }
             if (playerHandler.isPlaying()!!) {
                 playerHandler.pause()
             }
@@ -806,7 +809,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.player?.run {
                 HomeFragment.videoduraion = currentPosition
             }
-
             playerHandler.pause()
             playerHandler.release()
             volumeManager.stopMonitoring()

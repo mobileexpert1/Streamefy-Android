@@ -474,7 +474,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
         rvCategory.apply {
-          //  requestFocus()
+            //  requestFocus()
             setHasFixedSize(true)
 
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
@@ -649,7 +649,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
                     Log.e(
                         "videoback",
-                        "$eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}"
+                        "isDrawerOpen $isDrawerOpen  $eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}"
                     )
                     videoduraion = 0
                 }
@@ -683,7 +683,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
             }
-          //  eventFocus()
+            //  eventFocus()
             if (isFirstVideo) {
                 sliderInit()
             }

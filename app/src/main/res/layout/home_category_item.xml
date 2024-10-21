@@ -24,7 +24,7 @@
 
     <LinearLayout
         android:id="@+id/clThumb"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/_70sdp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:background="@color/transparent"

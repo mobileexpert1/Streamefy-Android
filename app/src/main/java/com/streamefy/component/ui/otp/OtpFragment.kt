@@ -51,10 +51,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     override fun bindView(): Int = R.layout.fragment_otp
     var phone: String = "6280830819"
     var name: String = "appdev096"
-    var applogo=""
-    var app_background=""
+    var applogo = ""
+    var app_background = ""
 
-    var isResend=false
+    var isResend = false
     private val viewModel: OTPVM by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,8 +64,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         }
         name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
 
-        applogo=  SharedPref.getString(PrefConstent.APP_LOGO).toString()
-       // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivApplogo.loadAny(applogo)
         initClickListeners()
         binding.tvResend.clearFocus()
@@ -402,6 +402,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             otpView.setOtpCompletionListener {
                 // requireActivity().hideKey()
                 tvProceed.requestFocus()
+                requireActivity().hideKey()
             }
             otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
 //            otpView.addTextChangedListener {
@@ -438,9 +439,19 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             otpView.setOnFocusChangeListener { v, hasFocus ->
                 Log.e("smskmc", "$hasFocus setOnFocusChangeListener")
                 if (hasFocus) {
-                    otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.ic_seleted_otp))
-                }else{
-                    otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.bg_round_rect_stroke_gray))
+                    otpView.setItemBackground(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_seleted_otp
+                        )
+                    )
+                } else {
+                    otpView.setItemBackground(
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.bg_round_rect_stroke_gray
+                        )
+                    )
 
                 }
             }
@@ -485,6 +496,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
             tvResend.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
                     tvResend.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
+                    requireActivity().hideKey()
                 } else {
                     tvResend.setTextColor(
                         ContextCompat.getColor(
@@ -576,12 +588,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
                 is MyResource.isSuccess -> {
                     var data = it.data?.response
-                    if (isResend){
+                    if (isResend) {
                         ShowError.handleError.message("OTP resent successfully")
-                    }else {
+                    } else {
                         ShowError.handleError.message(data.toString())
                     }
-                    isResend=true
+                    isResend = true
                     startOtpTimer()
                     dismissProgress()
                 }
@@ -641,9 +653,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         }
 
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e("skcnmskncm","skcnsk destroyview")
+        Log.e("skcnmskncm", "skcnsk destroyview")
         dismissProgress()
     }
 }

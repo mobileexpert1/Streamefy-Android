@@ -51,12 +51,13 @@ class CategoryAdapter(
 //            lpVideoProgres.progress = 40
             tvSubtitle.text = data.eventTitle
             tvTitle.text = data.eventTitle
-            Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
+
             if (data.media != null) {
                 if (data.media?.isNotEmpty()!! && data.media?.size!! > 1) {
                     tvSubtitle.text = data.media!![0].description
                     tvMore.text = data.media?.size.toString() + " more video"
                     // imageView.loadUrl(data.media!![0].thumbnailS3bucketId)
+                    Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
                     thumb.visible()
 //                    Glide.with(context)
 //                        .load(R.drawable.ic_video_play)

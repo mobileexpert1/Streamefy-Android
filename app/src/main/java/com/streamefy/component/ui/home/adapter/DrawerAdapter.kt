@@ -26,6 +26,7 @@ class DrawerAdapter(
     override fun onBindViewHolder(viewHolder: DrawerView, position: Int) {
         var data = mediaList[position]
         binding.apply {
+
             data?.run {
                 if (playbackDuration != "0") {
                     if (totalVideoDuration.isNotEmpty()) {

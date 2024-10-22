@@ -86,6 +86,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivBack.setOnClickListener { findNavController().popBackStack() }
 
         ivPlay.setOnClickListener {
+            toShowBackButton()
             val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
             params.width =
                 resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
@@ -105,6 +106,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
         ivSkipForward.setOnClickListener {
+            toShowBackButton()
             var current = playerHandler.player?.currentPosition
             var duration = playerHandler.player?.duration
             var count = current!! + 10000
@@ -116,12 +118,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
         ivSkipBack.setOnClickListener {
+            toShowBackButton()
             playerHandler.seekBackward(10)
         }
         ivZoom.setOnClickListener {
             //  playerHandler.toggleFullScreen()
         }
         ivVolume.setOnClickListener {
+            toShowBackButton()
             Log.e("sncsnc", "dndnv $volumeCount ${playerHandler.isMuted()}")
             visibilityCount = 0
             if (playerHandler.player != null) {
@@ -215,6 +219,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("djhfjd", "shcudh $event")
             toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
+                toShowBackButton()
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
                         ivSkipForward.requestFocus()
@@ -247,6 +252,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             clSettingsMenu.gone()
 
             if (event.action == KeyEvent.ACTION_DOWN) {
+                toShowBackButton()
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_LEFT -> {
                         ivVolume.requestFocus()

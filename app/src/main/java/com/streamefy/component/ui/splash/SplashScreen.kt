@@ -34,7 +34,7 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
             logException()
         }
 
-        // causeNullPointerCrash()
+//         causeNullPointerCrash()
     }
 
     private fun navigateToHome() {

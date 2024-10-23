@@ -6,6 +6,7 @@
                 android:angle="0"
                 android:endColor="#EFBD8A"
                 android:startColor="#941AF2"
+                android:centerColor="@color/transparent"
                 android:type="linear" />
             <corners android:radius="@dimen/_3sdp" />
         </shape>

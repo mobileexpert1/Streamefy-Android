@@ -15,12 +15,25 @@ android {
         minSdk = 21
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.2"
         vectorDrawables {
             useSupportLibrary = true
         }
 
     }
+    flavorDimensions += "default"
+    productFlavors {
+        create("streamefy") {
+            applicationId = "com.streamefy"
+            versionNameSuffix = "-streamefy"
+        }
+        create("cupcake") {
+            applicationId = "com.streamefy.cupcake"
+            versionNameSuffix = "-cupcake"
+        }
+    }
+
+
 
     buildTypes {
         release {
@@ -52,6 +65,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+
 }
 
 dependencies {

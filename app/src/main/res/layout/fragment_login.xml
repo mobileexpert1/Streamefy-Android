@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/ic_background_blur">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         >
 
 
@@ -17,10 +15,11 @@
             android:layout_width="@dimen/_150sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_marginTop="@dimen/_40sdp"
-            tools:src="@drawable/app_logo"
+            tools:src="@drawable/ic_logo"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
             app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/app_name"
            />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -83,7 +82,8 @@
                 android:textColorHint="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etFullname" />
+                app:layout_constraintTop_toBottomOf="@+id/etFullname"
+                tools:ignore="TextFields" />
             <!--            android:background="@drawable/bg_round_gradient_purple_orange"-->
             <TextView
                 android:id="@+id/tvGetOtp"
@@ -100,7 +100,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-
                 app:layout_constraintTop_toBottomOf="@+id/etPhoneNumber" />
 
 
@@ -143,13 +142,14 @@
                 android:layout_marginBottom="@dimen/_6sdp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_logo"
+               android:src="@drawable/ic_logo"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/app_name"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-
+<!--            android:src="@drawable/ic_powerby"-->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

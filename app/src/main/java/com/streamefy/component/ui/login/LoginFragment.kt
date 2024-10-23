@@ -1,11 +1,9 @@
 package com.streamefy.component.ui.login
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.TextView.OnEditorActionListener
 import androidx.activity.addCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -39,7 +37,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
 //        }
-        binding.ivApplogo.loadAny(R.drawable.app_logo)
+        binding.ivApplogo.loadAny(R.drawable.ic_logo)
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
                 (requireActivity() as MainActivity).exitApp()
             }

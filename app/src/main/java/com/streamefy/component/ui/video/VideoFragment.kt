@@ -9,9 +9,9 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -87,7 +87,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivPlay.setOnClickListener {
             toShowBackButton()
-            val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+            val params = ivPlay.layoutParams as LinearLayout.LayoutParams
             params.width =
                 resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
             params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
@@ -404,13 +404,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSkipBack.layoutParams as LinearLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSkipBack.layoutParams = params
             } else {
-                val params = ivSkipBack.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSkipBack.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivSkipBack.layoutParams = params
@@ -419,14 +419,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSkipForward.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSkipForward.layoutParams as LinearLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSkipForward.layoutParams = params
 //                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
             } else {
-                val params = ivSkipForward.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSkipForward.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivSkipForward.layoutParams = params
@@ -436,7 +436,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivPlay.layoutParams as LinearLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
@@ -448,7 +448,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     ivPlay.setImageResource(R.drawable.ic_seleceted_play)
                 }
             } else {
-                val params = ivPlay.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivPlay.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivPlay.layoutParams = params
@@ -479,13 +479,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSetting.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._16sdp)
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivSetting.layoutParams = params
 
             } else {
-                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivSetting.layoutParams = params
@@ -497,7 +497,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("smclksmc", "$hasFocus snknc ${playerHandler.isMuted()}")
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivVolume.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivVolume.layoutParams as LinearLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
@@ -512,7 +512,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
             } else {
-                val params = ivSetting.layoutParams as LinearLayoutCompat.LayoutParams
+                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivVolume.layoutParams = params

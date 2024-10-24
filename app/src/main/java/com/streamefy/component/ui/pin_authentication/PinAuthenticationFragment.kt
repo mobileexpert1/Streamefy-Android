@@ -49,7 +49,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.ivApplogo.loadAny(applogo)
+//        binding.ivApplogo.loadAny(applogo)
         otpFieldFocus()
         binding.apply {
             textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")

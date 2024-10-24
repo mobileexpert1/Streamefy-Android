@@ -62,7 +62,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 android:id="@+id/projectlogo"
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/tvProjectTitle"
                     style="@style/filson_bold_66_whiteTV"
                     android:layout_marginTop="@dimen/_50sdp"
@@ -90,7 +90,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Riya and Vijay" />
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <TextView
                     android:id="@+id/tvProjectDesc"
                     style="@style/filson_14_whiteTV"
                     android:layout_width="@dimen/_170sdp"
@@ -114,7 +114,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 android:id="@+id/ivLogout"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
@@ -165,7 +165,7 @@
             android:orientation="vertical"
             android:paddingTop="@dimen/_20sdp">
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <TextView
                 android:id="@+id/tvTitle"
                 style="@style/filson_regular_21_whiteTV"
                 android:layout_width="0dp"

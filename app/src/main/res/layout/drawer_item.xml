@@ -29,7 +29,7 @@
             android:id="@+id/clVideoThumb"
             >
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 android:id="@+id/ivCate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -43,7 +43,7 @@
                 android:id="@+id/icPlay"
                 android:layout_width="@dimen/_13sdp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_play"
+                android:src="@drawable/ic_video_play"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +52,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/tvDuration"
         style="@style/filson_regular_12_whiteTV"
         android:layout_marginStart="@dimen/_7sdp"
@@ -64,7 +64,7 @@
         app:layout_constraintStart_toEndOf="@+id/clThumb"
         app:layout_constraintTop_toTopOf="@+id/clThumb" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/tvMenu"
         style="@style/filson_regular_12_whiteTV"
         android:layout_marginStart="@dimen/_50sdp"
@@ -99,7 +99,7 @@
         app:trackColor="#ffffff"
         app:trackThickness="@dimen/_1sdp" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/tvSubtitle"
         style="@style/filson_14_whiteTV"
         android:layout_width="0dp"

@@ -73,9 +73,9 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
             val length = nullObject!!.length
         } catch (e: Exception) {
 
-            val crashlytics = FirebaseCrashlytics.getInstance()
-            crashlytics.recordException(e) // Log the exception
-            throw RuntimeException("Splash Error 5")
+//            val crashlytics = FirebaseCrashlytics.getInstance()
+//            crashlytics.recordException(e) // Log the exception
+//            throw RuntimeException("Splash Error 5")
 
 //            throwerror("Splash new")
         }

@@ -66,7 +66,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         // app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.ivApplogo.loadAny(applogo)
+//        binding.ivApplogo.loadAny(applogo)
         initClickListeners()
         binding.tvResend.clearFocus()
         otpFieldFocus()

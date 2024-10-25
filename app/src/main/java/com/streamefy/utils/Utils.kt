@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,27 +23,52 @@ fun Context.showMessage(mesg: String) {
 }
 
 
+//fun Context.isNetworkAvailable(): Boolean {
+//    try {
+//        (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
+//            return getNetworkCapabilities(activeNetwork)?.run {
+//                when {
+//                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+//                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+//                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+//                    else -> false
+//                }
+//            } ?: false
+//        }
+//    }catch (e:Exception){
+//        return false
+//    }
+//    catch (e: IOException) {
+//        return false
+//    }
+//}
+
 fun Context.isNetworkAvailable(): Boolean {
     try {
-        (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
-            return getNetworkCapabilities(activeNetwork)?.run {
-                when {
-                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                    else -> false
-                }
-            } ?: false
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        // Check API level for network capabilities
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+
+            return capabilities.run {
+                hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+            }
+        } else {
+            // For devices below API 21
+            val networkInfo = connectivityManager.activeNetworkInfo
+            return networkInfo?.isConnected == true
         }
-    }catch (e:Exception){
+    } catch (e: Exception) {
+        // Optionally log the exception
         return false
     }
-    catch (e: IOException) {
-        return false
-    }
+
+    return false
 }
-
-
 
 fun hideSoftKeyboard(activity: Activity, view: View) {
     var gestureDetector =

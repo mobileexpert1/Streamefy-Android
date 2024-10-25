@@ -37,7 +37,7 @@ class DrawerAdapter(
 
                         var remains = totalDuration - duration
                         var left = getcurrent(remains.toInt().toString())
-                        tvDuration.text = "$left"
+                        tvDuration.text = "$left Left"
                         tvDuration.visible()
                     }
                 } else {
@@ -62,7 +62,12 @@ class DrawerAdapter(
 
         }
 
-
+//            .\adb -s 192.168.12.200:5555 root
+//        .\adb -s 192.168.12.200:5555 shell setenforce 0
+//        setenforce: Couldn't set enforcing status to '0': Permission denied
+//
+//        adb -s <device_id> root
+//                adb -s <device_id> shell setenforce 0
     }
 
     class DrawerView(itemView: DrawerItemBinding) : ViewHolder(itemView.root) {
@@ -75,15 +80,15 @@ class DrawerAdapter(
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
-        var total = "0"
+        var total = ""
         if (hours != 0L) {
-            total = "$hours h"
+            total = "$hours"+"h "
         }
         if (minutes != 0L) {
-            total += "$minutes m"
+            total += "$minutes"+"m "
         }
         if (seconds != 0L) {
-            total += "$seconds s"
+            total += "$seconds"+"s"
         }
 
 //        if (total !="0"){

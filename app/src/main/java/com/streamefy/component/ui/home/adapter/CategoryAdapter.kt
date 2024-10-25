@@ -53,16 +53,18 @@ class CategoryAdapter(
             tvTitle.text = data.eventTitle
 
             if (data.media != null) {
-                if (data.media?.isNotEmpty()!! && data.media?.size!! > 1) {
+                if (data.media?.isNotEmpty()!! && data.media?.size!! >= 1) {
                     tvSubtitle.text = data.media!![0].description
-                    tvMore.text = data.media?.size.toString() + " more video"
-                    // imageView.loadUrl(data.media!![0].thumbnailS3bucketId)
                     Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
                     thumb.visible()
-//                    Glide.with(context)
-//                        .load(R.drawable.ic_video_play)
-//                        .into(imageView)
                     Log.e("asfafaf", "nkcda ${data.media!![0].thumbnailS3bucketId}")
+                    if (data.media?.size!! == 1){
+                        tvMore.invisible()
+                    }else{
+                        tvMore.text = data.media?.size.toString() + " more video"
+                        tvMore.visible()
+                    }
+
                 } else {
                     tvMore.invisible()
                 }

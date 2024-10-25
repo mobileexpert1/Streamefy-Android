@@ -1,13 +1,18 @@
 package com.streamefy.component.ui.home
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
@@ -35,6 +40,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
+import com.streamefy.utils.gone
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.visible
@@ -343,6 +349,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
+    var toolsCount:Long = 0
     fun sliderInit() = with(binding) {
 
         rvBackgVideo.apply {
@@ -387,6 +394,89 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //            Log.e("aggggg", "sknmcjiadnc  $it")
 //            customIndicator.updateIndicator(it)
 //        }
+    }
+
+    fun hideTools() = with(binding) {
+        Log.e("skmcks", "sbjcbs $toolsCount")
+        if (toolsCount >= 6000) {
+            clOpecity.gone()
+            rvCreators.gone()
+            tvProjectDesc.gone()
+//            tvProjectDesc.apply {
+//                val parentHeight = (parent as View).height
+//                animate()
+//                    .translationX(0f) // Move to the left (if not already at 0)
+//                    .translationY(parentHeight - height.toFloat()) // Move down
+//                    .alpha(0f) // Fade out
+//                    .setInterpolator(DecelerateInterpolator()) // Smooth transition
+//                    .setDuration(1050) // Duration of the animation
+//                    .setListener(object : AnimatorListenerAdapter() {
+//                        override fun onAnimationEnd(animation: Animator) {
+//                            super.onAnimationEnd(animation)
+//                            visibility = View.GONE // Hide the view after the animation
+//                            requestLayout()
+//                        }
+//                    })
+//                    .start()
+//
+//
+//            }
+//            rvCreators.apply {
+//                val parentHeight = (parent as View).height
+//                animate()
+//                    .translationX(0f) // Move to the left (if not already at 0)
+//                    .translationY(parentHeight - height.toFloat()) // Move down
+//                    .alpha(0f) // Fade out
+//                    .setInterpolator(DecelerateInterpolator()) // Smooth transition
+//                    .setDuration(1050) // Duration of the animation
+//                    .setListener(object : AnimatorListenerAdapter() {
+//                        override fun onAnimationEnd(animation: Animator) {
+//                            super.onAnimationEnd(animation)
+//                            visibility = View.GONE // Hide the view after the animation
+//                            requestLayout()
+//                            Log.e("smcksmc","skcmks gone")
+//                        }
+//                    })
+//                    .start()
+//
+//            }
+//
+        }
+
+    }
+
+    fun showTools() = with(binding) {
+        clOpecity.visible()
+        tvProjectDesc.visible()
+        rvCreators.visible()
+//        tvProjectDesc.apply {
+//            val parentHeight = (parent as View).height
+//            alpha = 0f
+//            translationY = parentHeight.toFloat()
+//            visible()
+//            animate()
+//                .alpha(1f) // Fade in
+//                .translationX(0f) // Move to the left (if not already at 0)
+//                .translationY(0f) // Move to the original position
+//                .setInterpolator(DecelerateInterpolator()) // Smooth transition
+//                .setDuration(1000) // Adjust duration as needed
+//                .start()
+//        }
+//
+//        rvCreators.apply {
+//            val parentHeight = (parent as View).height
+//            alpha = 0f
+//            translationY = parentHeight.toFloat()
+//            visible()
+//            animate()
+//                .alpha(1f) // Fade in
+//                .translationX(0f) // Move to the left (if not already at 0)
+//                .translationY(0f) // Move to the original position
+//                .setInterpolator(DecelerateInterpolator()) // Smooth transition
+//                .setDuration(1000) // Adjust duration as needed
+//                .start()
+//        }
+
     }
 
     private fun getUserData() {
@@ -592,10 +682,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     proDesc = projectDescription.toString()
                                     it.tvProjectTitle.text = proTitle.toString()
                                     it.tvProjectDesc.text = proDesc.toString()
+                                    it.clTitle.visible()
                                 }
                                 it.rvCategory.requestFocus()
 //                            it. rvBackgVideo.requestFocus()
-                                it.projectlogo.loadUrl(this.logo)
+//                                it.projectlogo.loadUrl(this.logo)
                                 proLogo = this.logo
 
 
@@ -605,6 +696,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                             if (crewMembers != null && crewMembers.isNotEmpty()) {
                                 // crewList.addAll(crewMembers)
+                                binding.rvCreators.visible()
                                 creatorsAdapter.update(crewMembers as ArrayList<crewMembers>)
                             }
                             isFirst = false
@@ -669,8 +761,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         binding.apply {
             tvProjectTitle.text = proTitle.toString()
             tvProjectDesc.text = proDesc.toString()
-            projectlogo.loadUrl(proLogo)
+//            projectlogo.loadUrl(proLogo)
             if (tvProjectTitle.text.toString().isNotEmpty()) {
+                clTitle.visible()
                 ivLogout.visible()
             }
             Log.e(

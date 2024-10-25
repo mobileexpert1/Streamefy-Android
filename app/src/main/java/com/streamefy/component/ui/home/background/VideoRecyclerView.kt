@@ -174,6 +174,10 @@ class VideoRecyclerView : RecyclerView {
                     Player.STATE_ENDED -> {
                         Log.e("jnjddc", " STATE_ENDED")
                        // playerHandler.release()
+                        homeFragment.apply {
+                            toolsCount=0
+                            showTools()
+                        }
                         scrollMe(currentVideo)
                     }
 
@@ -288,6 +292,10 @@ class VideoRecyclerView : RecyclerView {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
         thumbShow()
+        homeFragment.apply {
+            toolsCount=0
+            showTools()
+        }
        // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
@@ -520,6 +528,10 @@ class VideoRecyclerView : RecyclerView {
             playerHandler.handler.postDelayed({ updateDuration() }, 500)
         } else {
             playerHandler.stopHandler()
+        }
+        homeFragment.apply {
+            toolsCount=position
+            hideTools()
         }
 //        Log.e("updates", " duration $position")
         if (position>=30000){

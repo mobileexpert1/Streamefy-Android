@@ -14,10 +14,10 @@ class MyApp : Application() {
 //    val startTime = System.currentTimeMillis()
 
     override fun onCreate() {
-        if (FirebaseApp.getApps(this).isEmpty()) {
-            FirebaseApp.initializeApp(this)
-            Log.e("firebasecrass", "Firebase initialized: ${FirebaseApp.getApps(this).isNotEmpty()}")
-        }
+//        if (FirebaseApp.getApps(this).isEmpty()) {
+//            FirebaseApp.initializeApp(this)
+//            Log.e("firebasecrass", "Firebase initialized: ${FirebaseApp.getApps(this).isNotEmpty()}")
+//        }
         super.onCreate()
 
         startKoin {

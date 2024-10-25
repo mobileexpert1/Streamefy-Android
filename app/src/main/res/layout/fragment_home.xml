@@ -53,34 +53,49 @@
                 android:layout_marginEnd="@dimen/_20sdp"
                 android:layout_marginBottom="@dimen/_50sdp"
                 android:background="@drawable/ic_indecator_selector"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:paddingHorizontal="@dimen/_3sdp"
                 android:paddingVertical="@dimen/_5sdp"
                 android:visibility="invisible"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/projectlogo"
-                android:layout_width="@dimen/_80sdp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_30sdp"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:scaleType="fitStart"
-                android:src="@drawable/ic_logo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clOpecity"
                 android:layout_width="@dimen/_400sdp"
                 android:layout_height="match_parent"
                 android:background="@drawable/horizontal_opecity"
+                app:layout_constraintBottom_toTopOf="@+id/clRv"
+                app:layout_constraintStart_toStartOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clTitle"
+                android:layout_width="@dimen/_400sdp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="@dimen/_10sdp"
                 android:paddingStart="@dimen/_30sdp"
-                app:layout_constraintStart_toStartOf="parent"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/clRv"
+                app:layout_constraintStart_toStartOf="parent">
 
-                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:id="@+id/projectlogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:drawableStart="@drawable/ic_production"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:fontFamily="@font/filsonpro_medium"
+                    android:gravity="center_vertical"
+                    android:letterSpacing=".3"
+                    android:text="production"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tvProjectTitle"
@@ -108,11 +123,50 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_1sdp"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvProjectDesc" />
 
+                <TextView
+                    android:id="@+id/tvProceed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/bg_round_gradient_purple_orange"
+                    android:drawableStart="@drawable/ic_backg_play"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:drawableTint="@color/white"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:fontFamily="@font/filsonpro_bold"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="play"
+                    android:textAllCaps="true"
+                    android:textColor="@color/input_field_color_selector"
+                    app:layout_constraintStart_toStartOf="@+id/rvCreators"
+                    app:layout_constraintTop_toBottomOf="@+id/rvCreators" />
+
+                <ImageView
+                    android:id="@+id/ivTrailer"
+                    android:layout_width="@dimen/_22sdp"
+                    android:layout_height="@dimen/_22sdp"
+                    android:layout_marginStart="@dimen/_7sdp"
+                    android:background="@drawable/bg_round_gradient_purple_orange"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:rotation="180"
+                    android:src="@drawable/ic_trailer"
+                    android:text="Back"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvProceed"
+                    app:layout_constraintStart_toEndOf="@+id/tvProceed"
+                    app:layout_constraintTop_toTopOf="@+id/tvProceed" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
             <ImageView
                 android:id="@+id/ivLogout"
@@ -129,6 +183,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clRv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/vertical_opacity"
@@ -136,7 +191,7 @@
                 android:paddingBottom="@dimen/_7sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/projectlogo">
+                app:layout_constraintStart_toStartOf="@+id/clTitle">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCategory"

@@ -57,7 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/home_theme"
+                    tools:src="@drawable/home_theme"
                     app:layout_constraintBottom_toTopOf="@+id/lpVideoProgres"
                     app:layout_constraintTop_toTopOf="parent" />
 

@@ -64,10 +64,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                }
 //            }
             ivBack.setOnClickListener {
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.splashScreen, true)
-                    .build()
-                findNavController().navigate(R.id.loginFragment, null, navOptions)
+                findNavController().navigate(R.id.loginFragment)
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
@@ -144,10 +141,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        val navOptions = NavOptions.Builder()
-                            .setPopUpTo(R.id.splashScreen, true)
-                            .build()
-                        findNavController().navigate(R.id.loginFragment, null, navOptions)
+                        findNavController().navigate(R.id.loginFragment)
                     }
                 })
         }

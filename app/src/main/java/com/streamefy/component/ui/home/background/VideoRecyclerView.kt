@@ -105,7 +105,7 @@ class VideoRecyclerView : RecyclerView {
 
         // Bind the player to the view.
         player = playerHandler.getPLayer()!!
-        videoSurfaceView?.useController=false
+        videoSurfaceView?.useController = false
 //        videoSurfaceView?.resizeMode= RESIZE_MODE_FIT
         addOnScrollListener(object : OnScrollListener() {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -127,7 +127,7 @@ class VideoRecyclerView : RecyclerView {
             @RequiresApi(Build.VERSION_CODES.TIRAMISU)
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-               // Log.e("scsoddsvs", "is frst $currentVideo target $targetPosition")
+                // Log.e("scsoddsvs", "is frst $currentVideo target $targetPosition")
 
                 if (isfirst) {
                     Log.e("scsoddsvs", "is frst ")
@@ -173,9 +173,9 @@ class VideoRecyclerView : RecyclerView {
 
                     Player.STATE_ENDED -> {
                         Log.e("jnjddc", " STATE_ENDED")
-                       // playerHandler.release()
+                        // playerHandler.release()
                         homeFragment.apply {
-                            toolsCount=0
+                            toolsCount = 0
                             showTools()
                         }
                         scrollMe(currentVideo)
@@ -272,7 +272,7 @@ class VideoRecyclerView : RecyclerView {
             scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         } else {
-          //  recyclerview?.scrollToPosition(0)
+            //  recyclerview?.scrollToPosition(0)
             homeFragment.binding.rvBackgVideo.smoothScrollToPosition(0)
         }
     }
@@ -292,11 +292,12 @@ class VideoRecyclerView : RecyclerView {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
         thumbShow()
+       playerHandler.stopHandler()
         homeFragment.apply {
-            toolsCount=0
+            toolsCount = 0
             showTools()
         }
-       // pauseVideo()
+        // pauseVideo()
         targetPosition =
             (recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
         currentPose = targetPosition
@@ -329,7 +330,7 @@ class VideoRecyclerView : RecyclerView {
             frameLayout = videoContainer
         }
 
-       // updateAll()
+        // updateAll()
         if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
             thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
 
@@ -390,7 +391,7 @@ class VideoRecyclerView : RecyclerView {
         player = playerHandler.getPLayer()!!
         Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
-            playerHandler.setMediaUri(homeFragment.mediaUrl,0)
+            playerHandler.setMediaUri(homeFragment.mediaUrl, 0)
 //            playerHandler.seekWithInitialise(mediaUrl,videoDuration)
             // thumbnail?.gone()
         } else {
@@ -400,7 +401,7 @@ class VideoRecyclerView : RecyclerView {
 //        homeFragment.binding.rvCategory.requestFocus()
     }
 
-    fun thumbShow(){
+    fun thumbShow() {
         thumbnail?.visible()
         videoSurfaceView?.visible()
         thumbnail?.run {
@@ -427,7 +428,8 @@ class VideoRecyclerView : RecyclerView {
         }
 
     }
-    fun thumbHide(){
+
+    fun thumbHide() {
 
         videoSurfaceView?.run {
             alpha = 0f
@@ -455,17 +457,18 @@ class VideoRecyclerView : RecyclerView {
         }
 
 
-
     }
 
     private fun updateAll() {
-     //   CoroutineScope(Dispatchers.IO).launch {
-          //  delay(200)
-        val lastVisibleItemPosition = (layoutManager as? LinearLayoutManager)?.findLastVisibleItemPosition() ?: return
+        //   CoroutineScope(Dispatchers.IO).launch {
+        //  delay(200)
+        val lastVisibleItemPosition =
+            (layoutManager as? LinearLayoutManager)?.findLastVisibleItemPosition() ?: return
 
         mediaObjects.forEachIndexed { index, backgroundMediaItem ->
-            val currentPosition = index - (layoutManager as LinearLayoutManager)?.findFirstVisibleItemPosition()!!
-                ?: return
+            val currentPosition =
+                index - (layoutManager as LinearLayoutManager)?.findFirstVisibleItemPosition()!!
+                    ?: return
             val child = getChildAt(currentPosition) ?: return
             val holder = child.tag as? BackgroundHolder
 
@@ -506,7 +509,7 @@ class VideoRecyclerView : RecyclerView {
         player = playerHandler.getPLayer()!!
         Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
-            playerHandler.setMediaUri(homeFragment.mediaUrl,0)
+            playerHandler.setMediaUri(homeFragment.mediaUrl, 0)
         } else {
             pauseVideo()
         }
@@ -529,16 +532,20 @@ class VideoRecyclerView : RecyclerView {
         } else {
             playerHandler.stopHandler()
         }
+
         homeFragment.apply {
-            toolsCount=position
-            hideTools()
+            toolsCount += 500
+            Log.e("skmcks", "sbjcbs $toolsCount")
+            if (toolsCount == 5000L) {
+                hideTools()
+            }
         }
 //        Log.e("updates", " duration $position")
-        if (position>=30000){
+        if (position >= 30000) {
             if (targetPosition == mediaObjects.size - 1) {
                 recyclerview?.smoothScrollToPosition(0)
-            }else{
-                recyclerview?.smoothScrollToPosition(targetPosition+1)
+            } else {
+                recyclerview?.smoothScrollToPosition(targetPosition + 1)
             }
         }
     }
@@ -569,9 +576,9 @@ class VideoRecyclerView : RecyclerView {
             frameLayout!!.addView(videoSurfaceView)
             isVideoViewAdded = true
             videoSurfaceView!!.requestFocus()
-           // frameLayout!!.viewAnimate()
+            // frameLayout!!.viewAnimate()
             videoSurfaceView!!.viewAnimate()
-          //  thumbnail?.goneAnimate()
+            //  thumbnail?.goneAnimate()
 
 //            videoSurfaceView?.isFocusable = false
 //            videoSurfaceView?.isFocusableInTouchMode = false
@@ -592,7 +599,7 @@ class VideoRecyclerView : RecyclerView {
             removeVideoView(videoSurfaceView)
             playPosition = -1
             videoSurfaceView!!.visibility = View.INVISIBLE
-           // thumbnail!!.visibility = View.GONE
+            // thumbnail!!.visibility = View.GONE
         }
     }
 

@@ -16,8 +16,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Tracks
+import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
@@ -192,8 +197,35 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
             }
 
+            override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+                super.onTrackSelectionParametersChanged(parameters)
+                val minVideoWidth = parameters.minVideoWidth
+                val minVideoHeight = parameters.minVideoHeight
+                Log.d("TrackSelectionParams", "Min Video Width: $minVideoWidth, Min Video Height: $minVideoHeight hhh\n $parameters" )
+            }
+
+            override fun onTracksChanged(tracks: Tracks) {
+                for (group in tracks.getGroups()) {
+                    // Get the length of the track group
+                    val trackCount = group.length
+                    for (j in 0 until trackCount) {
+                        val format = group.getTrackFormat(j)
+                        // Check if the format is a video format using supported properties
+                        if (format.width > 0 && format.height > 0) {
+                            val width = format.width
+                            val height = format.height
+                            Log.d("VideoResolution", "Current resolution: ${width}x${height}")
+                        }
+                    }
+                }
+            }
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayerError", "Playback error: " + error.message, error)
+            }
+
+            override fun onPlayerErrorChanged(error: PlaybackException?) {
+                super.onPlayerErrorChanged(error)
+                Log.e("ExoPlayerError", "Playback error: " + error?.message, error)
             }
         })
 

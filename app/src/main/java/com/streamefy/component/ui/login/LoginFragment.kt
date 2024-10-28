@@ -34,13 +34,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
-        requireActivity().onBackPressedDispatcher.addCallback {
-            MainActivity().exitApp()
-        }
-        binding.ivApplogo.loadAny(R.drawable.ic_logo)
-//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-//            (requireActivity() as MainActivity).exitApp()
+//        requireActivity().onBackPressedDispatcher.addCallback {
+//            MainActivity().exitApp()
 //        }
+        binding.ivApplogo.loadAny(R.drawable.ic_logo)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            (requireActivity() as MainActivity).exitApp()
+        }
 
     }
 

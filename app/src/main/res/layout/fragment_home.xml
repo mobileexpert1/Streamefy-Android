@@ -83,8 +83,6 @@
                     android:id="@+id/projectlogo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
-                    android:layout_marginTop="@dimen/_20sdp"
                     android:drawableStart="@drawable/ic_production"
                     android:drawablePadding="@dimen/_5sdp"
                     android:fontFamily="@font/filsonpro_medium"
@@ -93,28 +91,32 @@
                     android:text="production"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
+                    android:layout_marginBottom="@dimen/_10sdp"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toTopOf="@+id/tvProjectTitle"
+
+                    />
 
                 <TextView
                     android:id="@+id/tvProjectTitle"
                     style="@style/filson_bold_66_whiteTV"
-                    android:layout_marginTop="@dimen/_50sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/tvProjectDesc"
+                    android:layout_marginBottom="@dimen/_5sdp"
                     tools:text="Riya and Vijay" />
 
                 <TextView
                     android:id="@+id/tvProjectDesc"
                     style="@style/filson_14_whiteTV"
                     android:layout_width="@dimen/_170sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_height="@dimen/_25sdp"
                     android:fontFamily="@font/filsonpro_light"
+                    android:gravity="center_vertical"
                     android:maxLines="2"
                     android:paddingBottom="@dimen/_1sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvProjectTitle"
+                    app:layout_constraintBottom_toTopOf="@+id/rvCreators"
                     tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been " />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -123,9 +125,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_1sdp"
-                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvProjectDesc" />
+                    app:layout_constraintBottom_toTopOf="@+id/tvProceed"
+                    />
 
                 <TextView
                     android:id="@+id/tvProceed"
@@ -146,7 +148,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/input_field_color_selector"
                     app:layout_constraintStart_toStartOf="@+id/rvCreators"
-                    app:layout_constraintTop_toBottomOf="@+id/rvCreators" />
+                   app:layout_constraintBottom_toBottomOf="parent" />
 
                 <ImageView
                     android:id="@+id/ivTrailer"

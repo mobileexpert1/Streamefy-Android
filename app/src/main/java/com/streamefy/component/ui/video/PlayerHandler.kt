@@ -1,5 +1,6 @@
 package com.streamefy.component.ui.video
 
+
 import TokenAuthDataSource
 import android.content.Context
 import android.net.Uri
@@ -10,23 +11,19 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DataSource.Factory
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import java.net.URLEncoder
 import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DataSource.Factory
-import com.google.android.exoplayer2.upstream.DataSpec
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
-import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
-import java.util.HashMap
 
 class PlayerHandler(
     private val context: Context,
@@ -42,7 +39,10 @@ class PlayerHandler(
 
     private fun initializePlayer() {
         try {
-            player = ExoPlayer.Builder(context).build()
+            val trackSelector = DefaultTrackSelector(context)
+            player = ExoPlayer.Builder(context)
+               // .setTrackSelector(trackSelector)
+                .build()
 
             playerView.player = player
         } catch (e: Exception) {

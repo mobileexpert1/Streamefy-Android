@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSource.Factory
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.streamefy.component.ui.video.model.QualityModel
 import java.net.URLEncoder
 import java.util.Base64
 import javax.crypto.Mac
@@ -133,7 +134,6 @@ class PlayerHandler(
 
     }
 
-
     fun playTokenise() {
         val url =
             "https://vz-4aa86377-b82.b-cdn.net/bcdn_token=VTzc7imuotCSMWo-2B8xPdfacWpngzRH0k5u6l5GeYk&expires=1726208026&token_path=%2F06a93993-df8b-44c5-bf95-24d107ff5a95%2F/06a93993-df8b-44c5-bf95-24d107ff5a95/playlist.m3u8"
@@ -184,23 +184,26 @@ class PlayerHandler(
     val expireTime = System.currentTimeMillis() / 1000 + 3600 // URL valid for 1 hour
 
 
-    fun setQuality(resolution: String) {
+    fun setQuality(resolution: QualityModel) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
-        val dimensions = when (resolution) {
-            // "360p" -> Pair(640, 360)// Pair(352, 240)
-            "480p" -> Pair(854, 480)// Pair(640, 360)
-            "1080p" -> Pair(1920, 1080)// Pair(640, 360)
-            "2080p" -> Pair(3840, 2160)// Pair(640, 360)
-            // "720p" -> Pair(1280, 720)// Pair(842, 480)
-            //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
-            // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
-            //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
-            else -> return
-        }
-
-        val (width, height) = dimensions
+//        val dimensions = when (resolution) {
+//            // "360p" -> Pair(640, 360)// Pair(352, 240)
+//            "480p" -> Pair(854, 480)// Pair(640, 360)
+//            "1080p" -> Pair(1920, 1080)// Pair(640, 360)
+//            "2080p" -> Pair(3840, 2160)// Pair(640, 360)
+//            // "720p" -> Pair(1280, 720)// Pair(842, 480)
+//            //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
+//            // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
+//            //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
+//            else -> return
+//        }
+//
+//        val (width, height) = dimensions
         val trackSelectionParameters = trackSelector.buildUponParameters()
-            .setMaxVideoSize(width, height)
+            .setMaxVideoSize(resolution.width, resolution.height)
+//            .setMaxVideoSize(1920, 1080)
+//            .setMaxVideoSizeSd()
+//            .setMaxAudioBitrate(6000)
             .build()
 
         trackSelector.setParameters(trackSelectionParameters)

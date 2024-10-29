@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:descendantFocusability="afterDescendants"
+    android:id="@+id/llQuality"
+    >
+    <TextView
+        android:id="@+id/tvquality"
+        style="@style/filson_14_whiteTV"
+        android:layout_width="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:fontFamily="@font/filsonpro_light"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_3sdp"
+        android:text="480p"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        />
+</LinearLayout>

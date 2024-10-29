@@ -16,15 +16,16 @@
             android:id="@+id/player_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             app:use_controller="false" />
+
         <ImageView
             android:id="@+id/ivVideoThumb"
             android:layout_width="match_parent"
@@ -35,8 +36,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            />
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/ivBack"
@@ -118,15 +118,15 @@
                     android:layout_width="@dimen/_180sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:progress="0"
                     android:background="@drawable/ic_seekbar_background_selector"
-                    android:progressTint="@color/red"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
+                    android:progress="0"
+                    android:progressTint="@color/red"
+                    android:secondaryProgress="@integer/slideEdgeStart"
+                    android:secondaryProgressTint="@color/white"
                     android:thumb="@drawable/seekbar_thumb"
                     app:trackColor="#ffffff"
-                    android:secondaryProgressTint="@color/white"
-                    android:secondaryProgress="@integer/slideEdgeStart"
 
                     />
             </LinearLayout>
@@ -177,16 +177,15 @@
                     android:layout_width="@dimen/_60sdp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:focusable="true"
                     android:background="@drawable/ic_seekbar_background_selector"
+                    android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:progress="0"
                     android:progressTint="@color/red"
-                    android:thumb="@drawable/seekbar_thumb"
-                    app:trackColor="#ffffff"
-                    android:secondaryProgressTint="@color/white"
                     android:secondaryProgress="@integer/slideEdgeStart"
-                    />
+                    android:secondaryProgressTint="@color/white"
+                    android:thumb="@drawable/seekbar_thumb"
+                    app:trackColor="#ffffff" />
             </LinearLayout>
 
             <ImageView
@@ -215,18 +214,28 @@
             app:layout_constraintBottom_toTopOf="@+id/llTools"
             app:layout_constraintEnd_toEndOf="@+id/llTools">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvQuality"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
+
+
             <TextView
                 android:id="@+id/tv480p"
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
+                android:background="@color/light_gray"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
                 android:text="480p"
-                android:background="@color/light_gray"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv1080p"
@@ -239,7 +248,8 @@
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
                 android:text="1080p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv2080p"
@@ -252,21 +262,22 @@
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
                 android:text="2080p"
-                android:textColor="@color/black" />
+
+                android:textColor="@color/black"  android:visibility="gone"/>
 
             <TextView
                 style="@style/filson_14_whiteTV"
                 android:layout_width="match_parent"
                 android:layout_marginTop="@dimen/_2sdp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:fontFamily="@font/filsonpro_light"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:paddingVertical="@dimen/_1sdp"
                 android:background="@color/light_gray"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/filsonpro_light"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_1sdp"
                 android:text="720p"
-                android:visibility="gone"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 style="@style/filson_14_whiteTV"
@@ -277,9 +288,9 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
-                android:visibility="gone"
                 android:text="480p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 style="@style/filson_14_whiteTV"
@@ -290,9 +301,9 @@
                 android:fontFamily="@font/filsonpro_light"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_1sdp"
-                android:visibility="gone"
                 android:text="360p"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

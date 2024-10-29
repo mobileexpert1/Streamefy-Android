@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
+import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.visible
 
@@ -41,8 +42,8 @@ class DrawerAdapter(
                         tvDuration.visible()
                     }
                 } else {
-                    lpVideoProgres.gone()
-                    tvDuration.gone()
+                    lpVideoProgres.invisible()
+                    tvDuration.invisible()
                 }
             }
 //            var current = getcurrent(data.playbackDuration)

@@ -123,8 +123,9 @@
                     android:id="@+id/rvCreators"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_1sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/tvProceed"
                     />
@@ -250,13 +251,14 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvDrawer"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_height="0dp"
+                android:layout_marginVertical="@dimen/_5sdp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+                app:layout_constraintBottom_toBottomOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.drawerlayout.widget.DrawerLayout>
 

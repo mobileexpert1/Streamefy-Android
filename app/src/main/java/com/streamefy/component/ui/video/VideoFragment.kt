@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -27,6 +28,7 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment
+import com.streamefy.component.ui.video.model.QualityModel
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
@@ -51,6 +53,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var playbackduration: Long = 0
     var thumbnailS3bucketId = ""
     private lateinit var volumeManager: VolumeManager
+    lateinit var qualityAdapter: QualityAdapter
+    var qualityList = ArrayList<QualityModel>()
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
@@ -58,7 +62,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-         handleKey(binding.playerView)
+        handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
         arguments?.run {
@@ -79,7 +83,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             clickme()
             listener()
-            quality()
+
         }
         volume()
 
@@ -201,24 +205,86 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 super.onTrackSelectionParametersChanged(parameters)
                 val minVideoWidth = parameters.minVideoWidth
                 val minVideoHeight = parameters.minVideoHeight
-                Log.d("TrackSelectionParams", "Min Video Width: $minVideoWidth, Min Video Height: $minVideoHeight hhh\n $parameters" )
+                Log.d(
+                    "TrackSelectionParams",
+                    "Min Video Width: $minVideoWidth, Min Video Height: $minVideoHeight hhh\n $parameters"
+                )
             }
 
             override fun onTracksChanged(tracks: Tracks) {
-                for (group in tracks.getGroups()) {
-                    // Get the length of the track group
-                    val trackCount = group.length
-                    for (j in 0 until trackCount) {
-                        val format = group.getTrackFormat(j)
-                        // Check if the format is a video format using supported properties
-                        if (format.width > 0 && format.height > 0) {
-                            val width = format.width
-                            val height = format.height
-                            Log.d("VideoResolution", "Current resolution: ${width}x${height}")
+                if (!isOpenSettingFirst) {
+                    isOpenSettingFirst = true
+                    qualityList.clear()
+                    for (group in tracks.getGroups()) {
+                        // Get the length of the track group
+                        val trackCount = group.length
+                        for (j in 0 until trackCount) {
+                            val format = group.getTrackFormat(j)
+                            if (group.isTrackSelected(j)) {
+                                Log.d(
+                                    "VideoResolution",
+                                    "selected index $j and ${group.isSelected}"
+                                )
+                            }
+                            // Check if the format is a video format using supported properties
+                            if (format.width > 0 && format.height > 0) {
+                                val width = format.width
+                                val height = format.height
+//                               if (group.isTrackSelected(j)) {
+//                                   val data =
+//                                       QualityModel(height.toString() + " P", true, height, width)
+//                                   qualityList.add(data)
+//                                   //qualityAdapter.update(data)
+//                                   Log.d(
+//                                       "VideoResolution",
+//                                       "Current playing resolution: ${width}x${height}"
+//                                   )
+//                               } else {
+                                var isSelected = false
+                                if (j == 0) {
+                                    isSelected = true
+                                }
+
+                                val data =
+                                    QualityModel(
+                                        height.toString() + " P",
+                                        isSelected,
+                                        height,
+                                        width
+                                    )
+                                qualityList.add(data)
+                                Log.d("VideoResolution", "resolution: ${width}x${height}")
+                                // }
+
+                            }
                         }
+
+
+//                    for (j in 0 until trackCount) {
+//                        if (group.isTrackSelected(j)) {
+//                            val currentFormat = group.getTrackFormat(j)
+//                            var  currentResolution = "${currentFormat.width}x${currentFormat.height}"
+//                            Log.d("ttttttgd", "$trackCount testing $currentResolution")
+//
+//                            if (currentFormat.width > 0 && currentFormat.height > 0) {
+//
+//                                Log.d("ttttttgd", "Currently playing resolution: $currentResolution")
+//                            } else {
+//                                Log.d("ttttttgd", "No valid video format is currently playing.")
+//                            }
+//                            break // Exit loop after finding the selected track
+//                        }
+//                    }
+
                     }
+                    quality()
                 }
+                // Now check for the currently selected track
+
+
+//                qualityAdapter.update(qualityList)
             }
+
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayerError", "Playback error: " + error.message, error)
             }
@@ -596,111 +662,144 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 
     private fun quality() = with(binding) {
-        val qualityButtons = ArrayList<TextView>()
-        qualityButtons.clear()
-        if (isSmartRevision) {
-            qualityButtons.add(tv480p)
-            qualityButtons.add(tv1080p)
-            qualityButtons.add(tv2080p)
-        } else {
-            qualityButtons.add(tv480p)
-            tv1080p.gone()
-            tv2080p.gone()
-        }
+//        val qualityButtons = ArrayList<TextView>()
+//        qualityButtons.clear()
+//        if (isSmartRevision) {
+//            qualityButtons.add(tv480p)
+//            qualityButtons.add(tv1080p)
+//            qualityButtons.add(tv2080p)
+//        }
+//        else {
+//            qualityButtons.add(tv480p)
+//            tv1080p.gone()
+//            tv2080p.gone()
+//        }
+//        ivSetting.setOnClickListener {
+//            if (clSettingsMenu.isVisible) {
+//                clSettingsMenu.gone()
+//            } else {
+//                clSettingsMenu.visible()
+//
+//                qualityButtons[videoQualityIndex].requestFocus()
+//                qualityButtons[videoQualityIndex].setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireActivity(),
+//                        R.color.light_gray
+//                    )
+//                )
+//            }
+//        }
+//        qualityButtons.forEachIndexed { index, textView ->
+//            textView.setOnClickListener {
+//                clSettingsMenu.gone()
+//              //  playerHandler.setQuality(textView.text.toString())
+//                ivSetting.requestFocus()
+//                isOpenSettingFirst = true
+//                qualityButtons.forEachIndexed { subindex, subText ->
+//                    if (index == subindex) {
+//                        subText.setBackgroundColor(
+//                            ContextCompat.getColor(
+//                                requireActivity(),
+//                                R.color.light_gray
+//                            )
+//                        )
+//                        videoQualityIndex = subindex
+//
+//                    } else {
+//                        subText.setBackgroundColor(
+//                            ContextCompat.getColor(
+//                                requireActivity(),
+//                                R.color.white
+//                            )
+//                        )
+//                    }
+//
+//                }
+//            }
+//
+//            textView.setOnFocusChangeListener { _, hasFocus ->
+//                if (hasFocus) {
+//                    textView.setBackgroundColor(
+//                        ContextCompat.getColor(
+//                            requireActivity(),
+//                            R.color.light_gray
+//                        )
+//                    )
+//                } else {
+//                    textView.setBackgroundColor(
+//                        ContextCompat.getColor(
+//                            requireActivity(),
+//                            R.color.white
+//                        )
+//                    )
+//                    // clSettingsMenu.gone()
+//                }
+//            }
+//
+//            textView.setOnKeyListener { v, keyCode, event ->
+//                Log.e("hdhhdhdhd", "ddmv ${event}")
+//                visibilityCount = 0
+//                if (event.action == KeyEvent.ACTION_DOWN) {
+//                    when (keyCode) {
+//                        KeyEvent.KEYCODE_DPAD_DOWN -> {
+//                            if (index + 1 < qualityButtons.size) {
+//                                qualityButtons[index + 1].requestFocus()
+//                            } else {
+//                                //qualityButtons[index].requestFocus()
+//                                ivSetting.requestFocus()
+//                            }
+//                            return@setOnKeyListener true
+//                        }
+//
+//                        KeyEvent.KEYCODE_DPAD_UP -> {
+//                            if (index - 1 >= 0) {
+//                                qualityButtons[index - 1].requestFocus()
+//                            } else {
+//                                qualityButtons[index].requestFocus()
+////                                ivBack.requestFocus()
+//                            }
+//                            return@setOnKeyListener true
+//                        }
+//
+//                    }
+//                }
+//                false
+//            }
+//        }
+
+        // view initialize
+
         ivSetting.setOnClickListener {
             if (clSettingsMenu.isVisible) {
                 clSettingsMenu.gone()
+
             } else {
                 clSettingsMenu.visible()
+                qualityList.forEachIndexed { index, qualityModel ->
+                    if (qualityModel.isSelected) {
+                        clSettingsMenu.requestFocus()
+                        rvQuality.requestFocus()
+                        rvQuality.post {
+                            rvQuality.getChildAt(index)?.requestFocus()
+                        }
+                    }
 
-                qualityButtons[videoQualityIndex].requestFocus()
-                qualityButtons[videoQualityIndex].setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.light_gray
-                    )
-                )
+                }
             }
         }
 
-        qualityButtons.forEachIndexed { index, textView ->
-            textView.setOnClickListener {
+        rvQuality.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext())
+            qualityAdapter = QualityAdapter(requireActivity(), qualityList) {
                 clSettingsMenu.gone()
-                playerHandler.setQuality(textView.text.toString())
-                ivSetting.requestFocus()
-                isOpenSettingFirst = true
-                qualityButtons.forEachIndexed { subindex, subText ->
-                    if (index == subindex) {
-                        subText.setBackgroundColor(
-                            ContextCompat.getColor(
-                                requireActivity(),
-                                R.color.light_gray
-                            )
-                        )
-                        videoQualityIndex = subindex
-
-                    } else {
-                        subText.setBackgroundColor(
-                            ContextCompat.getColor(
-                                requireActivity(),
-                                R.color.white
-                            )
-                        )
-                    }
-
-                }
+                playerHandler.setQuality(qualityList[it])
+                //ivSetting.requestFocus()
+//                isOpenSettingFirst = true
+                Log.e("sncksnc", "clicked ${qualityList[it]}")
             }
-
-            textView.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    textView.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireActivity(),
-                            R.color.light_gray
-                        )
-                    )
-                } else {
-                    textView.setBackgroundColor(
-                        ContextCompat.getColor(
-                            requireActivity(),
-                            R.color.white
-                        )
-                    )
-                    // clSettingsMenu.gone()
-                }
-            }
-
-            textView.setOnKeyListener { v, keyCode, event ->
-                Log.e("hdhhdhdhd", "ddmv ${event}")
-                visibilityCount = 0
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    when (keyCode) {
-                        KeyEvent.KEYCODE_DPAD_DOWN -> {
-                            if (index + 1 < qualityButtons.size) {
-                                qualityButtons[index + 1].requestFocus()
-                            } else {
-                                //qualityButtons[index].requestFocus()
-                                ivSetting.requestFocus()
-                            }
-                            return@setOnKeyListener true
-                        }
-
-                        KeyEvent.KEYCODE_DPAD_UP -> {
-                            if (index - 1 >= 0) {
-                                qualityButtons[index - 1].requestFocus()
-                            } else {
-                                qualityButtons[index].requestFocus()
-//                                ivBack.requestFocus()
-                            }
-                            return@setOnKeyListener true
-                        }
-
-                    }
-                }
-                false
-            }
+            adapter = qualityAdapter
         }
-
     }
 
     private fun volume() = with(binding) {

@@ -3,6 +3,7 @@ package com.streamefy.component.ui.video
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -17,14 +18,13 @@ class QualityAdapter(
     var callBack: (Int) -> Unit
 ) : RecyclerView.Adapter<QualityAdapter.qualityHolder>() {
 
-    //    var binding QualityItemBinding
-//    val binding by lazy { QualityItemBinding.inflate(context.layoutInflater) }
     lateinit var binding: QualityItemBinding
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): qualityHolder {
-        binding = QualityItemBinding.inflate(context.layoutInflater)
+//        var inflater=LayoutInflater.from(context).inflate(R.layout.quality_item,parent,false)
+        binding = QualityItemBinding.inflate(context.layoutInflater,parent,false)
         return qualityHolder(binding)
     }
 
@@ -32,11 +32,11 @@ class QualityAdapter(
         var data = list[position]
         Log.e("sncksnc", "skcnks $data")
         binding.apply {
-//            if (data.isSelected) {
-//                tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
-//            } else {
-//                tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-//            }
+            if (data.isSelected) {
+                tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
+            } else {
+                tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            }
 
             tvquality.text = data.title
             tvquality.setOnClickListener {
@@ -47,7 +47,7 @@ class QualityAdapter(
                         tvquality.setBackgroundColor(
                             ContextCompat.getColor(
                                 context,
-                                R.color.light_green
+                                R.color.light_gray
                             )
                         )
                     } else {
@@ -59,11 +59,18 @@ class QualityAdapter(
 
             }
 
-            llQuality.setOnFocusChangeListener { _, hasFocus ->
+
+            tvquality.setOnFocusChangeListener { _, hasFocus ->
+                Log.e("sjncjsbc","skck $hasFocus")
                 if (hasFocus) {
-                    llQuality.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                    tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else{
-                    llQuality.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                    if (!data.isSelected) {
+                        tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                    }else{
+                        tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
+                    }
+
                 }
             }
         }

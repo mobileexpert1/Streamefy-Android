@@ -269,7 +269,8 @@ class VideoRecyclerView : RecyclerView {
         Log.e("smcskmc", "up $pos new $mNewPos size ${mediaObjects.size}")
         if (mNewPos < mediaObjects.size) {
             homeFragment.binding.rvBackgVideo.smoothScrollToPosition(mNewPos)
-            scrollPlay {}
+            removeVideoView(videoSurfaceView)
+//            scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         } else {
             //  recyclerview?.scrollToPosition(0)
@@ -278,12 +279,12 @@ class VideoRecyclerView : RecyclerView {
     }
 
     fun backScroll(pos: Int) {
-        var mNewPos = 2
-        Log.e("smcskmc", "back $pos new $mNewPos size ${mediaObjects.size}")
-        if (mNewPos > 0) {
-            recyclerview?.scrollToPosition(mNewPos)
-            scrollPlay {}
-        }
+
+        Log.e("smcskmc", "back $pos new $pos size ${mediaObjects.size}")
+        homeFragment.binding.rvBackgVideo.smoothScrollToPosition(pos)
+        removeVideoView(videoSurfaceView)
+//            scrollPlay {}
+
     }
 
     var targetPosition = 0
@@ -292,7 +293,7 @@ class VideoRecyclerView : RecyclerView {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun play(callBack: (String) -> Unit) {
         thumbShow()
-       playerHandler.stopHandler()
+        playerHandler.stopHandler()
         homeFragment.apply {
             toolsCount = 0
             showTools()
@@ -311,7 +312,7 @@ class VideoRecyclerView : RecyclerView {
         if (videoSurfaceView == null) {
             return
         }
-        Log.e("skncksnc", "skck surface")
+        Log.e("skncksnc", "skck surface $playPosition")
 
         removeVideoView(videoSurfaceView)
 
@@ -330,75 +331,21 @@ class VideoRecyclerView : RecyclerView {
             frameLayout = videoContainer
         }
 
-        // updateAll()
+        Log.e("skcnsknc","second video $targetPosition thumb ${mediaObjects[targetPosition].thumbnailSBucketId}")
         if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
             thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
-
-//            Glide.with(viewContext!!)
-//                .load(mediaObjects[targetPosition].thumbnailSBucketId)
-//                .into(object : CustomTarget<Drawable?>() {
-//                    override fun onResourceReady(
-//                        resource: Drawable,
-//                        transition: Transition<in Drawable?>?
-//                    )
-//                    {
-//                        clParant?.setBackground(resource)
-//                      //  clParant?.setBackground(resource)
-////                        videoSurfaceView?.run {
-////                            animate()
-////                                .alpha(1f)
-////                                .scaleX(1f)
-////                                .scaleY(1f)
-////                                .setInterpolator(AccelerateDecelerateInterpolator())
-////                                .setDuration(1500)
-////                                .withEndAction {
-////                                    frameLayout?.run {
-////                                        animate()
-////                                            .alpha(1f)
-////                                            .scaleX(1f)
-////                                            .scaleY(1f)
-////                                            .setInterpolator(DecelerateInterpolator())// Scale to original size
-////                                            .setDuration(10)
-////                                            .start()
-////                                    }
-////                                    thumbnail?.run {
-////                                        animate()
-////                                            .alpha(0f)
-////                                            .scaleX(1f)
-////                                            .scaleY(1f)
-////                                            .setInterpolator(DecelerateInterpolator())// Scale to original size
-////                                            .setDuration(10)
-////                                            .start()
-////                                    }
-////                                    //thumbnail?.gone()
-////
-//                                }
-//                               // .start()
-//
-//
-//                    override fun onLoadCleared(placeholder: Drawable?) {
-//                    }
-//                })
-        } else {
-            //thumbnail?.gone()
         }
 
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         currentVideo = targetPosition
-        var videoDuration = homeFragment.currentVideoDuration
-
-//        videoSurfaceView!!.player = playerHandler.getPLayer()
         player = playerHandler.getPLayer()!!
-        Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
+        Log.e("skncksnc", "skcks thumb ${mediaObjects[targetPosition].thumbnailSBucketId}\n video ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
             playerHandler.setMediaUri(homeFragment.mediaUrl, 0)
-//            playerHandler.seekWithInitialise(mediaUrl,videoDuration)
-            // thumbnail?.gone()
         } else {
             pauseVideo()
         }
         //playerHandler.mute()
-//        homeFragment.binding.rvCategory.requestFocus()
     }
 
     fun thumbShow() {
@@ -490,8 +437,6 @@ class VideoRecyclerView : RecyclerView {
 
         removeVideoView(videoSurfaceView)
 
-//        val currentPosition =
-//            targetPosition - (Objects.requireNonNull(layoutManager) as LinearLayoutManager).findFirstVisibleItemPosition()
         val child = getChildAt(targetPosition) ?: return
         holder = child.tag as BackgroundHolder
         if (holder == null) {
@@ -505,7 +450,6 @@ class VideoRecyclerView : RecyclerView {
         }
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         currentVideo = targetPosition
-        var videoDuration = homeFragment.currentVideoDuration
         player = playerHandler.getPLayer()!!
         Log.e("skncksnc", "skcks ${homeFragment.mediaUrl}")
         if (homeFragment.mediaUrl.isNotEmpty()) {
@@ -513,8 +457,6 @@ class VideoRecyclerView : RecyclerView {
         } else {
             pauseVideo()
         }
-        //  playerHandler.mute()
-        // homeFragment.binding.rvBackgVideo.requestFocus()
 
     }
 

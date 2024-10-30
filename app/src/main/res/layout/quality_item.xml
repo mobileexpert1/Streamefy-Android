@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusableInTouchMode="true"
     android:focusable="true"
     android:descendantFocusability="afterDescendants"
+    android:background="@color/white"
     android:id="@+id/llQuality"
     >
     <TextView
@@ -15,9 +16,9 @@
         android:focusableInTouchMode="true"
         android:fontFamily="@font/filsonpro_light"
         android:paddingHorizontal="@dimen/_10sdp"
-        android:paddingVertical="@dimen/_3sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:layout_marginBottom="@dimen/_2sdp"
         android:text="480p"
-        android:background="@color/white"
         android:textColor="@color/black"
         />
 </LinearLayout>

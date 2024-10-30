@@ -181,9 +181,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 .setInterpolator(DecelerateInterpolator())// Scale to original size
                                 .setDuration(50)
                                 .start()
-//                            playerView.visible()
-//                            ivVideoThumb.gone()
-
                         }
                         .start()
                     binding.sbVideoSeek.max = 100
@@ -216,73 +213,33 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     isOpenSettingFirst = true
                     qualityList.clear()
                     for (group in tracks.getGroups()) {
-                        // Get the length of the track group
                         val trackCount = group.length
                         for (j in 0 until trackCount) {
                             val format = group.getTrackFormat(j)
-                            if (group.isTrackSelected(j)) {
-                                Log.d(
-                                    "VideoResolution",
-                                    "selected index $j and ${group.isSelected}"
-                                )
-                            }
+
                             // Check if the format is a video format using supported properties
                             if (format.width > 0 && format.height > 0) {
                                 val width = format.width
                                 val height = format.height
-//                               if (group.isTrackSelected(j)) {
-//                                   val data =
-//                                       QualityModel(height.toString() + " P", true, height, width)
-//                                   qualityList.add(data)
-//                                   //qualityAdapter.update(data)
-//                                   Log.d(
-//                                       "VideoResolution",
-//                                       "Current playing resolution: ${width}x${height}"
-//                                   )
-//                               } else {
                                 var isSelected = false
-                                if (j == 0) {
+                                if (j == trackCount-1) {
                                     isSelected = true
                                 }
-
                                 val data =
                                     QualityModel(
-                                        height.toString() + " P",
-                                        isSelected,
+                                        height.toString() + " P", isSelected,
                                         height,
-                                        width
-                                    )
+                                        width)
                                 qualityList.add(data)
                                 Log.d("VideoResolution", "resolution: ${width}x${height}")
-                                // }
 
                             }
                         }
 
-
-//                    for (j in 0 until trackCount) {
-//                        if (group.isTrackSelected(j)) {
-//                            val currentFormat = group.getTrackFormat(j)
-//                            var  currentResolution = "${currentFormat.width}x${currentFormat.height}"
-//                            Log.d("ttttttgd", "$trackCount testing $currentResolution")
-//
-//                            if (currentFormat.width > 0 && currentFormat.height > 0) {
-//
-//                                Log.d("ttttttgd", "Currently playing resolution: $currentResolution")
-//                            } else {
-//                                Log.d("ttttttgd", "No valid video format is currently playing.")
-//                            }
-//                            break // Exit loop after finding the selected track
-//                        }
-//                    }
-
                     }
                     quality()
                 }
-                // Now check for the currently selected track
 
-
-//                qualityAdapter.update(qualityList)
             }
 
             override fun onPlayerError(error: PlaybackException) {
@@ -775,6 +732,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             } else {
                 clSettingsMenu.visible()
+//                clSettingsMenu.requestFocus()
+//                rvQuality.requestFocus()
+//                rvQuality.post {
+//                    rvQuality.getChildAt(0)?.requestFocus()
+//                }
                 qualityList.forEachIndexed { index, qualityModel ->
                     if (qualityModel.isSelected) {
                         clSettingsMenu.requestFocus()
@@ -794,8 +756,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             qualityAdapter = QualityAdapter(requireActivity(), qualityList) {
                 clSettingsMenu.gone()
                 playerHandler.setQuality(qualityList[it])
-                //ivSetting.requestFocus()
-//                isOpenSettingFirst = true
+                ivSetting.requestFocus()
                 Log.e("sncksnc", "clicked ${qualityList[it]}")
             }
             adapter = qualityAdapter

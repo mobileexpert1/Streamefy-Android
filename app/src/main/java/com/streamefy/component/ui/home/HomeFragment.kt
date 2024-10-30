@@ -284,7 +284,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         ivLogout.requestFocus()
                     } else {
                         val currenPos = rvBackgVideo.targetPosition - 1
-                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
+                        binding.rvBackgVideo.backScroll(currenPos)
 
                     }
                 }
@@ -373,8 +373,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         var newPos =
                             (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                         Log.e(
-                            "skncksnc",
-                            "${rvBackgVideo.targetPosition} current $${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
+                            "skncksnc", "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
                         )
                         customIndicator.updateIndicator(newPos)
                     }

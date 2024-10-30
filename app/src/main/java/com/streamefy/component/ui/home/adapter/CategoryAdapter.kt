@@ -49,20 +49,27 @@ class CategoryAdapter(
             itemView.isFocusable = true
             itemView.isClickable = true
 //            lpVideoProgres.progress = 40
-            tvSubtitle.text = data.eventTitle
             tvTitle.text = data.eventTitle
+
+
 
             if (data.media != null) {
                 if (data.media?.isNotEmpty()!! && data.media?.size!! >= 1) {
-                    tvSubtitle.text = data.media!![0].description
                     Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
                     thumb.visible()
                     Log.e("asfafaf", "nkcda ${data.media!![0].thumbnailS3bucketId}")
-                    if (data.media?.size!! == 1){
+                    if (data.media?.size!! == 1) {
                         tvMore.invisible()
-                    }else{
-                        tvMore.text = data.media?.size.toString() + " more video"
+                    } else {
+                        tvMore.text = (data.media?.size!! - 1).toString() + " more videos"
                         tvMore.visible()
+                    }
+
+                    if (data.media!![0].description.isNotEmpty()) {
+                        tvSubtitle.text = data.media!![0].description
+                        tvSubtitle.visible()
+                    }else{
+                        tvSubtitle.gone()
                     }
 
                 } else {
@@ -71,27 +78,27 @@ class CategoryAdapter(
             } else {
                 tvMore.invisible()
             }
-          //  tvMore.visible()
+            //  tvMore.visible()
             data.media?.run {
-                 if (this.isNotEmpty()) {
-                     this[0].run {
-                     if (playbackDuration !="0") {
-                         lpVideoProgres.visible()
-                         var totalDuration = convertToMillis(totalVideoDuration)
+                if (this.isNotEmpty()) {
+                    this[0].run {
+                        if (playbackDuration != "0") {
+                            lpVideoProgres.visible()
+                            var totalDuration = convertToMillis(totalVideoDuration)
 
-                         val duration = playbackDuration.toDouble()
-                       //  val currentPosition = playerHandler.getCurrentPosition()
-                         val progress = (duration * 100 / totalDuration.toDouble()).toInt()
-                         lpVideoProgres.progress=progress
-                     }else{
-                         lpVideoProgres.gone()
-                     }
+                            val duration = playbackDuration.toDouble()
+                            //  val currentPosition = playerHandler.getCurrentPosition()
+                            val progress = (duration * 100 / totalDuration.toDouble()).toInt()
+                            lpVideoProgres.progress = progress
+                        } else {
+                            lpVideoProgres.gone()
+                        }
 
-                 }
+                    }
 
-                 }else{
-                     lpVideoProgres.gone()
-                 }
+                } else {
+                    lpVideoProgres.gone()
+                }
             }
 
 
@@ -103,15 +110,24 @@ class CategoryAdapter(
 //                }
 
                 if (hasFocus) {
-                    if (viewHolder.absoluteAdapterPosition==eventList.size-2 && homeFragment.isEventPagination){
-                        callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
+                    if (viewHolder.absoluteAdapterPosition == eventList.size - 2 && homeFragment.isEventPagination) {
+                        callBack.invoke(viewHolder.absoluteAdapterPosition, StreamEnum.PAGINATION)
                     }
-                    homeFragment.eventFocusPos=viewHolder.absoluteAdapterPosition
+                    homeFragment.eventFocusPos = viewHolder.absoluteAdapterPosition
 //                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
-                    itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200).start()
+                    itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
+                        .withEndAction {
+                            homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
+                            itemView.invalidate()
+                            itemView.requestLayout()
+                        }.start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {
-                    itemView.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                    itemView.animate().scaleX(1f).scaleY(1f).setDuration(200)
+                        .withEndAction {
+//                            itemView.invalidate()
+//                            itemView.requestLayout()
+                        }.start()
                     clEvent.setBackgroundColor(
                         ContextCompat.getColor(
                             context,
@@ -121,26 +137,25 @@ class CategoryAdapter(
                 }
 
 
-
             }
 
             clEvent.setOnKeyListener { v, keyCode, event ->
-                if (event.action== KeyEvent.ACTION_DOWN){
-                when(keyCode){
-                    KeyEvent.KEYCODE_DPAD_UP ->{
-                        callBack.invoke(position,StreamEnum.UP_DPAD_KEY)
-                    }
+                if (event.action == KeyEvent.ACTION_DOWN) {
+                    when (keyCode) {
+                        KeyEvent.KEYCODE_DPAD_UP -> {
+                            callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
+                        }
 //                    KeyEvent.KEYCODE_DPAD_RIGHT->{
 //                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){
 //                            callBack.invoke(viewHolder.absoluteAdapterPosition,StreamEnum.PAGINATION)
 //                        }
 //                    }
-                    else->{
+                        else -> {
+                        }
                     }
                 }
-            }
 
-            false
+                false
             }
 
             clEvent.setOnClickListener {
@@ -188,21 +203,21 @@ class CategoryAdapter(
 
     fun pagination(newlist: ArrayList<EventsItem>) {
 //        eventList.clear()
-        eventList.addAll(eventList.size-1,newlist)
+        eventList.addAll(eventList.size - 1, newlist)
 //        notifyItemChanged(eventList.size - 1)
         notifyDataSetChanged()
     }
 
-    fun updateDuration(position: Int,mediaIndex:Int,duraton:Long) {
+    fun updateDuration(position: Int, mediaIndex: Int, duraton: Long) {
 //        eventList.clear()
-       // if (mediaIndex==0) {
-            eventList[position].media?.run {
-                get(mediaIndex).playbackDuration = duraton.toString()
-          //  }
+        // if (mediaIndex==0) {
+        eventList[position].media?.run {
+            get(mediaIndex).playbackDuration = duraton.toString()
+            //  }
         }
         //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
 
-       notifyItemChanged(position)
+        notifyItemChanged(position)
     }
 
 

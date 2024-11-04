@@ -114,6 +114,7 @@ class CategoryAdapter(
                         callBack.invoke(viewHolder.absoluteAdapterPosition, StreamEnum.PAGINATION)
                     }
                     homeFragment.eventFocusPos = viewHolder.absoluteAdapterPosition
+                    homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
 //                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
                     itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
                         .withEndAction {
@@ -168,6 +169,7 @@ class CategoryAdapter(
 
             tvMore.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
+                    homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
                     // itemView.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
                     tvMore.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
                 } else {

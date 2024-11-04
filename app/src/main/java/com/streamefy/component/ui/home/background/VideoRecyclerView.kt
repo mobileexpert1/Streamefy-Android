@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.size
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -331,7 +332,10 @@ class VideoRecyclerView : RecyclerView {
             frameLayout = videoContainer
         }
 
-        Log.e("skcnsknc","second video $targetPosition thumb ${mediaObjects[targetPosition].thumbnailSBucketId}")
+        Log.e(
+            "skcnsknc",
+            "second video $targetPosition thumb ${mediaObjects[targetPosition].thumbnailSBucketId}"
+        )
         if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
             thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
         }
@@ -339,7 +343,10 @@ class VideoRecyclerView : RecyclerView {
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         currentVideo = targetPosition
         player = playerHandler.getPLayer()!!
-        Log.e("skncksnc", "skcks thumb ${mediaObjects[targetPosition].thumbnailSBucketId}\n video ${homeFragment.mediaUrl}")
+        Log.e(
+            "skncksnc",
+            "skcks thumb ${mediaObjects[targetPosition].thumbnailSBucketId}\n video ${homeFragment.mediaUrl}"
+        )
         if (homeFragment.mediaUrl.isNotEmpty()) {
             playerHandler.setMediaUri(homeFragment.mediaUrl, 0)
         } else {
@@ -526,9 +533,21 @@ class VideoRecyclerView : RecyclerView {
 //            videoSurfaceView?.isFocusableInTouchMode = false
             homeFragment.apply {
                 // focusView = StreamEnum.INDECATOR_VIEW
-                binding.rvCategory.clearFocus()
+//                binding.rvCategory.clearFocus()
+                Log.e("testingdhfht", "$eventFocusPos dmvdmv $focusView ")
                 if (focusView == StreamEnum.INDECATOR_VIEW) {
                     binding.customIndicator.requestFocus()
+                } else if (focusView == StreamEnum.BACKGROUND_VIDEO) {
+                    binding.apply {
+                        tvPlay.requestFocus()
+                        tvPlay.setText("pause")
+                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                            ContextCompat.getDrawable(
+                                requireActivity(),
+                                R.drawable.ic_backg_pause
+                            ), null, null, null
+                        )
+                    }
                 } else {
                     eventFocus()
                 }

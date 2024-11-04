@@ -212,10 +212,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-
-//                    rvBackgVideo.isFocusableInTouchMode = false
-//                    rvBackgVideo.isFocusable = false
-//                    rvBackgVideo.requestFocus()
                     customIndicator.requestFocus()
                 }
 
@@ -291,6 +287,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 StreamEnum.DOWN_DPAD_KEY -> {
                     if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
+//                        tvPlay.requestFocus()
                         rvCategory.requestFocus()
                     } else {
                         val currenPos = rvBackgVideo.targetPosition + 1
@@ -299,7 +296,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
@@ -331,7 +328,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                 ivClose.layoutParams = params
                 // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
             } else {
@@ -342,6 +339,69 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 ivClose.layoutParams = params
                 //ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
             }
+        }
+
+        tvPlay.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    rvCategory.requestFocus()
+                }
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    customIndicator.requestFocus()
+                }
+                else->{}
+            }
+        }
+
+        tvPlay.setOnFocusChangeListener { _, hasFocus ->
+            Log.e("lcsdwdw", "scnsivn $hasFocus")
+            if (hasFocus) {
+                focusView = StreamEnum.BACKGROUND_VIDEO
+                tvPlay.compoundDrawableTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.purple
+                    )
+                )
+                tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+               // playPauseChecks()
+            } else {
+                // Revert size when not focused
+                tvPlay.compoundDrawableTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+                tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+               // playPauseChecks()
+            }
+        }
+        tvPlay.setOnClickListener {
+            Log.e("lcsdwdw", "clicked ${tvPlay.text.toString()}")
+            if (tvPlay.text.toString().contains("play")) {
+                tvPlay.setText("pause")
+                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(
+                        requireActivity(),
+                        R.drawable.ic_backg_pause
+                    ), null, null, null
+                )
+                binding.rvBackgVideo.apply {
+                    playerHandler.play()
+                }
+            } else {
+                tvPlay.setText("play")
+                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(
+                        requireActivity(),
+                        R.drawable.ic_backg_play
+                    ), null, null, null
+                )
+                binding.rvBackgVideo.apply {
+                    playerHandler.pause()
+                }
+            }
+
         }
 
     }
@@ -373,9 +433,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         var newPos =
                             (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
                         Log.e(
-                            "skncksnc", "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
+                            "skncksnc",
+                            "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
                         )
                         customIndicator.updateIndicator(newPos)
+
                     }
                 }
             })

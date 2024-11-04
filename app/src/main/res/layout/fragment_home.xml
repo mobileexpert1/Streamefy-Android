@@ -129,16 +129,16 @@
                     android:layout_marginBottom="@dimen/_5sdp"
 
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/tvProceed"
+                    app:layout_constraintBottom_toTopOf="@+id/tvPlay"
                     />
 
                 <TextView
-                    android:id="@+id/tvProceed"
+                    android:id="@+id/tvPlay"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_18sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/bg_round_gradient_purple_orange"
-                    android:drawableStart="@drawable/ic_backg_play"
+                    android:background="@drawable/ic_button_selector"
+                    android:drawableStart="@drawable/ic_backg_pause"
                     android:drawablePadding="@dimen/_5sdp"
                     android:drawableTint="@color/white"
                     android:focusable="true"
@@ -147,7 +147,7 @@
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_12sdp"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:text="play"
+                    android:text="pause"
                     android:textAllCaps="true"
                     android:textColor="@color/input_field_color_selector"
                     app:layout_constraintStart_toStartOf="@+id/rvCreators"
@@ -164,9 +164,9 @@
                     android:src="@drawable/ic_trailer"
                     android:text="Back"
                     android:textColor="@color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvProceed"
-                    app:layout_constraintStart_toEndOf="@+id/tvProceed"
-                    app:layout_constraintTop_toTopOf="@+id/tvProceed" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
+                    app:layout_constraintStart_toEndOf="@+id/tvPlay"
+                    app:layout_constraintTop_toTopOf="@+id/tvPlay" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

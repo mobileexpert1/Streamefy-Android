@@ -250,7 +250,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         rvCategory.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    customIndicator.requestFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -327,7 +327,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 // Change size when focused
                 val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
-                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                    resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                 ivClose.layoutParams = params
                 // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)

@@ -1,13 +1,17 @@
 package com.streamefy.component.ui.login
 
+import android.content.Context
 import android.os.Bundle
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -24,19 +28,27 @@ import com.streamefy.utils.remoteKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.Locale
 
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     //    var viewmodel = KoinCompo.loginVM
     val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
-
+    var countryCode = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
 //        }
+
+        binding.etFullname.requestFocus()
+//        val locale = Locale.getDefault()
+//        countryCode = locale.isO3Country
+
+
+        Log.e("sknskjn", " code: $countryCode")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             (requireActivity() as MainActivity).exitApp()
@@ -59,6 +71,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     viewmodel.login(
                         requireActivity(),
                         LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+//                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
                     )
                     observe()
 
@@ -88,9 +101,21 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                if (etPhoneNumber.text.isNotEmpty()) {
-                    etPhoneNumber.setSelection(etPhoneNumber.text.length)
-                }
+                // if (etPhoneNumber.text.isNotEmpty()) {
+                etPhoneNumber.setSelection(etPhoneNumber.text.length)
+                etPhoneNumber.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.semi_transparent
+                    )
+                )
+            } else {
+                etPhoneNumber.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.white
+                    )
+                )
             }
         }
         etPhoneNumber.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
@@ -105,10 +130,43 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         etFullname.requestFocus()
                         return@OnKeyListener true
                     }
+
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        ccCode.requestFocus()
+                        return@OnKeyListener true
+                    }
                 }
             }
             false
         })
+
+
+        ccCode.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                ccCode.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.semi_transparent
+                    )
+                )
+            } else {
+                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+            }
+        }
+        ccCode.setCountryForPhoneCode(91)
+        ccCode.setCountryForNameCode("IN")
+
+
+        ccCode.setOnCountryChangeListener {
+            var countryCode = ccCode.selectedCountryCode
+            var countryCodeName = ccCode.selectedCountryNameCode
+            Log.e("call", "countryCodeName.... $countryCodeName countryCode $countryCode")
+        }
+
+        ccCode.setOnClickListener {
+            ccCode.setCountryForPhoneCode(91)
+            ccCode.setCountryForNameCode("IN")
+        }
 
         tvGetOtp.remoteKey {
             when (it) {
@@ -163,6 +221,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
     }
+
+
 
     override fun onResume() {
         super.onResume()
@@ -233,6 +293,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 is MyResource.isError -> {
                     progressDialog.dismiss()
                 }
+                else->{}
             }
         }
     }
@@ -249,6 +310,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
         }
     }
+
     override fun onPause() {
         super.onPause()
 

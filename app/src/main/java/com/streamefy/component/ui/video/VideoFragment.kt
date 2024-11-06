@@ -62,6 +62,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
@@ -222,14 +223,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 val width = format.width
                                 val height = format.height
                                 var isSelected = false
-                                if (j == trackCount-1) {
+                                if (j == trackCount - 1) {
                                     isSelected = true
                                 }
                                 val data =
                                     QualityModel(
                                         height.toString() + " P", isSelected,
                                         height,
-                                        width)
+                                        width
+                                    )
                                 qualityList.add(data)
                                 Log.d("VideoResolution", "resolution: ${width}x${height}")
 
@@ -870,6 +872,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onPause() {
         super.onPause()
+        Log.e("skmncskc","sncs onPause")
+
         if (playerHandler.player != null) {
             playerHandler.player?.run {
                 HomeFragment.videoduraion = currentPosition
@@ -882,9 +886,18 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        playerHandler.pause()
-        playerHandler.release()
-        volumeManager.stopMonitoring()
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                HomeFragment.videoduraion = currentPosition
+            }
+            playerHandler.pause()
+            playerHandler.release()
+            volumeManager.stopMonitoring()
+        }
+
+//        playerHandler.pause()
+//        playerHandler.release()
+//        volumeManager.stopMonitoring()
     }
 
 
@@ -894,23 +907,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onResume() {
         super.onResume()
-        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        Log.e("skmncskc","sncs onResume")
 
         binding.playerView.onResume()
-        isOpenSettingFirst = false
-    }
-
-
-    override fun onStop() {
-        super.onStop()
         if (playerHandler.player != null) {
-            playerHandler.player?.run {
-                HomeFragment.videoduraion = currentPosition
-            }
-            playerHandler.pause()
-            playerHandler.release()
-            volumeManager.stopMonitoring()
+            playerHandler.play()
         }
+
+
+        isOpenSettingFirst = false
     }
 
 

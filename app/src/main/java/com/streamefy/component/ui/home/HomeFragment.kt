@@ -831,10 +831,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         binding.rvBackgVideo.apply {
             pauseVideo()
             //  playerHandler.pause()
-            playerHandler.release()
+//            playerHandler.release()
         }
         binding.rvBackgVideo.isfirst = true
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.rvBackgVideo.apply {
+            pauseVideo()
+            //  playerHandler.pause()
+            playerHandler.release()
+        }
     }
 
 }

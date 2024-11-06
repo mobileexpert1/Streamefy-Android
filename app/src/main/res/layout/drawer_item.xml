@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/caegory_radious"
                 android:scaleType="centerCrop"
-                tools:src="@drawable/home_theme"
+                android:src="@drawable/caegory_radious"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -44,7 +44,7 @@
                 android:id="@+id/icPlay"
                 android:layout_width="@dimen/_13sdp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_video_play"
+                android:src="@drawable/ic_play"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

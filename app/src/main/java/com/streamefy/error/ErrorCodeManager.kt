@@ -31,6 +31,7 @@ object ErrorCodeManager {
 
     const val PIN_LENGTH=19
     const val PIN_EMPTY=20
+    const val INVALID_EMAIL=21
 
     private val errorMessages = mapOf(
         LOGIN_FAIL to "Server error, please try again later.",
@@ -39,7 +40,7 @@ object ErrorCodeManager {
         PIN_FAIL to "Invalid Phone number",
         NOT_FOUND to "Data not found",
         BLANK to "this field should not blank",
-        NAME_EMPTY to "Please enter Full name",
+        NAME_EMPTY to "Please enter your email address",
         NAME_MAX_LENGTH to "More than 25 characters are not allowed",
         NAME_MIN_LENGTH to "Please enter at least 3 characters",
         INVALID_CHAR to  "Oops! invalid characters",
@@ -51,6 +52,7 @@ object ErrorCodeManager {
         PHONE_EMPTY to  "Please enter phone number",
         PIN_EMPTY to "Please enter 4-digit PIN",
         PIN_LENGTH to "Invalid PIN",
+        INVALID_EMAIL to "Invalid email",
         PHONE_LENGTH to  "Invalid phone number",
         UNKNOWN_ERROR to "Something went wrong, please try again later.",
         NETWORK_ISSUE to "Please check your internet connection"

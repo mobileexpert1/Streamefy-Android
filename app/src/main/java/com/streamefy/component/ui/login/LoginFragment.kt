@@ -1,8 +1,6 @@
 package com.streamefy.component.ui.login
 
-import android.content.Context
 import android.os.Bundle
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -11,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.hbb20.CountryCodePicker.PhoneNumberValidityChangeListener
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -28,7 +26,6 @@ import com.streamefy.utils.remoteKey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.Locale
 
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
@@ -38,6 +35,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     var countryCode = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        countryCode= SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
@@ -48,7 +46,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //        countryCode = locale.isO3Country
 
 
-        Log.e("sknskjn", " code: $countryCode")
+        Log.e("newcode", " code: $countryCode")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             (requireActivity() as MainActivity).exitApp()
@@ -153,20 +151,32 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
             }
         }
-        ccCode.setCountryForPhoneCode(91)
-        ccCode.setCountryForNameCode("IN")
-
-
+        ccCode.setCountryForPhoneCode(countryCode)
+//        ccCode.setCountryForNameCode("US")
+       // ccCode.registerCarrierNumberEditText(etPhoneNumber);
         ccCode.setOnCountryChangeListener {
+
             var countryCode = ccCode.selectedCountryCode
             var countryCodeName = ccCode.selectedCountryNameCode
-            Log.e("call", "countryCodeName.... $countryCodeName countryCode $countryCode")
+//            ccCode.setCountryForPhoneCode(countryCode.toInt())
+          //  var length=ccCode.fullNumber
+            Log.e("testtetrttr", " countryCodeName.... $countryCodeName countryCode $countryCode")
         }
+//        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
+//            Log.e("testtetrttr", " country validation.... $it ")
+//
+//            // your code
+//        })
 
+        ccCode.isEnabled=true
+        ccCode.setCcpClickable(true)
         ccCode.setOnClickListener {
-            ccCode.setCountryForPhoneCode(91)
-            ccCode.setCountryForNameCode("IN")
-        }
+                try {
+                    ccCode.launchCountrySelectionDialog()
+                } catch (e: Exception) {
+                }
+            }
+
 
         tvGetOtp.remoteKey {
             when (it) {

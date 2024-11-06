@@ -38,12 +38,20 @@ class DrawerAdapter(
 
                         var remains = totalDuration - duration
                         var left = getcurrent(remains.toInt().toString())
-                        tvDuration.text = "$left Left"
+                        if (left.isNotEmpty()) {
+                            tvDuration.text = "$left Left"
+                        }else{
+                            tvDuration.text = "0 s Left"
+                        }
                         tvDuration.visible()
                     }
                 } else {
-                    lpVideoProgres.invisible()
-                    tvDuration.invisible()
+                    var totalDuration = convertToMillis(totalVideoDuration)
+                    var left = getcurrent(totalDuration.toInt().toString())
+                    tvDuration.text = "$left Left"
+                    lpVideoProgres.progress = 0
+                    lpVideoProgres.visible()
+                    tvDuration.visible()
                 }
             }
 //            var current = getcurrent(data.playbackDuration)
@@ -89,7 +97,7 @@ class DrawerAdapter(
             total += "$minutes"+"m "
         }
         if (seconds != 0L) {
-            total += "$seconds"+"s"
+            total += "$seconds"+" s"
         }
 
 //        if (total !="0"){

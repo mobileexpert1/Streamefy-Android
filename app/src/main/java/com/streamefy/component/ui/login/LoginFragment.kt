@@ -1,6 +1,9 @@
 package com.streamefy.component.ui.login
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -23,6 +26,7 @@ import com.streamefy.utils.LogMessage
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.removeSpacesOnTextChange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,7 +39,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     var countryCode = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        countryCode= SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
+        if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty()) {
+            countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
+        }
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
@@ -118,6 +124,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         etPhoneNumber.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
+                Log.e("sjncjsc","sncjn ${event.action}")
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         tvGetOtp.requestFocus()
@@ -153,20 +160,18 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         ccCode.setCountryForPhoneCode(countryCode)
 //        ccCode.setCountryForNameCode("US")
-       // ccCode.registerCarrierNumberEditText(etPhoneNumber);
+        ccCode.registerCarrierNumberEditText(etPhoneNumber);
         ccCode.setOnCountryChangeListener {
-
             var countryCode = ccCode.selectedCountryCode
             var countryCodeName = ccCode.selectedCountryNameCode
-//            ccCode.setCountryForPhoneCode(countryCode.toInt())
           //  var length=ccCode.fullNumber
-            Log.e("testtetrttr", " countryCodeName.... $countryCodeName countryCode $countryCode")
+            Log.e("testtetrttr", " setOnCountryChangeListener.... $countryCodeName countryCode $countryCode")
         }
-//        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
-//            Log.e("testtetrttr", " country validation.... $it ")
-//
-//            // your code
-//        })
+        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
+            Log.e("testtetrttr", " country validation.... $it ")
+
+            // your code
+        })
 
         ccCode.isEnabled=true
         ccCode.setCcpClickable(true)
@@ -199,6 +204,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             false
         })
 
+        etFullname.removeSpacesOnTextChange()
 
         etFullname.setOnEditorActionListener { v, actionId, event ->
             Log.e("slcnslnc", "sjkcnbsakjbc setOnEditorActionListener ${etFullname.text.length}")

@@ -2,6 +2,7 @@ package com.streamefy.utils
 
 import android.os.CountDownTimer
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
@@ -122,4 +123,11 @@ fun View.startCountdownTimer(
     }
     countDownTimer.start()
    // custm=countDownTimer
+}
+fun EditText.removeSpacesOnTextChange() {
+    val filter = InputFilter { source, start, end, dest, dstart, dend ->
+        // Remove spaces from the source text
+        source.toString().replace(" ", "")
+    }
+    filters = arrayOf(filter)
 }

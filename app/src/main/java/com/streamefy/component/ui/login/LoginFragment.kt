@@ -1,9 +1,5 @@
 package com.streamefy.component.ui.login
-
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputFilter
-import android.text.TextWatcher
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -12,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.hbb20.CountryCodePicker.PhoneNumberValidityChangeListener
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -36,23 +31,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     //    var viewmodel = KoinCompo.loginVM
     val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
-    var countryCode = 0
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty()) {
-            countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
-        }
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
 //        }
 
         binding.etFullname.requestFocus()
-//        val locale = Locale.getDefault()
-//        countryCode = locale.isO3Country
 
-
-        Log.e("newcode", " code: $countryCode")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             (requireActivity() as MainActivity).exitApp()
@@ -136,51 +124,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         return@OnKeyListener true
                     }
 
-                    KeyEvent.KEYCODE_DPAD_LEFT -> {
-                        ccCode.requestFocus()
-                        return@OnKeyListener true
-                    }
                 }
             }
             false
         })
-
-
-        ccCode.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                ccCode.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
-            } else {
-                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            }
-        }
-        ccCode.setCountryForPhoneCode(countryCode)
-//        ccCode.setCountryForNameCode("US")
-        ccCode.registerCarrierNumberEditText(etPhoneNumber);
-        ccCode.setOnCountryChangeListener {
-            var countryCode = ccCode.selectedCountryCode
-            var countryCodeName = ccCode.selectedCountryNameCode
-          //  var length=ccCode.fullNumber
-            Log.e("testtetrttr", " setOnCountryChangeListener.... $countryCodeName countryCode $countryCode")
-        }
-        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
-            Log.e("testtetrttr", " country validation.... $it ")
-
-            // your code
-        })
-
-        ccCode.isEnabled=true
-        ccCode.setCcpClickable(true)
-        ccCode.setOnClickListener {
-                try {
-                    ccCode.launchCountrySelectionDialog()
-                } catch (e: Exception) {
-                }
-            }
 
 
         tvGetOtp.remoteKey {

@@ -69,58 +69,13 @@ fun nameAndPassword(name: String, password: String) = when {
     }
 }
 var regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
-fun nameWithNumber(name: String, number: String) = when {
-
-
-   name.isEmpty() -> {
-        ErrorCodeManager.NAME_EMPTY
-       ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
-       false
-    }
-
-    name.length < 3 -> {
-        ErrorCodeManager.NAME_MIN_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.NAME_MIN_LENGTH)
-        false
-    }
-
-    name.length > 25 -> {
-        ErrorCodeManager.NAME_MAX_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.NAME_MAX_LENGTH)
-        false
-
-    }
-
-    !name.matches(regex.toRegex())->{
-        ErrorCodeManager.INVALID_EMAIL
-        ShowError.handleError.handleError(ErrorCodeManager.INVALID_EMAIL)
-        false
-    }
-    number.isEmpty() -> {
-        ErrorCodeManager.PHONE_EMPTY
-        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
-        false
-
-    }
-
-    number.length!= 10  -> {
-        ErrorCodeManager.PHONE_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
-        false
-
-    }
-
-    else -> {
-        true
-    }
-}
 //fun nameWithNumber(name: String, number: String) = when {
 //
 //
-//    name.isEmpty() -> {
+//   name.isEmpty() -> {
 //        ErrorCodeManager.NAME_EMPTY
-//        ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
-//        false
+//       ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
+//       false
 //    }
 //
 //    name.length < 3 -> {
@@ -135,9 +90,11 @@ fun nameWithNumber(name: String, number: String) = when {
 //        false
 //
 //    }
-//    !Patterns.EMAIL_ADDRESS.matcher(name).matches() ->{
+//
+//    !name.matches(regex.toRegex())->{
 //        ErrorCodeManager.INVALID_EMAIL
 //        ShowError.handleError.handleError(ErrorCodeManager.INVALID_EMAIL)
+//        false
 //    }
 //    number.isEmpty() -> {
 //        ErrorCodeManager.PHONE_EMPTY
@@ -157,6 +114,43 @@ fun nameWithNumber(name: String, number: String) = when {
 //        true
 //    }
 //}
+fun nameWithNumber(name: String, number: String) = when {
+    name.isEmpty() -> {
+        ErrorCodeManager.NAME_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
+        false
+    }
+
+    name.length < 3 -> {
+        ErrorCodeManager.NAME_MIN_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MIN_LENGTH)
+        false
+    }
+
+    name.length > 25 -> {
+        ErrorCodeManager.NAME_MAX_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MAX_LENGTH)
+        false
+
+    }
+    number.isEmpty() -> {
+        ErrorCodeManager.PHONE_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
+        false
+
+    }
+
+    number.length!= 10  -> {
+        ErrorCodeManager.PHONE_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+        false
+
+    }
+
+    else -> {
+        true
+    }
+}
 
 fun passwordValidation(password: String) = when {
     password.isEmpty() -> {

@@ -32,6 +32,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tvMore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        android:paddingStart="@dimen/_2sdp"
 
         >
 

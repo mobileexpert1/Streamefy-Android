@@ -1,4 +1,5 @@
 package com.streamefy.component.ui.login
+
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -93,26 +94,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                // if (etPhoneNumber.text.isNotEmpty()) {
-                etPhoneNumber.setSelection(etPhoneNumber.text.length)
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
-            } else {
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.white
-                    )
-                )
+                if (etPhoneNumber.text.isNotEmpty()) {
+                    etPhoneNumber.setSelection(etPhoneNumber.text.length)
+                }
             }
         }
         etPhoneNumber.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
-                Log.e("sjncjsc","sncjn ${event.action}")
+                Log.e("sjncjsc", "sncjn ${event.action}")
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         tvGetOtp.requestFocus()
@@ -186,7 +175,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     }
 
 
-
     override fun onResume() {
         super.onResume()
         Log.e("slcnslnc", "onResume")
@@ -256,7 +244,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 is MyResource.isError -> {
                     progressDialog.dismiss()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }

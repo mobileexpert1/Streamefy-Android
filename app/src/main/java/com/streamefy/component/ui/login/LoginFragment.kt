@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.hbb20.CountryCodePicker.PhoneNumberValidityChangeListener
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -23,6 +22,7 @@ import com.streamefy.utils.LogMessage
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.removeSpacesOnTextChange
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -32,21 +32,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     //    var viewmodel = KoinCompo.loginVM
     val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
-    var countryCode = 0
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        countryCode= SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
 //            MainActivity().exitApp()
 //        }
 
         binding.etFullname.requestFocus()
-//        val locale = Locale.getDefault()
-//        countryCode = locale.isO3Country
 
-
-        Log.e("newcode", " code: $countryCode")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             (requireActivity() as MainActivity).exitApp()
@@ -99,25 +94,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                // if (etPhoneNumber.text.isNotEmpty()) {
-                etPhoneNumber.setSelection(etPhoneNumber.text.length)
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
-            } else {
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.white
-                    )
-                )
+                if (etPhoneNumber.text.isNotEmpty()) {
+                    etPhoneNumber.setSelection(etPhoneNumber.text.length)
+                }
             }
         }
         etPhoneNumber.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
+                Log.e("sjncjsc", "sncjn ${event.action}")
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         tvGetOtp.requestFocus()
@@ -129,53 +113,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         return@OnKeyListener true
                     }
 
-                    KeyEvent.KEYCODE_DPAD_LEFT -> {
-                        ccCode.requestFocus()
-                        return@OnKeyListener true
-                    }
                 }
             }
             false
         })
-
-
-        ccCode.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                ccCode.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
-            } else {
-                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-            }
-        }
-        ccCode.setCountryForPhoneCode(countryCode)
-//        ccCode.setCountryForNameCode("US")
-       // ccCode.registerCarrierNumberEditText(etPhoneNumber);
-        ccCode.setOnCountryChangeListener {
-
-            var countryCode = ccCode.selectedCountryCode
-            var countryCodeName = ccCode.selectedCountryNameCode
-//            ccCode.setCountryForPhoneCode(countryCode.toInt())
-          //  var length=ccCode.fullNumber
-            Log.e("testtetrttr", " countryCodeName.... $countryCodeName countryCode $countryCode")
-        }
-//        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
-//            Log.e("testtetrttr", " country validation.... $it ")
-//
-//            // your code
-//        })
-
-        ccCode.isEnabled=true
-        ccCode.setCcpClickable(true)
-        ccCode.setOnClickListener {
-                try {
-                    ccCode.launchCountrySelectionDialog()
-                } catch (e: Exception) {
-                }
-            }
 
 
         tvGetOtp.remoteKey {
@@ -199,6 +140,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             false
         })
 
+        etFullname.removeSpacesOnTextChange()
 
         etFullname.setOnEditorActionListener { v, actionId, event ->
             Log.e("slcnslnc", "sjkcnbsakjbc setOnEditorActionListener ${etFullname.text.length}")
@@ -231,7 +173,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
     }
-
 
 
     override fun onResume() {
@@ -303,7 +244,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 is MyResource.isError -> {
                     progressDialog.dismiss()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }

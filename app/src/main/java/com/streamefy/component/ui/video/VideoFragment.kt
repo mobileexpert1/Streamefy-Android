@@ -71,7 +71,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
             isSmartRevision = getBoolean(PrefConstent.SMART_REVISION)
             playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
-            Log.e("ckdanmcn", "$isSmartRevision mkadnc $videoUrl")
+
         }
         binding.apply {
             ivVideoThumb.loadPicaso(thumbnailS3bucketId)
@@ -90,6 +90,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         // bitPlayer()
         selectorFocus()
+
+        Log.e("ckdanmcn", "$isSmartRevision volumeCount $volumeCount mkadnc $videoUrl")
+        binding.sbVolumeSeek.setProgress(volumeCount)
+
     }
 
     fun clickme() = with(binding) {
@@ -144,14 +148,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     volumeCount = 1
                     ivVolume.setImageResource(R.drawable.ic_selected_volume)
                     sbVolumeSeek.setProgress(volumeCount)
-//                volumeManager.setVolumePercentage(volumeCount)
-                    // volumeUp()
-
                 } else {
                     playerHandler.mute()
                     ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
                     sbVolumeSeek.setProgress(0)
-//                playerHandler.setVolume(0 / 100.0f)
                     volumeManager.setVolumePercentage(0)
                     volumeCount = 0
                 }
@@ -425,7 +425,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun volumeDown() {
         Log.e("hdhhdhds", "volume count Down $volumeCount")
-        if (volumeCount > 1) {
+        if (volumeCount >= 1) {
             volumeCount -= 1
             playerHandler.setVolume(volumeCount / 100.0f)
             volumeManager.setVolumePercentage(volumeCount)
@@ -536,16 +536,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSetting.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._16sdp)
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivSetting.layoutParams = params
+//                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._16sdp)
+//                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+//                ivSetting.layoutParams = params
 
             } else {
-                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivSetting.layoutParams = params
+//                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+//                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+//                ivSetting.layoutParams = params
 
             }
         }
@@ -554,11 +554,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("smclksmc", "$hasFocus snknc ${playerHandler.isMuted()}")
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivVolume.layoutParams as LinearLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivVolume.layoutParams = params
+//                val params = ivVolume.layoutParams as LinearLayout.LayoutParams
+//                params.width =
+//                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+//                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+//                ivVolume.layoutParams = params
                 if (playerHandler.player != null) {
                     if (playerHandler.player?.volume == 0f) {
 //                if (playerHandler.isMuted()) {
@@ -569,10 +569,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
             } else {
-                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivVolume.layoutParams = params
+//                val params = ivSetting.layoutParams as LinearLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+//                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+//                ivVolume.layoutParams = params
                 if (playerHandler.player != null) {
                     if (playerHandler.player?.volume!! > 0f) {
 //                if (playerHandler.isMuted()) {
@@ -872,7 +872,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onPause() {
         super.onPause()
-        Log.e("skmncskc","sncs onPause")
+        Log.e("skmncskc", "sncs onPause")
 
         if (playerHandler.player != null) {
             playerHandler.player?.run {
@@ -907,7 +907,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onResume() {
         super.onResume()
-        Log.e("skmncskc","sncs onResume")
+        Log.e("skmncskc", "sncs onResume")
 
         binding.playerView.onResume()
         if (playerHandler.player != null) {

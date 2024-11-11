@@ -51,33 +51,54 @@ fun Context.showMessage(mesg: String) {
 //    }
 //}
 
+// new
+//fun Context.isNetworkAvailable(): Boolean {
+//    try {
+//        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//
+//        // Check API level for network capabilities
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            val activeNetwork = connectivityManager.activeNetwork ?: return false
+//            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+//
+//            return capabilities.run {
+//                hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+//                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+//                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+//            }
+//        } else {
+//            // For devices below API 21
+//            val networkInfo = connectivityManager.activeNetworkInfo
+//            return networkInfo?.isConnected == true
+//        }
+//    } catch (e: Exception) {
+//        // Optionally log the exception
+//        return false
+//    }
+//
+//    return false
+//}
 fun Context.isNetworkAvailable(): Boolean {
     try {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        // Check API level for network capabilities
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val activeNetwork = connectivityManager.activeNetwork ?: return false
             val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
 
-            return capabilities.run {
+            capabilities.run {
                 hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                         hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
                         hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
             }
         } else {
-            // For devices below API 21
-            val networkInfo = connectivityManager.activeNetworkInfo
-            return networkInfo?.isConnected == true
+            val networkInfo = connectivityManager.allNetworkInfo
+            return networkInfo?.any { it.isConnected } == true
         }
     } catch (e: Exception) {
-        // Optionally log the exception
+        e.printStackTrace()
         return false
     }
-
-    return false
 }
-
 fun hideSoftKeyboard(activity: Activity, view: View) {
     var gestureDetector =
         GestureDetector(activity, object : GestureDetector.SimpleOnGestureListener() {

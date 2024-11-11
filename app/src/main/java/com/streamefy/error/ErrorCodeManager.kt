@@ -40,7 +40,7 @@ object ErrorCodeManager {
         PIN_FAIL to "Invalid Phone number",
         NOT_FOUND to "Data not found",
         BLANK to "this field should not blank",
-        NAME_EMPTY to "Please enter your email address",
+        NAME_EMPTY to "Please enter your Full name",
         NAME_MAX_LENGTH to "More than 25 characters are not allowed",
         NAME_MIN_LENGTH to "Please enter at least 3 characters",
         INVALID_CHAR to  "Oops! invalid characters",

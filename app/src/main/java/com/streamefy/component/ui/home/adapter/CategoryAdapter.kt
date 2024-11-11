@@ -61,7 +61,7 @@ class CategoryAdapter(
                     if (data.media?.size!! == 1) {
                         tvMore.invisible()
                     } else {
-                        tvMore.text = (data.media?.size!! - 1).toString() + " more videos"
+                        tvMore.text = (data.media?.size!! - 1).toString() + " More Videos"
                         tvMore.visible()
                     }
 

@@ -8,11 +8,13 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
+import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 
 
@@ -39,16 +41,16 @@ class DrawerAdapter(
                         var remains = totalDuration - duration
                         var left = getcurrent(remains.toInt().toString())
                         if (left.isNotEmpty()) {
-                            tvDuration.text = "$left Left"
+                            tvDuration.text = "$left "
                         }else{
-                            tvDuration.text = "0 s Left"
+                            tvDuration.text = "0s "
                         }
                         tvDuration.visible()
                     }
                 } else {
                     var totalDuration = convertToMillis(totalVideoDuration)
                     var left = getcurrent(totalDuration.toInt().toString())
-                    tvDuration.text = "$left Left"
+                    tvDuration.text = "$left "
                     lpVideoProgres.progress = 0
                     lpVideoProgres.visible()
                     tvDuration.visible()
@@ -60,15 +62,27 @@ class DrawerAdapter(
             tvSubtitle.text = data.description
             ivCate.loadUrl(data.thumbnailS3bucketId)
 
+            clParent.setOnFocusChangeListener { v, hasFocus ->
+                Log.e("shhssd","hasFocus dd ${hasFocus}")
+                if (hasFocus){
+                    homeFragment.drawerItemFocus=viewHolder.absoluteAdapterPosition
+                }
+
+            }
+
 //            if (position%2==0){
 //                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
 //            }else{
 //                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.semi_white))
 //            }
             viewHolder.itemView.setOnClickListener {
-                callBack.invoke(position)
+                Log.e("shhssd","skmxksmx ${data.totalVideoDuration}")
+                if (data.totalVideoDuration!="00:00:00") {
+                    callBack.invoke(position)
+                }else{
+                    context.showMessage("We can't play this video, please contact with your provider.")
+                }
             }
-
         }
 
 //            .\adb -s 192.168.12.200:5555 root
@@ -79,9 +93,7 @@ class DrawerAdapter(
 //                adb -s <device_id> shell setenforce 0
     }
 
-    class DrawerView(itemView: DrawerItemBinding) : ViewHolder(itemView.root) {
-
-    }
+    class DrawerView(itemView: DrawerItemBinding) : ViewHolder(itemView.root)
 
     fun getcurrent(playbackduration: String): String {
         val durationMillis = playbackduration.toLong()
@@ -97,7 +109,7 @@ class DrawerAdapter(
             total += "$minutes"+"m "
         }
         if (seconds != 0L) {
-            total += "$seconds"+" s"
+            total += "$seconds"+"s"
         }
 
 //        if (total !="0"){

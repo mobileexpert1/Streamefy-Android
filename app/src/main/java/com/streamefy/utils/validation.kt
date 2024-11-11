@@ -10,7 +10,7 @@ val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{
 
 fun nameValidation(name: String) = when {
     name.isBlank() -> {
-       // "this field should not blank"
+        // "this field should not blank"
         ErrorCodeManager.BLANK
     }
 
@@ -37,7 +37,7 @@ fun nameValidation(name: String) = when {
 
 fun nameAndPassword(name: String, password: String) = when {
 
-   name.isEmpty() -> {
+    name.isEmpty() -> {
         ErrorCodeManager.NAME_EMPTY
     }
 
@@ -57,10 +57,11 @@ fun nameAndPassword(name: String, password: String) = when {
         ErrorCodeManager.PASSWORD_EMPTY
     }
 
-    password.length< 8 || password.length> 15  -> {
+    password.length < 8 || password.length > 15 -> {
         ErrorCodeManager.PASSWORD_MIN_MAX
     }
-    !password.matches(passwordPattern)  -> {
+
+    !password.matches(passwordPattern) -> {
         ErrorCodeManager.INVALID_PASSWORD_FORMAT
     }
 
@@ -68,59 +69,16 @@ fun nameAndPassword(name: String, password: String) = when {
         true
     }
 }
+
 var regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
-fun nameWithNumber(name: String, number: String) = when {
 
-
-   name.isEmpty() -> {
-        ErrorCodeManager.NAME_EMPTY
-       ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
-       false
-    }
-
-    name.length < 3 -> {
-        ErrorCodeManager.NAME_MIN_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.NAME_MIN_LENGTH)
-        false
-    }
-
-    name.length > 25 -> {
-        ErrorCodeManager.NAME_MAX_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.NAME_MAX_LENGTH)
-        false
-
-    }
-
-    !name.matches(regex.toRegex())->{
-        ErrorCodeManager.INVALID_EMAIL
-        ShowError.handleError.handleError(ErrorCodeManager.INVALID_EMAIL)
-        false
-    }
-    number.isEmpty() -> {
-        ErrorCodeManager.PHONE_EMPTY
-        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
-        false
-
-    }
-
-    number.length!= 10  -> {
-        ErrorCodeManager.PHONE_LENGTH
-        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
-        false
-
-    }
-
-    else -> {
-        true
-    }
-}
 //fun nameWithNumber(name: String, number: String) = when {
 //
 //
-//    name.isEmpty() -> {
+//   name.isEmpty() -> {
 //        ErrorCodeManager.NAME_EMPTY
-//        ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
-//        false
+//       ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
+//       false
 //    }
 //
 //    name.length < 3 -> {
@@ -135,9 +93,11 @@ fun nameWithNumber(name: String, number: String) = when {
 //        false
 //
 //    }
-//    !Patterns.EMAIL_ADDRESS.matcher(name).matches() ->{
+//
+//    !name.matches(regex.toRegex())->{
 //        ErrorCodeManager.INVALID_EMAIL
 //        ShowError.handleError.handleError(ErrorCodeManager.INVALID_EMAIL)
+//        false
 //    }
 //    number.isEmpty() -> {
 //        ErrorCodeManager.PHONE_EMPTY
@@ -157,6 +117,44 @@ fun nameWithNumber(name: String, number: String) = when {
 //        true
 //    }
 //}
+fun nameWithNumber(name: String, number: String) = when {
+    name.isEmpty() -> {
+        ErrorCodeManager.NAME_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_EMPTY)
+        false
+    }
+
+    name.length < 3 -> {
+        ErrorCodeManager.NAME_MIN_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MIN_LENGTH)
+        false
+    }
+
+    name.length > 25 -> {
+        ErrorCodeManager.NAME_MAX_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.NAME_MAX_LENGTH)
+        false
+
+    }
+
+    number.isEmpty() -> {
+        ErrorCodeManager.PHONE_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
+        false
+
+    }
+
+    number.length != 10 -> {
+        ErrorCodeManager.PHONE_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+        false
+
+    }
+
+    else -> {
+        true
+    }
+}
 
 fun passwordValidation(password: String) = when {
     password.isEmpty() -> {

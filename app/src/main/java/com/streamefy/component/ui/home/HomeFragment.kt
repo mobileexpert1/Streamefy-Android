@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
@@ -251,6 +252,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
                     tvPlay.requestFocus()
+//                    customIndicator.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -341,6 +343,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
 
+        val drawables = tvPlay.compoundDrawables
+
+        val drawableStart = drawables[0]  // index 0 corresponds to drawableStart
+
+        if (drawableStart != null) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                // For API level 22 or lower, tint programmatically
+                val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white)) // Your desired color
+                // Set the drawable back with tint
+                tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, null, null, null)
+            } else {
+                // For API level 23 or higher, use drawableTint in XML (or this can be done directly programmatically as well)
+                tvPlay.setCompoundDrawablesWithIntrinsicBounds(drawableStart, null, null, null)
+            }
+        }
+
         tvPlay.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -355,23 +374,53 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 else->{}
             }
         }
-
+//
         tvPlay.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
             if (hasFocus) {
-                focusView = StreamEnum.BACKGROUND_VIDEO
-                tvPlay.compoundDrawableTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.purple
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    focusView = StreamEnum.BACKGROUND_VIDEO
+                    tvPlay.compoundDrawableTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.purple
+                        )
                     )
-                )
+
+                }else{
+                    val drawables = tvPlay.compoundDrawables
+                    val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+
+                    if (drawableStart != null) {
+                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
+                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                    }
+                }
+
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
                // playPauseChecks()
             } else {
-                // Revert size when not focused
-                tvPlay.compoundDrawableTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.white))
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    // Revert size when not focused
+                    tvPlay.compoundDrawableTintList =
+                        ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                requireActivity(),
+                                R.color.white
+                            )
+                        )
+
+                }else{
+                    val drawables = tvPlay.compoundDrawables
+                    val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                    if (drawableStart != null) {
+                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
+                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                    }
+                }
+
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
                // playPauseChecks()
             }
@@ -437,6 +486,59 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
                         )
                         customIndicator.updateIndicator(newPos)
+
+                            tvPlay.setText("pause")
+                            tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                                ContextCompat.getDrawable(
+                                    requireActivity(),
+                                    R.drawable.ic_backg_pause
+                                ), null, null, null
+                            )
+                        if (tvPlay.isFocused){
+                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                                // Revert size when not focused
+                                tvPlay.compoundDrawableTintList =
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(
+                                            requireActivity(),
+                                            R.color.purple
+                                        )
+                                    )
+
+                            }else{
+                                val drawables = tvPlay.compoundDrawables
+                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                                if (drawableStart != null) {
+                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
+                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                                }
+                            }
+
+                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                        }else{
+                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                                // Revert size when not focused
+                                tvPlay.compoundDrawableTintList =
+                                    ColorStateList.valueOf(
+                                        ContextCompat.getColor(
+                                            requireActivity(),
+                                            R.color.white
+                                        )
+                                    )
+
+                            }else{
+                                val drawables = tvPlay.compoundDrawables
+                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                                if (drawableStart != null) {
+                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
+                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                                }
+                            }
+
+                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+                        }
 
                     }
                 }

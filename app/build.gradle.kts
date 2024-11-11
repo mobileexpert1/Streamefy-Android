@@ -114,7 +114,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics")
 //    implementation("com.hbb20:android-country-picker:0.0.7")
-    implementation("com.hbb20:ccp:2.7.0")
+    implementation("com.hbb20:ccp:2.7.3")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.40")
 //    implementation ("com.google.firebase:firebase-crashlytics-ktx:18.4.1")
 //    implementation("com.google.firebase:firebase-analytics:21.5.0")

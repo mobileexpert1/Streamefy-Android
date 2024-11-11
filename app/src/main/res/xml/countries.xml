@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<countries>
+    <country>
+        <name>India</name>
+        <code>IN</code>
+        <flag>R.drawable.flag_india</flag> <!-- Drawable name without extension -->
+    </country>
+    <country>
+        <name>United States</name>
+        <code>US</code>
+        <flag>us_flag</flag>
+    </country>
+    <country>
+        <name>United Kingdom</name>
+        <code>GB</code>
+        <flag>uk_flag</flag>
+    </country>
+    <country>
+        <name>Australia</name>
+        <code>AU</code>
+        <flag>aus_flag</flag>
+    </country>
+</countries>

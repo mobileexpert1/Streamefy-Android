@@ -141,7 +141,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 isMenuOpened = false
             }
 
-
             drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
                     // Handle drawer slide if needed
@@ -181,6 +180,27 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
             })
 
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                // Revert size when not focused
+                tvPlay.compoundDrawableTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.white
+                        )
+                    )
+
+            }
+            else{
+                val drawables = tvPlay.compoundDrawables
+                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                if (drawableStart != null) {
+                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
+                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                }
+            }
+            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
@@ -705,17 +725,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 mediaIndex = 0
                 when (type) {
                     StreamEnum.SINGLE -> {
-                        eventList[pos].media?.get(0)?.run {
-                            mediaId = this.id
-                            val bundle = Bundle()
-                            bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
-                            bundle.putString(PrefConstent.PLAY_BACK_DURATION, playbackDuration)
-                            bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
-                            bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
-                            findNavController().navigate(R.id.videofragment, bundle)
+                        if(eventList[pos].media!=null) {
+                            if (eventList[pos].media?.size!! >= 1) {
+                                eventList[pos].media?.get(0)?.run {
+                                    mediaId = this.id
+                                    val bundle = Bundle()
+                                    bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
+                                    bundle.putString(
+                                        PrefConstent.PLAY_BACK_DURATION,
+                                        playbackDuration
+                                    )
+                                    bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
+                                    bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
+                                    findNavController().navigate(R.id.videofragment, bundle)
+                                }
+                            }
                         }
-
-
                     }
 
                     StreamEnum.MORE -> {

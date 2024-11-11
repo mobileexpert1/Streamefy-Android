@@ -575,10 +575,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     }
 
     fun getOtp() {
-        viewModel.getOtp(
-            requireActivity(),
-            OTPRequest(name, phone)
-        )
+        viewModel.getOtp(requireActivity(), OTPRequest(name, phone))
 
         viewModel.otpLiveData.observe(viewLifecycleOwner) {
             when (it) {

@@ -155,6 +155,25 @@ fun nameWithNumber(name: String, number: String) = when {
         true
     }
 }
+fun phoneNumber(number: String) = when {
+    number.isEmpty() -> {
+        ErrorCodeManager.PHONE_EMPTY
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_EMPTY)
+        false
+
+    }
+//    number.length != 10 -> {
+//        ErrorCodeManager.PHONE_LENGTH
+//        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+//        false
+//
+//    }
+
+    else -> {
+        true
+    }
+}
+
 
 fun passwordValidation(password: String) = when {
     password.isEmpty() -> {

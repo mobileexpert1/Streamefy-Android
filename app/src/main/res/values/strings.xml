@@ -33,5 +33,7 @@
     <string name="pin_description">Enter a 4-digit PIN to unlock your event videos</string>
     <string name="pin_title">Welcome Vijay! We are thrilled to have you here</string>
     <string name="password">Password</string>
+    <string name="confirm_pin">New PIN will be sent to your Email (****jot-kaur@gmail.com) \nand Mobile Number XXXXXXXX56</string>
+    <string name="want_to_reset_pin">Are you sure you want to rest the PIN for the event “Arjun Weds Rhea”.</string>
 
 </resources>

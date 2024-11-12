@@ -17,6 +17,7 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
+import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentPinAuthenticationBinding
@@ -144,6 +145,16 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                         findNavController().navigate(R.id.loginFragment)
                     }
                 })
+
+            tvResetPin.setOnClickListener {
+                ConfirmPinDialog(requireContext(),true){
+                    if (it){
+                        /// changes it
+                        viewModel.resetPin(requireContext(),"")
+                    }
+                }.show()
+            }
+
         }
     }
 
@@ -259,6 +270,38 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             }
 
         }
+        tvProceed.remoteKey {
+            when (it) {
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvResetPin.requestFocus()
+                }
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    otpView.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        tvResetPin.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                tvResetPin.setBackgroundResource(R.drawable.ic_selected_button)
+            } else {
+                tvResetPin.setBackgroundColor(ContextCompat.getColor(requireContext(),
+                    com.otpview.R.color.transparent))
+            }
+        }
+        tvResetPin.remoteKey {
+            when (it) {
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    tvProceed.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
 
 //        et1.setupNextFocusOnDigit(et2)
 //        et2.setupNextFocusOnDigit(et3)
@@ -309,6 +352,24 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 }
             }
         }
+
+
+        viewModel.resetData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                    showProgress()
+                }
+                is MyResource.isSuccess -> {
+
+
+                }
+
+                is MyResource.isError -> {
+                    dismissProgress()
+                }
+            }
+        }
+
     }
 
 

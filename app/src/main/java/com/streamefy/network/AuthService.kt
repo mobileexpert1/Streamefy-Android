@@ -22,7 +22,7 @@ interface AuthService {
 
     @POST(ServerUrls.OTP)
     suspend fun otp(
-        @Body otp: OTPRequest
+        @Body phone: String
     ): Response<OTPResponse>
 
 

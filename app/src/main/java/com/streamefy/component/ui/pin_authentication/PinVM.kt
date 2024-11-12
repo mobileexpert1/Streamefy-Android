@@ -52,4 +52,39 @@ class PinVM(var repo: ApiService) : ViewModel() {
             }
         }
     }
+
+    // reset pin
+    var _resetData = SingleLiveEvent<MyResource<PinResponse>>()
+    var resetData :LiveData<MyResource<PinResponse>> =_resetData
+    fun resetPin(
+        context: Context,
+        userPin: String,
+        ) {
+        viewModelScope.launch {
+            if (context.isNetworkAvailable()) {
+                _pinData.value = MyResource.isLoading()
+                try {
+                    var response = repo.verifyPin(userPin)
+                    if (response.body()?.isSuccess!!) {
+                        _pinData.value = MyResource.isSuccess(response.body())
+                    } else {
+                        ShowError.handleError.message(response.body()?.error?.userMessage.toString())
+                        _pinData.value =
+                            MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                    }
+                } catch (e: Exception) {
+                    LogMessage.logeMe(e.toString())
+                    //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    _pinData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+
+                }
+            } else {
+                ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
+                _pinData.value =
+                    MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
+
+            }
+        }
+    }
+
 }

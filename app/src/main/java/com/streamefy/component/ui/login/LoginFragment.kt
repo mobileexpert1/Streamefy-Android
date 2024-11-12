@@ -1,7 +1,9 @@
 package com.streamefy.component.ui.login
 
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
+import android.util.Xml
 import android.view.KeyEvent
 import android.view.View
 import androidx.activity.addCallback
@@ -9,19 +11,19 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.hbb20.CountryCodePicker.PhoneNumberValidityChangeListener
+import com.hbb20.CountryCodePicker
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.login.model.LoginRequest
+import com.streamefy.country_code.model.CountryCodeModel
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
 import com.streamefy.utils.loadAny
-import com.streamefy.utils.nameWithNumber
 import com.streamefy.utils.phoneNumber
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.removeSpacesOnTextChange
@@ -29,6 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.xmlpull.v1.XmlPullParser
+import java.io.InputStream
 
 
 class LoginFragment : BaseFragment<FragmentLoginBinding>() {
@@ -39,10 +43,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty())
-        {
-            countryCode= SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
+        if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty()) {
+            countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
+
+
 
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
@@ -52,7 +57,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         binding.etPhoneNumber.requestFocus()
 
 
-        Log.e("newcode", " code: $countryCode")
+        Log.e("newcode", " code: $countryCode country code")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             (requireActivity() as MainActivity).exitApp()
@@ -62,11 +67,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
-
+            //   CountryPicker.loadDataFromXML(requireContext())
+            //  var list=    CountryPicker.loadedLibraryMaterList
+            //    Log.e("newcode", " code: $countryCode country code $list")
 
             var validate =
 //                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
-            phoneNumber(etPhoneNumber.text.toString())
+                phoneNumber(etPhoneNumber.text.toString())
             LogMessage.logeMe(validate.toString())
             if (validate) {
                 // ShowError.handleError.handleError(validate as Int)
@@ -161,34 +168,44 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         ccCode.setCountryForPhoneCode(countryCode)
 //        ccCode.setCountryForNameCode("US")
-       // ccCode.registerCarrierNumberEditText(etPhoneNumber);
+        ccCode.registerCarrierNumberEditText(etPhoneNumber);
         ccCode.setOnCountryChangeListener {
-
+            ccCode.registerCarrierNumberEditText(etPhoneNumber);
             var countryCode = ccCode.selectedCountryCode
             var countryCodeName = ccCode.selectedCountryNameCode
-//            ccCode.setCountryForPhoneCode(countryCode.toInt())
-          //  var length=ccCode.fullNumber
-            Log.e("testtetrttr", " countryCodeName.... $countryCodeName countryCode $countryCode")
+            setMaxLength(20)
+            Log.e(
+                "testtetrttr",
+                "${ccCode.isValidFullNumber} countryCodeName.... $countryCodeName countryCode $countryCode"
+            )
         }
-//        ccCode.setPhoneNumberValidityChangeListener(PhoneNumberValidityChangeListener {
-//            Log.e("testtetrttr", " country validation.... $it ")
-//
-//            // your code
-//        })
-
-//        ccCode.isEnabled=true
-//        ccCode.setCcpClickable(true)
-        ccCode.setOnClickListener {
-                try {
-                    lifecycleScope.launch() {
-                        ccCode.launchCountrySelectionDialog()
-//                        ccCode.focusedChild
-//                      ccCode.isAccessibilityFocused
-                    }
-
-                } catch (e: Exception) {
-                }
+        ccCode.setPhoneNumberValidityChangeListener(CountryCodePicker.PhoneNumberValidityChangeListener {
+            Log.e("testtetrttr", " country validation.... $it ")
+            if (it) {
+                // var length=etPhoneNumber.text.toString().length + ccCode.selectedCountryCode.length.toInt()
+                setMaxLength(ccCode.selectedCountryCode.toInt())
+                var formated = ccCode.formattedFullNumber
+                var valid = ccCode.fullNumberWithPlus
+                Log.e(
+                    "testtetrttr",
+                    "$valid formated $formated length ${ccCode.selectedCountryCode.toInt()}country number.... $it "
+                )
             }
+
+
+            // your code
+        })
+
+        ccCode.isEnabled = true
+        ccCode.setCcpClickable(true)
+        ccCode.setOnClickListener {
+            try {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    ccCode.launchCountrySelectionDialog()
+                }
+            } catch (e: Exception) {
+            }
+        }
 
 
         tvGetOtp.remoteKey {
@@ -248,11 +265,104 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     }
 
+    fun setMaxLength(length: Int) = with(binding) {
+        val filterArray = arrayOf<InputFilter>(InputFilter.LengthFilter(length))
+        etPhoneNumber.filters = filterArray
+    }
 
+    fun setMinMaxLength(minLength: Int, maxLength: Int) = with(binding) {
+        val maxLengthFilter = InputFilter.LengthFilter(maxLength)
+        val minLengthFilter = InputFilter { source, start, end, dest, dstart, dend ->
+            val newText = dest.toString().substring(0, dstart) + source.toString() + dest.toString()
+                .substring(dend)
+            if (newText.length < minLength) {
+                return@InputFilter ""
+            }
+            null
+        }
+
+        etPhoneNumber.filters = arrayOf(minLengthFilter, maxLengthFilter)
+    }
+
+    private fun readCountriesFromXml(): List<CountryCodeModel> {
+        val countries = mutableListOf<CountryCodeModel>()
+        val parser: XmlPullParser = Xml.newPullParser()
+
+        try {
+            // Open the raw resource
+            val inputStream: InputStream = resources.openRawResource(R.raw.code_template)
+
+            // Set the input stream to the parser
+            parser.setInput(inputStream, null)
+
+            var eventType = parser.eventType
+            var currentCountry: CountryCodeModel? = null
+
+            // Parse the XML
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        val tagName = parser.name
+                        when (tagName) {
+                            "country" -> {
+                                // Initialize a new Country object when we start reading a country
+                                currentCountry = CountryCodeModel()
+                            }
+
+                            "name" -> {
+                                // Read country name
+                                currentCountry?.name = parser.nextText()
+                            }
+
+                            "english_name" -> {
+                                // Read english name
+                                currentCountry?.englishName = parser.nextText()
+                            }
+
+                            "name_code" -> {
+                                // Read name code
+                                currentCountry?.nameCode = parser.nextText()
+                            }
+
+                            "phone_code" -> {
+                                // Read phone code
+                                currentCountry?.phoneCode = parser.nextText()
+                            }
+
+                            "dialing_length" -> {
+                                // Read dialing length
+                                currentCountry?.dialingLength = parser.nextText()
+                            }
+
+                            "flag" -> {
+                                // Read flag (this would typically be a drawable resource reference)
+                                currentCountry?.flagResID = parser.nextText()
+                            }
+                        }
+                    }
+
+                    XmlPullParser.END_TAG -> {
+                        // When we finish reading a country, add it to the list
+                        if (parser.name == "country" && currentCountry != null) {
+                            countries.add(currentCountry)
+                            currentCountry = null
+                        }
+                    }
+                }
+                eventType = parser.next()
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("slcnslnc", "onResume $e")
+        }
+
+        return countries
+    }
 
     override fun onResume() {
         super.onResume()
-        Log.e("slcnslnc", "onResume")
+
         binding.apply {
             etFullname.setText("")
             etPhoneNumber.setText("")
@@ -278,8 +388,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
                             SharedPref.setString(
                                 PrefConstent.PHONE_NUMBER,
-                                binding.etPhoneNumber.text.toString()
+                                binding.ccCode.formattedFullNumber.toString()
+                                //binding.etPhoneNumber.text.toString()
                             )
+                            Log.e("slcnslnc", "onResume ${ binding.ccCode.formattedFullNumber.toString()}")
                             SharedPref.setString(
                                 PrefConstent.FULL_NAME,
                                 "appdev"
@@ -303,7 +415,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         var bundle = Bundle()
                         bundle.putString(
                             PrefConstent.PHONE_NUMBER,
-                            binding.etPhoneNumber.text.toString()
+                            binding.ccCode.formattedFullNumber.toString()
                         )
                         if (isAdded) {
                             findNavController().navigate(R.id.otpFragment, bundle)
@@ -320,7 +432,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 is MyResource.isError -> {
                     progressDialog.dismiss()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }

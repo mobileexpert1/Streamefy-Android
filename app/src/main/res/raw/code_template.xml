@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data>
-    <messages>
-        <ccp_dialog_title translation="todo: update" />
-        <ccp_dialog_search_hint_message translation="todo: update" />
-        <ccp_dialog_no_result_ack_message translation='todo: update' />
-    </messages>
-
     <countries>
-    <?xml version="1.0" encoding="utf-8"?>
         <country
             name="TODO: replace with translated country name"
             english_name="Andorra"
@@ -130,7 +123,7 @@
             english_name="Åland Islands"
             name_code="ax"
             phone_code="358"
-            flag="@drawable/flag_aland_islands"kk
+            flag="@drawable/flag_aland_islands"
             dialing_length="8" />
 
         <country
@@ -162,7 +155,7 @@
             english_name="Bangladesh"
             name_code="bd"
             phone_code="880"
-            flag="@drawable/flag_antigua_and_barbuda"
+            flag="@drawable/flag_bangladesh"
             dialing_length="10" />
 
         <country
@@ -170,7 +163,7 @@
             english_name="Belgium"
             name_code="be"
             phone_code="32"
-            flag="@drawable/flag_antigua_and_barbuda"
+            flag="@drawable/flag_belgium"
             dialing_length="9" />
 
         <country

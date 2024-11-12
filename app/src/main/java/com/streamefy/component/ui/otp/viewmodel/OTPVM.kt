@@ -30,12 +30,12 @@ class OTPVM(var repo: AuthService) : ViewModel() {
     var _vericationData = SingleLiveEvent<MyResource<OTPResponse>>()
     val vericationData: LiveData<MyResource<OTPResponse>> get() = _vericationData
 
-    fun getOtp(context: Context, optrequest: OTPRequest) {
+    fun getOtp(context: Context, number: String) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 _otpLiveData.value = MyResource.isLoading()
                 try {
-                    var response = repo.otp(optrequest)
+                    var response = repo.otp(number)
                     if (response.body()?.isSuccess!!) {
                         _otpLiveData.value = MyResource.isSuccess(response.body())
                     } else {

@@ -277,7 +277,22 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <TextView
+            android:id="@+id/tvResetPin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/filsonpro_bold"
+            android:drawableStart="@drawable/ic_reset_pin"
+            android:text="Reset Pin"
+            android:textColor="@color/white"
+            android:paddingVertical="@dimen/_4sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:drawablePadding="@dimen/_5sdp"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
         <View
             android:id="@+id/view"

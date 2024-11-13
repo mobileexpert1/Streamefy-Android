@@ -174,18 +174,34 @@
 
 
             <ImageView
-                android:id="@+id/ivLogout"
+                android:id="@+id/ivHomeCross"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:background="@drawable/ic_logout_selector"
+                android:background="@drawable/ic_home_cross"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:id="@+id/ivLogout"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/ic_logout"
                 android:clickable="true"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toStartOf="@+id/ivHomeCross"
+                app:layout_constraintTop_toTopOf="@+id/ivHomeCross"
+                app:layout_constraintBottom_toBottomOf="@+id/ivHomeCross"
+                />
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clRv"

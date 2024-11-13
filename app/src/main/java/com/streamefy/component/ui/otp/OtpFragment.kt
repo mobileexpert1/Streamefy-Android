@@ -65,7 +65,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
 
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-         app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivApplogo.loadAny(applogo)
 
         initClickListeners()
@@ -513,7 +513,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 otpView.setText("")
                 viewModel.getOtp(
                     requireActivity(),
-                    phone
+                    OTPRequest(phone)
                 )
             }
 
@@ -575,12 +575,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     }
 
     fun getOtp() {
-        viewModel.getOtp(requireActivity(),phone)
-
+        viewModel.getOtp(requireActivity(), OTPRequest(phone))
         viewModel.otpLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                    ///loading
                     showProgress()
                 }
 
@@ -608,20 +606,26 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         viewModel.vericationData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                    ///loading
                     showProgress()
                 }
 
                 is MyResource.isSuccess -> {
                     it.data?.run {
+                        var data = this.response
                         if (isSuccess) {
-                            ShowError.handleError.message(this.response)
+                            ShowError.handleError.message(this.response.message)
                             lifecycleScope.launch {
+                                SharedPref.setBoolean(
+                                    PrefConstent.ISPRIMARY_USER,
+                                    data.isPrimaryuser
+                                )
                                 delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                                 bundle.putString(PrefConstent.FULL_NAME, name)
+                                bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
+                                SharedPref.setString(PrefConstent.USER_EMAIL, data.email)
                                 findNavController().navigate(
                                     R.id.action_otpFragment_to_pinAuthenticationFragment,
                                     bundle

@@ -19,5 +19,6 @@ object ServerUrls {
     const val USER_VIDEOS = "api/BunnyVideo/GetUserVideos"
     const val PLAY_BACK = "api/BunnyVideo/Playback"
     const val PIN_VERIFICATION = "api/BunnyVideo/Authorize/"
+    const val RESETPIN = "api/Project/PrimaryUser/ResetPin"
 
 }

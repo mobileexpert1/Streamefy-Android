@@ -10,6 +10,7 @@ import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.OTPResponse
 import com.streamefy.component.ui.otp.model.VerificationRequest
+import com.streamefy.component.ui.otp.model.VerifyResponse
 import com.streamefy.data.KoinCompo
 import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
@@ -27,15 +28,15 @@ class OTPVM(var repo: AuthService) : ViewModel() {
     var _otpLiveData = SingleLiveEvent<MyResource<OTPResponse>>()
     val otpLiveData: LiveData<MyResource<OTPResponse>> get() = _otpLiveData
 
-    var _vericationData = SingleLiveEvent<MyResource<OTPResponse>>()
-    val vericationData: LiveData<MyResource<OTPResponse>> get() = _vericationData
+    var _vericationData = SingleLiveEvent<MyResource<VerifyResponse>>()
+    val vericationData: LiveData<MyResource<VerifyResponse>> get() = _vericationData
 
-    fun getOtp(context: Context, number: String) {
+    fun getOtp(context: Context, request: OTPRequest) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 _otpLiveData.value = MyResource.isLoading()
                 try {
-                    var response = repo.otp(number)
+                    var response = repo.otp(request)
                     if (response.body()?.isSuccess!!) {
                         _otpLiveData.value = MyResource.isSuccess(response.body())
                     } else {
@@ -68,7 +69,7 @@ class OTPVM(var repo: AuthService) : ViewModel() {
                     } else {
                         context.showMessage(response.body()?.error?.userMessage.toString())
                        // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
-                        _vericationData.value=MyResource.isError(response.body()?.error?.userMessage.toString()!!)
+                        _vericationData.value=MyResource.isError(response.body()?.error?.userMessage.toString())
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())

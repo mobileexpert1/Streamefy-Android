@@ -6,7 +6,10 @@ import com.streamefy.component.ui.login.model.LoginResponse
 import com.streamefy.component.ui.otp.model.OTPRequest
 import com.streamefy.component.ui.otp.model.OTPResponse
 import com.streamefy.component.ui.otp.model.VerificationRequest
+import com.streamefy.component.ui.otp.model.VerifyResponse
 import com.streamefy.component.ui.pin_authentication.PinResponse
+import com.streamefy.component.ui.projects.model.ProjectRequest
+import com.streamefy.component.ui.projects.model.ProjectResponse
 import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.VideoPlaback
 import retrofit2.Response
@@ -37,7 +40,10 @@ interface ApiService {
     ): Response<VideoPlaback>
 
 
-
+    @POST(ServerUrls.RESETPIN)
+    suspend fun getProject(
+        @Body request: ProjectRequest,
+    ): Response<ProjectResponse>
 //
 //    @POST(ServerUrls.URL_USERNAME_EXISTS)
 //    suspend fun usernameRequest(

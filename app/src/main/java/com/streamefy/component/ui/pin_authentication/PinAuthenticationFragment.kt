@@ -1,5 +1,7 @@
 package com.streamefy.component.ui.pin_authentication
 
+import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +10,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doBeforeTextChanged
 import androidx.navigation.NavOptions
@@ -25,11 +28,13 @@ import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
+import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.visible
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -40,20 +45,32 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     var applogo = ""
     var app_background = ""
     private val viewModel: PinVM by viewModel()
+    var isPrimaryuser = false
+    var isHome = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         SharedPref.setBoolean(PrefConstent.ISAUTH, false)
+        isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
+            isHome = getBoolean(PrefConstent.ISHOME)
         }
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-         app_background=SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivApplogo.loadAny(applogo)
+
         otpFieldFocus()
         binding.apply {
-            textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
+            if (isPrimaryuser) {
+                tvResetPin.visible()
+            }
+            if (isHome) {
+                ivBack.gone()
+            }
+//            textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
+            textView2.setText("Welcome We are thrilled to have you here")
 
             // pinView.requestFocusOTP()
             // pinView.requestFocus()
@@ -142,15 +159,20 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        findNavController().navigate(R.id.loginFragment)
+                        if (!isHome) {
+                            findNavController().navigate(R.id.loginFragment)
+                        }
                     }
                 })
 
             tvResetPin.setOnClickListener {
-                ConfirmPinDialog(requireContext(),true){
-                    if (it){
+                SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, true)
+
+                ConfirmPinDialog(requireContext()) {
+                    if (it) {
                         /// changes it
-                        viewModel.resetPin(requireContext(),"")
+                        findNavController().navigate(R.id.projectfragment)
+                        // viewModel.resetPin(requireContext(),"")
                     }
                 }.show()
             }
@@ -287,9 +309,67 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         tvResetPin.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 tvResetPin.setBackgroundResource(R.drawable.ic_selected_button)
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    tvResetPin.compoundDrawableTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.purple
+                        )
+                    )
+                } else {
+                    val drawables = tvResetPin.compoundDrawables
+                    val drawableStart =
+                        drawables[0]  // You can adjust this for top, end, bottom as needed
+                    if (drawableStart != null) {
+                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                        DrawableCompat.setTint(
+                            wrappedDrawable,
+                            ContextCompat.getColor(requireActivity(), R.color.purple)
+                        )
+                        tvResetPin.setCompoundDrawablesWithIntrinsicBounds(
+                            wrappedDrawable,
+                            drawables[1],
+                            drawables[2],
+                            drawables[3]
+                        )
+                    }
+                }
+
+                tvResetPin.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
             } else {
-                tvResetPin.setBackgroundColor(ContextCompat.getColor(requireContext(),
-                    com.otpview.R.color.transparent))
+                tvResetPin.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        com.otpview.R.color.transparent
+                    )
+                )
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    tvResetPin.compoundDrawableTintList = ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.white
+                        )
+                    )
+
+                } else {
+                    val drawables = tvResetPin.compoundDrawables
+                    val drawableStart =
+                        drawables[0]  // You can adjust this for top, end, bottom as needed
+                    if (drawableStart != null) {
+                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                        DrawableCompat.setTint(
+                            wrappedDrawable,
+                            ContextCompat.getColor(requireActivity(), R.color.white)
+                        )
+                        tvResetPin.setCompoundDrawablesWithIntrinsicBounds(
+                            wrappedDrawable,
+                            drawables[1],
+                            drawables[2],
+                            drawables[3]
+                        )
+                    }
+                }
+                tvResetPin.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
             }
         }
         tvResetPin.remoteKey {
@@ -318,7 +398,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //        et2.previousFocusOnDigit(et1)
 
     }
-
 
     private fun observe() {
         viewModel.pinData.observe(viewLifecycleOwner) {
@@ -352,24 +431,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 }
             }
         }
-
-
-        viewModel.resetData.observe(viewLifecycleOwner) {
-            when (it) {
-                is MyResource.isLoading -> {
-                    showProgress()
-                }
-                is MyResource.isSuccess -> {
-
-
-                }
-
-                is MyResource.isError -> {
-                    dismissProgress()
-                }
-            }
-        }
-
     }
 
 

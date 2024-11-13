@@ -56,4 +56,12 @@
         android:label="dynamicscreen"
         tools:layout="@layout/fragment_dynamic_player"
         />
+
+    <fragment
+        android:name="com.streamefy.component.ui.projects.EventFragment"
+        android:id="@+id/projectfragment"
+        android:label="projectfragment"
+        tools:layout="@layout/fragment_event"
+        />
+
 </navigation>

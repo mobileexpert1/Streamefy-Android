@@ -241,7 +241,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    customIndicator.requestFocus()
+                    ivHomeCross.requestFocus()
                 }
 
                 else -> {}
@@ -256,18 +256,74 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                 ivLogout.layoutParams = params
-                ivLogout.background =
-                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+//                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
             } else {
                 // Revert size when not focused
                 val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivLogout.layoutParams = params
-                ivLogout.background =
-                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+//                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
             }
         }
+
+        ivHomeCross.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    rvCategory.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    customIndicator.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        ivHomeCross.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                focusView = StreamEnum.LOGOUT_VIEW
+                // Change size when focused
+                val params = ivHomeCross.layoutParams as ConstraintLayout.LayoutParams
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                ivHomeCross.layoutParams = params
+//                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+            } else {
+                // Revert size when not focused
+                val params = ivHomeCross.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivHomeCross.layoutParams = params
+//                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+            }
+        }
+        ivHomeCross.setOnClickListener {
+            SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
+            /// navigate to the Project screen
+            val bundle = Bundle().apply {
+                putBoolean(PrefConstent.ISHOME, true) }
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+                    .build()
+                // Navigate to home fragment with the options
+                findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
+
+        }
+
         rvCategory.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -299,7 +355,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
 
                     if (rvBackgVideo.targetPosition == 0) {
-                        ivLogout.requestFocus()
+                        ivHomeCross.requestFocus()
                     } else {
                         val currenPos = rvBackgVideo.targetPosition - 1
                         binding.rvBackgVideo.backScroll(currenPos)
@@ -342,7 +398,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 )
             }
         }
-
+        // right drawer close
         ivClose.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 focusView = StreamEnum.DRAWER_VIEW

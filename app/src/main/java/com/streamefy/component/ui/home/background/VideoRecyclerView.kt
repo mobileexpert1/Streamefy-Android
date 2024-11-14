@@ -43,6 +43,7 @@ import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.utils.gone
 import com.streamefy.utils.loadPicaso
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.viewAnimate
 import com.streamefy.utils.visible
 import kotlinx.coroutines.CoroutineScope
@@ -280,11 +281,10 @@ class VideoRecyclerView : RecyclerView {
     }
 
     fun backScroll(pos: Int) {
-
         Log.e("smcskmc", "back $pos new $pos size ${mediaObjects.size}")
         homeFragment.binding.rvBackgVideo.smoothScrollToPosition(pos)
         removeVideoView(videoSurfaceView)
-//            scrollPlay {}
+
 
     }
 
@@ -337,7 +337,8 @@ class VideoRecyclerView : RecyclerView {
             "second video $targetPosition thumb ${mediaObjects[targetPosition].thumbnailSBucketId}"
         )
         if (mediaObjects[targetPosition].thumbnailSBucketId.isNotEmpty()) {
-            thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
+//            thumbnail?.loadPicaso(mediaObjects[targetPosition].thumbnailSBucketId)
+            thumbnail?.loadUrl(mediaObjects[targetPosition].thumbnailSBucketId)
         }
 
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
@@ -538,16 +539,16 @@ class VideoRecyclerView : RecyclerView {
                 if (focusView == StreamEnum.INDECATOR_VIEW) {
                     binding.customIndicator.requestFocus()
                 } else if (focusView == StreamEnum.BACKGROUND_VIDEO) {
-                    binding.apply {
-                        tvPlay.requestFocus()
-                        tvPlay.setText("pause")
-                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-                            ContextCompat.getDrawable(
-                                requireActivity(),
-                                R.drawable.ic_backg_pause
-                            ), null, null, null
-                        )
-                    }
+//                    binding.apply {
+//                        tvPlay.requestFocus()
+//                        tvPlay.setText("pause")
+//                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+//                            ContextCompat.getDrawable(
+//                                requireActivity(),
+//                                R.drawable.ic_backg_pause
+//                            ), null, null, null
+//                        )
+//                    }
                 } else {
                     eventFocus()
                 }

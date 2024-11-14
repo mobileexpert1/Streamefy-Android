@@ -619,6 +619,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                     PrefConstent.ISPRIMARY_USER,
                                     data.isPrimaryuser
                                 )
+                                SharedPref.setBoolean(PrefConstent.ISAUTH, false)
                                 delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)

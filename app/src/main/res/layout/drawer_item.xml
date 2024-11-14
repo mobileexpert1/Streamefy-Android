@@ -18,13 +18,12 @@
         android:layout_marginVertical="@dimen/_5sdp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="@dimen/_60sdp"
-            android:layout_height="@dimen/_45sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/_1sdp"
             android:id="@+id/clVideoThumb"
@@ -32,12 +31,13 @@
 
             <ImageView
                 android:id="@+id/ivCate"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_45sdp"
                 android:background="@drawable/caegory_radious"
                 android:scaleType="centerCrop"
                 android:src="@drawable/caegory_radious"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView

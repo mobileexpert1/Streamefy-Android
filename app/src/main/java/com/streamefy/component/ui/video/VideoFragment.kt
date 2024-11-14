@@ -883,7 +883,18 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
     }
-
+    override fun onStop() {
+        super.onStop()
+        // Properly release the player when the fragment is no longer visible
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                HomeFragment.videoduraion = currentPosition
+            }
+            playerHandler.pause()
+            playerHandler.release()
+            volumeManager.stopMonitoring()
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         if (playerHandler.player != null) {

@@ -32,7 +32,8 @@ class BackgroundHolder(var binding: ItemSliderBinding) : RecyclerView.ViewHolder
            Log.e("nckdnvd","ncksdnc $thumbnailSBucketId")
             if (thumbnailSBucketId.isNotEmpty()) {
                 imageView.visible()
-                imageView.loadPicaso(thumbnailSBucketId)
+//                imageView.loadPicaso(thumbnailSBucketId)
+                imageView.loadUrl(thumbnailSBucketId)
             } else {
                 imageView.gone()
             }

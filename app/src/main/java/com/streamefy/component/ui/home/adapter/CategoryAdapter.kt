@@ -55,7 +55,8 @@ class CategoryAdapter(
 
             if (data.media != null) {
                 if (data.media?.isNotEmpty()!! && data.media?.size!! >= 1) {
-                    Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
+//                    Picasso.get().load(data.media!![0].thumbnailS3bucketId).into(thumb)
+                    thumb.loadUrl(data.media!![0].thumbnailS3bucketId)
                     thumb.visible()
                     Log.e("asfafaf", "nkcda ${data.media!![0].thumbnailS3bucketId}")
                     if (data.media?.size!! == 1) {
@@ -144,7 +145,8 @@ class CategoryAdapter(
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_DPAD_UP -> {
-                            callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
+                           // callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
+                            homeFragment.binding.tvPlay.requestFocus()
                         }
 //                    KeyEvent.KEYCODE_DPAD_RIGHT->{
 //                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){
@@ -222,6 +224,6 @@ class CategoryAdapter(
         notifyItemChanged(position)
     }
 
-
+fun getList()=eventList
     override fun getItemCount(): Int = eventList.size
 }

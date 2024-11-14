@@ -1,24 +1,16 @@
 package com.streamefy.component.ui.home
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
@@ -45,13 +37,12 @@ import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideTransition
-import com.streamefy.utils.loadUrl
 import com.streamefy.utils.moveDown
 import com.streamefy.utils.moveUp
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showTransition
 import com.streamefy.utils.visible
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -93,6 +84,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     var focusView = StreamEnum.BOTTOM_EVENT_VIEW
 
+    var isLastPlay = false
+    var lastVideoUrl = ""
+    var lastVideoDuration = ""
+    var lastVideoThumb = ""
+    var isPlayByPlayButton = false
+    var isTrailer = false
+
     companion object {
         lateinit var homeFragment: HomeFragment
         var videoduraion: Long = 0
@@ -132,9 +130,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     // Navigate to home fragment with the options
                     findNavController().navigate(R.id.loginFragment, null, navOptions)
                 }.show()
-
             }
-
 
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
@@ -165,6 +161,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onDrawerClosed(drawerView: View) {
                     Log.e("dndjvn", "drawer close")
                     isDrawerOpen = false
+                    if (isTrailer){
+                        ivTrailer.requestFocus()
+                    }
                     rvCategory.apply {
                         post {
                             getChildAt(eventFocusPos)?.requestFocus()
@@ -179,7 +178,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     // Handle state change if needed
                 }
             })
-
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                 // Revert size when not focused
                 tvPlay.compoundDrawableTintList =
@@ -190,14 +188,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     )
 
-            }
-            else{
+            } else {
                 val drawables = tvPlay.compoundDrawables
-                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                val drawableStart =
+                    drawables[0]  // You can adjust this for top, end, bottom as needed
                 if (drawableStart != null) {
                     val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
-                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                    DrawableCompat.setTint(
+                        wrappedDrawable,
+                        ContextCompat.getColor(requireActivity(), R.color.white)
+                    )
+                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                        wrappedDrawable,
+                        drawables[1],
+                        drawables[2],
+                        drawables[3]
+                    )
                 }
             }
             tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
@@ -214,12 +220,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun savePlayback() {
-
         if (videoduraion >= 0) {
             var request = PlayBackRequest()
-            request.number = phone
+            request.phoneNumber = phone
             request.mediaId = mediaId
             request.duration = videoduraion.toString()
+            lastVideoDuration = videoduraion.toString()
+            if (!isPlayByPlayButton) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    var newList = eventAdapter.getList()
+                    if (newList.isNotEmpty()) {
+                        newList[eventVideoIndex].media?.get(mediaIndex)?.run {
+                            isLastPlay = true
+                            lastVideoUrl = hlsPlaylistUrl
+                            lastVideoDuration = videoduraion.toString()
+                            lastVideoThumb = thumbnailS3bucketId
+                        }
+                    }
+                }
+            }
+
             viewModel.saveDuration(requireContext(), request)
             durationObserve()
         }
@@ -233,7 +253,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    customIndicator.requestFocus()
+                    //  customIndicator.requestFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -276,7 +297,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    customIndicator.requestFocus()
+//                    customIndicator.requestFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -312,15 +334,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
         ivHomeCross.setOnClickListener {
-            SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
             /// navigate to the Project screen
             val bundle = Bundle().apply {
-                putBoolean(PrefConstent.ISHOME, true) }
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
-                    .build()
-                // Navigate to home fragment with the options
-                findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
+                putBoolean(PrefConstent.ISHOME, true)
+            }
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+                .build()
+            // Navigate to home fragment with the options
+            findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
 
         }
 
@@ -419,35 +441,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
 
-        val drawables = tvPlay.compoundDrawables
-
-        val drawableStart = drawables[0]  // index 0 corresponds to drawableStart
-
-        if (drawableStart != null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                // For API level 22 or lower, tint programmatically
-                val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white)) // Your desired color
-                // Set the drawable back with tint
-                tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, null, null, null)
-            } else {
-                // For API level 23 or higher, use drawableTint in XML (or this can be done directly programmatically as well)
-                tvPlay.setCompoundDrawablesWithIntrinsicBounds(drawableStart, null, null, null)
-            }
-        }
-
         tvPlay.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivLogout.requestFocus()
                 }
+
                 StreamEnum.DOWN_DPAD_KEY -> {
                     rvCategory.requestFocus()
                 }
+
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    customIndicator.requestFocus()
+//                    customIndicator.requestFocus()
+                    ivTrailer.requestFocus()
                 }
-                else->{}
+
+                else -> {}
             }
         }
 //
@@ -463,19 +472,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     )
 
-                }else{
+                } else {
                     val drawables = tvPlay.compoundDrawables
-                    val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                    val drawableStart =
+                        drawables[0]  // You can adjust this for top, end, bottom as needed
 
                     if (drawableStart != null) {
                         val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
-                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                        DrawableCompat.setTint(
+                            wrappedDrawable,
+                            ContextCompat.getColor(requireActivity(), R.color.purple)
+                        )
+                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                            wrappedDrawable,
+                            drawables[1],
+                            drawables[2],
+                            drawables[3]
+                        )
                     }
                 }
 
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
-               // playPauseChecks()
+                // playPauseChecks()
             } else {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                     // Revert size when not focused
@@ -487,48 +505,139 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             )
                         )
 
-                }else{
+                } else {
                     val drawables = tvPlay.compoundDrawables
-                    val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+                    val drawableStart =
+                        drawables[0]  // You can adjust this for top, end, bottom as needed
                     if (drawableStart != null) {
                         val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
-                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+                        DrawableCompat.setTint(
+                            wrappedDrawable,
+                            ContextCompat.getColor(requireActivity(), R.color.white)
+                        )
+                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                            wrappedDrawable,
+                            drawables[1],
+                            drawables[2],
+                            drawables[3]
+                        )
                     }
                 }
 
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-               // playPauseChecks()
+                // playPauseChecks()
             }
         }
         tvPlay.setOnClickListener {
             Log.e("lcsdwdw", "clicked ${tvPlay.text.toString()}")
             if (tvPlay.text.toString().contains("play")) {
-                tvPlay.setText("pause")
-                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-                    ContextCompat.getDrawable(
-                        requireActivity(),
-                        R.drawable.ic_backg_pause
-                    ), null, null, null
-                )
-                binding.rvBackgVideo.apply {
-                    playerHandler.play()
-                }
+                playEventVideo()
             } else {
-                tvPlay.setText("play")
-                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-                    ContextCompat.getDrawable(
-                        requireActivity(),
-                        R.drawable.ic_backg_play
-                    ), null, null, null
-                )
-                binding.rvBackgVideo.apply {
-                    playerHandler.pause()
-                }
+                playEventVideo()
             }
 
         }
 
+
+        ivTrailer.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    rvCategory.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    tvPlay.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        ivTrailer.setOnFocusChangeListener { _, hasFocus ->
+            Log.e("lcsdwdw", "scnsivn $hasFocus")
+            if (hasFocus) {
+              //  focusView = StreamEnum.LOGOUT_VIEW
+//                ivTrailer.setBackgroundResource(R.drawable.bg_round_gradient_purple_orange)
+//                val colorStateList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white))
+//                ivTrailer.backgroundTintList = colorStateList
+                // Change size when focused
+                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                ivTrailer.layoutParams = params
+//                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+            } else {
+
+//                val colorStateList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple))
+//                ivTrailer.backgroundTintList = colorStateList
+
+                // Revert size when not focused
+                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                ivTrailer.layoutParams = params
+////                ivLogout.background =
+//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+            }
+        }
+
+
+        ivTrailer.setOnClickListener {
+            isTrailer=true
+            drawerLayout.openDrawer(GravityCompat.END)
+            var newList=ArrayList<BackgroundMediaItem>()
+            newList.clear()
+            newList.addAll(images)
+            trailerDrawer(newList)
+        }
+
+
+//        tvPlay.setOnClickListener {
+//            Log.e("lcsdwdw", "clicked ${tvPlay.text.toString()}")
+//            if (tvPlay.text.toString().contains("play")) {
+//                tvPlay.setText("pause")
+//                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+//                    ContextCompat.getDrawable(
+//                        requireActivity(),
+//                        R.drawable.ic_backg_pause
+//                    ), null, null, null
+//                )
+//                binding.rvBackgVideo.apply {
+//                    playerHandler.play()
+//                }
+//            } else {
+//                tvPlay.setText("play")
+//                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+//                    ContextCompat.getDrawable(
+//                        requireActivity(),
+//                        R.drawable.ic_backg_play
+//                    ), null, null, null
+//                )
+//                binding.rvBackgVideo.apply {
+//                    playerHandler.pause()
+//                }
+//            }
+//
+//        }
+
+    }
+
+    fun playEventVideo() {
+        Log.e(
+            "playresumesd",
+            "play by button $isPlayByPlayButton last video data $isLastPlay $lastVideoDuration video url $lastVideoUrl thumb $lastVideoThumb"
+        )
+        isPlayByPlayButton=true
+        val bundle = Bundle()
+        bundle.putString(PrefConstent.VIDEO_URL, lastVideoUrl)
+        bundle.putString(PrefConstent.PLAY_BACK_DURATION, lastVideoDuration)
+        bundle.putBoolean(PrefConstent.SMART_REVISION, false)
+        bundle.putString(PrefConstent.VIDEO_THUMB, lastVideoThumb)
+        findNavController().navigate(R.id.videofragment, bundle)
     }
 
     private fun creatorView() = with(binding) {
@@ -561,83 +670,70 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             "skncksnc",
                             "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
                         )
-                        customIndicator.updateIndicator(newPos)
+                        //  customIndicator.updateIndicator(newPos)
 
-                            tvPlay.setText("pause")
-                            tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-                                ContextCompat.getDrawable(
-                                    requireActivity(),
-                                    R.drawable.ic_backg_pause
-                                ), null, null, null
-                            )
-                        if (tvPlay.isFocused){
-                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-                                // Revert size when not focused
-                                tvPlay.compoundDrawableTintList =
-                                    ColorStateList.valueOf(
-                                        ContextCompat.getColor(
-                                            requireActivity(),
-                                            R.color.purple
-                                        )
-                                    )
-
-                            }else{
-                                val drawables = tvPlay.compoundDrawables
-                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
-                                if (drawableStart != null) {
-                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
-                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
-                                }
-                            }
-
-                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
-                        }else{
-                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                                // Revert size when not focused
-                                tvPlay.compoundDrawableTintList =
-                                    ColorStateList.valueOf(
-                                        ContextCompat.getColor(
-                                            requireActivity(),
-                                            R.color.white
-                                        )
-                                    )
-
-                            }else{
-                                val drawables = tvPlay.compoundDrawables
-                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
-                                if (drawableStart != null) {
-                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
-                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
-                                }
-                            }
-
-                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-                        }
+//                            tvPlay.setText("pause")
+//                            tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+//                                ContextCompat.getDrawable(
+//                                    requireActivity(),
+//                                    R.drawable.ic_backg_pause
+//                                ), null, null, null
+//                            )
+//                        if (tvPlay.isFocused){
+//                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+//                                // Revert size when not focused
+//                                tvPlay.compoundDrawableTintList =
+//                                    ColorStateList.valueOf(
+//                                        ContextCompat.getColor(
+//                                            requireActivity(),
+//                                            R.color.purple
+//                                        )
+//                                    )
+//
+//                            }else{
+//                                val drawables = tvPlay.compoundDrawables
+//                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+//                                if (drawableStart != null) {
+//                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+//                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
+//                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+//                                }
+//                            }
+//
+//                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+//                        }
+//                        else{
+//                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+//                                // Revert size when not focused
+//                                tvPlay.compoundDrawableTintList =
+//                                    ColorStateList.valueOf(
+//                                        ContextCompat.getColor(
+//                                            requireActivity(),
+//                                            R.color.white
+//                                        )
+//                                    )
+//
+//                            }else{
+//                                val drawables = tvPlay.compoundDrawables
+//                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
+//                                if (drawableStart != null) {
+//                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+//                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
+//                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
+//                                }
+//                            }
+//
+//                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+//                        }
 
                     }
                 }
             })
         }
 
-        customIndicator.setIndicatorCount(images.size, 0)
-
-        if (images.size > 1) {
-            binding.customIndicator.visible()
-        }
-        //  binding.ivLogout.visible()
-//        val adapter = SliderAdapter(requireActivity(), images) {
-//            Log.e("amcdanc", "sknmcjiadnc  $it")
-//        }
-//
-//        imageSlider.setSliderAdapter(adapter)
-//        imageSlider.startAutoCycle()
-//        customIndicator.setIndicatorCount(images.size, 0)
-//
-//        imageSlider.setCurrentPageListener {
-//            Log.e("aggggg", "sknmcjiadnc  $it")
-//            customIndicator.updateIndicator(it)
+        //  customIndicator.setIndicatorCount(images.size, 0)
+//        if (images.size > 1) {
+//            binding.customIndicator.visible()
 //        }
     }
 
@@ -658,7 +754,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         clOpecity.visible()
         projectlogo.moveUp(requireContext())
         tvProjectTitle.moveUp(requireContext())
-
         tvProjectDesc.showTransition(requireContext())
         rvCreators.showTransition(requireContext())
 
@@ -666,14 +761,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun moveUp(view: View) {
         view.translationY = 0f
-
-
     }
 
     private fun moveDown(view: View) {
         view.translationY = 0f
-
-
     }
 
 
@@ -687,7 +778,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun drawerView() = with(binding) {
-
         tvTitle.setText(selectedTitle)
         // testing
 //        for (i in 1 until 10){
@@ -703,17 +793,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //        }
 ////
         rvDrawer.apply {
-
+            isTrailer=false
             getChildAt(0)?.requestFocus()
 
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
-            mediaAdapter = DrawerAdapter(requireActivity(), mediaList) {
+            mediaAdapter = DrawerAdapter(requireActivity(), mediaList as ArrayList<Any>) {
 //                drawerLayout.closeDrawer(GravityCompat.END)
                 drawerItemFocus = it
                 mediaIndex = it
                 mediaId = mediaList[it].id
-
+                isPlayByPlayButton=false
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
@@ -726,7 +816,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             adapter = mediaAdapter
         }
     }
+    private fun trailerDrawer(newList: ArrayList<BackgroundMediaItem>) = with(binding) {
+        tvTitle.setText("Trailer")
 
+        rvDrawer.apply {
+
+            getChildAt(0)?.requestFocus()
+
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireActivity())
+            mediaAdapter = DrawerAdapter(requireActivity(), newList as ArrayList<Any>) {
+                Log.e("sjncsjncb","trailer video $it")
+                drawerLayout.closeDrawer(GravityCompat.END)
+                binding.rvBackgVideo.backScroll(it)
+
+            }
+
+            adapter = mediaAdapter
+        }
+    }
     private fun eventView() = with(binding) {
 
 //        cateList.add(
@@ -781,9 +889,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 mediaIndex = 0
                 when (type) {
                     StreamEnum.SINGLE -> {
-                        if(eventList[pos].media!=null) {
+                        if (eventList[pos].media != null) {
                             if (eventList[pos].media?.size!! >= 1) {
                                 eventList[pos].media?.get(0)?.run {
+                                    isPlayByPlayButton=false
                                     mediaId = this.id
                                     val bundle = Bundle()
                                     bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
@@ -814,7 +923,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                     StreamEnum.UP_DPAD_KEY -> {
 
-                        customIndicator.requestFocus()
+//                        customIndicator.requestFocus()
+
                     }
 
                     StreamEnum.PAGINATION -> {
@@ -878,6 +988,50 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                 }
                             }
                             // event video
+                            isLastPlay
+//                            events?.filter { if (it.media?.filter { if (it.isLastPlayed)})}
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                val filteredEvents = events?.filter { event ->
+                                    event.media?.any { it.isLastPlayed } == true
+                                }
+
+                                if (filteredEvents != null && filteredEvents.isNotEmpty()) {
+                                    filteredEvents.forEach {
+                                        var media = it.media?.filter { it.isLastPlayed }
+                                        Log.e("hhutyuigjf", "knkndv ${it?.media?.size} data $media")
+                                        if (media != null && media.size > 0) {
+                                            if (media[0].isLastPlayed) {
+                                                isLastPlay = true
+                                                lastVideoUrl = media[0].hlsPlaylistUrl
+                                                lastVideoDuration = media[0].playbackDuration
+                                                lastVideoThumb = media[0].thumbnailS3bucketId
+                                                mediaId = media[0].id
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    binding.tvPlay.setText(
+                                                        "resume"
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    var media = events?.get(0)?.media
+                                    media?.get(0)?.run {
+                                        isLastPlay = false
+                                        lastVideoUrl = hlsPlaylistUrl
+                                        lastVideoDuration = "0"
+                                        lastVideoThumb = thumbnailS3bucketId
+                                        mediaId = id
+                                        lifecycleScope.launch(Dispatchers.Main) {
+                                            binding.tvPlay.setText(
+                                                "play"
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+
                             eventAdapter.update(events as ArrayList<EventsItem>)
                             binding.let {
                                 this.project?.get(0)?.run {
@@ -888,7 +1042,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     it.clTitle.visible()
                                 }
                                 it.rvCategory.requestFocus()
-//                            it. rvBackgVideo.requestFocus()
+//                                it. rvBackgVideo.requestFocus()
 //                                it.projectlogo.loadUrl(this.logo)
                                 proLogo = this.logo
 
@@ -903,6 +1057,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                 creatorsAdapter.update(crewMembers as ArrayList<crewMembers>)
                             }
                             isFirst = false
+
+
+
+                            Log.e(
+                                "hhutyuigjf",
+                                "last video data $isLastPlay $lastVideoDuration video url $lastVideoUrl thumb $lastVideoThumb"
+                            )
+
                         }
 
 
@@ -943,7 +1105,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
                     }
                     Log.e(
-                        "videoback",
+                        "hduudhuirjirj",
                         "isDrawerOpen $isDrawerOpen  $eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}"
                     )
                     videoduraion = 0
@@ -993,7 +1155,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         lifecycleScope.launch {
             Log.e("kdmcdkmc", "$eventFocusPos dmvdmv $focusView ")
             if (focusView == StreamEnum.INDECATOR_VIEW) {
-                customIndicator.requestFocus()
+//                customIndicator.requestFocus()
+                ivTrailer.requestFocus()
             } else if (isDrawerOpen) {
                 rvDrawer.post {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()

@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.otpview.OTPListener
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
@@ -50,7 +51,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        SharedPref.setBoolean(PrefConstent.ISAUTH, false)
+
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
@@ -161,6 +162,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                         // Show the custom dialog when back is pressed
                         if (!isHome) {
                             findNavController().navigate(R.id.loginFragment)
+                        }else{
+                            ExitDialog(requireActivity()).show()
                         }
                     }
                 })

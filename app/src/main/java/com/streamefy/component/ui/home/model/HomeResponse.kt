@@ -65,7 +65,9 @@ data class MediaItem(
     @SerializedName("playbackDuration")
     var playbackDuration: String = "" ,
     @SerializedName("totalVideoDuration")
-    var totalVideoDuration: String = ""
+    var totalVideoDuration: String = "",
+    @SerializedName("isLastPlayed")
+    val isLastPlayed: Boolean = false,
 )
 
 

@@ -9,6 +9,8 @@ import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -41,8 +43,10 @@ class PlayerHandler(
     private fun initializePlayer() {
         try {
             val trackSelector = DefaultTrackSelector(context)
+
             player = ExoPlayer.Builder(context)
                // .setTrackSelector(trackSelector)
+
                 .build()
 
             playerView.player = player
@@ -110,7 +114,21 @@ class PlayerHandler(
             player!!.seekTo(lastDuration)
             player!!.play()
 
-        } catch (e: Exception) {
+        }
+//        catch (e: ExoPlaybackException) {
+//            when (e.type) {
+//                ExoPlaybackException.TYPE_SOURCE -> {
+//                    Log.e("ExoPlayerError", "Source error: ${e.sourceException?.message}")
+//                }
+//                ExoPlaybackException.TYPE_RENDERER -> {
+//                    Log.e("ExoPlayerError", "Renderer error: ${e.rendererException?.message}")
+//                }
+//                ExoPlaybackException.TYPE_UNEXPECTED -> {
+//                    Log.e("ExoPlayerError", "Unexpected error: ${e.message}")
+//                }
+//            }
+//        }
+        catch (e: Exception) {
             Log.e("skcmskc", "video playing error $e")
         }
         Log.e("sjkcnsakjbc", "akjcnkja play")

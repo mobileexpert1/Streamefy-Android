@@ -17,7 +17,6 @@ import kotlin.coroutines.coroutineContext
 
 class LogoutDialog(context: Context,var callBack:()->Unit) :
     BaseDialog<LogoutUiBinding>(context, R.layout.logout_ui, R.style.TransparentDialogTheme) {
-
     override fun setupViews() {
         binding.apply {
             tvLogout.setOnClickListener {

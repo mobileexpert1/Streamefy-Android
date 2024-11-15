@@ -32,6 +32,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout.ResizeMode
@@ -211,7 +212,11 @@ class VideoRecyclerView : RecyclerView {
 
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
-                Log.e("skcjnakjbc", "kjcdabcv $error")
+                Log.e("skcjnakjbc", "by home fragment kjcdabcv $error")
+                if (error.cause is MediaCodecRenderer.DecoderInitializationException) {
+                    // Handle decoder initialization failure
+                    Log.e("ExoPlayerError", "by home fragment Decoder initialization failed: ${error.message}")
+                }
             }
 
             override fun onPlayerErrorChanged(error: PlaybackException?) {

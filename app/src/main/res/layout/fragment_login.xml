@@ -73,12 +73,14 @@
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/ccCode"
                     style="@style/filson_14_whiteTV"
-                    android:layout_width="@dimen/_30sdp"
+                    android:layout_width="@dimen/_25sdp"
                     android:layout_height="0dp"
                     android:focusable="true"
                     android:importantForAccessibility="yes"
-                    android:layout_margin="@dimen/_3sdp"
+                    android:layout_marginVertical="@dimen/_3sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:gravity="center"
+                    app:circularflow_viewCenter="@dimen/_4sdp"
                     app:ccpDialog_background="@color/white"
                     app:ccp_arrowColor="@color/black"
                     app:ccp_contentColor="@color/black"
@@ -86,7 +88,7 @@
                     app:ccp_defaultNameCode="in"
                     android:imeOptions="actionDone"
                     app:ccp_showArrow="true"
-                    app:ccp_arrowSize="@dimen/_10sdp"
+                    app:ccp_arrowSize="@dimen/_9sdp"
                     app:ccp_defaultPhoneCode="91"
                     app:ccp_showFlag="false"
                     app:ccp_showNameCode="false"
@@ -99,10 +101,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <View
+                    android:id="@+id/lineview"
+                    android:layout_width="1dp"
+                    android:layout_height="0dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/ccCode"
+                    app:layout_constraintTop_toTopOf="@+id/ccCode"
+                    app:layout_constraintBottom_toBottomOf="@+id/ccCode"/>
                 <EditText
                     android:id="@+id/etPhoneNumber"
                     style="@style/filson_14_whiteTV"
-                    :paddingEnd="@dimen/_6sdp"
+                    android:paddingEnd="@dimen/_6sdp"
                     android:layout_width="0dp"
                     android:layout_marginVertical="@dimen/_3sdp"
                     android:background="@color/white"
@@ -111,7 +121,8 @@
                     android:hint="@string/phone_number"
                     android:imeOptions="actionDone"
                     android:inputType="number"
-                    android:minEms="2"
+                    android:gravity="center_vertical"
+                    android:minEms="4"
                     android:maxLines="1"
                     android:paddingVertical="@dimen/_5sdp"
                     android:paddingStart="@dimen/_2sdp"
@@ -122,7 +133,7 @@
                     android:textColorHint="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/ccCode"
+                    app:layout_constraintStart_toEndOf="@+id/lineview"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="TextFields" />
 

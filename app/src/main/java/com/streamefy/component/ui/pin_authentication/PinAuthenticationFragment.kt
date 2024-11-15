@@ -71,7 +71,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 ivBack.gone()
             }
 //            textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
-            textView2.setText("Welcome We are thrilled to have you here")
+            textView2.setText("Welcome")
 
             // pinView.requestFocusOTP()
             // pinView.requestFocus()
@@ -436,7 +436,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+        binding.otpView.setText("")
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("skcnmskncm", "skcnsk destroyview")

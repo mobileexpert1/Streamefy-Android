@@ -135,6 +135,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
                         requireActivity().showMessage("PIN updated successfully")
+                        findNavController().popBackStack()
                     } else {
                         it.data?.run {
                             list.clear()

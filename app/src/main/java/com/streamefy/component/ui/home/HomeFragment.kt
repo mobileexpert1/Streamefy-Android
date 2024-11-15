@@ -43,6 +43,7 @@ import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showTransition
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -89,7 +90,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var lastVideoDuration = ""
     var lastVideoThumb = ""
     var isPlayByPlayButton = false
-    var isTrailer = false
+
 
     companion object {
         lateinit var homeFragment: HomeFragment
@@ -97,12 +98,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         var mediaId: Int = 0
         var eventVideoIndex = 0
         var mediaIndex = 0
+        var isTrailer = false
     }
 
     var background_current_play_duration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         //  progressDialog= CircularProgressDialog(requireContext())
     }
 
@@ -147,11 +150,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     Log.e("dndjvn", "drawer open")
 //                    drawerView.requestFocus()
                     isDrawerOpen = true
-                    rvCategory.apply {
-                        post {
-                            getChildAt(eventFocusPos)?.clearFocus()
-                        }
-                    }
+//                    rvCategory.apply {
+//                        post {
+//                            getChildAt(eventFocusPos)?.clearFocus()
+//                        }
+//                    }
+                    eventVideoFocus()
                     rvDrawer.post {
                         rvDrawer.getChildAt(0)?.requestFocus()
                     }
@@ -161,16 +165,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onDrawerClosed(drawerView: View) {
                     Log.e("dndjvn", "drawer close")
                     isDrawerOpen = false
-                    if (isTrailer){
+                    if (isTrailer) {
                         ivTrailer.requestFocus()
-                    }
-                    rvCategory.apply {
-                        post {
-                            getChildAt(eventFocusPos)?.requestFocus()
+                    }else {
+                        eventVideoFocus()
+//                    rvCategory.apply {
+//                        post {
+//                            getChildAt(eventFocusPos)?.requestFocus()
+//                        }
+//                    }
+                        rvDrawer.post {
+                            rvDrawer.getChildAt(0)?.clearFocus()
                         }
-                    }
-                    rvDrawer.post {
-                        rvDrawer.getChildAt(0)?.clearFocus()
                     }
                 }
 
@@ -179,7 +185,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
             })
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                // Revert size when not focused
                 tvPlay.compoundDrawableTintList =
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
@@ -249,7 +254,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivLogout.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+//                    rvCategory.requestFocus()
+                    eventVideoFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -559,40 +565,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivTrailer.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
             if (hasFocus) {
-              //  focusView = StreamEnum.LOGOUT_VIEW
-//                ivTrailer.setBackgroundResource(R.drawable.bg_round_gradient_purple_orange)
-//                val colorStateList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.white))
-//                ivTrailer.backgroundTintList = colorStateList
-                // Change size when focused
                 val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.width =
+                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                 ivTrailer.layoutParams = params
-//                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
             } else {
-
-//                val colorStateList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.purple))
-//                ivTrailer.backgroundTintList = colorStateList
-
-                // Revert size when not focused
                 val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                params.width = resources.getDimensionPixelSize(R.dimen._17sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                 ivTrailer.layoutParams = params
-////                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
             }
         }
 
 
         ivTrailer.setOnClickListener {
-            isTrailer=true
+            isTrailer = true
             drawerLayout.openDrawer(GravityCompat.END)
-            var newList=ArrayList<BackgroundMediaItem>()
-            newList.clear()
-            newList.addAll(images)
-            trailerDrawer(newList)
+            trailerDrawer()
         }
 
 
@@ -631,7 +621,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             "playresumesd",
             "play by button $isPlayByPlayButton last video data $isLastPlay $lastVideoDuration video url $lastVideoUrl thumb $lastVideoThumb"
         )
-        isPlayByPlayButton=true
+        isPlayByPlayButton = true
         val bundle = Bundle()
         bundle.putString(PrefConstent.VIDEO_URL, lastVideoUrl)
         bundle.putString(PrefConstent.PLAY_BACK_DURATION, lastVideoDuration)
@@ -779,6 +769,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun drawerView() = with(binding) {
         tvTitle.setText(selectedTitle)
+        isTrailer = false
         // testing
 //        for (i in 1 until 10){
 //            var model1=MediaItem(
@@ -793,7 +784,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //        }
 ////
         rvDrawer.apply {
-            isTrailer=false
+            isTrailer = false
             getChildAt(0)?.requestFocus()
 
             setHasFixedSize(true)
@@ -803,7 +794,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 drawerItemFocus = it
                 mediaIndex = it
                 mediaId = mediaList[it].id
-                isPlayByPlayButton=false
+                isPlayByPlayButton = false
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
                 bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
@@ -816,7 +807,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             adapter = mediaAdapter
         }
     }
-    private fun trailerDrawer(newList: ArrayList<BackgroundMediaItem>) = with(binding) {
+
+    private fun trailerDrawer() = with(binding) {
         tvTitle.setText("Trailer")
 
         rvDrawer.apply {
@@ -825,16 +817,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
-            mediaAdapter = DrawerAdapter(requireActivity(), newList as ArrayList<Any>) {
-                Log.e("sjncsjncb","trailer video $it")
-                drawerLayout.closeDrawer(GravityCompat.END)
-                binding.rvBackgVideo.backScroll(it)
+            mediaAdapter = DrawerAdapter(requireActivity(), images as ArrayList<Any>) {
+                Log.e("sjncsjncb", "trailer video $it")
+                // drawerLayout.closeDrawer(GravityCompat.END)
+                //  binding.rvBackgVideo.backScroll(it)
+                images[0]?.run {
+                    var hlsPlaylistUrl = this.hlsPlaylistUrl
+                    var thumbnailS3bucketId = this.thumbnailSBucketId
+                    var playbackDuration = "0"
 
+                    val bundle = Bundle()
+                    bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
+                    bundle.putString(
+                        PrefConstent.PLAY_BACK_DURATION,
+                        playbackDuration
+                    )
+                    bundle.putBoolean(PrefConstent.SMART_REVISION, false)
+                    bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
+                    findNavController().navigate(R.id.videofragment, bundle)
+                }
             }
 
             adapter = mediaAdapter
         }
     }
+
     private fun eventView() = with(binding) {
 
 //        cateList.add(
@@ -892,7 +899,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         if (eventList[pos].media != null) {
                             if (eventList[pos].media?.size!! >= 1) {
                                 eventList[pos].media?.get(0)?.run {
-                                    isPlayByPlayButton=false
+                                    isPlayByPlayButton = false
                                     mediaId = this.id
                                     val bundle = Bundle()
                                     bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
@@ -916,7 +923,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             if (isNotEmpty()) {
                                 mediaList.clear()
                                 mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
+//                                rightDrawer.invalidate()
+//                                rightDrawer.post {
+//                                    rightDrawer.layoutParams.width = 800
                                 drawerView()
+//                                }
                             }
                         }
                     }
@@ -1136,7 +1147,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 "videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
             )
             if (isDrawerOpen) {
-                drawerView()
+                if (isTrailer) {
+                    trailerDrawer()
+                } else {
+                    drawerView()
+                }
                 rvDrawer.post {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
@@ -1146,8 +1161,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 sliderInit()
             }
             isFirstVideo = true
+
+            /// check if user played video or not
+            if (isLastPlay){
+                tvPlay.setText("resume")
+            }else{
+                tvPlay.setText("play")
+            }
+
         }
-        savePlayback()
+        if (!isTrailer) {
+            savePlayback()
+        }
 
     }
 
@@ -1162,22 +1187,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
                 }
             } else {
-                rvCategory.apply {
-                    post {
-                        getChildAt(eventFocusPos)?.requestFocus()
-                    }
-                }
+                eventVideoFocus()
             }
         }
 
+    }
+
+    fun eventVideoFocus()= with(binding){
+        rvCategory.apply {
+            post {
+                getChildAt(eventFocusPos)?.requestFocus()
+            }
+        }
     }
 
     override fun onPause() {
 
         binding.rvBackgVideo.apply {
             pauseVideo()
-            //  playerHandler.pause()
-//            playerHandler.release()
         }
         binding.rvBackgVideo.isfirst = true
         super.onPause()

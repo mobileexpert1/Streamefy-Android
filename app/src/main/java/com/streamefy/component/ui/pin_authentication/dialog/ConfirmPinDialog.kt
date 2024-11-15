@@ -40,7 +40,7 @@ class ConfirmPinDialog(context: Context, var callBack: (Boolean) -> Unit) :
 
                var email= SharedPref.getString(PrefConstent.USER_EMAIL)
                 if (email!=null){
-                    value = "New PIN will be sent to your Email (${maskEmail(email)}) \nand Mobile Number ${maskPhoneNumber(phone)}"
+                    value = "New PIN will be sent to your Email (${maskEmail(email)}) \nand Mobile Number (${maskPhoneNumber(phone)})"
                 }else{
                     value = "New PIN will be sent to your Mobile Number ${maskPhoneNumber(phone)}"
                 }
@@ -50,7 +50,7 @@ class ConfirmPinDialog(context: Context, var callBack: (Boolean) -> Unit) :
             } else {
                 var project = SharedPref.getString(PrefConstent.PROJECT_NAME).toString()
                 var value =
-                    "Are you sure you want to rest the PIN for the event ( $project )"
+                    "Are you sure you want to reset the PIN for the event ($project)"
                 tvMessage.setText(value)
                 ivClose.setImageResource(R.drawable.ic_question_marks)
             }

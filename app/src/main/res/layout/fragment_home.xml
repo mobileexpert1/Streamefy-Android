@@ -69,6 +69,7 @@
                 android:background="@drawable/horizontal_opecity"
                 app:layout_constraintBottom_toTopOf="@+id/clRv"
                 app:layout_constraintStart_toStartOf="parent" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clTitle"
                 android:layout_width="@dimen/_400sdp"
@@ -76,14 +77,15 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:paddingStart="@dimen/_30sdp"
                 android:visibility="invisible"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/clRv"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/projectlogo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_3sdp"
                     android:drawableStart="@drawable/ic_production"
                     android:drawablePadding="@dimen/_5sdp"
                     android:fontFamily="@font/filsonpro_medium"
@@ -92,10 +94,9 @@
                     android:text="production"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
-                    android:layout_marginBottom="@dimen/_3sdp"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/tvProjectTitle"
+                    app:layout_constraintStart_toStartOf="parent"
 
 
                     />
@@ -103,9 +104,9 @@
                 <TextView
                     android:id="@+id/tvProjectTitle"
                     style="@style/filson_bold_66_whiteTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/tvProjectDesc"
                     android:layout_marginBottom="@dimen/_3sdp"
+                    app:layout_constraintBottom_toTopOf="@+id/tvProjectDesc"
+                    app:layout_constraintStart_toStartOf="parent"
                     tools:text="Riya and Vijay" />
 
                 <TextView
@@ -113,25 +114,24 @@
                     style="@style/filson_14_whiteTV"
                     android:layout_width="@dimen/_170sdp"
                     android:layout_height="@dimen/_20sdp"
+                    android:ellipsize="end"
                     android:fontFamily="@font/filsonpro_light"
                     android:gravity="center_vertical"
                     android:maxLines="2"
-                    android:ellipsize="end"
                     android:paddingBottom="@dimen/_1sdp"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/rvCreators"
+                    app:layout_constraintStart_toStartOf="parent"
                     tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been " />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCreators"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="@dimen/_1sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_1sdp"
 
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/tvPlay"
-                    />
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <TextView
                     android:id="@+id/tvPlay"
@@ -151,8 +151,8 @@
                     android:text="play"
                     android:textAllCaps="true"
                     android:textColor="@color/input_field_color_selector"
-                    app:layout_constraintStart_toStartOf="@+id/rvCreators"
-                   app:layout_constraintBottom_toBottomOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/rvCreators" />
 
                 <ImageView
                     android:id="@+id/ivTrailer"
@@ -166,11 +166,9 @@
                     android:text="Back"
                     android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
-                    app:layout_constraintStart_toEndOf="@+id/tvPlay"
-                    app:layout_constraintTop_toTopOf="@+id/tvPlay" />
+                    app:layout_constraintStart_toEndOf="@+id/tvPlay" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
             <ImageView
@@ -197,10 +195,9 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:visibility="invisible"
-                app:layout_constraintEnd_toStartOf="@+id/ivHomeCross"
-                app:layout_constraintTop_toTopOf="@+id/ivHomeCross"
                 app:layout_constraintBottom_toBottomOf="@+id/ivHomeCross"
-                />
+                app:layout_constraintEnd_toStartOf="@+id/ivHomeCross"
+                app:layout_constraintTop_toTopOf="@+id/ivHomeCross" />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -219,10 +216,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:paddingRight="@dimen/_3sdp"
-                    android:paddingStart="@dimen/_2sdp"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
+                    android:paddingStart="@dimen/_2sdp"
+                    android:paddingRight="@dimen/_3sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -234,7 +231,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/right_drawer"
-            android:layout_width="@dimen/_200sdp"
+            android:layout_width="@dimen/_170sdp"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:background="@color/black"
@@ -275,10 +272,10 @@
                 android:layout_marginVertical="@dimen/_5sdp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.drawerlayout.widget.DrawerLayout>
 

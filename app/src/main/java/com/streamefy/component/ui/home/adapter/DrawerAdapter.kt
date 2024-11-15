@@ -73,11 +73,6 @@ class DrawerAdapter(
                         }
                     }
 
-//            if (position%2==0){
-//                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
-//            }else{
-//                clParent.setBackgroundColor(ContextCompat.getColor(context,R.color.semi_white))
-//            }
                     viewHolder.itemView.setOnClickListener {
                         Log.e("shhssd", "skmxksmx ${data.totalVideoDuration}")
                         if (data.totalVideoDuration != "00:00:00") {
@@ -92,11 +87,15 @@ class DrawerAdapter(
                     lpVideoProgres.gone()
                     tvDuration.gone()
                     tvSubtitle.gone()
-                    tvMenu.gone()
-
+                    clParent.setOnFocusChangeListener { v, hasFocus ->
+                        Log.e("shhssd", "hasFocus dd ${hasFocus}")
+                        if (hasFocus) {
+                            homeFragment.drawerItemFocus = viewHolder.absoluteAdapterPosition
+                        }
+                    }
                     clParent.post {
                         val layoutParams = ivCate.layoutParams
-                        layoutParams.width =600
+                        layoutParams.width =500
                         val dynamicHeight = 200
                         layoutParams.height = dynamicHeight
                         ivCate.layoutParams = layoutParams

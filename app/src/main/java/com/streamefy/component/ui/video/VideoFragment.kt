@@ -3,6 +3,7 @@ package com.streamefy.component.ui.video
 import VolumeManager
 import android.media.AudioManager
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
@@ -21,6 +22,7 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
+import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionParameters
@@ -33,6 +35,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.utils.gone
 import com.streamefy.utils.loadPicaso
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
@@ -62,6 +65,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
@@ -74,7 +78,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         }
         binding.apply {
-            ivVideoThumb.loadPicaso(thumbnailS3bucketId)
+            ivVideoThumb.loadUrl(thumbnailS3bucketId)
 
             playerHandler = PlayerHandler(requireActivity(), playerView)
             playerHandler.setMediaUri(videoUrl, playbackduration)
@@ -116,7 +120,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     playerHandler.play()
                 }
                 ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                updateProgressBar()
+                //updateProgressBar()
             }
         }
         ivSkipForward.setOnClickListener {
@@ -140,7 +144,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivVolume.setOnClickListener {
             toShowBackButton()
-            Log.e("sncsnc", "dndnv $volumeCount ${playerHandler.isMuted()}")
             visibilityCount = 0
             if (playerHandler.player != null) {
                 if (playerHandler.player?.volume == 0f) {
@@ -245,7 +248,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
 
             override fun onPlayerError(error: PlaybackException) {
-                Log.e("ExoPlayerError", "Playback error: " + error.message, error)
+                Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
+                if (error.cause is MediaCodecRenderer.DecoderInitializationException) {
+                    // Handle decoder initialization failure
+                    Log.e("ExoPlayerError", "by video fragment Decoder initialization failed: ${error.message}")
+                }
+
             }
 
             override fun onPlayerErrorChanged(error: PlaybackException?) {
@@ -273,7 +281,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //        })
 
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-            Log.e("djhfjd", "shcudh $event")
             toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
                 toShowBackButton()
@@ -302,7 +309,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             false // Don't consume other events
         })
         sbVolumeSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-            Log.e("djhfjd", "shcudh $event $volumeCount")
             binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
             binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
             visibilityCount = 0
@@ -415,7 +421,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun volumeUp() {
-        Log.e("hdhhdhds", "volume count UP $volumeCount")
         if (volumeCount <= 99) {
             volumeCount += 1
             playerHandler.setVolume(volumeCount / 100.0f)
@@ -424,7 +429,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun volumeDown() {
-        Log.e("hdhhdhds", "volume count Down $volumeCount")
         if (volumeCount >= 1) {
             volumeCount -= 1
             playerHandler.setVolume(volumeCount / 100.0f)
@@ -551,7 +555,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
         ivVolume.setOnFocusChangeListener { _, hasFocus ->
-            Log.e("smclksmc", "$hasFocus snknc ${playerHandler.isMuted()}")
             if (hasFocus) {
                 toShowBackButton()
 //                val params = ivVolume.layoutParams as LinearLayout.LayoutParams
@@ -591,14 +594,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
 //        sbVideoSeek.setOnClickListener {
-//            Log.e("kkdkdkdkd", "clicked")
 //        }
 //
 //        sbVideoSeek.setOnFocusChangeListener { _, hasFocus ->
 //            if (hasFocus) {
-//                Log.e("kkdkdkdkd", "fosus")
 //            } else {
-//                Log.e("kkdkdkdkd", "disabled")
 //            }
 //        }
 
@@ -696,7 +696,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //            }
 //
 //            textView.setOnKeyListener { v, keyCode, event ->
-//                Log.e("hdhhdhdhd", "ddmv ${event}")
 //                visibilityCount = 0
 //                if (event.action == KeyEvent.ACTION_DOWN) {
 //                    when (keyCode) {
@@ -759,7 +758,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 clSettingsMenu.gone()
                 playerHandler.setQuality(qualityList[it])
                 ivSetting.requestFocus()
-                Log.e("sncksnc", "clicked ${qualityList[it]}")
             }
             adapter = qualityAdapter
         }
@@ -770,7 +768,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
-            Log.e("hdhhdhds", "$volumeCount volume manager $volumePercentage")
 
             lifecycleScope.launch(Dispatchers.Main) {
                 volumeCount = volumePercentage
@@ -803,7 +800,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         val currentPosition = playerHandler.getCurrentPosition()
         val progress = (currentPosition * 100 / duration.toDouble()).toInt()
         binding.sbVideoSeek.progress = progress
-        // Log.e("ssknckscn", "$currentPosition sbcsjbc ${progress} ${playerHandler.getcurrent()}")
         binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
 
         if (playerHandler.isPlaying()!!) {
@@ -835,7 +831,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         view.setFocusableInTouchMode(true)
         view.requestFocus()
         view.setOnKeyListener { v, keyCode, event ->
-            Log.e("dldfdfd", "ddmv ")
             if (event.action == KeyEvent.ACTION_DOWN) {
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
@@ -872,11 +867,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onPause() {
         super.onPause()
-        Log.e("skmncskc", "sncs onPause")
-
         if (playerHandler.player != null) {
-            playerHandler.player?.run {
-                HomeFragment.videoduraion = currentPosition
+            if (!HomeFragment.isTrailer) {
+                playerHandler.player?.run {
+                    HomeFragment.videoduraion = currentPosition
+                }
             }
             if (playerHandler.isPlaying()!!) {
                 playerHandler.pause()
@@ -887,8 +882,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         super.onStop()
         // Properly release the player when the fragment is no longer visible
         if (playerHandler.player != null) {
-            playerHandler.player?.run {
-                HomeFragment.videoduraion = currentPosition
+            if (!HomeFragment.isTrailer) {
+                playerHandler.player?.run {
+                    HomeFragment.videoduraion = currentPosition
+                }
             }
             playerHandler.pause()
             playerHandler.release()
@@ -898,8 +895,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         if (playerHandler.player != null) {
-            playerHandler.player?.run {
-                HomeFragment.videoduraion = currentPosition
+            if (!HomeFragment.isTrailer) {
+                playerHandler.player?.run {
+                    HomeFragment.videoduraion = currentPosition
+                }
             }
             playerHandler.pause()
             playerHandler.release()
@@ -918,8 +917,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onResume() {
         super.onResume()
-        Log.e("skmncskc", "sncs onResume")
-
         binding.playerView.onResume()
         if (playerHandler.player != null) {
             playerHandler.play()

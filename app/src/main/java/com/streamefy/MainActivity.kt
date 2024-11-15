@@ -26,7 +26,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        try {
+            val metricsEnabled = System.getProperty("media.metrics.enabled")
+        } catch (e: SecurityException) {
+            // Handle the access denied error gracefully
+            Log.e("AccessError", "Failed to access media metrics: ${e.message}")
+        }
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
         navController = (navHostFragment as NavHostFragment).navController
         getLocationFromIP()

@@ -114,20 +114,20 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         etPhoneNumber.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 // if (etPhoneNumber.text.isNotEmpty()) {
-                etPhoneNumber.setSelection(etPhoneNumber.text.length)
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
+//                etPhoneNumber.setSelection(etPhoneNumber.text.length)
+//                etPhoneNumber.setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.semi_transparent
+//                    )
+//                )
             } else {
-                etPhoneNumber.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.white
-                    )
-                )
+//                etPhoneNumber.setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.white
+//                    )
+//                )
             }
         }
         etPhoneNumber.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->

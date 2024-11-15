@@ -104,19 +104,12 @@ class CategoryAdapter(
 
 
             clEvent.setOnFocusChangeListener { _, hasFocus ->
-//                if (hasFocus) {
-//                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.red ))
-//                } else {
-//                    clEvent.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gray))
-//                }
-
                 if (hasFocus) {
                     if (viewHolder.absoluteAdapterPosition == eventList.size - 2 && homeFragment.isEventPagination) {
                         callBack.invoke(viewHolder.absoluteAdapterPosition, StreamEnum.PAGINATION)
                     }
                     homeFragment.eventFocusPos = viewHolder.absoluteAdapterPosition
                     homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
-//                    itemView.animate().scaleX(1.03f).scaleY(1.05f).setDuration(200).start()
                     itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
                         .withEndAction {
                             homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
@@ -142,11 +135,13 @@ class CategoryAdapter(
             }
 
             clEvent.setOnKeyListener { v, keyCode, event ->
+                Log.e("dkvdknv","dnvdkvn all $event")
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_DPAD_UP -> {
                            // callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
                             homeFragment.binding.tvPlay.requestFocus()
+                            Log.e("dkvdknv","dnvdkvn KEYCODE_DPAD_UP")
                         }
 //                    KeyEvent.KEYCODE_DPAD_RIGHT->{
 //                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){

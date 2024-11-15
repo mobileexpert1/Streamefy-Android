@@ -6,14 +6,17 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
+import android.os.StrictMode
 import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.analytics.AnalyticsCollector
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -22,6 +25,10 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.streamefy.component.ui.video.model.QualityModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.util.Base64
 import javax.crypto.Mac
@@ -37,19 +44,55 @@ class PlayerHandler(
     private var isMuted: Boolean = false
 
     init {
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        )
+
         initializePlayer()
     }
 
     private fun initializePlayer() {
         try {
-            val trackSelector = DefaultTrackSelector(context)
 
-            player = ExoPlayer.Builder(context)
-               // .setTrackSelector(trackSelector)
-
+//            val renderersFactory = DefaultRenderersFactory(context)
+//                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+            val renderersFactory = DefaultRenderersFactory(context)
+                .setEnableDecoderFallback(true)
+            val loadControl = DefaultLoadControl.Builder()
+                .setBufferDurationsMs(
+                    DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
+                    DefaultLoadControl.DEFAULT_MAX_BUFFER_MS,
+                    DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
+                    DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
+                )
                 .build()
 
+            player = ExoPlayer.Builder(context)
+                .setRenderersFactory(renderersFactory)
+                .setLoadControl(loadControl)
+                .build()
             playerView.player = player
+//
+//            val trackSelector = DefaultTrackSelector(context)
+//            val renderersFactory = DefaultRenderersFactory(context).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
+//             player = ExoPlayer.Builder(context)
+//                .setRenderersFactory(renderersFactory)
+//                .setTrackSelector(trackSelector)
+//                .build()
+//            playerView.player = player
+
+//            CoroutineScope(Dispatchers.IO).launch {
+//                val trackSelector = DefaultTrackSelector(context)
+//                player = ExoPlayer.Builder(context)
+//                    .setTrackSelector(trackSelector)
+//                    .build()
+//                withContext(Dispatchers.Main) {
+//                    playerView.player = player
+//                }
+//            }
         } catch (e: Exception) {
             Log.e("skcmskc", "initializeing error $e")
         }
@@ -105,15 +148,27 @@ class PlayerHandler(
 //
 //        // Create media source
         try {
-            val dataSourceFactory = DefaultHttpDataSource.Factory()
-            val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-                .createMediaSource(MediaItem.fromUri(uri))
-            // Prepare player with media source
-            player!!.setMediaSource(mediaSource)
-            player!!.prepare()
-            player!!.seekTo(lastDuration)
-            player!!.play()
+            if (player != null) {
 
+                player?.let {
+                    if (player?.isPlaying!!) {
+                        release()
+                        initializePlayer()
+                    }
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val dataSourceFactory = DefaultHttpDataSource.Factory()
+                        val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
+                            .createMediaSource(MediaItem.fromUri(uri))
+                        // Prepare player with media source
+                        withContext(Dispatchers.Main) {
+                            player?.setMediaSource(mediaSource)
+                            player?.prepare()
+                            player?.seekTo(lastDuration)
+                            player?.play()
+                        }
+                    }
+                }
+            }
         }
 //        catch (e: ExoPlaybackException) {
 //            when (e.type) {
@@ -358,8 +413,11 @@ class PlayerHandler(
     }
 
     fun release() {
+
+        player?.stop()
         player?.release()
         player = null
         handler.removeMessages(0)
+
     }
 }

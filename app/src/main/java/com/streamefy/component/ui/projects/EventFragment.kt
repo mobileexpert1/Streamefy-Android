@@ -106,25 +106,20 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivBack.layoutParams = params
-
             }
-
         }
         rvEvent.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
-
                 else -> {}
             }
         }
-
     }
 
 
     private fun observe() {
-
         viewModel.projectLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {

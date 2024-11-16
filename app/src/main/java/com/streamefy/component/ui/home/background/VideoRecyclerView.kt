@@ -276,8 +276,8 @@ class VideoRecyclerView : RecyclerView {
         Log.e("smcskmc", "up $pos new $mNewPos size ${mediaObjects.size}")
         if (mNewPos < mediaObjects.size) {
             homeFragment.binding.rvBackgVideo.smoothScrollToPosition(mNewPos)
-            removeVideoView(videoSurfaceView)
-//            scrollPlay {}
+//            removeVideoView(videoSurfaceView)
+            scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         } else {
             //  recyclerview?.scrollToPosition(0)
@@ -497,10 +497,14 @@ class VideoRecyclerView : RecyclerView {
         }
 //        Log.e("updates", " duration $position")
         if (position >= 30000) {
-            if (targetPosition == mediaObjects.size - 1) {
-                recyclerview?.smoothScrollToPosition(0)
-            } else {
-                recyclerview?.smoothScrollToPosition(targetPosition + 1)
+            homeFragment?.run {
+                if (targetPosition == mediaObjects.size - 1) {
+                    binding.rvBackgVideo.smoothScrollToPosition(0)
+                    scrollPlay{}
+                } else {
+                    binding.rvBackgVideo.smoothScrollToPosition(targetPosition + 1)
+                    scrollPlay{}
+                }
             }
         }
     }

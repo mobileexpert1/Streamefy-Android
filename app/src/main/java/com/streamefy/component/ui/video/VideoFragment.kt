@@ -65,8 +65,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
@@ -881,6 +881,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onStop() {
         super.onStop()
         // Properly release the player when the fragment is no longer visible
+        requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
@@ -894,6 +895,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
     override fun onDestroy() {
         super.onDestroy()
+        requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {

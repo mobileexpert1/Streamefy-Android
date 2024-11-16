@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -105,7 +106,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         //  progressDialog= CircularProgressDialog(requireContext())
     }
 
@@ -167,21 +169,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     isDrawerOpen = false
                     if (isTrailer) {
                         ivTrailer.requestFocus()
-                    }else {
+                    } else {
                         eventVideoFocus()
-//                    rvCategory.apply {
-//                        post {
-//                            getChildAt(eventFocusPos)?.requestFocus()
-//                        }
-//                    }
-                        rvDrawer.post {
-                            rvDrawer.getChildAt(0)?.clearFocus()
-                        }
                     }
                 }
 
                 override fun onDrawerStateChanged(newState: Int) {
-                    // Handle state change if needed
                 }
             })
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -283,16 +276,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                 ivLogout.layoutParams = params
-//                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
+
             } else {
                 // Revert size when not focused
                 val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivLogout.layoutParams = params
-//                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
+
             }
         }
 
@@ -320,7 +311,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         ivHomeCross.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                focusView = StreamEnum.LOGOUT_VIEW
+                focusView = StreamEnum.HOME_CLOSE
                 // Change size when focused
                 val params = ivHomeCross.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
@@ -351,21 +342,43 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
 
         }
-
-        rvCategory.remoteKey {
+        rvBackgVideo.remoteKey {
+            Log.e("sjncjsbc","ncjxcnbd backvideo")
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-//                    customIndicator.requestFocus()
+                    rvCategory.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-//                    rvBackgVideo.requestFocus()
+//                    customIndicator.requestFocus()
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    ivLogout.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
                     ivLogout.requestFocus()
                 }
 
                 else -> {}
             }
+        }
+        rvCategory.remoteKey {
+//            when (it) {
+//                StreamEnum.UP_DPAD_KEY -> {
+//                    tvPlay.requestFocus()
+////                    customIndicator.requestFocus()
+//                }
+//
+//                StreamEnum.DOWN_DPAD_KEY -> {
+////                    rvBackgVideo.requestFocus()
+//                    ivLogout.requestFocus()
+//                }
+//
+//                else -> {}
+//            }
         }
         rvCategory.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
@@ -433,20 +446,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 // Change size when focused
                 val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
-                    resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
+                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                 ivClose.layoutParams = params
-                // ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
             } else {
                 // Revert size when not focused
                 val params = ivClose.layoutParams as ConstraintLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivClose.layoutParams = params
-                //ivLogout.background = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
             }
         }
-
         tvPlay.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -544,7 +554,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         }
 
-
         ivTrailer.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -565,6 +574,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivTrailer.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
             if (hasFocus) {
+                focusView = StreamEnum.TRAILER
                 val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
                     resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
@@ -577,7 +587,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 ivTrailer.layoutParams = params
             }
         }
-
 
         ivTrailer.setOnClickListener {
             isTrailer = true
@@ -764,7 +773,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun showCustomDialog() {
-        ExitDialog(requireActivity()).show()
+        if (isDrawerOpen) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END)
+        } else {
+            ExitDialog(requireActivity()).show()
+        }
     }
 
     private fun drawerView() = with(binding) {
@@ -773,7 +786,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         // testing
 //        for (i in 1 until 10){
 //            var model1=MediaItem(
-//                 size = "4",
+0//                 size = "4",
 //                 format = "jpj",
 //                 hlsPlaylistUrl = "",
 //                 description = "testing",
@@ -812,9 +825,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         tvTitle.setText("Trailer")
 
         rvDrawer.apply {
-
             getChildAt(0)?.requestFocus()
-
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), images as ArrayList<Any>) {
@@ -837,7 +848,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     findNavController().navigate(R.id.videofragment, bundle)
                 }
             }
-
             adapter = mediaAdapter
         }
     }
@@ -1133,11 +1143,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onResume() {
         super.onResume()
-
         binding.apply {
             tvProjectTitle.text = proTitle.toString()
             tvProjectDesc.text = proDesc.toString()
-//            projectlogo.loadUrl(proLogo)
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 clTitle.visible()
                 ivLogout.visible()
@@ -1152,9 +1160,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 } else {
                     drawerView()
                 }
-                rvDrawer.post {
-                    rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
-                }
+                drawerVideoFocus()
             }
             //  eventFocus()
             if (isFirstVideo) {
@@ -1163,12 +1169,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             isFirstVideo = true
 
             /// check if user played video or not
-            if (isLastPlay){
+            if (isLastPlay) {
                 tvPlay.setText("resume")
-            }else{
+            } else {
                 tvPlay.setText("play")
             }
-
         }
         if (!isTrailer) {
             savePlayback()
@@ -1183,9 +1188,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                customIndicator.requestFocus()
                 ivTrailer.requestFocus()
             } else if (isDrawerOpen) {
-                rvDrawer.post {
-                    rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
-                }
+                drawerVideoFocus()
             } else {
                 eventVideoFocus()
             }
@@ -1193,13 +1196,52 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun eventVideoFocus()= with(binding){
+    fun eventVideoFocus() = with(binding) {
         rvCategory.apply {
             post {
                 getChildAt(eventFocusPos)?.requestFocus()
             }
         }
     }
+
+    fun drawerVideoFocus() = with(binding) {
+        rvDrawer.post {
+            rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
+        }
+    }
+
+    fun viewFocus() = with(binding) {
+//        focusView = StreamEnum.BOTTOM_EVENT_VIEW
+        when (focusView) {
+            StreamEnum.LOGOUT_VIEW -> {
+                ivLogout.requestFocus()
+            }
+
+            StreamEnum.HOME_CLOSE -> {
+                ivHomeCross.requestFocus()
+            }
+
+            StreamEnum.PLAY_RESUME -> {
+                tvPlay.requestFocus()
+            }
+
+            StreamEnum.TRAILER -> {
+                ivTrailer.requestFocus()
+            }
+
+            StreamEnum.BOTTOM_EVENT_VIEW -> {
+                eventVideoFocus()
+            }
+
+            StreamEnum.DRAWER_VIEW -> {
+                drawerVideoFocus()
+            }
+
+            else -> {}
+        }
+
+    }
+
 
     override fun onPause() {
 
@@ -1212,6 +1254,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onDestroy() {
         super.onDestroy()
+        requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding.rvBackgVideo.apply {
             pauseVideo()
             //  playerHandler.pause()

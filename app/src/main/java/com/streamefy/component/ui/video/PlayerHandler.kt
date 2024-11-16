@@ -413,8 +413,7 @@ class PlayerHandler(
     }
 
     fun release() {
-
-        player?.stop()
+     //   player?.stop()
         player?.release()
         player = null
         handler.removeMessages(0)

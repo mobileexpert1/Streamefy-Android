@@ -58,9 +58,9 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             isHome = getBoolean(PrefConstent.ISHOME)
         }
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
-        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+       // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.ivApplogo.loadAny(applogo)
+       // binding.ivApplogo.loadAny(applogo)
 
         otpFieldFocus()
         binding.apply {

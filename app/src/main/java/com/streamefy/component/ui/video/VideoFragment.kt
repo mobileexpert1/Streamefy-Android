@@ -62,9 +62,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
     var isSmartRevision = true
+    companion object {
+        lateinit var videoFragment: VideoFragment
 
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        videoFragment=this
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handleKey(binding.playerView)
@@ -139,8 +143,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             toShowBackButton()
             playerHandler.seekBackward(10)
         }
-        ivZoom.setOnClickListener {
+        ivRefresh.setOnClickListener {
             //  playerHandler.toggleFullScreen()
+            if (playerHandler.player != null) {
+                playerHandler.refresh()
+                getLengthOnce=true
+                ivPlay.setImageResource(R.drawable.ic_video_pause)
+            }
+
         }
         ivVolume.setOnClickListener {
             toShowBackButton()
@@ -251,7 +261,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
                 if (error.cause is MediaCodecRenderer.DecoderInitializationException) {
                     // Handle decoder initialization failure
-                    Log.e("ExoPlayerError", "by video fragment Decoder initialization failed: ${error.message}")
+                    Log.e(
+                        "ExoPlayerError",
+                        "by video fragment Decoder initialization failed: ${error.message}"
+                    )
                 }
 
             }
@@ -323,7 +336,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                        ivSkipBack.requestFocus()
+                        ivRefresh.requestFocus()
                         return@OnKeyListener true // Consume the event
                     }
 
@@ -373,7 +386,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSkipBack.remoteKey {
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    sbVolumeSeek.requestFocus()
+                    ivRefresh.requestFocus()
                     visibilityCount = 0
                 }
 
@@ -397,15 +410,36 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
         ivBack.remoteKey {
+            visibilityCount = 0
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    sbVolumeSeek.requestFocus()
-                    visibilityCount = 0
+                    ivRefresh.requestFocus()
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
+                    ivRefresh.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        ivRefresh.remoteKey {
+            visibilityCount = 0
+            when (it) {
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }
+
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
                     sbVolumeSeek.requestFocus()
-                    visibilityCount = 0
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    ivSkipBack.requestFocus()
                 }
 
                 else -> {}
@@ -465,54 +499,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSkipBack.layoutParams as LinearLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivSkipBack.layoutParams = params
-            } else {
-                val params = ivSkipBack.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivSkipBack.layoutParams = params
             }
         }
         ivSkipForward.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivSkipForward.layoutParams as LinearLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivSkipForward.layoutParams = params
-//                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), R.color.red))
-            } else {
-                val params = ivSkipForward.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivSkipForward.layoutParams = params
-//                ivSkipForward.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(requireActivity(), com.otpview.R.color.transparent))
             }
         }
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivPlay.layoutParams as LinearLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-                ivPlay.layoutParams = params
-
                 if (playerHandler.isPlaying()!!) {
                     ivPlay.setImageResource(R.drawable.ic_selected_pause)
                 } else {
                     ivPlay.setImageResource(R.drawable.ic_seleceted_play)
                 }
             } else {
-                val params = ivPlay.layoutParams as LinearLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivPlay.layoutParams = params
                 if (playerHandler.isPlaying()!!) {
                     ivPlay.setImageResource(R.drawable.ic_video_pause)
                 } else {
@@ -588,6 +590,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
         ivBack.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                toShowBackButton()
+            }
+        }
+        ivRefresh.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
             }
@@ -853,7 +860,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                     KeyEvent.KEYCODE_DPAD_RIGHT -> {
                         toShowBackButton()
-                        binding.ivVolume.requestFocus()
+                        binding.ivRefresh.requestFocus()
                         return@setOnKeyListener true
                     }
 
@@ -878,6 +885,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
     }
+
     override fun onStop() {
         super.onStop()
         // Properly release the player when the fragment is no longer visible
@@ -893,6 +901,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             volumeManager.stopMonitoring()
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

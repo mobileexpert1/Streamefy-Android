@@ -539,28 +539,28 @@ class VideoRecyclerView : RecyclerView {
             videoSurfaceView!!.viewAnimate()
             //  thumbnail?.goneAnimate()
 
-//            videoSurfaceView?.isFocusable = false
-//            videoSurfaceView?.isFocusableInTouchMode = false
             homeFragment.apply {
                 // focusView = StreamEnum.INDECATOR_VIEW
 //                binding.rvCategory.clearFocus()
                 Log.e("testingdhfht", "$eventFocusPos dmvdmv $focusView ")
-                if (focusView == StreamEnum.INDECATOR_VIEW) {
-                    binding.customIndicator.requestFocus()
-                } else if (focusView == StreamEnum.BACKGROUND_VIDEO) {
-//                    binding.apply {
-//                        tvPlay.requestFocus()
-//                        tvPlay.setText("pause")
-//                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-//                            ContextCompat.getDrawable(
-//                                requireActivity(),
-//                                R.drawable.ic_backg_pause
-//                            ), null, null, null
-//                        )
-//                    }
-                } else {
-                    eventFocus()
-                }
+                viewFocus()
+
+//                if (focusView == StreamEnum.INDECATOR_VIEW) {
+//                    binding.customIndicator.requestFocus()
+//                } else if (focusView == StreamEnum.BACKGROUND_VIDEO) {
+////                    binding.apply {
+////                        tvPlay.requestFocus()
+////                        tvPlay.setText("pause")
+////                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+////                            ContextCompat.getDrawable(
+////                                requireActivity(),
+////                                R.drawable.ic_backg_pause
+////                            ), null, null, null
+////                        )
+////                    }
+//                } else {
+//                    eventFocus()
+//                }
             }
         }
     }

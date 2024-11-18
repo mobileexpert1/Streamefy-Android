@@ -62,6 +62,7 @@ class QualityAdapter(
 
             tvquality.setOnFocusChangeListener { _, hasFocus ->
                 Log.e("sjncjsbc","skck $hasFocus")
+                VideoFragment.videoFragment.visibilityCount=0
                 if (hasFocus) {
                     tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else{

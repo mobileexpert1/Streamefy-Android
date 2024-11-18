@@ -76,10 +76,11 @@
                 android:id="@+id/clTitle"
                 android:layout_width="@dimen/_400sdp"
                 android:layout_height="0dp"
-                android:layout_marginBottom="@dimen/_10sdp"
                 android:paddingStart="@dimen/_30sdp"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toTopOf="@+id/clRv"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:layout_constraintBottom_toTopOf="@+id/tvPlay"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -120,6 +121,7 @@
                     android:fontFamily="@font/filsonpro_light"
                     android:gravity="center_vertical"
                     android:maxLines="2"
+                    android:visibility="invisible"
                     android:paddingBottom="@dimen/_1sdp"
                     app:layout_constraintBottom_toTopOf="@+id/rvCreators"
                     app:layout_constraintStart_toStartOf="parent"
@@ -131,43 +133,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_1sdp"
-
-                    app:layout_constraintBottom_toTopOf="@+id/tvPlay"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvPlay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/_18sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/ic_button_selector"
-                    android:drawableStart="@drawable/ic_play_svg"
-                    android:drawablePadding="@dimen/_5sdp"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:fontFamily="@font/filsonpro_bold"
-                    android:gravity="center"
-                    android:paddingHorizontal="@dimen/_12sdp"
 
-                    android:text="play"
-                    android:textAllCaps="true"
-                    android:textColor="@color/input_field_color_selector"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/rvCreators" />
-
-                <ImageView
-                    android:id="@+id/ivTrailer"
-                    android:layout_width="@dimen/_18sdp"
-                    android:layout_height="@dimen/_18sdp"
-                    android:layout_marginStart="@dimen/_7sdp"
-                    android:background="@drawable/bg_round_gradient_purple_orange"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:src="@drawable/ic_trailer"
-                    android:text="Back"
-                    android:textColor="@color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
-                    app:layout_constraintStart_toEndOf="@+id/tvPlay" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -200,7 +170,44 @@
                 app:layout_constraintEnd_toStartOf="@+id/ivHomeCross"
                 app:layout_constraintTop_toTopOf="@+id/ivHomeCross" />
 
+            <TextView
+                android:id="@+id/tvPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/ic_button_selector"
+                android:drawableStart="@drawable/ic_play_svg"
+                android:drawablePadding="@dimen/_5sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:fontFamily="@font/filsonpro_bold"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_3sdp"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:text="play"
+                android:visibility="invisible"
+                android:textAllCaps="true"
+                android:textColor="@color/input_field_color_selector"
+                app:layout_constraintBottom_toTopOf="@+id/clRv"
+                app:layout_constraintStart_toStartOf="@+id/clRv" />
 
+            <ImageView
+                android:id="@+id/ivTrailer"
+                android:layout_width="@dimen/_16sdp"
+                android:layout_height="@dimen/_16sdp"
+                android:layout_marginStart="@dimen/_7sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:src="@drawable/ic_unselect_trailer"
+                android:text="Back"
+                android:visibility="invisible"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
+                app:layout_constraintStart_toEndOf="@+id/tvPlay" />
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clRv"
                 android:layout_width="match_parent"
@@ -217,8 +224,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:paddingStart="@dimen/_2sdp"
                     android:paddingRight="@dimen/_3sdp"
                     app:layout_constraintStart_toStartOf="parent"

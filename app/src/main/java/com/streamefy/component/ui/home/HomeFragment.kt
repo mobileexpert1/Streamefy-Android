@@ -97,12 +97,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         lateinit var homeFragment: HomeFragment
         var videoduraion: Long = 0
         var mediaId: Int = 0
+        var videoId: String=""
         var eventVideoIndex = 0
         var mediaIndex = 0
         var isTrailer = false
     }
-
-    var background_current_play_duration = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,11 +151,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     Log.e("dndjvn", "drawer open")
 //                    drawerView.requestFocus()
                     isDrawerOpen = true
-//                    rvCategory.apply {
-//                        post {
-//                            getChildAt(eventFocusPos)?.clearFocus()
-//                        }
-//                    }
                     eventVideoFocus()
                     rvDrawer.post {
                         rvDrawer.getChildAt(0)?.requestFocus()
@@ -182,7 +176,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireActivity(),
-                            R.color.white
+                            R.color.purple
                         )
                     )
 
@@ -194,7 +188,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     val wrappedDrawable = DrawableCompat.wrap(drawableStart)
                     DrawableCompat.setTint(
                         wrappedDrawable,
-                        ContextCompat.getColor(requireActivity(), R.color.white)
+                        ContextCompat.getColor(requireActivity(), R.color.purple)
                     )
                     tvPlay.setCompoundDrawablesWithIntrinsicBounds(
                         wrappedDrawable,
@@ -204,7 +198,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     )
                 }
             }
-            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
@@ -222,6 +216,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             var request = PlayBackRequest()
             request.phoneNumber = phone
             request.mediaId = mediaId
+            request.videoId = videoId
             request.duration = videoduraion.toString()
             lastVideoDuration = videoduraion.toString()
             if (!isPlayByPlayButton) {
@@ -247,7 +242,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivLogout.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-//                    rvCategory.requestFocus()
                     eventVideoFocus()
                 }
 
@@ -257,7 +251,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+                    eventVideoFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
@@ -290,12 +284,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivHomeCross.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+                    eventVideoFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
 //                    customIndicator.requestFocus()
-                    tvPlay.requestFocus()
+                    eventVideoFocus()
+
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -318,16 +314,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
                 params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
                 ivHomeCross.layoutParams = params
-//                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_lselected_logout)
             } else {
                 // Revert size when not focused
                 val params = ivHomeCross.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+                params.width = resources.getDimensionPixelSize(R.dimen._16sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
                 ivHomeCross.layoutParams = params
-//                ivLogout.background =
-//                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_logout)
             }
         }
         ivHomeCross.setOnClickListener {
@@ -343,14 +335,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         }
         rvBackgVideo.remoteKey {
-            Log.e("sjncjsbc","ncjxcnbd backvideo")
+            Log.e("dkvdknv","ncjxcnbd backvideo")
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+                    eventVideoFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-//                    customIndicator.requestFocus()
                     tvPlay.requestFocus()
                 }
 
@@ -365,32 +356,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 else -> {}
             }
         }
-        rvCategory.remoteKey {
-//            when (it) {
-//                StreamEnum.UP_DPAD_KEY -> {
-//                    tvPlay.requestFocus()
-////                    customIndicator.requestFocus()
-//                }
-//
-//                StreamEnum.DOWN_DPAD_KEY -> {
-////                    rvBackgVideo.requestFocus()
-//                    ivLogout.requestFocus()
-//                }
-//
-//                else -> {}
-//            }
-        }
-        rvCategory.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                focusView = StreamEnum.BOTTOM_EVENT_VIEW
-                rvCategory.apply {
-                    post {
-                        getChildAt(eventFocusPos)?.requestFocus()
-                    }
-                }
-            }
 
-        }
         customIndicator.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -407,7 +373,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
 //                        tvPlay.requestFocus()
-                        rvCategory.requestFocus()
                     } else {
                         val currenPos = rvBackgVideo.targetPosition + 1
                         binding.rvBackgVideo.smoothScrollToPosition(currenPos)
@@ -419,7 +384,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    rvCategory.requestFocus()
                 }
 
                 else -> {}
@@ -464,7 +428,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+                    eventVideoFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
@@ -478,9 +442,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //
         tvPlay.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
-            if (hasFocus) {
+            if (!hasFocus) {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                    focusView = StreamEnum.BACKGROUND_VIDEO
+                    focusView = StreamEnum.PLAY_RESUME
                     tvPlay.compoundDrawableTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireActivity(),
@@ -488,17 +452,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     )
 
-                } else {
+                }
+                else {
                     val drawables = tvPlay.compoundDrawables
                     val drawableStart =
                         drawables[0]  // You can adjust this for top, end, bottom as needed
 
                     if (drawableStart != null) {
                         val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                        DrawableCompat.setTint(
-                            wrappedDrawable,
-                            ContextCompat.getColor(requireActivity(), R.color.purple)
-                        )
+                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
                         tvPlay.setCompoundDrawablesWithIntrinsicBounds(
                             wrappedDrawable,
                             drawables[1],
@@ -507,9 +469,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     }
                 }
-
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
-                // playPauseChecks()
+
             } else {
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                     // Revert size when not focused
@@ -521,7 +482,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             )
                         )
 
-                } else {
+                }
+                else {
                     val drawables = tvPlay.compoundDrawables
                     val drawableStart =
                         drawables[0]  // You can adjust this for top, end, bottom as needed
@@ -539,9 +501,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     }
                 }
-
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-                // playPauseChecks()
             }
         }
         tvPlay.setOnClickListener {
@@ -561,7 +521,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    rvCategory.requestFocus()
+                    eventVideoFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -575,16 +535,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             Log.e("lcsdwdw", "scnsivn $hasFocus")
             if (hasFocus) {
                 focusView = StreamEnum.TRAILER
-                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
-                ivTrailer.layoutParams = params
+                ivTrailer.setImageResource(R.drawable.ic_selected_trailer)
+//                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
+//                params.width =
+//                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+//                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+//                ivTrailer.layoutParams = params
             } else {
-                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._17sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
-                ivTrailer.layoutParams = params
+//                val params = ivTrailer.layoutParams as ConstraintLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._17sdp) // Original size
+//                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
+//                ivTrailer.layoutParams = params
+
+                ivTrailer.setImageResource(R.drawable.ic_unselect_trailer)
             }
         }
 
@@ -737,15 +700,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun hideTools() = with(binding) {
-
         Log.e("skmcks", "sbjcbs $toolsCount")
         clOpecity.gone()
-
         projectlogo.moveDown(requireContext())
         tvProjectTitle.moveDown(requireContext())
         tvProjectDesc.hideTransition(requireContext())
         rvCreators.hideTransition(requireContext())
-
 
     }
 
@@ -755,7 +715,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         tvProjectTitle.moveUp(requireContext())
         tvProjectDesc.showTransition(requireContext())
         rvCreators.showTransition(requireContext())
-
     }
 
     private fun moveUp(view: View) {
@@ -807,6 +766,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 drawerItemFocus = it
                 mediaIndex = it
                 mediaId = mediaList[it].id
+                videoId = mediaList[it].bunnyId
                 isPlayByPlayButton = false
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
@@ -854,51 +814,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun eventView() = with(binding) {
 
-//        cateList.add(
-//            CateModel(
-//                title = "Pre wedding",
-//                subTitle = "Lorem Ipsum is simply dummy text of the printing and",
-//                image = R.drawable.home_theme, progress = 70
-//            )
-//        )
-
-//        for (i in 1 until 4){
-//            var model1=MediaItem(
-//                size = "4",
-//                format = "jpj",
-//                hlsPlaylistUrl = "",
-//                description = "testing Lorem Ipsum is simply dummy text of the printing and Lorem Ipsum is simply dummy text of the printing and ",
-//                bunnyId = "",
-//                thumbnailS3bucketId = "",
-//                id = 0)
-//            mediaList.add(model1)
-//        }
-//// test case
-//        for (i in 1 until 10){
-//            var model1=EventsItem(
-//                eventId = i,
-//                eventTitle =  "Pre wedding No $i",
-//                media = mediaList ,
-//                userId = i,
-//                userName = "streamify"
-//            )
-//            eventList.add(model1)
-//        }
-
-
         rvCategory.apply {
-            //  requestFocus()
             setHasFixedSize(true)
-
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos, type ->
                 selectedTitle = eventList[pos].eventTitle
-
-//                var bundle=Bundle()
-//                bundle.putString(PrefConstent.VIDEO_URL,""
-//                    //eventList[pos].media?.get(0)?.hlsPlaylistUrl
-//                )
-//                findNavController().navigate(R.id.videofragment,bundle)
 
                 Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
@@ -911,6 +831,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                 eventList[pos].media?.get(0)?.run {
                                     isPlayByPlayButton = false
                                     mediaId = this.id
+                                    videoId = this.bunnyId
                                     val bundle = Bundle()
                                     bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
                                     bundle.putString(
@@ -943,8 +864,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.UP_DPAD_KEY -> {
-
-//                        customIndicator.requestFocus()
+                        Log.e("dkvdknv"," $pos new changes KEYCODE_DPAD_UP")
+                        rvBackgVideo.clearFocus()
+//                        rvCategory.apply {
+//                            post {
+//                              images.forEachIndexed { index, backgroundMediaItem ->
+//                                  getChildAt(index)?.clearFocus()
+//                              }
+//                            }
+//                        }
+                        tvPlay.isFocusable = true
+                        tvPlay.isFocusableInTouchMode = true
+                        tvPlay.post {
+                            tvPlay.requestFocus()
+                        }
 
                     }
 
@@ -1027,6 +960,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                 lastVideoDuration = media[0].playbackDuration
                                                 lastVideoThumb = media[0].thumbnailS3bucketId
                                                 mediaId = media[0].id
+                                                videoId = media[0].bunnyId
                                                 lifecycleScope.launch(Dispatchers.Main) {
                                                     binding.tvPlay.setText(
                                                         "resume"
@@ -1043,6 +977,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         lastVideoDuration = "0"
                                         lastVideoThumb = thumbnailS3bucketId
                                         mediaId = id
+                                        videoId = this.bunnyId
                                         lifecycleScope.launch(Dispatchers.Main) {
                                             binding.tvPlay.setText(
                                                 "play"
@@ -1061,8 +996,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     it.tvProjectTitle.text = proTitle.toString()
                                     it.tvProjectDesc.text = proDesc.toString()
                                     it.clTitle.visible()
+                                    it.ivTrailer.visible()
+                                    it.tvPlay.visible()
+                                    showTools()
                                 }
-                                it.rvCategory.requestFocus()
 //                                it. rvBackgVideo.requestFocus()
 //                                it.projectlogo.loadUrl(this.logo)
                                 proLogo = this.logo
@@ -1149,6 +1086,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 clTitle.visible()
                 ivLogout.visible()
+                ivTrailer.visible()
+                tvPlay.visible()
             }
             Log.e(
                 "dndjvn",

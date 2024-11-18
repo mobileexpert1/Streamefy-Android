@@ -189,12 +189,14 @@
             </LinearLayout>
 
             <ImageView
-                android:id="@+id/ivZoom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-
-                android:visibility="invisible" />
+                android:id="@+id/ivRefresh"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:padding="@dimen/_1sdp"
+                android:src="@drawable/ic_refresh_selector"
+                />
 
         </LinearLayout>
         <!--       settings-->

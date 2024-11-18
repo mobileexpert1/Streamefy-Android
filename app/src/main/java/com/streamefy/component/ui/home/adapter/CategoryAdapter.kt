@@ -135,13 +135,13 @@ class CategoryAdapter(
             }
 
             clEvent.setOnKeyListener { v, keyCode, event ->
-                Log.e("dkvdknv","dnvdkvn all $event")
+//                Log.e("dkvdknv","dnvdkvn all $event")
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_DPAD_UP -> {
-                           // callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
-                            homeFragment.binding.tvPlay.requestFocus()
-                            Log.e("dkvdknv","dnvdkvn KEYCODE_DPAD_UP")
+                            callBack.invoke(position, StreamEnum.UP_DPAD_KEY)
+//                            homeFragment.binding.tvPlay.requestFocus()
+//                            Log.e("dkvdknv","new changes KEYCODE_DPAD_UP")
                         }
 //                    KeyEvent.KEYCODE_DPAD_RIGHT->{
 //                        if (viewHolder.absoluteAdapterPosition==eventList.size-2){

@@ -285,7 +285,13 @@ class PlayerHandler(
     fun play() {
         player?.playWhenReady = true
     }
+    fun refresh() {
+        player?.let {
+            player?.seekTo(0)
+            player?.playWhenReady = true
+        }
 
+    }
     fun pause() {
         player?.playWhenReady = false
     }

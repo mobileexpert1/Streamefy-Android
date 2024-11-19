@@ -6,6 +6,7 @@ import com.streamefy.component.ui.login.LoginViewmodel
 import com.streamefy.component.ui.otp.viewmodel.OTPVM
 import com.streamefy.component.ui.pin_authentication.PinVM
 import com.streamefy.component.ui.projects.viewmodel.ProjectsVM
+import com.streamefy.component.ui.video.viewmodel.VideoVM
 import com.streamefy.error.ErrorHandler
 import com.streamefy.network.ApiService
 import com.streamefy.network.AuthClient
@@ -27,6 +28,7 @@ var appModule= module {
     viewModel { PinVM(get()) }
     viewModel { HomeVm(get()) }
     viewModel { ProjectsVM(get()) }
+    viewModel { VideoVM(get()) }
 
 
 //    factory { LoginViewmodel(get()) }

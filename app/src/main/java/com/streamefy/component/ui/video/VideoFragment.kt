@@ -13,6 +13,8 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.VideoView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -30,10 +32,14 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment
+import com.streamefy.component.ui.home.viewmodel.HomeVm
 import com.streamefy.component.ui.video.model.QualityModel
+import com.streamefy.component.ui.video.viewmodel.VideoVM
 import com.streamefy.data.PrefConstent
 import com.streamefy.databinding.FragmentVideoBinding
+import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
+import com.streamefy.utils.invisible
 import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
@@ -42,6 +48,8 @@ import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class VideoFragment : BaseFragment<FragmentVideoBinding>() {
@@ -61,31 +69,43 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
-    var isSmartRevision = true
+    var isResume = true
+    var ifFirst=true
+
+    var nextVideoId=""
+    var mediaId=0
+    var videoThumb=""
+    var videoDuration=""
     companion object {
         lateinit var videoFragment: VideoFragment
-
     }
+
+    private val viewModel: VideoVM by viewModel()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        videoFragment=this
+        videoFragment = this
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        handleKey(binding.playerView)
-        volumeManager = VolumeManager(requireActivity())
-        volumeManager.setVolumePercentage(5)
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
-            isSmartRevision = getBoolean(PrefConstent.SMART_REVISION)
+            isResume = getBoolean(PrefConstent.ISRESUME)
             playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
+            nextVideoId = getString(PrefConstent.VIDEO_ID).toString()
 
         }
+
+        handleKey(binding.playerView)
+        volumeManager = VolumeManager(requireActivity())
+        volumeManager.setVolumePercentage(5)
+
         binding.apply {
             ivVideoThumb.loadUrl(thumbnailS3bucketId)
 
-            playerHandler = PlayerHandler(requireActivity(), playerView)
-            playerHandler.setMediaUri(videoUrl, playbackduration)
+            updatePlayer()
+            newVideo()
+
 
 //            val progress = (playbackduration * 100 / duration.toDouble()).toInt()
 //            binding.sbVideoSeek.progress = progress
@@ -99,9 +119,63 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         // bitPlayer()
         selectorFocus()
 
-        Log.e("ckdanmcn", "$isSmartRevision volumeCount $volumeCount mkadnc $videoUrl")
+        Log.e(
+            "ckdanmcn",
+            "video id ${nextVideoId} isResume $isResume volumeCount $volumeCount mkadnc ${videoUrl}"
+        )
         binding.sbVolumeSeek.setProgress(volumeCount)
 
+    }
+
+    fun updatePlayer()= with(binding){
+        playerHandler = PlayerHandler(requireActivity(), playerView)
+    }
+    fun newVideo() {
+       // if (!isResume) {
+            viewModel.getVideo(requireContext(),nextVideoId)
+            observe()
+//        }else{
+//            playerHandler.setMediaUri(viewModel.videoUrl, playbackduration)
+//        }
+    }
+    fun observe() {
+        viewModel.videoLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                }
+
+                is MyResource.isSuccess -> {
+                var data=it.data?.response
+                    Log.e("skcmsknc","$ifFirst scnsknc ${it.data}")
+                    if (data!=null){
+                        videoUrl=""
+                        nextVideoId=""
+                        mediaId=0
+                        videoThumb=""
+                        videoUrl=data.hlsUrl
+                        nextVideoId=data.nextVideo.nextVideoId
+                        mediaId=data.mediaId
+                        videoThumb=data.nextVideo.nextVideoThumbnail
+//                        viewModel.videoDuration=data.nextVideo.nextVideoPlaybackDuration.toString()
+                        if (ifFirst) {
+                            ifFirst=false
+                            var video="https://vz-54993638-a7b.b-cdn.net/bcdn_token=U83HXNjK8x3xkUq6z4_ILQ&expires=1732026314&token_path=%2F2661c3e2-7e70-4479-9838-fedeca562a62%2F/2661c3e2-7e70-4479-9838-fedeca562a62/playlist.m3u8"
+                            playerHandler.setMediaUri(video, playbackduration)
+                        }else{
+                            binding.ivNextVideo.loadUrl(data.nextVideo.nextVideoThumbnail)
+                            binding.ivVideoThumb.loadUrl(data.nextVideo.nextVideoThumbnail)
+                        }
+                    }else{
+                        requireActivity().showMessage("Video not found")
+                    }
+                }
+
+                is MyResource.isError -> {
+                }
+
+                else -> {}
+            }
+        }
     }
 
     fun clickme() = with(binding) {
@@ -147,11 +221,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             //  playerHandler.toggleFullScreen()
             if (playerHandler.player != null) {
                 playerHandler.refresh()
-                getLengthOnce=true
+                getLengthOnce = true
+                ivNextVideo.invisible()
                 ivPlay.setImageResource(R.drawable.ic_video_pause)
             }
-
         }
+
+        ivNextVideo.setOnClickListener {
+            playerHandler.pause()
+            playerHandler.player?.stop()
+            playerHandler.player?.release()
+
+//            playerHandler.setMediaUri(video, 0)
+            getNextVideo=true
+        }
+
         ivVolume.setOnClickListener {
             toShowBackButton()
             visibilityCount = 0
@@ -209,6 +293,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 } else if (playbackState == Player.STATE_ENDED) {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
+                    getNextVideo=true
+                  //  playerHandler.setMediaUri(videoUrl, 0)
+                    playerView.requestLayout()
+                    playerView.invalidate()
                 }
             }
 
@@ -413,7 +501,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             visibilityCount = 0
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    ivRefresh.requestFocus()
+                    if (ivNextVideo.isVisible){
+                        ivNextVideo.requestFocus()
+                    }
+                    else {
+                        ivBack.requestFocus()
+                    }
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
@@ -431,7 +524,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
+                    if (ivNextVideo.isVisible){
+                        ivNextVideo.requestFocus()
+                    }
+                    else {
+                        ivBack.requestFocus()
+                    }
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
@@ -445,7 +543,28 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
+        ivNextVideo.remoteKey {
+            visibilityCount = 0
+            when (it) {
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    ivRefresh.requestFocus()
+                }
 
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivBack.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    ivRefresh.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    ivSkipBack.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
 //        ivSkipBack.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
 //            if (event.action == KeyEvent.ACTION_DOWN) {
 //
@@ -598,6 +717,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             if (hasFocus) {
                 toShowBackButton()
             }
+        }
+        ivNextVideo.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                toShowBackButton()
+                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._90sdp)
+                params.height = resources.getDimensionPixelSize(R.dimen._50sdp)
+                ivNextVideo.layoutParams = params
+            } else {
+                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._80sdp)
+                params.height = resources.getDimensionPixelSize(R.dimen._40sdp)
+                ivNextVideo.layoutParams = params
+            }
+
         }
 
 //        sbVideoSeek.setOnClickListener {
@@ -801,26 +935,38 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         volumeManager.startMonitoring()
     }
-
+    var getNextVideo=true
     private fun updateProgressBar() {
-        val duration = playerHandler.getDuration()
-        val currentPosition = playerHandler.getCurrentPosition()
-        val progress = (currentPosition * 100 / duration.toDouble()).toInt()
-        binding.sbVideoSeek.progress = progress
-        binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
+            val duration = playerHandler.getDuration()
+            val currentPosition = playerHandler.getCurrentPosition()
+            val progress = (currentPosition * 100 / duration.toDouble()).toInt()
+                binding.sbVideoSeek.progress = progress
+                binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
+                if (playerHandler.isPlaying()!!) {
+                    playerHandler.handler.postDelayed({ updateProgressBar() }, 500)
+                }
+                visibilityCount++
+                if (visibilityCount == 15) {
+                    visibilityCount = 0
+                    binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+                    binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+                    binding.playerView.requestFocus()
+                    binding.clSettingsMenu.gone()
+                }
+//             lifecycleScope.launch(Dispatchers.IO) {
+                 var video_show_count=binding.sbVideoSeek.progress
+                 if (video_show_count >=10){
+                         if (!binding.ivNextVideo.isVisible) {
+                             Log.e("sbhsbc","scsjcsj now visible $video_show_count")
+                             binding.ivNextVideo.visible()
+                             newVideo()
+                             getNextVideo = false
+                         }
+                 }
 
-        if (playerHandler.isPlaying()!!) {
-            playerHandler.handler.postDelayed({ updateProgressBar() }, 500)
-        }
-        visibilityCount++
-        if (visibilityCount == 15) {
-            visibilityCount = 0
-            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-            binding.playerView.requestFocus()
-            binding.clSettingsMenu.gone()
-//            binding.ivBack.gone()
-        }
+//             }
+
+
     }
 
 

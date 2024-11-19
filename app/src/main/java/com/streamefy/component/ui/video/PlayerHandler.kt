@@ -54,7 +54,7 @@ class PlayerHandler(
         initializePlayer()
     }
 
-    private fun initializePlayer() {
+    fun initializePlayer() {
         try {
 
 //            val renderersFactory = DefaultRenderersFactory(context)
@@ -155,18 +155,40 @@ class PlayerHandler(
                         release()
                         initializePlayer()
                     }
+                    Log.e("videourlssss", "player: $uri")
                     CoroutineScope(Dispatchers.IO).launch {
+
                         val dataSourceFactory = DefaultHttpDataSource.Factory()
                         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
                             .createMediaSource(MediaItem.fromUri(uri))
                         // Prepare player with media source
                         withContext(Dispatchers.Main) {
-                            player?.setMediaSource(mediaSource)
-                            player?.prepare()
-                            player?.seekTo(lastDuration)
-                            player?.play()
+//                            player?.stop()
+//                            player?.clearMediaItems()
+//
+//
+//                            player?.setMediaSource(mediaSource)
+//                            player?.prepare()
+//                            player?.seekTo(lastDuration)
+//                            player?.play()
+
+
+                            player?.apply {
+                                // Clear media items and stop playback before setting a new media source
+                                stop()
+                                clearMediaItems()
+
+                                setMediaSource(mediaSource)
+                                prepare()
+                                seekTo(lastDuration)
+                                play()
+                            }
+
                         }
                     }
+
+
+
                 }
             }
         }
@@ -293,7 +315,9 @@ class PlayerHandler(
 
     }
     fun pause() {
-        player?.playWhenReady = false
+        if (player!=null) {
+            player?.playWhenReady = false
+        }
     }
 
     fun seekTo(positionMs: Long) {

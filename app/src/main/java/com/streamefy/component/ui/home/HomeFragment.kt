@@ -52,13 +52,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
     private val viewModel: HomeVm by viewModel()
 
-    //    val images = listOf(
-//        R.drawable.home_theme,
-//        R.drawable.app_icon_your_company,
-//        R.drawable.home_theme,
-//        R.drawable.movie,
-//        R.drawable.home_theme
-//    )
     val images = ArrayList<BackgroundMediaItem>()
     val crewList = ArrayList<crewMembers>()
     var selectedTitle = ""
@@ -71,6 +64,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var proTitle = ""
     var proDesc = ""
     var proLogo = ""
+    var projectId = 0
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
@@ -225,7 +219,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     if (newList.isNotEmpty()) {
                         newList[eventVideoIndex].media?.get(mediaIndex)?.run {
                             isLastPlay = true
-                            lastVideoUrl = hlsPlaylistUrl
+                            lastVideoUrl = ""
                             lastVideoDuration = videoduraion.toString()
                             lastVideoThumb = thumbnailS3bucketId
                         }
@@ -597,8 +591,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val bundle = Bundle()
         bundle.putString(PrefConstent.VIDEO_URL, lastVideoUrl)
         bundle.putString(PrefConstent.PLAY_BACK_DURATION, lastVideoDuration)
-        bundle.putBoolean(PrefConstent.SMART_REVISION, false)
+        bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
         bundle.putString(PrefConstent.VIDEO_THUMB, lastVideoThumb)
+        bundle.putString(PrefConstent.VIDEO_ID, videoId)
         findNavController().navigate(R.id.videofragment, bundle)
     }
 
@@ -727,7 +722,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun getUserData() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId,phone)
         observe()
     }
 
@@ -770,9 +765,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 isPlayByPlayButton = false
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
-                bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
-                bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
+                bundle.putString(PrefConstent.VIDEO_URL, "")
+                bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                 bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
+                bundle.putString(PrefConstent.VIDEO_ID, videoId)
                 findNavController().navigate(R.id.videofragment, bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
@@ -803,8 +799,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         PrefConstent.PLAY_BACK_DURATION,
                         playbackDuration
                     )
-                    bundle.putBoolean(PrefConstent.SMART_REVISION, false)
+                    bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
+                    bundle.putString(PrefConstent.VIDEO_ID, videoId)
                     findNavController().navigate(R.id.videofragment, bundle)
                 }
             }
@@ -833,13 +830,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     mediaId = this.id
                                     videoId = this.bunnyId
                                     val bundle = Bundle()
-                                    bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
-                                    bundle.putString(
-                                        PrefConstent.PLAY_BACK_DURATION,
-                                        playbackDuration
-                                    )
-                                    bundle.putBoolean(PrefConstent.SMART_REVISION, isSmartRevision)
+                                    bundle.putString(PrefConstent.VIDEO_URL, "")
+                                    bundle.putString(PrefConstent.PLAY_BACK_DURATION, playbackDuration)
+                                    bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
+                                    bundle.putString(PrefConstent.VIDEO_ID, videoId)
                                     findNavController().navigate(R.id.videofragment, bundle)
                                 }
                             }
@@ -847,32 +842,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.MORE -> {
-                        //  drawerLayout.requestFocus()
                         drawerLayout.openDrawer(GravityCompat.END)
-
                         eventList[pos].media?.run {
                             if (isNotEmpty()) {
                                 mediaList.clear()
                                 mediaList.addAll(eventList[pos].media as ArrayList<MediaItem>)
-//                                rightDrawer.invalidate()
-//                                rightDrawer.post {
-//                                    rightDrawer.layoutParams.width = 800
                                 drawerView()
-//                                }
                             }
                         }
                     }
 
                     StreamEnum.UP_DPAD_KEY -> {
-                        Log.e("dkvdknv"," $pos new changes KEYCODE_DPAD_UP")
                         rvBackgVideo.clearFocus()
-//                        rvCategory.apply {
-//                            post {
-//                              images.forEachIndexed { index, backgroundMediaItem ->
-//                                  getChildAt(index)?.clearFocus()
-//                              }
-//                            }
-//                        }
                         tvPlay.isFocusable = true
                         tvPlay.isFocusableInTouchMode = true
                         tvPlay.post {
@@ -900,7 +881,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun eventVideosMore() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin,projectId, phone)
         observe()
     }
 
@@ -956,7 +937,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         if (media != null && media.size > 0) {
                                             if (media[0].isLastPlayed) {
                                                 isLastPlay = true
-                                                lastVideoUrl = media[0].hlsPlaylistUrl
+                                                lastVideoUrl =""
                                                 lastVideoDuration = media[0].playbackDuration
                                                 lastVideoThumb = media[0].thumbnailS3bucketId
                                                 mediaId = media[0].id
@@ -973,7 +954,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     var media = events?.get(0)?.media
                                     media?.get(0)?.run {
                                         isLastPlay = false
-                                        lastVideoUrl = hlsPlaylistUrl
+                                        lastVideoUrl = ""
                                         lastVideoDuration = "0"
                                         lastVideoThumb = thumbnailS3bucketId
                                         mediaId = id

@@ -2,15 +2,15 @@ package com.streamefy.network
 
 object ServerUrls {
     ////    //  dev server
-//    const val BASE_URL = "https://apidev.streamefy.com"
-//    const val BASE_AUTH_URL = "https://authdev.streamefy.com/"
+    const val BASE_URL = "https://apidev.streamefy.com"
+    const val BASE_AUTH_URL = "https://authdev.streamefy.com/"
     // production url
 //    const val BASE_AUTH_URL="https://auth.streamefy.com/"
 //    const val BASE_URL="http://streamefy-auth-linux-env.eba-9b6qs4fc.ap-south-1.elasticbeanstalk.com/"
 
 ////     production server
-    const val BASE_URL ="https://api.streamefy.com/"
-    const val BASE_AUTH_URL="https://auth.streamefy.com"
+//    const val BASE_URL ="https://api.streamefy.com/"
+//    const val BASE_AUTH_URL="https://auth.streamefy.com"
 
     const val LOGIN = "api/User/Login"
     const val REFRESH = "api/User/RefreshToken"
@@ -20,5 +20,6 @@ object ServerUrls {
     const val PLAY_BACK = "api/BunnyVideo/Playback"
     const val PIN_VERIFICATION = "api/BunnyVideo/Authorize/"
     const val RESETPIN = "api/Project/PrimaryUser/ResetPin"
+    const val SINGLE_VIDEO = "api/StreamefyMedia"
 
 }

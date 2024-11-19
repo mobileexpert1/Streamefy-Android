@@ -1,21 +1,15 @@
 package com.streamefy.network
 
 import com.streamefy.component.ui.home.model.HomeResponse
-import com.streamefy.component.ui.login.model.LoginRequest
-import com.streamefy.component.ui.login.model.LoginResponse
-import com.streamefy.component.ui.otp.model.OTPRequest
-import com.streamefy.component.ui.otp.model.OTPResponse
-import com.streamefy.component.ui.otp.model.VerificationRequest
-import com.streamefy.component.ui.otp.model.VerifyResponse
 import com.streamefy.component.ui.pin_authentication.PinResponse
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ProjectResponse
 import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.VideoPlaback
+import com.streamefy.component.ui.video.model.VideoResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -27,6 +21,7 @@ interface ApiService {
         @Query("Page") page: Int,
         @Query("ItemsPerPage") itemsPerPage: Int,
         @Query("UserPin") userPin: String,
+        @Query("ProjectId") ProjectId: Int,
         @Query("PhoneNumber") phoneNumber: String,
     ): Response<HomeResponse>
     @GET(ServerUrls.PIN_VERIFICATION+"{id}")
@@ -44,6 +39,13 @@ interface ApiService {
     suspend fun getProject(
         @Body request: ProjectRequest,
     ): Response<ProjectResponse>
+
+
+    @GET(ServerUrls.SINGLE_VIDEO)
+    suspend fun getVideo(
+        @Query("videoId") videoId: String,
+    ): Response<VideoResponse>
+
 //
 //    @POST(ServerUrls.URL_USERNAME_EXISTS)
 //    suspend fun usernameRequest(

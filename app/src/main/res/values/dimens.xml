@@ -16,5 +16,8 @@
     <dimen name="_16sdp">16dp</dimen>
     <dimen name="_17sdp">17dp</dimen>
     <dimen name="_5sdp">10dp</dimen>
+    <dimen name="_40sdp">80dp</dimen>
+    <dimen name="_90sdp">90dp</dimen>
+    <dimen name="_50sdp">50dp</dimen>
 
 </resources>

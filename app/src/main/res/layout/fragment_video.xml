@@ -307,6 +307,20 @@
                 android:textColor="@color/black"
                 android:visibility="gone" />
         </LinearLayout>
+
+<!--        show next video suggestion-->
+        <ImageView
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_40sdp"
+            app:layout_constraintEnd_toEndOf="@+id/llTools"
+            app:layout_constraintBottom_toTopOf="@+id/llTools"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:src="@drawable/flag_india"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:visibility="invisible"
+            android:id="@+id/ivNextVideo"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -26,13 +26,14 @@ class HomeVm(var repo: ApiService) : ViewModel() {
         context: Context, page: Int,
         itemsPerPage: Int,
         userPin: String,
+        ProjectId: Int,
         phoneNumber: String,
     ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 _homeLiveData.value = MyResource.isLoading()
                 try {
-                    var response = repo.getUserVideos(page,itemsPerPage,userPin,phoneNumber)
+                    var response = repo.getUserVideos(page,itemsPerPage,userPin,ProjectId,phoneNumber)
                     if (response.body()?.isSuccess!!) {
                         _homeLiveData.value = MyResource.isSuccess(response.body())
                     } else {

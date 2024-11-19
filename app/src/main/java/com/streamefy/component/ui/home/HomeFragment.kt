@@ -91,6 +91,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var lastVideoDuration = ""
     var lastVideoThumb = ""
     var isPlayByPlayButton = false
+    var ProjectId = 0
 
 
     companion object {
@@ -225,7 +226,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     if (newList.isNotEmpty()) {
                         newList[eventVideoIndex].media?.get(mediaIndex)?.run {
                             isLastPlay = true
-                            lastVideoUrl = hlsPlaylistUrl
+                            lastVideoUrl = ""
                             lastVideoDuration = videoduraion.toString()
                             lastVideoThumb = thumbnailS3bucketId
                         }
@@ -727,7 +728,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun getUserData() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin,ProjectId, phone)
         observe()
     }
 
@@ -770,7 +771,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 isPlayByPlayButton = false
                 var bundle = Bundle()
                 bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
-                bundle.putString(PrefConstent.VIDEO_URL, mediaList[it].hlsPlaylistUrl)
+                bundle.putString(PrefConstent.VIDEO_URL, "")
                 bundle.putBoolean(PrefConstent.SMART_REVISION, mediaList[it].isSmartRevision)
                 bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
                 findNavController().navigate(R.id.videofragment, bundle)
@@ -833,7 +834,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     mediaId = this.id
                                     videoId = this.bunnyId
                                     val bundle = Bundle()
-                                    bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
+                                    bundle.putString(PrefConstent.VIDEO_URL, "")
                                     bundle.putString(
                                         PrefConstent.PLAY_BACK_DURATION,
                                         playbackDuration
@@ -900,7 +901,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun eventVideosMore() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin,ProjectId, phone)
         observe()
     }
 
@@ -956,7 +957,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         if (media != null && media.size > 0) {
                                             if (media[0].isLastPlayed) {
                                                 isLastPlay = true
-                                                lastVideoUrl = media[0].hlsPlaylistUrl
+                                                lastVideoUrl = ""
                                                 lastVideoDuration = media[0].playbackDuration
                                                 lastVideoThumb = media[0].thumbnailS3bucketId
                                                 mediaId = media[0].id
@@ -973,7 +974,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     var media = events?.get(0)?.media
                                     media?.get(0)?.run {
                                         isLastPlay = false
-                                        lastVideoUrl = hlsPlaylistUrl
+                                        lastVideoUrl = ""
                                         lastVideoDuration = "0"
                                         lastVideoThumb = thumbnailS3bucketId
                                         mediaId = id

@@ -27,6 +27,7 @@ interface ApiService {
         @Query("Page") page: Int,
         @Query("ItemsPerPage") itemsPerPage: Int,
         @Query("UserPin") userPin: String,
+        @Query("ProjectId") ProjectId: Int,
         @Query("PhoneNumber") phoneNumber: String,
     ): Response<HomeResponse>
     @GET(ServerUrls.PIN_VERIFICATION+"{id}")

@@ -32,10 +32,13 @@ import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment
+import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.viewmodel.HomeVm
+import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.QualityModel
 import com.streamefy.component.ui.video.viewmodel.VideoVM
 import com.streamefy.data.PrefConstent
+import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
@@ -47,6 +50,7 @@ import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -70,12 +74,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
     var isResume = true
-    var ifFirst=true
+    var ifFirst = true
 
-    var nextVideoId=""
-    var mediaId=0
-    var videoThumb=""
-    var videoDuration=""
+    var nextVideoId = ""
+    var mediaId = 0
+    var eventId = 0
+    var oldMediaId = 0
+    var oldEventId = 0
+    var oldBunnyId = ""
+    var oldVideoDuration: Long = 0
+    var videoThumb = ""
+    var videoDuration = ""
+    var isNextVideoStarted=false
+var phone=""
     companion object {
         lateinit var videoFragment: VideoFragment
     }
@@ -87,13 +98,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         videoFragment = this
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
             isResume = getBoolean(PrefConstent.ISRESUME)
-            playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
+            if (getString(PrefConstent.PLAY_BACK_DURATION).toString().isNotEmpty()) {
+                playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
+            }
             nextVideoId = getString(PrefConstent.VIDEO_ID).toString()
-
+            if (getString(PrefConstent.MEDIA_ID).toString().isNotEmpty()) {
+                mediaId = getString(PrefConstent.MEDIA_ID).toString().toInt()
+            }
+            oldBunnyId=nextVideoId
         }
 
         handleKey(binding.playerView)
@@ -112,6 +129,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             clickme()
             listener()
+            keyMove()
 
         }
         volume()
@@ -127,260 +145,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
-    fun updatePlayer()= with(binding){
-        playerHandler = PlayerHandler(requireActivity(), playerView)
-    }
-    fun newVideo() {
-       // if (!isResume) {
-            viewModel.getVideo(requireContext(),nextVideoId)
-            observe()
-//        }else{
-//            playerHandler.setMediaUri(viewModel.videoUrl, playbackduration)
-//        }
-    }
-    fun observe() {
-        viewModel.videoLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is MyResource.isLoading -> {
-                }
-
-                is MyResource.isSuccess -> {
-                var data=it.data?.response
-                    Log.e("skcmsknc","$ifFirst scnsknc ${it.data}")
-                    if (data!=null){
-                        videoUrl=""
-                        nextVideoId=""
-                        mediaId=0
-                        videoThumb=""
-                        videoUrl=data.hlsUrl
-                        nextVideoId=data.nextVideo.nextVideoId
-                        mediaId=data.mediaId
-                        videoThumb=data.nextVideo.nextVideoThumbnail
-//                        viewModel.videoDuration=data.nextVideo.nextVideoPlaybackDuration.toString()
-                        if (ifFirst) {
-                            ifFirst=false
-                            var video="https://vz-54993638-a7b.b-cdn.net/bcdn_token=U83HXNjK8x3xkUq6z4_ILQ&expires=1732026314&token_path=%2F2661c3e2-7e70-4479-9838-fedeca562a62%2F/2661c3e2-7e70-4479-9838-fedeca562a62/playlist.m3u8"
-                            playerHandler.setMediaUri(video, playbackduration)
-                        }else{
-                            binding.ivNextVideo.loadUrl(data.nextVideo.nextVideoThumbnail)
-                            binding.ivVideoThumb.loadUrl(data.nextVideo.nextVideoThumbnail)
-                        }
-                    }else{
-                        requireActivity().showMessage("Video not found")
-                    }
-                }
-
-                is MyResource.isError -> {
-                }
-
-                else -> {}
-            }
-        }
-    }
-
-    fun clickme() = with(binding) {
-        ivBack.setOnClickListener { findNavController().popBackStack() }
-
-        ivPlay.setOnClickListener {
-            toShowBackButton()
-            val params = ivPlay.layoutParams as LinearLayout.LayoutParams
-            params.width =
-                resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
-            params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
-            ivPlay.layoutParams = params
-            if (playerHandler.isPlaying()!!) {
-                playerHandler.pause()
-                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-            } else {
-                if (isEnded) {
-                    playerHandler.player?.seekTo(0)
-                } else {
-                    playerHandler.play()
-                }
-                ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                //updateProgressBar()
-            }
-        }
-        ivSkipForward.setOnClickListener {
-            toShowBackButton()
-            var current = playerHandler.player?.currentPosition
-            var duration = playerHandler.player?.duration
-            var count = current!! + 10000
-
-            if (duration!! > count) {
-                playerHandler.seekTo(count)
-            } else {
-                playerHandler.seekTo(duration)
-            }
-        }
-        ivSkipBack.setOnClickListener {
-            toShowBackButton()
-            playerHandler.seekBackward(10)
-        }
-        ivRefresh.setOnClickListener {
-            //  playerHandler.toggleFullScreen()
-            if (playerHandler.player != null) {
-                playerHandler.refresh()
-                getLengthOnce = true
-                ivNextVideo.invisible()
-                ivPlay.setImageResource(R.drawable.ic_video_pause)
-            }
-        }
-
-        ivNextVideo.setOnClickListener {
-            playerHandler.pause()
-            playerHandler.player?.stop()
-            playerHandler.player?.release()
-
-//            playerHandler.setMediaUri(video, 0)
-            getNextVideo=true
-        }
-
-        ivVolume.setOnClickListener {
-            toShowBackButton()
-            visibilityCount = 0
-            if (playerHandler.player != null) {
-                if (playerHandler.player?.volume == 0f) {
-                    playerHandler.unmute()
-                    volumeCount = 1
-                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
-                    sbVolumeSeek.setProgress(volumeCount)
-                } else {
-                    playerHandler.mute()
-                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-                    sbVolumeSeek.setProgress(0)
-                    volumeManager.setVolumePercentage(0)
-                    volumeCount = 0
-                }
-            }
-        }
-        llVolumeSeek.setOnClickListener {
-        }
-        llSeek.setOnClickListener {
-        }
-    }
-
-    fun listener() = with(binding) {
-        showProgress()
-        playerHandler.player?.addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
-                    ivVideoThumb.animate()
-                        .alpha(0f)
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setInterpolator(AccelerateDecelerateInterpolator())
-                        .setDuration(1500)
-                        .withEndAction {
-                            playerView.animate()
-                                .alpha(1f)
-                                .scaleX(1f)
-                                .scaleY(1f)
-                                .setInterpolator(DecelerateInterpolator())// Scale to original size
-                                .setDuration(50)
-                                .start()
-                        }
-                        .start()
-                    binding.sbVideoSeek.max = 100
-                    if (getLengthOnce) {
-                        tvDuration.setText(playerHandler.getTotalLength())
-                        getLengthOnce = false
-                        ivPlay.setImageResource(R.drawable.ic_video_pause)
-                    }
-                    isEnded = false
-                    dismissProgress()
-                    updateProgressBar()
-                } else if (playbackState == Player.STATE_ENDED) {
-                    ivPlay.setImageResource(R.drawable.ic_video_play)
-                    isEnded = true
-                    getNextVideo=true
-                  //  playerHandler.setMediaUri(videoUrl, 0)
-                    playerView.requestLayout()
-                    playerView.invalidate()
-                }
-            }
-
-            override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
-                super.onTrackSelectionParametersChanged(parameters)
-                val minVideoWidth = parameters.minVideoWidth
-                val minVideoHeight = parameters.minVideoHeight
-                Log.d(
-                    "TrackSelectionParams",
-                    "Min Video Width: $minVideoWidth, Min Video Height: $minVideoHeight hhh\n $parameters"
-                )
-            }
-
-            override fun onTracksChanged(tracks: Tracks) {
-                if (!isOpenSettingFirst) {
-                    isOpenSettingFirst = true
-                    qualityList.clear()
-                    for (group in tracks.getGroups()) {
-                        val trackCount = group.length
-                        for (j in 0 until trackCount) {
-                            val format = group.getTrackFormat(j)
-
-                            // Check if the format is a video format using supported properties
-                            if (format.width > 0 && format.height > 0) {
-                                val width = format.width
-                                val height = format.height
-                                var isSelected = false
-                                if (j == trackCount - 1) {
-                                    isSelected = true
-                                }
-                                val data =
-                                    QualityModel(
-                                        height.toString() + " P", isSelected,
-                                        height,
-                                        width
-                                    )
-                                qualityList.add(data)
-                                Log.d("VideoResolution", "resolution: ${width}x${height}")
-
-                            }
-                        }
-
-                    }
-                    quality()
-                }
-
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
-                if (error.cause is MediaCodecRenderer.DecoderInitializationException) {
-                    // Handle decoder initialization failure
-                    Log.e(
-                        "ExoPlayerError",
-                        "by video fragment Decoder initialization failed: ${error.message}"
-                    )
-                }
-
-            }
-
-            override fun onPlayerErrorChanged(error: PlaybackException?) {
-                super.onPlayerErrorChanged(error)
-                Log.e("ExoPlayerError", "Playback error: " + error?.message, error)
-            }
-        })
-
-//        // Volume control
-        // sbVolumeSeek.max = 100
-        // sbVolumeSeek.progress = (playerHandler.getVolume() * 100).toInt()
-//        sbVolumeSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-//            override fun onProgressChanged(
-//                seekBar: SeekBar?,
-//                progress: Int,
-//                fromUser: Boolean
-//            ) {
-////                    playerHandler.setVolume(progress / 100.0f)
-//                volumeManager.setVolumePercentage(progress)
-//                Log.e("volumetes", "Playback error: " + progress)
-//            }
-//
-//            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-//            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-//        })
-
+    fun keyMove() = with(binding) {
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
@@ -496,15 +261,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
-
         ivBack.remoteKey {
             visibilityCount = 0
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    if (ivNextVideo.isVisible){
+                    if (ivNextVideo.isVisible) {
                         ivNextVideo.requestFocus()
-                    }
-                    else {
+                    } else {
                         ivBack.requestFocus()
                     }
                 }
@@ -524,10 +287,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
-                    if (ivNextVideo.isVisible){
+                    if (ivNextVideo.isVisible) {
                         ivNextVideo.requestFocus()
-                    }
-                    else {
+                    } else {
                         ivBack.requestFocus()
                     }
                 }
@@ -565,12 +327,281 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
-//        ivSkipBack.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-//            if (event.action == KeyEvent.ACTION_DOWN) {
-//
-//            }
-//            false
-//        })
+    }
+
+    fun updatePlayer() = with(binding) {
+        playerHandler = PlayerHandler(requireActivity(), playerView)
+    }
+
+    fun newVideo() {
+        // if (!isResume) {
+        viewModel.getVideo(requireContext(), nextVideoId)
+        observe()
+//        }else{
+//            playerHandler.setMediaUri(viewModel.videoUrl, playbackduration)
+//        }
+    }
+
+    fun observe() {
+        viewModel.videoLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                }
+
+                is MyResource.isSuccess -> {
+                    var data = it.data?.response
+                    Log.e("skcmsknc", "$ifFirst scnsknc ${it.data}")
+                    if (data != null) {
+                        videoUrl = data.hlsUrl
+                        eventId = data.eventId
+                        if (ifFirst) {
+                            oldMediaId=mediaId
+                            ifFirst = false
+                            playerHandler.setMediaUri(videoUrl, playbackduration)
+                        } else {
+                            isNextVideoStarted=true
+                            videoThumb = data.nextVideo.nextVideoThumbnail
+                            nextVideoId = data.nextVideo.nextVideoId
+                            mediaId = data.mediaId
+                            binding.ivNextVideo.loadUrl(data.nextVideo.nextVideoThumbnail)
+                            binding.ivVideoThumb.loadUrl(data.nextVideo.nextVideoThumbnail)
+                        }
+                    } else {
+                        requireActivity().showMessage("Video not found")
+                    }
+                }
+
+                is MyResource.isError -> {
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    fun clickme() = with(binding) {
+        ivBack.setOnClickListener { findNavController().popBackStack() }
+
+        ivPlay.setOnClickListener {
+            toShowBackButton()
+            val params = ivPlay.layoutParams as LinearLayout.LayoutParams
+            params.width =
+                resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
+            params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+            ivPlay.layoutParams = params
+            if (playerHandler.isPlaying()!!) {
+                playerHandler.pause()
+                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+            } else {
+                if (isEnded) {
+                    playerHandler.player?.seekTo(0)
+                } else {
+                    playerHandler.play()
+                }
+                ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                //updateProgressBar()
+            }
+        }
+        ivSkipForward.setOnClickListener {
+            toShowBackButton()
+            var current = playerHandler.player?.currentPosition
+            var duration = playerHandler.player?.duration
+            var count = current!! + 10000
+
+            if (duration!! > count) {
+                playerHandler.seekTo(count)
+            } else {
+                playerHandler.seekTo(duration)
+            }
+        }
+        ivSkipBack.setOnClickListener {
+            toShowBackButton()
+            playerHandler.seekBackward(10)
+        }
+        ivRefresh.setOnClickListener {
+            //  playerHandler.toggleFullScreen()
+            if (playerHandler.player != null) {
+                playerHandler.refresh()
+                getLengthOnce = true
+                ivNextVideo.invisible()
+                ivPlay.setImageResource(R.drawable.ic_video_pause)
+            }
+        }
+
+        ivNextVideo.setOnClickListener {
+            if (!HomeFragment.isTrailer) {
+                oldVideoDuration = playerHandler.getDuration()
+                savePlayback(
+                    oldEventId,
+                    oldMediaId,
+                    oldBunnyId,
+                    oldVideoDuration)
+            }
+            getLengthOnce = true
+            isEnded = false
+            ivNextVideo.invisible()
+            playerView.requestLayout()
+            playerView.invalidate()
+            playerHandler.stopHandler()
+            binding.sbVideoSeek.progress = 0
+            playerHandler.setMediaUri(videoUrl, 0)
+
+        }
+
+        ivVolume.setOnClickListener {
+            toShowBackButton()
+            visibilityCount = 0
+            if (playerHandler.player != null) {
+                if (playerHandler.player?.volume == 0f) {
+                    playerHandler.unmute()
+                    volumeCount = 1
+                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                    sbVolumeSeek.setProgress(volumeCount)
+                } else {
+                    playerHandler.mute()
+                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                    sbVolumeSeek.setProgress(0)
+                    volumeManager.setVolumePercentage(0)
+                    volumeCount = 0
+                }
+            }
+        }
+        llVolumeSeek.setOnClickListener {
+        }
+        llSeek.setOnClickListener {
+        }
+    }
+
+    fun listener() = with(binding) {
+        showProgress()
+        playerHandler.player?.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_READY) {
+                    if (isNextVideoStarted) {
+                        oldEventId = eventId
+                        oldMediaId = mediaId
+                        oldBunnyId = nextVideoId
+                    }
+
+                    Log.e("idcheckstr"," old eventid $oldEventId, oldMediId  $oldMediaId oldBunnyId $oldBunnyId oldVideoDuration ")
+
+                    ivVideoThumb.animate()
+                        .alpha(0f)
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setInterpolator(AccelerateDecelerateInterpolator())
+                        .setDuration(1500)
+                        .withEndAction {
+                            playerView.animate()
+                                .alpha(1f)
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setInterpolator(DecelerateInterpolator())// Scale to original size
+                                .setDuration(50)
+                                .start()
+                        }
+                        .start()
+                    binding.sbVideoSeek.max = 100
+                    if (getLengthOnce) {
+                        tvDuration.setText(playerHandler.getTotalLength())
+                        getLengthOnce = false
+                        ivPlay.setImageResource(R.drawable.ic_video_pause)
+                    }
+                    isEnded = false
+                    dismissProgress()
+                    updateProgressBar()
+
+                } else if (playbackState == Player.STATE_ENDED) {
+                    // filterItem()
+                    if (!HomeFragment.isTrailer) {
+                        oldVideoDuration = playerHandler.getDuration()
+                        savePlayback(
+                            oldEventId,
+                            oldMediaId,
+                            oldBunnyId,
+                            oldVideoDuration)
+                    }
+                    ivPlay.setImageResource(R.drawable.ic_video_play)
+                    isEnded = true
+                    getLengthOnce = true
+                    ivNextVideo.invisible()
+                    playerView.requestLayout()
+                    playerView.invalidate()
+                    playerHandler.stopHandler()
+                    binding.sbVideoSeek.progress = 0
+                    playerHandler.setMediaUri(videoUrl, 0)
+
+                    /// save playback status in home screen
+
+                }
+            }
+
+            override fun onTrackSelectionParametersChanged(parameters: TrackSelectionParameters) {
+                super.onTrackSelectionParametersChanged(parameters)
+                val minVideoWidth = parameters.minVideoWidth
+                val minVideoHeight = parameters.minVideoHeight
+                Log.d(
+                    "TrackSelectionParams",
+                    "Min Video Width: $minVideoWidth, Min Video Height: $minVideoHeight hhh\n $parameters"
+                )
+            }
+
+            override fun onTracksChanged(tracks: Tracks) {
+                if (!isOpenSettingFirst) {
+                    isOpenSettingFirst = true
+                    qualityList.clear()
+                    for (group in tracks.getGroups()) {
+                        val trackCount = group.length
+                        for (j in 0 until trackCount) {
+                            val format = group.getTrackFormat(j)
+
+                            // Check if the format is a video format using supported properties
+                            if (format.width > 0 && format.height > 0) {
+                                val width = format.width
+                                val height = format.height
+                                var isSelected = false
+                                if (j == trackCount - 1) {
+                                    isSelected = true
+                                }
+                                val data =
+                                    QualityModel(
+                                        height.toString() + " P", isSelected,
+                                        height,
+                                        width
+                                    )
+                                qualityList.add(data)
+                                Log.d("VideoResolution", "resolution: ${width}x${height}")
+
+                            }
+                        }
+
+                    }
+                    quality()
+                }
+
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
+                if (error.cause is MediaCodecRenderer.DecoderInitializationException) {
+                    // Handle decoder initialization failure
+                    Log.e(
+                        "ExoPlayerError",
+                        "by video fragment Decoder initialization failed: ${error.message}"
+                    )
+                }
+            }
+
+            override fun onPlayerErrorChanged(error: PlaybackException?) {
+                super.onPlayerErrorChanged(error)
+                Log.e("ExoPlayerError", "Playback error: " + error?.message, error)
+            }
+        })
+    }
+
+
+    fun getIndex() {
+
     }
 
     fun volumeUp() {
@@ -734,14 +765,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         }
 
-//        sbVideoSeek.setOnClickListener {
-//        }
-//
-//        sbVideoSeek.setOnFocusChangeListener { _, hasFocus ->
-//            if (hasFocus) {
-//            } else {
-//            }
-//        }
 
         llTools.setOnClickListener { }
         llTools.setOnFocusChangeListener { _, hasFocus ->
@@ -906,10 +929,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     private fun volume() = with(binding) {
 
-
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
-
             lifecycleScope.launch(Dispatchers.Main) {
                 volumeCount = volumePercentage
                 toShowBackButton()
@@ -935,36 +956,52 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         volumeManager.startMonitoring()
     }
-    var getNextVideo=true
-    private fun updateProgressBar() {
-            val duration = playerHandler.getDuration()
-            val currentPosition = playerHandler.getCurrentPosition()
-            val progress = (currentPosition * 100 / duration.toDouble()).toInt()
-                binding.sbVideoSeek.progress = progress
-                binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
-                if (playerHandler.isPlaying()!!) {
-                    playerHandler.handler.postDelayed({ updateProgressBar() }, 500)
-                }
-                visibilityCount++
-                if (visibilityCount == 15) {
-                    visibilityCount = 0
-                    binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-                    binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-                    binding.playerView.requestFocus()
-                    binding.clSettingsMenu.gone()
-                }
-//             lifecycleScope.launch(Dispatchers.IO) {
-                 var video_show_count=binding.sbVideoSeek.progress
-                 if (video_show_count >=10){
-                         if (!binding.ivNextVideo.isVisible) {
-                             Log.e("sbhsbc","scsjcsj now visible $video_show_count")
-                             binding.ivNextVideo.visible()
-                             newVideo()
-                             getNextVideo = false
-                         }
-                 }
 
-//             }
+    private fun updateProgressBar() {
+        val duration = playerHandler.getDuration()
+        val currentPosition = playerHandler.getCurrentPosition()
+        val progress = (currentPosition * 100 / duration.toDouble()).toInt()
+        binding.sbVideoSeek.progress = progress
+        binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
+
+        if (playerHandler.isPlaying()!!) {
+            playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
+        }
+        visibilityCount++
+        if (visibilityCount == 15) {
+            visibilityCount = 0
+            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
+            binding.playerView.requestFocus()
+            binding.clSettingsMenu.gone()
+        }
+//             lifecycleScope.launch(Dispatchers.IO) {
+        var video_show_count = duration - currentPosition
+        if (duration > 10000) {
+
+            if (video_show_count <= 10000) {
+                if (!binding.ivNextVideo.isVisible) {
+                    Log.e("sbhsbc", "10000 now visible $video_show_count")
+                    binding.ivNextVideo.visible()
+                    newVideo()
+                }
+            } else if (binding.ivNextVideo.isVisible) {
+                binding.ivNextVideo.gone()
+            }
+
+        } else {
+            if (video_show_count <= 3000) {
+                if (!binding.ivNextVideo.isVisible) {
+                    Log.e("sbhsbc", "3000 now visible $video_show_count")
+                    binding.ivNextVideo.visible()
+                    newVideo()
+                }
+            } else if (binding.ivNextVideo.isVisible) {
+                binding.ivNextVideo.gone()
+            }
+
+
+        }
 
 
     }
@@ -1041,7 +1078,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.player?.run {
                     HomeFragment.videoduraion = currentPosition
                 }
+                oldVideoDuration = playerHandler.getDuration()
+                savePlayback(oldEventId, oldMediaId, oldBunnyId, oldVideoDuration)
             }
+
             playerHandler.pause()
             playerHandler.release()
             volumeManager.stopMonitoring()
@@ -1051,22 +1091,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        if (playerHandler.player != null) {
-            if (!HomeFragment.isTrailer) {
-                playerHandler.player?.run {
-                    HomeFragment.videoduraion = currentPosition
-                }
-            }
-            playerHandler.pause()
-            playerHandler.release()
-            volumeManager.stopMonitoring()
-        }
+//        if (playerHandler.player != null) {
+//            if (!HomeFragment.isTrailer) {
+//                playerHandler.player?.run {
+//                    HomeFragment.videoduraion = currentPosition
+//                }
+//            }
+//            playerHandler.pause()
+//            playerHandler.release()
+//            volumeManager.stopMonitoring()
+//        }
+
 
 //        playerHandler.pause()
 //        playerHandler.release()
 //        volumeManager.stopMonitoring()
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -1078,10 +1118,37 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         if (playerHandler.player != null) {
             playerHandler.play()
         }
-
-
         isOpenSettingFirst = false
     }
+    fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
+        if (videoDuration >= 0) {
+            var request = PlayBackRequest()
+            request.phoneNumber = phone
+            request.mediaId = mediaId
+            request.videoId = bunneyId
+            request.duration = videoDuration.toString()
 
+            viewModel.saveDuration(requireContext(), request)
+            durationObserve(event, mediaId, videoDuration)
+        }
+    }
+    fun durationObserve(event: Int, mediaId: Int, videoDuration: Long) {
+        viewModel._videoduraion.observe(requireActivity()) {
+            when (it) {
+                is MyResource.isLoading -> {
+                }
 
+                is MyResource.isSuccess -> {
+
+                   homeFragment.filterItem(event, mediaId, videoDuration)
+
+                }
+
+                is MyResource.isError -> {
+                }
+
+                else -> {}
+            }
+        }
+    }
 }

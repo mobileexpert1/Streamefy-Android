@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.streamefy.component.ui.video.model.PlayBackRequest
+import com.streamefy.component.ui.video.model.VideoPlaback
 import com.streamefy.component.ui.video.model.VideoResponse
 import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
@@ -69,5 +71,35 @@ class VideoVM(var repo: ApiService) : ViewModel() {
         }
     }
 
+    var _videoduraion = SingleLiveEvent<MyResource<VideoPlaback>>()
 
+    fun saveDuration(
+        context: Context,
+        request: PlayBackRequest
+    ) {
+        viewModelScope.launch {
+            if (context.isNetworkAvailable()) {
+                _videoduraion.value = MyResource.isLoading()
+                try {
+                    var response = repo.saveDuration(request)
+                    if (response.body()?.isSuccess!!) {
+                        _videoduraion.value = MyResource.isSuccess(response.body())
+                    } else {
+                        // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                        //  context.showMessage(response.body()?.error?.userMessage.toString())
+                        _videoduraion.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                    }
+                } catch (e: Exception) {
+                    //  LogMessage.logeMe(e.toString())
+                    // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    _videoduraion.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+
+                }
+            } else {
+                ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
+                _videoduraion.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
+
+            }
+        }
+    }
 }

@@ -207,12 +207,14 @@ class CategoryAdapter(
         notifyDataSetChanged()
     }
 
-    fun updateDuration(position: Int, mediaIndex: Int, duraton: Long) {
+    fun updateDuration(position: Int, mediaIndex: Int?=null, duraton: Long) {
 //        eventList.clear()
         // if (mediaIndex==0) {
-        eventList[position].media?.run {
-            get(mediaIndex).playbackDuration = duraton.toString()
-            //  }
+        if (mediaIndex!=null) {
+            eventList[position].media?.run {
+                get(mediaIndex).playbackDuration = duraton.toString()
+                //  }
+            }
         }
         //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
 

@@ -46,6 +46,7 @@ import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
@@ -91,7 +92,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         lateinit var homeFragment: HomeFragment
         var videoduraion: Long = 0
         var mediaId: Int = 0
-        var videoId: String=""
+        var eventId: Int = 0
+        var videoId: String = ""
         var eventVideoIndex = 0
         var mediaIndex = 0
         var isTrailer = false
@@ -205,30 +207,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun savePlayback() {
-        if (videoduraion >= 0) {
+    fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
+        videoId = bunneyId
+        if (videoDuration >= 0) {
             var request = PlayBackRequest()
             request.phoneNumber = phone
             request.mediaId = mediaId
             request.videoId = videoId
-            request.duration = videoduraion.toString()
-            lastVideoDuration = videoduraion.toString()
-            if (!isPlayByPlayButton) {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    var newList = eventAdapter.getList()
-                    if (newList.isNotEmpty()) {
-                        newList[eventVideoIndex].media?.get(mediaIndex)?.run {
-                            isLastPlay = true
-                            lastVideoUrl = ""
-                            lastVideoDuration = videoduraion.toString()
-                            lastVideoThumb = thumbnailS3bucketId
-                        }
-                    }
-                }
-            }
+            request.duration = videoDuration.toString()
+            lastVideoDuration = videoDuration.toString()
+//            if (!isPlayByPlayButton) {
+//                lifecycleScope.launch(Dispatchers.IO) {
+//                    var newList = eventAdapter.getList()
+//                    if (newList.isNotEmpty()) {
+//                        newList[eventVideoIndex].media?.get(mediaIndex)?.run {
+//                            isLastPlay = true
+//                            lastVideoUrl = ""
+//                            lastVideoDuration = videoduraion.toString()
+//                            lastVideoThumb = thumbnailS3bucketId
+//                        }
+//                    }
+//                }
+//            }
 
             viewModel.saveDuration(requireContext(), request)
-            durationObserve()
+            durationObserve(event, mediaId, videoDuration)
         }
     }
 
@@ -329,7 +332,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         }
         rvBackgVideo.remoteKey {
-            Log.e("dkvdknv","ncjxcnbd backvideo")
+            Log.e("dkvdknv", "ncjxcnbd backvideo")
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
                     eventVideoFocus()
@@ -446,15 +449,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         )
                     )
 
-                }
-                else {
+                } else {
                     val drawables = tvPlay.compoundDrawables
                     val drawableStart =
                         drawables[0]  // You can adjust this for top, end, bottom as needed
 
                     if (drawableStart != null) {
                         val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                        DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
+                        DrawableCompat.setTint(
+                            wrappedDrawable,
+                            ContextCompat.getColor(requireActivity(), R.color.purple)
+                        )
                         tvPlay.setCompoundDrawablesWithIntrinsicBounds(
                             wrappedDrawable,
                             drawables[1],
@@ -476,8 +481,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             )
                         )
 
-                }
-                else {
+                } else {
                     val drawables = tvPlay.compoundDrawables
                     val drawableStart =
                         drawables[0]  // You can adjust this for top, end, bottom as needed
@@ -594,6 +598,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
         bundle.putString(PrefConstent.VIDEO_THUMB, lastVideoThumb)
         bundle.putString(PrefConstent.VIDEO_ID, videoId)
+        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
         findNavController().navigate(R.id.videofragment, bundle)
     }
 
@@ -722,7 +727,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun getUserData() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId,phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId, phone)
         observe()
     }
 
@@ -740,7 +745,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         // testing
 //        for (i in 1 until 10){
 //            var model1=MediaItem(
-0//                 size = "4",
+//                 size = "4",
 //                 format = "jpj",
 //                 hlsPlaylistUrl = "",
 //                 description = "testing",
@@ -769,6 +774,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                 bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
                 bundle.putString(PrefConstent.VIDEO_ID, videoId)
+                bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
                 findNavController().navigate(R.id.videofragment, bundle)
 //                        findNavController().navigate(R.id.dynamicscreen)
             }
@@ -792,7 +798,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     var hlsPlaylistUrl = this.hlsPlaylistUrl
                     var thumbnailS3bucketId = this.thumbnailSBucketId
                     var playbackDuration = "0"
-
+                    videoId = this.bunnyId
                     val bundle = Bundle()
                     bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
                     bundle.putString(
@@ -802,6 +808,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                     bundle.putString(PrefConstent.VIDEO_ID, videoId)
+                    bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
                     findNavController().navigate(R.id.videofragment, bundle)
                 }
             }
@@ -835,6 +842,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                                     bundle.putString(PrefConstent.VIDEO_ID, videoId)
+                                    bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
                                     findNavController().navigate(R.id.videofragment, bundle)
                                 }
                             }
@@ -881,7 +889,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun eventVideosMore() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin,projectId, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId, phone)
         observe()
     }
 
@@ -899,7 +907,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                         "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString()
                     )
                     it.data?.data?.run {
-
+                        var data = this
                         if (isEventPagination) {
                             if (events != null && events.isNotEmpty()) {
                                 eventAdapter.pagination(events as ArrayList<EventsItem>)
@@ -915,54 +923,135 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             eventList.clear()
                             binding.ivLogout.visible()
                             /// background
-                            this.backgroundMedia?.run {
-                                if (this.isNotEmpty()) {
-                                    images.addAll(this as ArrayList<BackgroundMediaItem>)
-                                    sliderInit()
 
-                                }
-                            }
                             // event video
-                            isLastPlay
+
 //                            events?.filter { if (it.media?.filter { if (it.isLastPlayed)})}
                             lifecycleScope.launch(Dispatchers.IO) {
-                                val filteredEvents = events?.filter { event ->
-                                    event.media?.any { it.isLastPlayed } == true
+                                data.backgroundMedia?.run {
+                                    if (this.isNotEmpty()) {
+                                        images.addAll(this as ArrayList<BackgroundMediaItem>)
+                                        withContext(Dispatchers.Main) {
+                                            sliderInit()
+                                        }
+                                    }
                                 }
+//                                val filteredEvents = events?.filter { event ->
+//                                    event.media?.any { it.isLastPlayed } == true
+//                                }
+//
+//                                if (filteredEvents != null && filteredEvents.isNotEmpty()) {
+//                                    filteredEvents.forEach {
+//                                        var media = it.media?.filter { it.isLastPlayed }
+//                                        Log.e("hhutyuigjf", "knkndv ${it?.media?.size} data $media")
+//                                        if (media != null && media.size > 0) {
+//                                            if (media[0].isLastPlayed) {
+//                                                isLastPlay = true
+//                                                lastVideoUrl =""
+//                                                lastVideoDuration = media[0].playbackDuration
+//                                                lastVideoThumb = media[0].thumbnailS3bucketId
+////                                                mediaId = media[0].id
+//                                                videoId = media[0].bunnyId
+//                                                lifecycleScope.launch(Dispatchers.Main) {
+//                                                    binding.tvPlay.setText(
+//                                                        "resume"
+//                                                    )
+//                                                }
+//                                            }
+//                                        }
+//                                    }
+//                                } else {
+//                                    var media = events?.get(0)?.media
+//                                    media?.get(0)?.run {
+//                                        isLastPlay = false
+//                                        lastVideoUrl = ""
+//                                        lastVideoDuration = "0"
+//                                        lastVideoThumb = thumbnailS3bucketId
+////                                        mediaId = id
+//                                        videoId = this.bunnyId
+//                                        lifecycleScope.launch(Dispatchers.Main) {
+//                                            binding.tvPlay.setText(
+//                                                "play"
+//                                            )
+//                                        }
+//                                    }
+//                                }
 
-                                if (filteredEvents != null && filteredEvents.isNotEmpty()) {
-                                    filteredEvents.forEach {
-                                        var media = it.media?.filter { it.isLastPlayed }
-                                        Log.e("hhutyuigjf", "knkndv ${it?.media?.size} data $media")
-                                        if (media != null && media.size > 0) {
-                                            if (media[0].isLastPlayed) {
-                                                isLastPlay = true
-                                                lastVideoUrl =""
-                                                lastVideoDuration = media[0].playbackDuration
-                                                lastVideoThumb = media[0].thumbnailS3bucketId
-                                                mediaId = media[0].id
-                                                videoId = media[0].bunnyId
-                                                lifecycleScope.launch(Dispatchers.Main) {
+
+                                var found = false
+                                if (events != null && events.size > 0) {
+                                    var reverseList = events.reversed()
+                                    for (i in 0 until reverseList.size) {
+                                        var mediaReverseList = reverseList[i].media?.reversed()
+                                        if (mediaReverseList != null) {
+                                            for (j in 0 until mediaReverseList.size) {
+                                                var media = mediaReverseList[j]
+                                                if (media.isLastPlayed) {
+                                                    lastVideoDuration = media.playbackDuration
+                                                    lastVideoThumb = media.thumbnailS3bucketId
+                                                    videoId = media.bunnyId
+                                                    lastVideoUrl = ""
+                                                    mediaId = media.id
+                                                    // Log the captured media details
+                                                    Log.e(
+                                                        "loglisrtss",
+                                                        "id ${media.id} Duration: $lastVideoDuration, Thumb: $lastVideoThumb, VideoID: $videoId"
+                                                    )
                                                     binding.tvPlay.setText(
                                                         "resume"
                                                     )
+                                                    found = true
+                                                    break
                                                 }
                                             }
                                         }
+                                        if (found) {
+                                            break
+                                        }
+
                                     }
-                                } else {
-                                    var media = events?.get(0)?.media
-                                    media?.get(0)?.run {
-                                        isLastPlay = false
-                                        lastVideoUrl = ""
-                                        lastVideoDuration = "0"
-                                        lastVideoThumb = thumbnailS3bucketId
-                                        mediaId = id
-                                        videoId = this.bunnyId
-                                        lifecycleScope.launch(Dispatchers.Main) {
-                                            binding.tvPlay.setText(
-                                                "play"
-                                            )
+
+//                                    events?.reversed()?.forEach { event ->
+//                                        // Reverse the media list for each event
+//                                        event.media?.reversed()?.forEach { media ->
+//                                            if (media.isLastPlayed) {
+//                                                // Once a match is found, capture the details and exit
+//                                                lastVideoDuration = media.playbackDuration
+//                                                lastVideoThumb = media.thumbnailS3bucketId
+//                                                videoId = media.bunnyId
+//                                                lastVideoUrl = ""
+//
+//                                                // Log the captured media details
+//                                                Log.e(
+//                                                    "lastmediapllll",
+//                                                    "Duration: $lastVideoDuration, Thumb: $lastVideoThumb, VideoID: $videoId"
+//                                                )
+//                                                binding.tvPlay.setText(
+//                                                    "resume"
+//                                                )
+//                                                found = true
+//                                                return@forEach  // Exit the inner loop (media list)
+//                                            }
+//                                        }
+//
+//                                        // If found, break the outer loop as well
+//                                        if (found) return@forEach
+//
+//                                    }
+                                    if (!found) {
+                                        var media = events?.get(0)?.media
+                                        media?.get(0)?.run {
+                                            isLastPlay = false
+                                            lastVideoUrl = ""
+                                            lastVideoDuration = "0"
+                                            lastVideoThumb = thumbnailS3bucketId
+                                            mediaId = id
+                                            videoId = this.bunnyId
+                                            lifecycleScope.launch(Dispatchers.Main) {
+                                                binding.tvPlay.setText(
+                                                    "play"
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -1028,21 +1117,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun durationObserve() {
-        viewModel._videoduraion.observe(viewLifecycleOwner) {
+    fun durationObserve(event: Int, mediaId: Int, videoDuration: Long) {
+        viewModel._videoduraion.observe(requireActivity()) {
             when (it) {
                 is MyResource.isLoading -> {
-                    //  showProgress()
                 }
 
                 is MyResource.isSuccess -> {
-                    //  dismissProgress()
-                    if (isDrawerOpen) {
-                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
-                        mediaAdapter.updateDuration(mediaIndex, videoduraion)
-                    } else {
-                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
-                    }
+//                    if (isDrawerOpen) {
+//                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
+//                        mediaAdapter.updateDuration(mediaIndex, videoduraion)
+//                    } else {
+//                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
+//                    }
+                    filterItem(event, mediaId, videoDuration)
+
+
                     Log.e(
                         "hduudhuirjirj",
                         "isDrawerOpen $isDrawerOpen  $eventVideoIndex mediaIndex $mediaIndex videoduraion $videoduraion data ${it.data}"
@@ -1051,11 +1141,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 is MyResource.isError -> {
-                    // dismissProgress()
                 }
 
                 else -> {}
             }
+        }
+    }
+
+    fun filterItem(eventId: Int, mediaId: Int, duration: Long) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            var newList = homeFragment.eventAdapter.getList()
+            Log.e("hdhduiehincyr", "$mediaId before update $newList")
+            val eventIndex = newList.indexOfFirst { it.eventId == eventId }
+            var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
+            delay(1000)
+            homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
+            var after = homeFragment.eventAdapter.getList()
+            Log.e("hdhduiehincyr", "$mediaId after update$after")
         }
     }
 
@@ -1072,7 +1174,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
             Log.e(
                 "dndjvn",
-                "videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
+                " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
             )
             if (isDrawerOpen) {
                 if (isTrailer) {
@@ -1095,9 +1197,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 tvPlay.setText("play")
             }
         }
-        if (!isTrailer) {
-            savePlayback()
-        }
+//        if (!isTrailer) {
+//            savePlayback()
+//        }
 
     }
 

@@ -627,13 +627,21 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                 bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
                                 SharedPref.setString(PrefConstent.USER_EMAIL, data.email)
-                                findNavController().navigate(
-                                    R.id.action_otpFragment_to_pinAuthenticationFragment,
-                                    bundle
-                                )
+                                if (response.isPrimaryuser) {
+                                    findNavController().navigate(
+                                        R.id.action_otpFragment_to_projectfragment,
+                                        bundle
+                                    )
+                                } else {
+                                    findNavController().navigate(
+                                        R.id.action_otpFragment_to_pinAuthenticationFragment,
+                                        bundle
+                                    )
+                                }
                             }
                         }
                     }
+//                    it.data?.response.isPrimaryuser
 
                 }
 

@@ -35,8 +35,14 @@ interface ApiService {
     ): Response<VideoPlaback>
 
 
-    @POST(ServerUrls.RESETPIN)
+
+    @POST(ServerUrls.GET_PROJECTS)
     suspend fun getProject(
+        @Body request: ProjectRequest,
+    ): Response<ProjectResponse>
+
+    @POST(ServerUrls.RESETPIN)
+    suspend fun resetPin(
         @Body request: ProjectRequest,
     ): Response<ProjectResponse>
 

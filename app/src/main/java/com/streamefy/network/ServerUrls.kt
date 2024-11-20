@@ -20,6 +20,7 @@ object ServerUrls {
     const val PLAY_BACK = "api/BunnyVideo/Playback"
     const val PIN_VERIFICATION = "api/BunnyVideo/Authorize/"
     const val RESETPIN = "api/Project/PrimaryUser/ResetPin"
+    const val GET_PROJECTS = "api/Project/PrimaryUser/Projects"
     const val SINGLE_VIDEO = "api/StreamefyMedia"
 
 }

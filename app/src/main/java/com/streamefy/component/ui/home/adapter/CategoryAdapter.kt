@@ -31,6 +31,7 @@ import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 
 
@@ -157,7 +158,14 @@ class CategoryAdapter(
             }
 
             clEvent.setOnClickListener {
-                callBack.invoke(position, StreamEnum.SINGLE)
+                data.media?.run {
+                    if (this[0].totalVideoDuration=="00:00:00"){
+                        context.showMessage("Something wrong with this Video.Please contact with Admin")
+                    }else{
+                        callBack.invoke(position, StreamEnum.SINGLE)
+                    }
+                }
+
             }
 
             tvMore.setOnClickListener {
@@ -212,13 +220,15 @@ class CategoryAdapter(
         // if (mediaIndex==0) {
         if (mediaIndex!=null) {
             eventList[position].media?.run {
-                get(mediaIndex).playbackDuration = duraton.toString()
-                //  }
+                if (this.size>mediaIndex) {
+                    get(mediaIndex).playbackDuration = duraton.toString()
+                    notifyItemChanged(position)
+                }
+
             }
         }
         //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
 
-        notifyItemChanged(position)
     }
 
 fun getList()=eventList

@@ -83,6 +83,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var oldEventId = 0
     var oldBunnyId = ""
     var oldVideoDuration: Long = 0
+    var nextVideoPlayedDuration:Long=0
     var videoThumb = ""
     var videoDuration = ""
     var isNextVideoStarted=false
@@ -265,8 +266,8 @@ var phone=""
             visibilityCount = 0
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
-                    if (ivNextVideo.isVisible) {
-                        ivNextVideo.requestFocus()
+                    if (timerLayout.isVisible) {
+                        timerLayout.requestFocus()
                     } else {
                         ivBack.requestFocus()
                     }
@@ -287,8 +288,8 @@ var phone=""
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
-                    if (ivNextVideo.isVisible) {
-                        ivNextVideo.requestFocus()
+                    if (timerLayout.isVisible) {
+                        timerLayout.requestFocus()
                     } else {
                         ivBack.requestFocus()
                     }
@@ -305,7 +306,7 @@ var phone=""
                 else -> {}
             }
         }
-        ivNextVideo.remoteKey {
+        timerLayout.remoteKey {
             visibilityCount = 0
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -363,6 +364,10 @@ var phone=""
                             videoThumb = data.nextVideo.nextVideoThumbnail
                             nextVideoId = data.nextVideo.nextVideoId
                             mediaId = data.mediaId
+                            if (data.nextVideo.nextVideoPlaybackDuration!=null){
+                                nextVideoPlayedDuration = data.nextVideo.nextVideoPlaybackDuration?.toString()!!.toLong()
+                            }
+
                             binding.ivNextVideo.loadUrl(data.nextVideo.nextVideoThumbnail)
                             binding.ivVideoThumb.loadUrl(data.nextVideo.nextVideoThumbnail)
                         }
@@ -423,12 +428,13 @@ var phone=""
             if (playerHandler.player != null) {
                 playerHandler.refresh()
                 getLengthOnce = true
-                ivNextVideo.invisible()
+//                ivNextVideo.invisible()
+                timerLayout.invisible()
                 ivPlay.setImageResource(R.drawable.ic_video_pause)
             }
         }
 
-        ivNextVideo.setOnClickListener {
+        timerLayout.setOnClickListener {
             if (!HomeFragment.isTrailer) {
                 oldVideoDuration = playerHandler.getDuration()
                 savePlayback(
@@ -439,12 +445,13 @@ var phone=""
             }
             getLengthOnce = true
             isEnded = false
-            ivNextVideo.invisible()
+//            ivNextVideo.invisible()
+            timerLayout.invisible()
             playerView.requestLayout()
             playerView.invalidate()
             playerHandler.stopHandler()
             binding.sbVideoSeek.progress = 0
-            playerHandler.setMediaUri(videoUrl, 0)
+            playerHandler.setMediaUri(videoUrl, nextVideoPlayedDuration)
 
         }
 
@@ -524,12 +531,13 @@ var phone=""
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
                     getLengthOnce = true
-                    ivNextVideo.invisible()
+                    timerLayout.invisible()
+//                    ivNextVideo.invisible()
                     playerView.requestLayout()
                     playerView.invalidate()
                     playerHandler.stopHandler()
                     binding.sbVideoSeek.progress = 0
-                    playerHandler.setMediaUri(videoUrl, 0)
+                    playerHandler.setMediaUri(videoUrl, nextVideoPlayedDuration)
 
                     /// save playback status in home screen
 
@@ -749,19 +757,20 @@ var phone=""
                 toShowBackButton()
             }
         }
-        ivNextVideo.setOnFocusChangeListener { _, hasFocus ->
+        timerLayout.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
-                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._90sdp)
-                params.height = resources.getDimensionPixelSize(R.dimen._50sdp)
-                ivNextVideo.layoutParams = params
-            } else {
-                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._80sdp)
-                params.height = resources.getDimensionPixelSize(R.dimen._40sdp)
-                ivNextVideo.layoutParams = params
+//                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._90sdp)
+//                params.height = resources.getDimensionPixelSize(R.dimen._50sdp)
+//                ivNextVideo.layoutParams = params
             }
+//            else {
+//                val params = ivNextVideo.layoutParams as ConstraintLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._80sdp)
+//                params.height = resources.getDimensionPixelSize(R.dimen._40sdp)
+//                ivNextVideo.layoutParams = params
+//            }
 
         }
 
@@ -956,7 +965,7 @@ var phone=""
 
         volumeManager.startMonitoring()
     }
-
+    var time=10000
     private fun updateProgressBar() {
         val duration = playerHandler.getDuration()
         val currentPosition = playerHandler.getCurrentPosition()
@@ -980,24 +989,37 @@ var phone=""
         if (duration > 10000) {
 
             if (video_show_count <= 10000) {
-                if (!binding.ivNextVideo.isVisible) {
+
+                if (!binding.timerLayout.isVisible) {
+                    time=10
+                    binding.timerLayout.requestFocus()
+                    binding.tvRemains.setText("Playing Next Video in $time s")
                     Log.e("sbhsbc", "10000 now visible $video_show_count")
-                    binding.ivNextVideo.visible()
+                    binding.timerLayout.visible()
                     newVideo()
+                }else{
+                    time--
+                    binding.tvRemains.setText("Playing Next Video in $time s")
                 }
-            } else if (binding.ivNextVideo.isVisible) {
-                binding.ivNextVideo.gone()
+            } else if (binding.timerLayout.isVisible) {
+                binding.timerLayout.gone()
             }
 
         } else {
             if (video_show_count <= 3000) {
-                if (!binding.ivNextVideo.isVisible) {
+                if (!binding.timerLayout.isVisible) {
+                    binding.timerLayout.requestFocus()
+                    time=3
+                    binding.tvRemains.setText("Playing Next Video in $time s")
                     Log.e("sbhsbc", "3000 now visible $video_show_count")
-                    binding.ivNextVideo.visible()
+                    binding.timerLayout.visible()
                     newVideo()
+                }else{
+                    time--
+                    binding.tvRemains.setText("Playing Next Video in $time s")
                 }
-            } else if (binding.ivNextVideo.isVisible) {
-                binding.ivNextVideo.gone()
+            } else if (binding.timerLayout.isVisible) {
+                binding.timerLayout.gone()
             }
 
 
@@ -1127,7 +1149,7 @@ var phone=""
             request.mediaId = mediaId
             request.videoId = bunneyId
             request.duration = videoDuration.toString()
-
+            homeFragment.filterItem(event, mediaId, videoDuration)
             viewModel.saveDuration(requireContext(), request)
             durationObserve(event, mediaId, videoDuration)
         }
@@ -1139,8 +1161,6 @@ var phone=""
                 }
 
                 is MyResource.isSuccess -> {
-
-                   homeFragment.filterItem(event, mediaId, videoDuration)
 
                 }
 

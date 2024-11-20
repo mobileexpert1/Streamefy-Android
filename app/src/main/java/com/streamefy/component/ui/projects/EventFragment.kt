@@ -49,7 +49,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         focusable()
         clicable()
         rvInit()
-        viewModel.getProject(requireContext(), ProjectRequest(projectId, phone))
+        viewModel.getProject(requireContext(), ProjectRequest(phone))
         observe()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -68,13 +68,21 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
                 SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                 SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-                ConfirmPinDialog(requireContext()) {
-                    if (it) {
-                        projectId = list[index].id
-                        viewModel.getProject(requireContext(), ProjectRequest(projectId, phone))
-                        observe()
-                    }
-                }.show()
+
+                val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+                val bundle = Bundle()
+                bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
+                bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                bundle.putString(PrefConstent.FULL_NAME, name)
+                bundle.putBoolean(PrefConstent.ISHOME, false)
+                findNavController().navigate(R.id.action_projectfragment_to_pinAuthenticationFragment, bundle)
+//                ConfirmPinDialog(requireContext()) {
+//                    if (it) {
+//                        projectId = list[index].id
+//                        viewModel.getProject(requireContext(), ProjectRequest(phone))
+//                        observe()
+//                    }
+//                }.show()
             }
             adapter = projectAdapter
         }

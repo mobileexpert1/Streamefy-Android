@@ -838,13 +838,37 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     videoId = this.bunnyId
                                     val bundle = Bundle()
                                     bundle.putString(PrefConstent.VIDEO_URL, "")
-                                    bundle.putString(PrefConstent.PLAY_BACK_DURATION, playbackDuration)
+                                    bundle.putString(PrefConstent.PLAY_BACK_DURATION, this.playbackDuration)
                                     bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                                     bundle.putString(PrefConstent.VIDEO_ID, videoId)
                                     bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
                                     findNavController().navigate(R.id.videofragment, bundle)
                                 }
+
+
+//                                eventList[pos].media?.forEach {
+//                                    if (it.isLastPlayed) {
+//                                        isPlayByPlayButton = false
+//                                        mediaId = it.id
+//                                        videoId = it.bunnyId
+//                                        val bundle = Bundle()
+//                                        bundle.putString(PrefConstent.VIDEO_URL, "")
+//                                        bundle.putString(
+//                                            PrefConstent.PLAY_BACK_DURATION,
+//                                            it. playbackDuration
+//                                        )
+//                                        bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
+//                                        bundle.putString(
+//                                            PrefConstent.VIDEO_THUMB,
+//                                            it.thumbnailS3bucketId
+//                                        )
+//                                        bundle.putString(PrefConstent.VIDEO_ID, videoId)
+//                                        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
+//                                        findNavController().navigate(R.id.videofragment, bundle)
+//                                    }
+//                                }
+
                             }
                         }
                     }
@@ -1008,7 +1032,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         if (found) {
                                             break
                                         }
-
                                     }
 
 //                                    events?.reversed()?.forEach { event ->
@@ -1151,13 +1174,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     fun filterItem(eventId: Int, mediaId: Int, duration: Long) {
         lifecycleScope.launch(Dispatchers.IO) {
             var newList = homeFragment.eventAdapter.getList()
-            Log.e("hdhduiehincyr", "$mediaId before update $newList")
+
             val eventIndex = newList.indexOfFirst { it.eventId == eventId }
-            var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
-            delay(1000)
-            homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
-            var after = homeFragment.eventAdapter.getList()
-            Log.e("hdhduiehincyr", "$mediaId after update$after")
+            Log.e("hdhduiehincyr", "$mediaId before event id $eventIndex update $newList")
+            try {
+                var newMedia=newList[eventIndex].media
+                if (newMedia!=null && newMedia.isNotEmpty()) {
+                    var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
+                    delay(1000)
+
+                    homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
+                    var after = homeFragment.eventAdapter.getList()
+                    Log.e("hdhduiehincyr", "$mediaId after media id $mediaIndex update$after")
+                }
+            }catch (e:Exception){
+                Log.e("hdhduiehincyr", "crashed $e")
+            }
+
         }
     }
 

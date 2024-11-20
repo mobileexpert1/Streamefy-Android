@@ -41,6 +41,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>() {
     override fun bindView(): Int = R.layout.fragment_pin_authentication
+    var projectId = "0"
     var phone = ""
     var otp = ""
     var applogo = ""
@@ -54,13 +55,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
         arguments?.run {
+            projectId = getInt(PrefConstent.PROJECT_ID).toString()
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
             isHome = getBoolean(PrefConstent.ISHOME)
         }
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
-       // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-       // binding.ivApplogo.loadAny(applogo)
+        // binding.ivApplogo.loadAny(applogo)
 
         otpFieldFocus()
         binding.apply {
@@ -421,6 +423,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isSuccess -> {
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
+                    SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
 //                    findNavController().navigate(R.id.homefragment)
                     if (isAdded) {

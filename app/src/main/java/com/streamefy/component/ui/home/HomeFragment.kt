@@ -65,7 +65,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var proTitle = ""
     var proDesc = ""
     var proLogo = ""
-    var projectId = 0
+    var projectId = "0"
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
@@ -86,6 +86,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var lastVideoDuration = ""
     var lastVideoThumb = ""
     var isPlayByPlayButton = false
+    var isPrimaryuser = false
+
 
 
     companion object {
@@ -110,6 +112,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onViewCreated(view, savedInstanceState)
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
+        isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
+        projectId=SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         homeFragment = this
         isEventPagination = false
         if (isFirst) {
@@ -121,16 +125,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         creatorView()
         foucusView()
         binding.apply {
-            ivLogout.setOnClickListener {
-                LogoutDialog(requireContext()) {
-                    SharedPref.clearData()
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
-                        .build()
-                    // Navigate to home fragment with the options
-                    findNavController().navigate(R.id.loginFragment, null, navOptions)
-                }.show()
-            }
+//            ivLogout.setOnClickListener {
+//                LogoutDialog(requireContext()) {
+//                    SharedPref.clearData()
+//                    val navOptions = NavOptions.Builder()
+//                        .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+//                        .build()
+//                    // Navigate to home fragment with the options
+//                    findNavController().navigate(R.id.loginFragment, null, navOptions)
+//                }.show()
+//            }
 
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
@@ -148,10 +152,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                    drawerView.requestFocus()
                     isDrawerOpen = true
                     eventVideoFocus()
-                    rvDrawer.post {
-                        rvDrawer.getChildAt(0)?.requestFocus()
-                    }
-
+                    rvDrawer.post { rvDrawer.getChildAt(0)?.requestFocus() }
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
@@ -167,34 +168,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onDrawerStateChanged(newState: Int) {
                 }
             })
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                tvPlay.compoundDrawableTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireActivity(),
-                            R.color.purple
-                        )
-                    )
 
-            } else {
-                val drawables = tvPlay.compoundDrawables
-                val drawableStart =
-                    drawables[0]  // You can adjust this for top, end, bottom as needed
-                if (drawableStart != null) {
-                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-                    DrawableCompat.setTint(
-                        wrappedDrawable,
-                        ContextCompat.getColor(requireActivity(), R.color.purple)
-                    )
-                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-                        wrappedDrawable,
-                        drawables[1],
-                        drawables[2],
-                        drawables[3]
-                    )
-                }
-            }
-            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
@@ -207,6 +181,37 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
+    fun playButtonFocus()= with(binding){
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            tvPlay.compoundDrawableTintList =
+                ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.purple
+                    )
+                )
+
+        }
+        else {
+            val drawables = tvPlay.compoundDrawables
+            val drawableStart =
+                drawables[0]  // You can adjust this for top, end, bottom as needed
+            if (drawableStart != null) {
+                val wrappedDrawable = DrawableCompat.wrap(drawableStart)
+                DrawableCompat.setTint(
+                    wrappedDrawable,
+                    ContextCompat.getColor(requireActivity(), R.color.purple)
+                )
+                tvPlay.setCompoundDrawablesWithIntrinsicBounds(
+                    wrappedDrawable,
+                    drawables[1],
+                    drawables[2],
+                    drawables[3]
+                )
+            }
+        }
+        tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+    }
     fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
         videoId = bunneyId
         if (videoDuration >= 0) {
@@ -236,68 +241,70 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun foucusView() = with(binding) {
-        ivLogout.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    //  customIndicator.requestFocus()
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    ivHomeCross.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        ivLogout.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                focusView = StreamEnum.LOGOUT_VIEW
-                // Change size when focused
-                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
-                params.width =
-                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
-                ivLogout.layoutParams = params
-
-            } else {
-                // Revert size when not focused
-                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                ivLogout.layoutParams = params
-
-            }
-        }
-
+//        ivLogout.remoteKey {
+//            when (it) {
+//                StreamEnum.UP_DPAD_KEY -> {
+//                    eventVideoFocus()
+//                }
+//
+//                StreamEnum.DOWN_DPAD_KEY -> {
+//                    //  customIndicator.requestFocus()
+//                    tvPlay.requestFocus()
+//                }
+//
+//                StreamEnum.LEFT_DPAD_KEY -> {
+//                    eventVideoFocus()
+//                }
+//
+//                StreamEnum.RIGHT_DPAD_KEY -> {
+//                    ivHomeCross.requestFocus()
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//        ivLogout.setOnFocusChangeListener { _, hasFocus ->
+//            if (hasFocus) {
+//                focusView = StreamEnum.LOGOUT_VIEW
+//                // Change size when focused
+//                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+//                params.width =
+//                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
+//                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+//                ivLogout.layoutParams = params
+//
+//            } else {
+//                // Revert size when not focused
+//                val params = ivLogout.layoutParams as ConstraintLayout.LayoutParams
+//                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+//                params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+//                ivLogout.layoutParams = params
+//
+//            }
+//        }
+        ivHomeCross.requestFocus()
         ivHomeCross.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    eventVideoFocus()
                     tvPlay.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
 //                    customIndicator.requestFocus()
-                    eventVideoFocus()
-
+//                    eventVideoFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+//                    ivLogout.requestFocus()
+                    tvPlay.requestFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+//                    ivLogout.requestFocus()
+                    tvPlay.requestFocus()
                 }
+
 
                 else -> {}
             }
@@ -328,7 +335,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
                 .build()
             // Navigate to home fragment with the options
-            findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
+            if (isPrimaryuser) {
+                findNavController().navigate(R.id.projectfragment, bundle, navOptions)
+            }else{
+                findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
+            }
 
         }
         rvBackgVideo.remoteKey {
@@ -343,11 +354,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                   // ivLogout.requestFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                   // ivLogout.requestFocus()
                 }
 
                 else -> {}
@@ -421,7 +432,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         tvPlay.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+                    ivHomeCross.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -515,7 +526,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         ivTrailer.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
-                    ivLogout.requestFocus()
+//                    ivLogout.requestFocus()
+                    ivHomeCross.requestFocus()
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
@@ -727,7 +739,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
     private fun getUserData() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
 
@@ -735,7 +747,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         if (isDrawerOpen) {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
         } else {
-            ExitDialog(requireActivity()).show()
+            //ExitDialog(requireActivity()).show()
+            LogoutDialog(requireContext()) {
+//                SharedPref.clearData()
+                SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+                    .build()
+                // Navigate to home fragment with the options
+                findNavController().navigate(R.id.loginFragment, null, navOptions)
+            }.show()
         }
     }
 
@@ -913,7 +934,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun eventVideosMore() {
-        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId, phone)
+        viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
 
@@ -945,7 +966,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             page++
                             isEventPagination = true
                             eventList.clear()
-                            binding.ivLogout.visible()
+                           // binding.ivLogout.visible()
                             /// background
 
                             // event video
@@ -1016,6 +1037,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                     videoId = media.bunnyId
                                                     lastVideoUrl = ""
                                                     mediaId = media.id
+                                                    isLastPlay=true
                                                     // Log the captured media details
                                                     Log.e(
                                                         "loglisrtss",
@@ -1071,9 +1093,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             mediaId = id
                                             videoId = this.bunnyId
                                             lifecycleScope.launch(Dispatchers.Main) {
-                                                binding.tvPlay.setText(
-                                                    "play"
-                                                )
+                                                binding.tvPlay.setText("play")
                                             }
                                         }
                                     }
@@ -1131,7 +1151,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
-                    binding.ivLogout.visible()
+                    if (it.error=="Incorrect PIN"){
+                        SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.homefragment, true)
+                            .build()
+                        findNavController().navigate(R.id.loginFragment, null, navOptions)
+                    }
                 }
 
                 else -> {}
@@ -1201,14 +1227,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             tvProjectDesc.text = proDesc.toString()
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 clTitle.visible()
-                ivLogout.visible()
+//                ivLogout.visible()
                 ivTrailer.visible()
                 tvPlay.visible()
             }
-            Log.e(
-                "dndjvn",
-                " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
-            )
+            Log.e("dndjvn", " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
             if (isDrawerOpen) {
                 if (isTrailer) {
                     trailerDrawer()
@@ -1224,11 +1247,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             isFirstVideo = true
 
             /// check if user played video or not
+            tvPlay.invalidate()
             if (isLastPlay) {
                 tvPlay.setText("resume")
             } else {
                 tvPlay.setText("play")
             }
+            playButtonFocus()
         }
 //        if (!isTrailer) {
 //            savePlayback()

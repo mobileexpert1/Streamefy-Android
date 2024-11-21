@@ -27,27 +27,28 @@ class LogoutDialog(context: Context,var callBack:()->Unit) :
                 }
 
             }
-            ivClose.setOnClickListener { dismiss() }
+//            ivClose.setOnClickListener { dismiss() }
+//            ivClose.requestFocus()
+//            ivClose.remoteKey {
+//                when(it){
+//                    StreamEnum.DOWN_DPAD_KEY->{
+//                        tvContinue.requestFocus()
+//                    }
+//                    StreamEnum.UP_DPAD_KEY->{
+//                        tvContinue.requestFocus()
+//                    }
+//                    else->{
+//                    }
+//                }
+//            }
             ivClose.requestFocus()
-            ivClose.remoteKey {
-                when(it){
-                    StreamEnum.DOWN_DPAD_KEY->{
-                        tvContinue.requestFocus()
-                    }
-                    StreamEnum.UP_DPAD_KEY->{
-                        tvContinue.requestFocus()
-                    }
-                    else->{
-                    }
-                }
-            }
             tvLogout.remoteKey {
                 when(it){
                     StreamEnum.LEFT_DPAD_KEY->{
                         tvContinue.requestFocus()
                     }
-                    StreamEnum.UP_DPAD_KEY->{
-                        ivClose.requestFocus()
+                    StreamEnum.RIGHT_DPAD_KEY->{
+                        tvContinue.requestFocus()
                     }
                     else->{
                     }
@@ -58,8 +59,8 @@ class LogoutDialog(context: Context,var callBack:()->Unit) :
                     StreamEnum.RIGHT_DPAD_KEY->{
                         tvLogout.requestFocus()
                     }
-                    StreamEnum.UP_DPAD_KEY->{
-                        ivClose.requestFocus()
+                    StreamEnum.LEFT_DPAD_KEY->{
+                        tvLogout.requestFocus()
                     }
                     else->{
 

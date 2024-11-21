@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.component.ui.home.model.EventsItem
@@ -26,6 +27,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
+import com.streamefy.utils.gone
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,6 +39,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     private val viewModel: ProjectsVM by viewModel()
     var phone = ""
     var projectId: Int = 0
+    var isHome = false
+    var isPrimaryuser = false
 
     companion object {
         lateinit var eventFragment: EventFragment
@@ -46,17 +50,31 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         super.onViewCreated(view, savedInstanceState)
         eventFragment = this
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
+        isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
+        arguments?.run {
+            isHome = getBoolean(PrefConstent.ISHOME)
+        }
+        binding.apply {
+
+        }
         focusable()
         clicable()
         rvInit()
-        viewModel.getProject(requireContext(), ProjectRequest(phone))
-        observe()
+//        viewModel.getProject(requireContext(), ProjectRequest(phone))
+//        observe()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    // Show the custom dialog when back is pressed
-                    findNavController().popBackStack()
+                    if (isPrimaryuser) {
+                        if (!isHome) {
+                            findNavController().navigate(R.id.loginFragment)
+                        } else {
+                            ExitDialog(requireActivity()).show()
+                        }
+                    } else {
+                        findNavController().navigate(R.id.loginFragment)
+                    }
                 }
             })
     }
@@ -68,14 +86,17 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
                 SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                 SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-
+                SharedPref.setString(PrefConstent.PROJECT_ID,list[index].id.toString())
                 val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                 val bundle = Bundle()
                 bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                 bundle.putString(PrefConstent.FULL_NAME, name)
                 bundle.putBoolean(PrefConstent.ISHOME, false)
-                findNavController().navigate(R.id.action_projectfragment_to_pinAuthenticationFragment, bundle)
+                findNavController().navigate(
+                    R.id.action_projectfragment_to_pinAuthenticationFragment,
+                    bundle
+                )
 //                ConfirmPinDialog(requireContext()) {
 //                    if (it) {
 //                        projectId = list[index].id
@@ -89,7 +110,17 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     }
 
     private fun clicable() = with(binding) {
-        ivBack.setOnClickListener { findNavController().popBackStack() }
+        ivBack.setOnClickListener {
+            if (isPrimaryuser) {
+                if (!isHome) {
+                    findNavController().navigate(R.id.loginFragment)
+                } else {
+                    ExitDialog(requireActivity()).show()
+                }
+            } else {
+                findNavController().navigate(R.id.loginFragment)
+            }
+        }
     }
 
     private fun focusable() = with(binding) {
@@ -121,6 +152,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
+
                 else -> {}
             }
         }
@@ -156,9 +188,30 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
+                    if (it.error=="No primary projects found for the user."){
+                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+                        SharedPref.setString(PrefConstent.PROJECT_NAME, "")
+                        SharedPref.setString(PrefConstent.PROJECT_ID,"0")
+                        val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+                        val bundle = Bundle()
+                        bundle.putInt(PrefConstent.PROJECT_ID, 0)
+                        bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                        bundle.putString(PrefConstent.FULL_NAME, name)
+                        bundle.putBoolean(PrefConstent.ISHOME, false)
+                        findNavController().navigate(
+                            R.id.action_projectfragment_to_pinAuthenticationFragment,
+                            bundle
+                        )
+                    }
+
                 }
             }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getProject(requireContext(), ProjectRequest(phone))
+        observe()
+    }
 }

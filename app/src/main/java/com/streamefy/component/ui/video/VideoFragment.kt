@@ -490,6 +490,7 @@ var phone=""
                         oldBunnyId = nextVideoId
                     }
 
+                    homeFragment.isLastPlay=true
                     Log.e("idcheckstr"," old eventid $oldEventId, oldMediId  $oldMediaId oldBunnyId $oldBunnyId oldVideoDuration ")
 
                     ivVideoThumb.animate()

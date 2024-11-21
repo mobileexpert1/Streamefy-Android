@@ -14,10 +14,11 @@ android {
         applicationId = "com.streamefy"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.2"
+        versionCode = 3
+        versionName = "1.0.4"
         vectorDrawables {
             useSupportLibrary = true
+
         }
 
     }

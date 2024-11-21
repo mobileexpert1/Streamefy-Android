@@ -39,7 +39,7 @@ class HomeVm(var repo: ApiService) : ViewModel() {
                     } else {
                        // ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
                         context.showMessage(response.body()?.error?.userMessage.toString())
-                        _homeLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                        _homeLiveData.value=MyResource.isError(response.body()?.error?.userMessage.toString())
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())

@@ -2,6 +2,8 @@ package com.streamefy.network
 
 import com.streamefy.component.ui.home.model.HomeResponse
 import com.streamefy.component.ui.pin_authentication.PinResponse
+import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
+import com.streamefy.component.ui.pin_authentication.model.ResetPinResponse
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ProjectResponse
 import com.streamefy.component.ui.video.model.PlayBackRequest
@@ -24,9 +26,10 @@ interface ApiService {
         @Query("ProjectId") ProjectId: Int,
         @Query("PhoneNumber") phoneNumber: String,
     ): Response<HomeResponse>
-    @GET(ServerUrls.PIN_VERIFICATION+"{id}")
+    @GET(ServerUrls.PIN_VERIFICATION+"{id}/{projectId}")
     suspend fun verifyPin(
         @Path("id") id: String,
+        @Path("projectId") projectId: Int,
     ): Response<PinResponse>
 //
     @POST(ServerUrls.PLAY_BACK)
@@ -43,8 +46,8 @@ interface ApiService {
 
     @POST(ServerUrls.RESETPIN)
     suspend fun resetPin(
-        @Body request: ProjectRequest,
-    ): Response<ProjectResponse>
+        @Body request: ResetPinRequest,
+    ): Response<ResetPinResponse>
 
 
     @GET(ServerUrls.SINGLE_VIDEO)

@@ -7,6 +7,7 @@
     android:layout_marginHorizontal="@dimen/_2sdp"
     android:descendantFocusability="afterDescendants"
     android:focusable="true"
+    android:layout_gravity="center_horizontal"
     android:focusableInTouchMode="true"
     android:padding="@dimen/_3sdp">
 

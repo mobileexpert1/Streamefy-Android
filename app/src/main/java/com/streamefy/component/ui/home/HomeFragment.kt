@@ -89,7 +89,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var isPrimaryuser = false
 
 
-
     companion object {
         lateinit var homeFragment: HomeFragment
         var videoduraion: Long = 0
@@ -113,7 +112,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
-        projectId=SharedPref.getString(PrefConstent.PROJECT_ID).toString()
+        projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         homeFragment = this
         isEventPagination = false
         if (isFirst) {
@@ -149,9 +148,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 override fun onDrawerOpened(drawerView: View) {
                     // Set focus to the first item if needed
                     Log.e("dndjvn", "drawer open")
+                    focusView = StreamEnum.DRAWER_VIEW
 //                    drawerView.requestFocus()
                     isDrawerOpen = true
-                    eventVideoFocus()
+                    // eventVideoFocus()
                     rvDrawer.post { rvDrawer.getChildAt(0)?.requestFocus() }
                 }
 
@@ -181,7 +181,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun playButtonFocus()= with(binding){
+    fun playButtonFocus() = with(binding) {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             tvPlay.compoundDrawableTintList =
                 ColorStateList.valueOf(
@@ -212,6 +212,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
         tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
     }
+
     fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
         videoId = bunneyId
         if (videoDuration >= 0) {
@@ -337,7 +338,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             // Navigate to home fragment with the options
             if (isPrimaryuser) {
                 findNavController().navigate(R.id.projectfragment, bundle, navOptions)
-            }else{
+            } else {
                 findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
             }
 
@@ -354,11 +355,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.LEFT_DPAD_KEY -> {
-                   // ivLogout.requestFocus()
+                    // ivLogout.requestFocus()
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
-                   // ivLogout.requestFocus()
+                    // ivLogout.requestFocus()
                 }
 
                 else -> {}
@@ -451,8 +452,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         tvPlay.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
             if (!hasFocus) {
+
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                    focusView = StreamEnum.PLAY_RESUME
                     tvPlay.compoundDrawableTintList = ColorStateList.valueOf(
                         ContextCompat.getColor(
                             requireActivity(),
@@ -482,6 +483,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
 
             } else {
+                focusView = StreamEnum.PLAY_RESUME
                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                     // Revert size when not focused
                     tvPlay.compoundDrawableTintList =
@@ -763,19 +765,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private fun drawerView() = with(binding) {
         tvTitle.setText(selectedTitle)
         isTrailer = false
-        // testing
-//        for (i in 1 until 10){
-//            var model1=MediaItem(
-//                 size = "4",
-//                 format = "jpj",
-//                 hlsPlaylistUrl = "",
-//                 description = "testing",
-//                 bunnyId = "",
-//                 thumbnailS3bucketId = "",
-//                 id = 0)
-//            mediaList.add(model1)
-//        }
-////
+        focusView = StreamEnum.DRAWER_VIEW
         rvDrawer.apply {
             isTrailer = false
             getChildAt(0)?.requestFocus()
@@ -806,7 +796,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     private fun trailerDrawer() = with(binding) {
         tvTitle.setText("Trailer")
-
+        focusView = StreamEnum.DRAWER_VIEW
         rvDrawer.apply {
             getChildAt(0)?.requestFocus()
             setHasFixedSize(true)
@@ -859,7 +849,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                     videoId = this.bunnyId
                                     val bundle = Bundle()
                                     bundle.putString(PrefConstent.VIDEO_URL, "")
-                                    bundle.putString(PrefConstent.PLAY_BACK_DURATION, this.playbackDuration)
+                                    bundle.putString(
+                                        PrefConstent.PLAY_BACK_DURATION,
+                                        this.playbackDuration
+                                    )
                                     bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
                                     bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
                                     bundle.putString(PrefConstent.VIDEO_ID, videoId)
@@ -966,7 +959,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             page++
                             isEventPagination = true
                             eventList.clear()
-                           // binding.ivLogout.visible()
+                            // binding.ivLogout.visible()
                             /// background
 
                             // event video
@@ -1037,15 +1030,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                     videoId = media.bunnyId
                                                     lastVideoUrl = ""
                                                     mediaId = media.id
-                                                    isLastPlay=true
+                                                    isLastPlay = true
                                                     // Log the captured media details
                                                     Log.e(
                                                         "loglisrtss",
                                                         "id ${media.id} Duration: $lastVideoDuration, Thumb: $lastVideoThumb, VideoID: $videoId"
                                                     )
-                                                    binding.tvPlay.setText(
-                                                        "resume"
-                                                    )
+
                                                     found = true
                                                     break
                                                 }
@@ -1096,6 +1087,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                 binding.tvPlay.setText("play")
                                             }
                                         }
+                                    }else{
+                                         withContext(Dispatchers.Main){ binding.tvPlay.setText("resume")}
                                     }
                                 }
                             }
@@ -1151,7 +1144,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
-                    if (it.error=="Incorrect PIN"){
+                    if (it.error == "Incorrect PIN") {
                         SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
                         val navOptions = NavOptions.Builder()
                             .setPopUpTo(R.id.homefragment, true)
@@ -1179,7 +1172,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                    } else {
 //                        eventAdapter.updateDuration(eventVideoIndex, mediaIndex, videoduraion)
 //                    }
-                    filterItem(event, mediaId, videoDuration)
+                    //filterItem(event, mediaId, videoDuration)
 
 
                     Log.e(
@@ -1202,19 +1195,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             var newList = homeFragment.eventAdapter.getList()
 
             val eventIndex = newList.indexOfFirst { it.eventId == eventId }
-            Log.e("hdhduiehincyr", "$mediaId before event id $eventIndex update $newList")
+            Log.e(
+                "filteridwith",
+                "duration $duration $mediaId eventId $eventId before event id $eventIndex update $newList"
+            )
             try {
-                var newMedia=newList[eventIndex].media
-                if (newMedia!=null && newMedia.isNotEmpty()) {
+                var newMedia = newList[eventIndex].media
+                if (newMedia != null && newMedia.isNotEmpty()) {
                     var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
                     delay(1000)
 
                     homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
                     var after = homeFragment.eventAdapter.getList()
-                    Log.e("hdhduiehincyr", "$mediaId after media id $mediaIndex update$after")
+                    Log.e("filteridwith", "$mediaId after media id $mediaIndex update$after")
                 }
-            }catch (e:Exception){
-                Log.e("hdhduiehincyr", "crashed $e")
+            } catch (e: Exception) {
+                Log.e("filteridwith", "crashed $e")
             }
 
         }
@@ -1225,13 +1221,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         binding.apply {
             tvProjectTitle.text = proTitle.toString()
             tvProjectDesc.text = proDesc.toString()
+            tvPlay.requestLayout()
+            tvPlay.invalidate()
             if (tvProjectTitle.text.toString().isNotEmpty()) {
                 clTitle.visible()
 //                ivLogout.visible()
                 ivTrailer.visible()
                 tvPlay.visible()
             }
-            Log.e("dndjvn", " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
+            Log.e(
+                "resumehandle",
+                " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
+            )
             if (isDrawerOpen) {
                 if (isTrailer) {
                     trailerDrawer()
@@ -1247,7 +1248,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             isFirstVideo = true
 
             /// check if user played video or not
-            tvPlay.invalidate()
+
             if (isLastPlay) {
                 tvPlay.setText("resume")
             } else {
@@ -1291,7 +1292,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun viewFocus() = with(binding) {
-//        focusView = StreamEnum.BOTTOM_EVENT_VIEW
+        Log.e("focussss", "focus $focusView")
         when (focusView) {
             StreamEnum.LOGOUT_VIEW -> {
                 ivLogout.requestFocus()

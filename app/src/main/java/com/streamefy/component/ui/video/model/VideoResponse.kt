@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class Response(@SerializedName("eventId")
                     val eventId: Int = 0,
                     @SerializedName("nextVideo")
-                    val nextVideo: NextVideo,
+                    val nextVideo: NextVideo?=null,
                     @SerializedName("mediaId")
                     val mediaId: Int = 0,
                     @SerializedName("hlsUrl")
@@ -24,9 +24,9 @@ data class VideoResponse(@SerializedName("response")
 data class NextVideo(@SerializedName("nextVideoThumbnail")
                      val nextVideoThumbnail: String = "",
                      @SerializedName("nextVideoId")
-                     val nextVideoId: String = "",
-                     @SerializedName("nextVideoPlaybackDuration")
-                     val nextVideoPlaybackDuration: Int?=null)
+                     val nextVideoId: String = "")
+//                     @SerializedName("nextVideoPlaybackDuration")
+//                     val nextVideoPlaybackDuration: Int?=null)
 data class MError(@SerializedName("userMessage")
                   val userMessage: String = "",
                   @SerializedName("developerMessage")

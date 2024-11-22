@@ -155,7 +155,7 @@ class PlayerHandler(
                         release()
                         initializePlayer()
                     }
-                    Log.e("videourlssss", "player: $uri")
+                    Log.e("videourlssss", "$lastDuration player: $uri")
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val dataSourceFactory = DefaultHttpDataSource.Factory()
@@ -180,7 +180,7 @@ class PlayerHandler(
 
                                 setMediaSource(mediaSource)
                                 prepare()
-                                seekTo(lastDuration)
+                                seekTo(0)
                                 play()
                             }
 

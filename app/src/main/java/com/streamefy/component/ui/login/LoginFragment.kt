@@ -61,16 +61,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         Log.e("newcode", " code: $countryCode country code")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            (requireActivity() as MainActivity).exitApp()
+            MainActivity().exitApp()
         }
 
     }
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
-            //   CountryPicker.loadDataFromXML(requireContext())
-            //  var list=    CountryPicker.loadedLibraryMaterList
-            //    Log.e("newcode", " code: $countryCode country code $list")
+
 
             var validate =
 //                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
@@ -87,14 +85,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
                     )
                     observe()
-
-//                    var bundle = Bundle()
-//                    bundle.putString(
-//                        PrefConstent.PHONE_NUMBER,
-//                        binding.etPhoneNumber.text.toString()
-//                    )
-//                    bundle.putString(PrefConstent.FULL_NAME, binding.etFullname.text.toString())
-//                    findNavController().navigate(R.id.otpFragment, bundle)
 
                 } else {
                     onAttach(requireActivity())
@@ -363,7 +353,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     override fun onResume() {
         super.onResume()
-
+        Log.e("resumelogin", "onResume $realnumer")
         binding.apply {
             etFullname.setText("")
             if (realnumer!=null){

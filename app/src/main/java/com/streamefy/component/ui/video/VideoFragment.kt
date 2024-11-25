@@ -21,6 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
@@ -122,7 +124,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.apply {
             ivVideoThumb.loadUrl(thumbnailS3bucketId)
             updatePlayer()
-            newVideo()
+            newVideo(nextVideoId)
             clickme()
             listener()
             keyMove()
@@ -430,10 +432,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler = PlayerHandler(requireActivity(), playerView)
     }
 
-    fun newVideo() {
+    fun newVideo(nextVideoId: String) {
         viewModel.getVideo(requireContext(), nextVideoId)
         observe()
-
     }
 
     fun observe() {
@@ -454,20 +455,24 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             oldEventId = eventId
                             oldVideoDuration = playbackduration
                             ifFirst = false
+                            Log.e("skcmsknc", "play back duration $playbackduration")
                             playerHandler.setMediaUri(videoUrl, playbackduration)
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
+                                // videoThumb = data.nextVideo?.nextVideoThumbnail!!
+                                nextVideoId = data?.nextVideo?.nextVideoId.toString()
+                                binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
                             } else {
                                 isNewVideoAvailable = false
                             }
                         } else {
+                            mediaId = data.mediaId
                             if (data.nextVideo != null) {
-                                    isNewVideoAvailable = true
-                                    videoThumb = data.nextVideo?.nextVideoThumbnail!!
-                                    nextVideoId = data?.nextVideo?.nextVideoId.toString()
-                                    mediaId = data.mediaId
-                                    binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
-                                    binding.ivVideoThumb.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
+                                isNewVideoAvailable = true
+                                videoThumb = data.nextVideo?.nextVideoThumbnail!!
+                                nextVideoId = data?.nextVideo?.nextVideoId.toString()
+                                binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
+                                binding.ivVideoThumb.loadUrl(videoThumb)
 
                             } else {
                                 isNewVideoAvailable = false
@@ -508,7 +513,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     playerHandler.play()
                 }
                 ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                //updateProgressBar()
+                updateProgressBar()
             }
         }
         ivSkipForward.setOnClickListener {
@@ -569,7 +574,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     fun playNextVideo() = with(binding) {
         if (isNewVideoAvailable) {
             if (!HomeFragment.isTrailer) {
-                oldVideoDuration = playerHandler.getDuration()
+                oldVideoDuration = playerHandler.getCurrentPosition()
                 savePlayback(
                     oldEventId,
                     oldMediaId,
@@ -589,7 +594,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             tvDuration.invalidate()
             sbVideoSeek.requestLayout()
             sbVideoSeek.invalidate()
-            sbVideoSeek.progress=0
+            sbVideoSeek.progress = 0
 
             playerView.requestLayout()
             playerView.invalidate()
@@ -597,6 +602,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             binding.sbVideoSeek.progress = 0
             playerHandler.setMediaUri(videoUrl, 0)
         }
+
     }
 
     fun listener() = with(binding) {
@@ -617,7 +623,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         "isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId"
                     )
                     videoTranisition()
-
                     binding.sbVideoSeek.max = 100
                     if (getLengthOnce) {
                         tvDuration.setText(playerHandler.getTotalLength())
@@ -640,33 +645,41 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 if (!isOpenSettingFirst) {
                     isOpenSettingFirst = true
                     qualityList.clear()
-                    for (group in tracks.getGroups()) {
-                        val trackCount = group.length
-                        for (j in 0 until trackCount) {
-                            val format = group.getTrackFormat(j)
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val data =
+                            QualityModel(
+                                "Auto", true,
+                                480,
+                                854
+                            )
+                        qualityList.add(data)
+                        for (group in tracks.getGroups()) {
+                            val trackCount = group.length
+                            for (j in 0 until trackCount) {
+                                val format = group.getTrackFormat(j)
+                                // Check if the format is a video format using supported properties
+                                if (format.width > 0 && format.height > 0) {
+                                    val width = format.width
+                                    val height = format.height
+                                    var isSelected = false
+//                                    if (j == trackCount - 1) {
+//                                        isSelected = true
+//                                    }
+                                    val data =
+                                        QualityModel(
+                                            height.toString() + "p", isSelected,
+                                            height,
+                                            width
+                                        )
+                                    qualityList.add(data)
+                                    Log.d("VideoResolution", "resolution: ${width}x${height}")
 
-                            // Check if the format is a video format using supported properties
-                            if (format.width > 0 && format.height > 0) {
-                                val width = format.width
-                                val height = format.height
-                                var isSelected = false
-                                if (j == trackCount - 1) {
-                                    isSelected = true
                                 }
-                                val data =
-                                    QualityModel(
-                                        height.toString() + " P", isSelected,
-                                        height,
-                                        width
-                                    )
-                                qualityList.add(data)
-                                Log.d("VideoResolution", "resolution: ${width}x${height}")
-
                             }
-                        }
 
+                        }
+                        withContext(Dispatchers.Main) { quality() }
                     }
-                    quality()
                 }
 
             }
@@ -742,7 +755,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 
     fun selectorFocus() = with(binding) {
-       // llTools.requestFocus()
+        // llTools.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
@@ -1039,8 +1052,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             layoutManager = LinearLayoutManager(requireContext())
             qualityAdapter = QualityAdapter(requireActivity(), qualityList) {
                 clSettingsMenu.gone()
-                playerHandler.setQuality(qualityList[it])
-                ivSetting.requestFocus()
+                if (qualityList[it].title == "Auto") {
+                    playerHandler.setAutoResolutionBasedOnBandwidth()
+                } else {
+                    playerHandler.setQuality(qualityList[it])
+                    ivSetting.requestFocus()
+                }
             }
             adapter = qualityAdapter
         }
@@ -1113,7 +1130,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         binding.tvRemains.setText("Playing Next Video in $time s")
                         Log.e("sbhsbc", "10000 now visible $video_show_count")
                         viewFocus()
-                        newVideo()
+                        newVideo(nextVideoId)
                     } else {
                         time--
                         binding.tvRemains.setText("Playing Next Video in $time s")
@@ -1136,7 +1153,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         binding.tvRemains.setText("Playing Next Video in $time s")
                         Log.e("sbhsbc", "3000 now visible $video_show_count")
                         viewFocus()
-                        newVideo()
+                        newVideo(nextVideoId)
                     } else {
                         time--
                         binding.tvRemains.setText("Playing Next Video in $time s")
@@ -1168,7 +1185,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         view.setOnKeyListener { v, keyCode, event ->
 
             if (event.action == KeyEvent.ACTION_DOWN) {
-                Log.e("sncjdnvjd","sncksdnc handling focus $event")
+                Log.e("sncjdnvjd", "sncksdnc handling focus $event")
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         toShowBackButton()
@@ -1229,7 +1246,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.player?.run {
                     HomeFragment.videoduraion = currentPosition
                 }
-                oldVideoDuration = playerHandler.getDuration()
+                oldVideoDuration = playerHandler.getCurrentPosition()
+                Log.e("filteridwith", "after onStop initialize $oldVideoDuration")
                 savePlayback(oldEventId, oldMediaId, oldBunnyId, oldVideoDuration)
             }
 
@@ -1343,12 +1361,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             VideoEnum.NEXT_VIDEO -> {
                 timerLayout.requestFocus()
             }
+
             VideoEnum.BACK_TO_VIDEO -> {
                 ivBack.requestFocus()
             }
 
             VideoEnum.RESULATION -> {
-               // timerLayout.requestFocus()
+                // timerLayout.requestFocus()
             }
 
             else -> {}

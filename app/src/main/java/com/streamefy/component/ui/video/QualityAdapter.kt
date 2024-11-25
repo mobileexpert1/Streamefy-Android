@@ -30,7 +30,7 @@ class QualityAdapter(
 
     override fun onBindViewHolder(holder: qualityHolder, position: Int) {
         var data = list[position]
-        Log.e("sncksnc", "skcnks $data")
+        Log.e("sncksnc", "resulation detected $data ")
         binding.apply {
             if (data.isSelected) {
                 tvquality.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))

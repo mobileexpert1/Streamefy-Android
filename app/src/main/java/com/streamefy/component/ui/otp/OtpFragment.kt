@@ -626,7 +626,9 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                 bundle.putString(PrefConstent.FULL_NAME, name)
                                 bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
-                                SharedPref.setString(PrefConstent.USER_EMAIL, data.email)
+                                if (data.email!=null) {
+                                    SharedPref.setString(PrefConstent.USER_EMAIL, data.email!!)
+                                }
                                 if (response.isPrimaryuser) {
                                     findNavController().navigate(
                                         R.id.action_otpFragment_to_projectfragment,

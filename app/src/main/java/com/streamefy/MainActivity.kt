@@ -94,10 +94,17 @@ class MainActivity : AppCompatActivity() {
 
     }
     fun exitApp() {
-        finishAffinity()
+        if (!isFinishing && !isDestroyed) {
+            // First, finish all activities in the task
+            finishAffinity()
+        }
         val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         activityManager.clearApplicationUserData()
         exitProcess(0)
+//        finishAffinity()
+//        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//        activityManager.clearApplicationUserData()
+//        exitProcess(0)
     }
 
     override fun onPause() {

@@ -88,7 +88,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     findNavController().popBackStack()
                 }
                 else {
-                    findNavController().navigate(R.id.loginFragment)
+                    ExitDialog(requireActivity()).show()
                 }
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->
@@ -170,7 +170,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                             findNavController().popBackStack()
                         }
                         else {
-                            findNavController().navigate(R.id.loginFragment)
+                           // findNavController().navigate(R.id.loginFragment)
+                            ExitDialog(requireActivity()).show()
                         }
                     }
                 })

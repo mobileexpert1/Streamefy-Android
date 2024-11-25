@@ -192,7 +192,8 @@
                 android:textAllCaps="true"
                 android:textColor="@color/input_field_color_selector"
                 app:layout_constraintBottom_toTopOf="@+id/clRv"
-                app:layout_constraintStart_toStartOf="@+id/clRv" />
+                app:layout_constraintStart_toStartOf="@+id/clRv"
+                app:drawableTint="@color/play_icon_tint" />
 
             <ImageView
                 android:id="@+id/ivTrailer"
@@ -205,7 +206,6 @@
                 android:src="@drawable/ic_unselect_trailer"
                 android:text="Back"
                 android:visibility="invisible"
-                android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
                 app:layout_constraintStart_toEndOf="@+id/tvPlay" />
             <androidx.constraintlayout.widget.ConstraintLayout

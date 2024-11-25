@@ -64,7 +64,7 @@
                 android:id="@+id/llNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
+
                 android:background="@drawable/inputfield_selector"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -124,6 +124,7 @@
                     android:gravity="center_vertical"
                     android:minEms="4"
                     android:maxLines="1"
+                    android:maxLength="16"
                     android:paddingVertical="@dimen/_5sdp"
                     android:paddingStart="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_8sdp"

@@ -22,6 +22,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSource.Factory
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.streamefy.component.ui.video.model.QualityModel
@@ -180,7 +181,7 @@ class PlayerHandler(
 
                                 setMediaSource(mediaSource)
                                 prepare()
-                                seekTo(0)
+                                seekTo(lastDuration)
                                 play()
                             }
 
@@ -301,6 +302,36 @@ class PlayerHandler(
 //            .setMaxAudioBitrate(6000)
             .build()
 
+        trackSelector.setParameters(trackSelectionParameters)
+    }
+
+
+    fun setAutoResolutionBasedOnBandwidth() {
+        val trackSelector = player?.trackSelector as DefaultTrackSelector
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
+        val estimatedBandwidth = bandwidthMeter.getBitrateEstimate()
+        val resolution = when {
+            estimatedBandwidth >= 5000000 -> {
+                // High bandwidth, select 1080p (landscape)
+                Pair(1920, 1080)
+            }
+            estimatedBandwidth >= 3000000 -> {
+                // Medium bandwidth, select 720p
+                Pair(1280, 720)
+            }
+            estimatedBandwidth >= 1000000 -> {
+                // Lower bandwidth, select 480p
+                Pair(854, 480)
+            }
+            else -> {
+                // Very low bandwidth, select 1080p (portrait mode)
+                Pair(1080, 1920)
+            }
+        }
+        Log.e("resulation"," resulation $resolution bandwidth $estimatedBandwidth  ")
+        val trackSelectionParameters = trackSelector.buildUponParameters()
+            .setMaxVideoSize(resolution.first, resolution.second)  // Set the dynamic resolution
+            .build()
         trackSelector.setParameters(trackSelectionParameters)
     }
 

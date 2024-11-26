@@ -36,6 +36,7 @@ import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.viewmodel.HomeVm
+import com.streamefy.component.ui.video.model.BunneyIds
 import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.QualityModel
 import com.streamefy.component.ui.video.viewmodel.VideoVM
@@ -62,7 +63,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun bindView(): Int = R.layout.fragment_video
     lateinit var playerHandler: PlayerHandler
     var getLengthOnce = true
-    var isEnded = false
+    var isEnded = true
     var visibilityCount = 0
     var volumeCount = 20
     var isOpenSettingFirst = false
@@ -72,6 +73,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     private lateinit var volumeManager: VolumeManager
     lateinit var qualityAdapter: QualityAdapter
     var qualityList = ArrayList<QualityModel>()
+    var bunneyIdList = ArrayList<BunneyIds>()
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
@@ -90,6 +92,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var videoDuration = ""
     var isNextVideoStarted = false
     var phone = ""
+    var B1 = ""
+    var B2 = ""
+    var B3 = ""
+    var videoCount = 0
+    var subVideoCount = 2
 
     companion object {
         lateinit var videoFragment: VideoFragment
@@ -101,7 +108,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         super.onViewCreated(view, savedInstanceState)
         videoFragment = this
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
             videoUrl = getString(PrefConstent.VIDEO_URL).toString()
@@ -115,6 +121,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 mediaId = getString(PrefConstent.MEDIA_ID).toString().toInt()
             }
             oldBunnyId = nextVideoId
+            bunneyIdList.clear()
+            //  bunneyIdList.add(BunneyIds(mediaId=mediaId, eventId = eventId, bunneyId = nextVideoId))
         }
 
         handleKey(binding.playerView)
@@ -124,7 +132,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.apply {
             ivVideoThumb.loadUrl(thumbnailS3bucketId)
             updatePlayer()
-            newVideo(nextVideoId)
+            newVideo()
             clickme()
             listener()
             keyMove()
@@ -432,7 +440,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler = PlayerHandler(requireActivity(), playerView)
     }
 
-    fun newVideo(nextVideoId: String) {
+    fun newVideo() {
+
+
+//        lifecycleScope.launch(Dispatchers.IO) {
+////            bunneyIdList.retainAll(bunneyIdList.distinctBy { it.bunneyId})
+//            if (bunneyIdList.none { it.bunneyId == nextVideoId }) {
+//                bunneyIdList.add(BunneyIds(mediaId=mediaId, eventId = eventId, bunneyId = nextVideoId))
+//                println("User added: $bunneyIdList")
+//            } else {
+//                println("User with userId ${nextVideoId} already exists.")
+//            }
+//        }
+
         viewModel.getVideo(requireContext(), nextVideoId)
         observe()
     }
@@ -440,19 +460,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     fun observe() {
         viewModel.videoLiveData.observe(viewLifecycleOwner) {
             when (it) {
-                is MyResource.isLoading -> {
-                }
-
                 is MyResource.isSuccess -> {
                     var data = it.data?.response
                     Log.e("skcmsknc", "$ifFirst scnsknc ${it.data}")
                     if (data != null) {
-
                         videoUrl = data.hlsUrl
                         eventId = data.eventId
+                        oldEventId = eventId
                         if (ifFirst) {
+                            videoCount++
                             oldMediaId = mediaId
-                            oldEventId = eventId
                             oldVideoDuration = playbackduration
                             ifFirst = false
                             Log.e("skcmsknc", "play back duration $playbackduration")
@@ -460,31 +477,34 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
                                 // videoThumb = data.nextVideo?.nextVideoThumbnail!!
+                                oldBunnyId = nextVideoId
                                 nextVideoId = data?.nextVideo?.nextVideoId.toString()
                                 binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
                             } else {
                                 isNewVideoAvailable = false
                             }
+
                         } else {
                             mediaId = data.mediaId
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
                                 videoThumb = data.nextVideo?.nextVideoThumbnail!!
-                                nextVideoId = data?.nextVideo?.nextVideoId.toString()
+                                oldBunnyId = nextVideoId
+                                nextVideoId = data.nextVideo?.nextVideoId.toString()
                                 binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
                                 binding.ivVideoThumb.loadUrl(videoThumb)
-
+                                videoCount++
                             } else {
                                 isNewVideoAvailable = false
                             }
+
                         }
+
+
                     } else {
                         isNewVideoAvailable = false
                         requireActivity().showMessage("Video not found")
                     }
-                }
-
-                is MyResource.isError -> {
                 }
 
                 else -> {}
@@ -572,16 +592,26 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun playNextVideo() = with(binding) {
-        if (isNewVideoAvailable) {
-            if (!HomeFragment.isTrailer) {
-                oldVideoDuration = playerHandler.getCurrentPosition()
-                savePlayback(
-                    oldEventId,
-                    oldMediaId,
-                    oldBunnyId,
-                    oldVideoDuration
-                )
+
+        if (!HomeFragment.isTrailer) {
+            oldVideoDuration = playerHandler.getCurrentPosition()
+            var newEventId = 0
+            var newMediaId = 0
+            var newBunneyId = ""
+            bunneyIdList[bunneyIdList.size - 1].let {
+                newEventId = it.eventId
+                newMediaId = it.mediaId
+                newBunneyId = it.bunneyId
             }
+            savePlayback(
+                newEventId,
+                newMediaId,
+                newBunneyId,
+                // oldBunnyId,
+                oldVideoDuration
+            )
+        }
+        if (isNewVideoAvailable) {
             isNextVideoStarted = true
             getLengthOnce = true
             isEnded = true
@@ -601,6 +631,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.stopHandler()
             binding.sbVideoSeek.progress = 0
             playerHandler.setMediaUri(videoUrl, 0)
+        } else {
+            findNavController().popBackStack()
         }
 
     }
@@ -610,11 +642,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
-                    if (isNextVideoStarted) {
-                        oldEventId = eventId
-                        oldMediaId = mediaId
-                        oldBunnyId = nextVideoId
-                        isNextVideoStarted = false
+//                    if (isNextVideoStarted) {
+//                        oldEventId = eventId
+//                        oldMediaId = mediaId
+//                        oldBunnyId = nextVideoId
+//                        isNextVideoStarted = false
+//                    }
+
+                    if (isEnded) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            if (bunneyIdList.none { it.bunneyId == nextVideoId }) {
+                                bunneyIdList.add(
+                                    BunneyIds(
+                                        mediaId = mediaId,
+                                        eventId = eventId,
+                                        bunneyId = oldBunnyId
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     homeFragment.isLastPlay = true
@@ -637,6 +683,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     // filterItem()
                     Log.e("filteridwith", "video ended ")
                     ivPlay.setImageResource(R.drawable.ic_video_play)
+                    isEnded = true
                     playNextVideo()
                 }
             }
@@ -1087,7 +1134,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     ivVolume.setImageResource(R.drawable.ic_video_volume)
                 }
             }
-
         }
 
         volumeManager.startMonitoring()
@@ -1113,7 +1159,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             binding.clSettingsMenu.gone()
         }
 //             lifecycleScope.launch(Dispatchers.IO) {
-        Log.e("focussss", "timmer $focusView")
+        Log.e("focussss", "timmer $focusView bunneyIdList")
         if (isNewVideoAvailable) {
             var video_show_count = duration - currentPosition
             if (duration > 10000) {
@@ -1130,7 +1176,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         binding.tvRemains.setText("Playing Next Video in $time s")
                         Log.e("sbhsbc", "10000 now visible $video_show_count")
                         viewFocus()
-                        newVideo(nextVideoId)
+                        newVideo()
                     } else {
                         time--
                         binding.tvRemains.setText("Playing Next Video in $time s")
@@ -1153,7 +1199,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         binding.tvRemains.setText("Playing Next Video in $time s")
                         Log.e("sbhsbc", "3000 now visible $video_show_count")
                         viewFocus()
-                        newVideo(nextVideoId)
+                        newVideo()
                     } else {
                         time--
                         binding.tvRemains.setText("Playing Next Video in $time s")
@@ -1161,7 +1207,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 } else if (binding.timerLayout.isVisible) {
                     binding.timerLayout.gone()
                 }
-
 
             }
         }
@@ -1238,47 +1283,44 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     override fun onStop() {
-        super.onStop()
-        // Properly release the player when the fragment is no longer visible
-        requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        requireActivity().window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
                     HomeFragment.videoduraion = currentPosition
                 }
                 oldVideoDuration = playerHandler.getCurrentPosition()
-                Log.e("filteridwith", "after onStop initialize $oldVideoDuration")
-                savePlayback(oldEventId, oldMediaId, oldBunnyId, oldVideoDuration)
+
+               // lifecycleScope.launch(Dispatchers.IO) {
+                    var newEventId = 0
+                    var newMediaId = 0
+                    var newBunneyId = ""
+                    bunneyIdList[bunneyIdList.size - 1].let {
+                        newEventId = it.eventId
+                        newMediaId = it.mediaId
+                        newBunneyId = it.bunneyId
+                    }
+                  //  withContext(Dispatchers.Main) {
+                    savePlayback(
+                        newEventId,
+                        newMediaId,
+                        newBunneyId,
+                        oldVideoDuration
+                    )
+              //  }
+              //  }
             }
 
             playerHandler.pause()
             playerHandler.release()
             volumeManager.stopMonitoring()
         }
+        super.onStop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-//        if (playerHandler.player != null) {
-//            if (!HomeFragment.isTrailer) {
-//                playerHandler.player?.run {
-//                    HomeFragment.videoduraion = currentPosition
-//                }
-//            }
-//            playerHandler.pause()
-//            playerHandler.release()
-//            volumeManager.stopMonitoring()
-//        }
-
-
-//        playerHandler.pause()
-//        playerHandler.release()
-//        volumeManager.stopMonitoring()
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onResume() {
@@ -1297,10 +1339,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             request.mediaId = mediaId
             request.videoId = bunneyId
             request.duration = videoDuration.toString()
-            Log.e("filteridwith", "savePlayback api initialize $videoDuration")
+
+            Log.e("filteridwith", "mediaId $mediaId event id $event bunneyId $bunneyId savePlayback api initialize $videoDuration")
+
             homeFragment.filterItem(event, mediaId, videoDuration)
-            viewModel.saveDuration(requireContext(), request)
-            durationObserve(event, mediaId, videoDuration)
+         //   lifecycleScope.launch(Dispatchers.Main) {
+                viewModel.saveDuration(requireContext(), request)
+                durationObserve(event, mediaId, videoDuration)
+           // }
         }
     }
 

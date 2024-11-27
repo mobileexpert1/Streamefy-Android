@@ -76,23 +76,23 @@ class ProjectsAdapter(
 
             }
 
-            clEvent.setOnKeyListener { v, keyCode, event ->
-                if (event.action == KeyEvent.ACTION_DOWN) {
-                    when (keyCode) {
-                        KeyEvent.KEYCODE_DPAD_UP -> {
-                            eventFragment.binding.ivBack.requestFocus()
-                        }
-
-                        KeyEvent.KEYCODE_DPAD_DOWN -> {
-                            eventFragment.binding.ivBack.requestFocus()
-                        }
-
-                        else -> {
-                        }
-                    }
-                }
-                false
-            }
+//            clEvent.setOnKeyListener { v, keyCode, event ->
+//                if (event.action == KeyEvent.ACTION_DOWN) {
+//                    when (keyCode) {
+//                        KeyEvent.KEYCODE_DPAD_UP -> {
+//                            eventFragment.binding.ivBack.requestFocus()
+//                        }
+//
+//                        KeyEvent.KEYCODE_DPAD_DOWN -> {
+//                            eventFragment.binding.ivBack.requestFocus()
+//                        }
+//
+//                        else -> {
+//                        }
+//                    }
+//                }
+//                false
+//            }
             clEvent.setOnClickListener {
                 callBack.invoke(position, StreamEnum.SINGLE)
             }

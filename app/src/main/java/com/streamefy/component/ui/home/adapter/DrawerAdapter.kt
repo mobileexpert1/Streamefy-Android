@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
+import com.streamefy.R
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.home.model.MediaItem
@@ -64,8 +66,11 @@ class DrawerAdapter(
 //            tvDuration.text = "$current of ${data.totalVideoDuration}"
 
                     tvSubtitle.text = data.description
-                    ivCate.loadUrl(data.thumbnailS3bucketId)
-
+                   // ivCate.loadUrl(data.thumbnailS3bucketId)
+                    Glide.with(context).load(data.thumbnailS3bucketId)
+                        .error(R.drawable.caegory_radious)
+                        .placeholder(R.drawable.caegory_radious)
+                        .into(ivCate)
                     clParent.setOnFocusChangeListener { v, hasFocus ->
                         Log.e("shhssd", "hasFocus dd ${hasFocus}")
                         if (hasFocus) {
@@ -149,17 +154,31 @@ class DrawerAdapter(
 
     fun updateDuration(mediaIndex: Int, duraton: Long) {
 //        eventList.clear()
-        mediaList[mediaIndex].run {
-            when (this) {
-                is MediaItem -> {
-                    playbackDuration = duraton.toString()
-                }
-            }
+//        mediaList[mediaIndex].run {
+//            when (this) {
+//                is MediaItem -> {
+//                    playbackDuration = duraton.toString()
+//                    notifyItemChanged(mediaIndex)
+//                }
+//            }
+//
+//        }
 
+        if (mediaIndex!=null && mediaList.size>mediaIndex) {
+            mediaList[mediaIndex].run {
+                when (this) {
+                    is MediaItem -> {
+                        playbackDuration = duraton.toString()
+                        notifyItemChanged(mediaIndex)
+                    }
+                }
+
+            }
         }
+
         //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
 
-        notifyItemChanged(mediaIndex)
+
     }
 
     override fun getItemCount(): Int = mediaList.size

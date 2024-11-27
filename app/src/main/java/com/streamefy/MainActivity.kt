@@ -30,12 +30,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        try {
-            val metricsEnabled = System.getProperty("media.metrics.enabled")
-        } catch (e: SecurityException) {
-            // Handle the access denied error gracefully
-            Log.e("AccessError", "Failed to access media metrics: ${e.message}")
-        }
+
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         wakelock()
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
@@ -98,8 +93,8 @@ class MainActivity : AppCompatActivity() {
             // First, finish all activities in the task
             finishAffinity()
         }
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        activityManager.clearApplicationUserData()
+//        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+//        activityManager.clearApplicationUserData()
         exitProcess(0)
 //        finishAffinity()
 //        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -109,12 +104,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        wakeLock.let {
-            if (it.isHeld) {
-                it.release() // Release only if the WakeLock is currently held
-            }
-        }
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+//        wakeLock.let {
+//            if (it.isHeld) {
+//                it.release() // Release only if the WakeLock is currently held
+//            }
+//        }
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -123,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 it.release() // Release only if the WakeLock is currently held
             }
         }
-        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
 }

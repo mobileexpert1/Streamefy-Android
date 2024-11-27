@@ -105,7 +105,6 @@ class VideoRecyclerView : RecyclerView {
         recyclerview = this
         videoSurfaceView = PlayerView(viewContext!!)
         playerHandler = PlayerHandler(viewContext!!, videoSurfaceView!!)
-
         // Bind the player to the view.
         player = playerHandler.getPLayer()!!
         videoSurfaceView?.useController = false

@@ -46,7 +46,6 @@ class VideoVM(var repo: ApiService) : ViewModel() {
 //                            }
 
                         } else {
-                            context.showMessage(response.body()?.error?.userMessage.toString())
                             _videoLiveData.value=MyResource.isError(
                                 ErrorCodeManager.getErrorMessage(
                                     ErrorCodeManager.NOT_FOUND))
@@ -54,11 +53,10 @@ class VideoVM(var repo: ApiService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
-                    // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                     _videoLiveData.value=MyResource.isError(
                         ErrorCodeManager.getErrorMessage(
                             ErrorCodeManager.UNKNOWN_ERROR))
-                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                 //   ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
 
                 }
             } else {

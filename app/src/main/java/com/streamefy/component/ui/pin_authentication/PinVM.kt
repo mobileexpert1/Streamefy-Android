@@ -72,8 +72,7 @@ class PinVM(var repo: ApiService) : ViewModel() {
                         _resetData.value = MyResource.isSuccess(response.body())
                     } else {
                         ShowError.handleError.message(response.body()?.error?.userMessage.toString())
-                        _resetData.value =
-                            MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                        _resetData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
                       ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)

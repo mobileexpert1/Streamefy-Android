@@ -95,8 +95,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 if (hasFocus) {
                     val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
                     params.width =
-                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                        resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                     ivBack.layoutParams = params
                 } else {
                     val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
@@ -398,19 +398,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             }
         }
 
-//        et1.setupNextFocusOnDigit(et2)
-//        et2.setupNextFocusOnDigit(et3)
-//        et3.setupNextFocusOnDigit(et4)
-//        et4.setupNextFocusOnDigit(et5)
-//        et5.setupNextFocusOnDigit(et6)
-//
-//        // previous
-//
-//        et6.previousFocusOnDigit(et5)
-//        et5.previousFocusOnDigit(et4)
-//        et4.previousFocusOnDigit(et3)
-//        et3.previousFocusOnDigit(et2)
-//        et2.previousFocusOnDigit(et1)
 
     }
 
@@ -420,21 +407,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isLoading -> {
                     showProgress()
                 }
-//                    val navOptions = NavOptions.Builder()
-////                        .setPopUpTo(R.id.splashScreen, true)
-////                        .setPopUpTo(R.id.loginFragment,true)
-////                        .setPopUpTo(R.id.otpFragment,true)
-//                            .setPopUpTo(R.id.pinAuthenticationFragment, true)
-//                            // .setLaunchSingleTop(true)
-//                            // Set inclusive to true
-//                            .build()
-//                        // Navigate to home fragment with the options
-//                        findNavController().navigate(R.id.homefragment, null, navOptions)
                 is MyResource.isSuccess -> {
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
-//                    findNavController().navigate(R.id.homefragment)
                     if (isAdded) {
                         findNavController().navigate(R.id.homefragment)
 
@@ -444,6 +420,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isError -> {
                     dismissProgress()
                 }
+                else->{}
             }
         }
     }
@@ -461,6 +438,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isError -> {
                     dismissProgress()
                 }
+                else->{}
             }
         }
     }

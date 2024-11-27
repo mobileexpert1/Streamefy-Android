@@ -85,7 +85,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     tools:text="Friday 22 March, 2024" />
 
-
                 <TextView
                     android:id="@+id/tvProjectCount"
                     style="@style/filson_14_whiteTV"

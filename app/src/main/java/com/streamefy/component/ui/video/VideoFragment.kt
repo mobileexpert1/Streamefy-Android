@@ -77,7 +77,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     //       var videoUrl="https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
     var videoUrl = ""
-    var isResume = true
     var ifFirst = true
 
     var nextVideoId = ""
@@ -87,16 +86,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var oldEventId = 0
     var oldBunnyId = ""
     var oldVideoDuration: Long = 0
-    var nextVideoPlayedDuration: Long = 0
     var videoThumb = ""
-    var videoDuration = ""
     var isNextVideoStarted = false
     var phone = ""
-    var B1 = ""
-    var B2 = ""
-    var B3 = ""
     var videoCount = 0
-    var subVideoCount = 2
 
     companion object {
         lateinit var videoFragment: VideoFragment
@@ -110,9 +103,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
-            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
+//            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
-            isResume = getBoolean(PrefConstent.ISRESUME)
+//            isResume = getBoolean(PrefConstent.ISRESUME)
             if (getString(PrefConstent.PLAY_BACK_DURATION).toString().isNotEmpty()) {
                 playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
             }
@@ -144,7 +137,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         Log.e(
             "ckdanmcn",
-            "duration $playbackduration video id ${nextVideoId} isResume $isResume volumeCount $volumeCount mkadnc ${videoUrl}"
+            "duration $playbackduration video id ${nextVideoId} volumeCount $volumeCount mkadnc ${videoUrl}"
         )
         binding.sbVolumeSeek.setProgress(volumeCount)
 
@@ -441,18 +434,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun newVideo() {
-
-
-//        lifecycleScope.launch(Dispatchers.IO) {
-////            bunneyIdList.retainAll(bunneyIdList.distinctBy { it.bunneyId})
-//            if (bunneyIdList.none { it.bunneyId == nextVideoId }) {
-//                bunneyIdList.add(BunneyIds(mediaId=mediaId, eventId = eventId, bunneyId = nextVideoId))
-//                println("User added: $bunneyIdList")
-//            } else {
-//                println("User with userId ${nextVideoId} already exists.")
-//            }
-//        }
-
         viewModel.getVideo(requireContext(), nextVideoId)
         observe()
     }
@@ -476,7 +457,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             playerHandler.setMediaUri(videoUrl, playbackduration)
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
-                                // videoThumb = data.nextVideo?.nextVideoThumbnail!!
+                                videoThumb = data.nextVideo?.nextVideoThumbnail!!
                                 oldBunnyId = nextVideoId
                                 nextVideoId = data?.nextVideo?.nextVideoId.toString()
                                 binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
@@ -488,6 +469,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             mediaId = data.mediaId
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
+                                thumbnailS3bucketId = videoThumb
                                 videoThumb = data.nextVideo?.nextVideoThumbnail!!
                                 oldBunnyId = nextVideoId
                                 nextVideoId = data.nextVideo?.nextVideoId.toString()
@@ -593,25 +575,29 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun playNextVideo() = with(binding) {
 
-        if (!HomeFragment.isTrailer) {
-            oldVideoDuration = playerHandler.getCurrentPosition()
-            var newEventId = 0
-            var newMediaId = 0
-            var newBunneyId = ""
-            bunneyIdList[bunneyIdList.size - 1].let {
-                newEventId = it.eventId
-                newMediaId = it.mediaId
-                newBunneyId = it.bunneyId
-            }
-            savePlayback(
-                newEventId,
-                newMediaId,
-                newBunneyId,
-                // oldBunnyId,
-                oldVideoDuration
-            )
-        }
+
         if (isNewVideoAvailable) {
+            if (!HomeFragment.isTrailer) {
+                oldVideoDuration = playerHandler.getCurrentPosition()
+                var newEventId = 0
+                var newMediaId = 0
+                var newBunneyId = ""
+                var newThumb = ""
+                bunneyIdList[bunneyIdList.size - 1].let {
+                    newEventId = it.eventId
+                    newMediaId = it.mediaId
+                    newBunneyId = it.bunneyId
+                    newThumb = it.thumb
+                }
+                savePlayback(
+                    newEventId,
+                    newMediaId,
+                    newBunneyId,
+                    // oldBunnyId,
+                    oldVideoDuration,
+                    newThumb
+                )
+            }
             isNextVideoStarted = true
             getLengthOnce = true
             isEnded = true
@@ -625,7 +611,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             sbVideoSeek.requestLayout()
             sbVideoSeek.invalidate()
             sbVideoSeek.progress = 0
-
             playerView.requestLayout()
             playerView.invalidate()
             playerHandler.stopHandler()
@@ -642,12 +627,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
-//                    if (isNextVideoStarted) {
-//                        oldEventId = eventId
-//                        oldMediaId = mediaId
-//                        oldBunnyId = nextVideoId
-//                        isNextVideoStarted = false
-//                    }
 
                     if (isEnded) {
                         lifecycleScope.launch(Dispatchers.IO) {
@@ -656,7 +635,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                     BunneyIds(
                                         mediaId = mediaId,
                                         eventId = eventId,
-                                        bunneyId = oldBunnyId
+                                        bunneyId = oldBunnyId,
+                                        thumb = thumbnailS3bucketId
                                     )
                                 )
                             }
@@ -802,7 +782,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 
     fun selectorFocus() = with(binding) {
-        // llTools.requestFocus()
+        ivSkipBack.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
@@ -1209,6 +1189,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
             }
+        } else {
+            binding.timerLayout.apply {
+                gone()
+            }
         }
 
     }
@@ -1291,25 +1275,24 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     HomeFragment.videoduraion = currentPosition
                 }
                 oldVideoDuration = playerHandler.getCurrentPosition()
+                var newEventId = 0
+                var newMediaId = 0
+                var newBunneyId = ""
+                var newThumb = ""
+                bunneyIdList[bunneyIdList.size - 1].let {
+                    newEventId = it.eventId
+                    newMediaId = it.mediaId
+                    newBunneyId = it.bunneyId
+                    newThumb = it.thumb
+                }
 
-               // lifecycleScope.launch(Dispatchers.IO) {
-                    var newEventId = 0
-                    var newMediaId = 0
-                    var newBunneyId = ""
-                    bunneyIdList[bunneyIdList.size - 1].let {
-                        newEventId = it.eventId
-                        newMediaId = it.mediaId
-                        newBunneyId = it.bunneyId
-                    }
-                  //  withContext(Dispatchers.Main) {
-                    savePlayback(
-                        newEventId,
-                        newMediaId,
-                        newBunneyId,
-                        oldVideoDuration
-                    )
-              //  }
-              //  }
+                savePlayback(
+                    newEventId,
+                    newMediaId,
+                    newBunneyId,
+                    oldVideoDuration,
+                    newThumb
+                )
             }
 
             playerHandler.pause()
@@ -1332,7 +1315,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         isOpenSettingFirst = false
     }
 
-    fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
+    fun savePlayback(
+        event: Int,
+        mediaId: Int,
+        bunneyId: String,
+        videoDuration: Long,
+        thumb: String
+    ) {
         if (videoDuration >= 0) {
             var request = PlayBackRequest()
             request.phoneNumber = phone
@@ -1340,13 +1329,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             request.videoId = bunneyId
             request.duration = videoDuration.toString()
 
-            Log.e("filteridwith", "mediaId $mediaId event id $event bunneyId $bunneyId savePlayback api initialize $videoDuration")
+            Log.e(
+                "filteridwith",
+                "mediaId $mediaId event id $event bunneyId $bunneyId savePlayback api initialize $videoDuration"
+            )
 
-            homeFragment.filterItem(event, mediaId, videoDuration)
-         //   lifecycleScope.launch(Dispatchers.Main) {
-                viewModel.saveDuration(requireContext(), request)
-                durationObserve(event, mediaId, videoDuration)
-           // }
+            homeFragment.filterItem(event, mediaId, videoDuration, bunneyId, thumb, isEnded)
+            //   lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.saveDuration(requireContext(), request)
+            durationObserve(event, mediaId, videoDuration)
+            // }
         }
     }
 

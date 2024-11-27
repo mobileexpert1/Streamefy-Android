@@ -28,6 +28,7 @@ import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
+import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -55,7 +56,11 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
         binding.apply {
-
+            if (isPrimaryuser) {
+                if (isHome) {
+                   ivBack.invisible()
+                }
+            }
         }
         focusable()
         clicable()
@@ -137,8 +142,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             if (hasFocus) {
                 val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
-                    resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                    resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
+                params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                 ivBack.layoutParams = params
             } else {
                 val params = ivBack.layoutParams as ConstraintLayout.LayoutParams

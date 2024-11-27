@@ -86,135 +86,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     }
 
     private fun otpFieldFocus() = with(binding) {
-        et1.requestFocus()
-        et1.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et2.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et2.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et1.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et3.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et3.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et2.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et4.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et4.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et3.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et5.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et5.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et4.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et6.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et6.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et5.requestFocus()
-
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
 //        tvProceed.remoteKey {
 //            when(it){
 //                StreamEnum.UP_DPAD_KEY->{
@@ -224,21 +95,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 //            }
 //        }
 
-//        et1.setOnClickListener {
-//           // etHide.requestFocus()
-//            etHide.requestFocus()
-//            val imm =
-//                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.showSoftInput(etHide, InputMethodManager.SHOW_IMPLICIT)
-//        }
-//        et1.setOnFocusChangeListener { v, hasFocus ->
-//            if (hasFocus) {
-//                etHide.setCursorVisible(false)
-//                val imm =
-//                    requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm.showSoftInput(etHide, InputMethodManager.SHOW_IMPLICIT)
-//            }
-//        }
         otpView.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -269,32 +125,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 }
             }
         }
-
-//
-//        et1.setOnClickListener {
-//            Log.e("dmclkdm","dkncldnv")
-//           // etHide.requestFocus()
-//            showKeyboard(etHide)
-//            //etHide.setOnClickListener {  }
-//
-//        }
-//        et2.setOnClickListener {
-//            requireActivity().showKeyboard(etHide)
-//        }
-
-//        et1.setupNextFocusOnDigit(et2)
-//        et2.setupNextFocusOnDigit(et3)
-//        et3.setupNextFocusOnDigit(et4)
-//        et4.setupNextFocusOnDigit(et5)
-//        et5.setupNextFocusOnDigit(et6)
-//
-//        // previous
-//
-//        et6.previousFocusOnDigit(et5)
-//        et5.previousFocusOnDigit(et4)
-//        et4.previousFocusOnDigit(et3)
-//        et3.previousFocusOnDigit(et2)
-//        et2.previousFocusOnDigit(et1)
 
     }
 
@@ -394,7 +224,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
     private fun initClickListeners() {
         binding.apply {
 
@@ -480,8 +310,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 if (hasFocus) {
                     val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
                     params.width =
-                        resources.getDimensionPixelSize(R.dimen._20sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._20sdp)
+                        resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
+                    params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                     ivBack.layoutParams = params
                 } else {
                     val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
@@ -525,23 +355,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         when (p0?.id) {
             R.id.tvProceed -> {
                 binding.apply {
-
-//                    var otp =
-//                        et1.text.toString().trim() +
-//                            et2.text.toString().trim() +
-//                            et3.text.toString().trim() +
-//                            et4.text.toString().trim() +
-//                            et5.text.toString().trim() +
-//                            et6.text.toString().trim()
                     var otp = otpView.text.toString()
                     otp.run {
                         if (this.isEmpty()) {
                             ShowError.handleError.handleError(ErrorCodeManager.OTP_EMPTY)
-                            // tvProceed.clearFocus()
                         } else if (this.length < 6) {
                             ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
-                            // tvProceed.clearFocus()
-
                         } else {
                             if (isAdded) {
                                 viewModel.otpVerification(
@@ -554,11 +373,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                 onAttach(requireActivity())
                             }
 
-//                            var bundle=Bundle()
-//                            bundle.putString(PrefConstent.PHONE_NUMBER,phone)
-//                            bundle.putString(PrefConstent.FULL_NAME,name)
-//                            SharedPref.setBoolean(PrefConstent.ISAUTH,false)
-//                            findNavController().navigate(R.id.action_otpFragment_to_pinAuthenticationFragment,bundle)
                         }
                     }
                 }
@@ -643,13 +457,11 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             }
                         }
                     }
-//                    it.data?.response.isPrimaryuser
 
                 }
 
                 is MyResource.isError -> {
                     dismissProgress()
-                    // requireActivity().showMessage(it.error)
                 }
 
             }

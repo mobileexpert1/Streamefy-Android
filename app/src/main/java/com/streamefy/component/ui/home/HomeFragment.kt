@@ -1,12 +1,6 @@
 package com.streamefy.component.ui.home
 
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +10,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -26,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.CreatorsAdapter
@@ -42,6 +34,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentHomeBinding
 import com.streamefy.network.MyResource
+import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideTransition
 import com.streamefy.utils.moveDown
@@ -89,7 +82,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     var isLastPlay = false
     var lastVideoUrl = ""
-    var lastVideoDuration = ""
+    var lastVideoDuration = "0"
     var lastVideoThumb = ""
     var isPlayByPlayButton = false
     var isPrimaryuser = false
@@ -188,33 +181,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-    fun savePlayback(event: Int, mediaId: Int, bunneyId: String, videoDuration: Long) {
-        videoId = bunneyId
-        if (videoDuration >= 0) {
-            var request = PlayBackRequest()
-            request.phoneNumber = phone
-            request.mediaId = mediaId
-            request.videoId = videoId
-            request.duration = videoDuration.toString()
-            lastVideoDuration = videoDuration.toString()
-//            if (!isPlayByPlayButton) {
-//                lifecycleScope.launch(Dispatchers.IO) {
-//                    var newList = eventAdapter.getList()
-//                    if (newList.isNotEmpty()) {
-//                        newList[eventVideoIndex].media?.get(mediaIndex)?.run {
-//                            isLastPlay = true
-//                            lastVideoUrl = ""
-//                            lastVideoDuration = videoduraion.toString()
-//                            lastVideoThumb = thumbnailS3bucketId
-//                        }
-//                    }
-//                }
-//            }
-
-            viewModel.saveDuration(requireContext(), request)
-            durationObserve(event, mediaId, videoDuration)
-        }
-    }
 
     private fun foucusView() = with(binding) {
 //        ivLogout.remoteKey {
@@ -515,14 +481,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             "play by button $isPlayByPlayButton last video data $isLastPlay $lastVideoDuration video url $lastVideoUrl thumb $lastVideoThumb"
         )
         isPlayByPlayButton = true
-        val bundle = Bundle()
-        bundle.putString(PrefConstent.VIDEO_URL, lastVideoUrl)
-        bundle.putString(PrefConstent.PLAY_BACK_DURATION, lastVideoDuration)
-        bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
-        bundle.putString(PrefConstent.VIDEO_THUMB, lastVideoThumb)
-        bundle.putString(PrefConstent.VIDEO_ID, videoId)
-        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
-        findNavController().navigate(R.id.videofragment, bundle)
+        toGotoVideo(
+            lastVideoDuration,
+            lastVideoThumb,
+            videoId,
+            mediaId
+        )
     }
 
     private fun creatorView() = with(binding) {
@@ -555,61 +519,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             "skncksnc",
                             "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
                         )
-                        //  customIndicator.updateIndicator(newPos)
-
-//                            tvPlay.setText("pause")
-//                            tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-//                                ContextCompat.getDrawable(
-//                                    requireActivity(),
-//                                    R.drawable.ic_backg_pause
-//                                ), null, null, null
-//                            )
-//                        if (tvPlay.isFocused){
-//                            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-//                                // Revert size when not focused
-//                                tvPlay.compoundDrawableTintList =
-//                                    ColorStateList.valueOf(
-//                                        ContextCompat.getColor(
-//                                            requireActivity(),
-//                                            R.color.purple
-//                                        )
-//                                    )
-//
-//                            }else{
-//                                val drawables = tvPlay.compoundDrawables
-//                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
-//                                if (drawableStart != null) {
-//                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-//                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.purple))
-//                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
-//                                }
-//                            }
-//
-//                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
-//                        }
-//                        else{
-//                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//                                // Revert size when not focused
-//                                tvPlay.compoundDrawableTintList =
-//                                    ColorStateList.valueOf(
-//                                        ContextCompat.getColor(
-//                                            requireActivity(),
-//                                            R.color.white
-//                                        )
-//                                    )
-//
-//                            }else{
-//                                val drawables = tvPlay.compoundDrawables
-//                                val drawableStart = drawables[0]  // You can adjust this for top, end, bottom as needed
-//                                if (drawableStart != null) {
-//                                    val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-//                                    DrawableCompat.setTint(wrappedDrawable, ContextCompat.getColor(requireActivity(), R.color.white))
-//                                    tvPlay.setCompoundDrawablesWithIntrinsicBounds(wrappedDrawable, drawables[1], drawables[2], drawables[3])
-//                                }
-//                            }
-//
-//                            tvPlay.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
-//                        }
 
                     }
                 }
@@ -682,21 +591,56 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList as ArrayList<Any>) {
-//                drawerLayout.closeDrawer(GravityCompat.END)
                 drawerItemFocus = it
                 mediaIndex = it
-                mediaId = mediaList[it].id
-                videoId = mediaList[it].bunnyId
-                isPlayByPlayButton = false
-                var bundle = Bundle()
-                bundle.putString(PrefConstent.PLAY_BACK_DURATION, mediaList[it].playbackDuration)
-                bundle.putString(PrefConstent.VIDEO_URL, "")
-                bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
-                bundle.putString(PrefConstent.VIDEO_THUMB, mediaList[it].thumbnailS3bucketId)
-                bundle.putString(PrefConstent.VIDEO_ID, videoId)
-                bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
-                findNavController().navigate(R.id.videofragment, bundle)
-//                        findNavController().navigate(R.id.dynamicscreen)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    mediaList[it].run {
+                        if (this.playbackDuration.isNotEmpty()) {
+//                            var totalDuration = convertToMillis(this.totalVideoDuration) - 2000
+//
+//                            if (this.playbackDuration.isNotEmpty()) {
+//                                if (this.playbackDuration.toLong() >= totalDuration) {
+//                                    newDuration = "0"
+//                                }
+//                            }
+
+                            var newDuration = this.playbackDuration
+                            var totalDuration: Long =
+                                convertToMillis(this.totalVideoDuration)
+
+                            totalDuration = if (totalDuration > 10000L) {
+                                totalDuration - 11000
+                            } else {
+                                totalDuration - 4000
+                            }
+
+                            if (totalDuration.toLong() >= totalDuration) {
+                                newDuration = "0"
+                            }
+
+
+                            mediaId = this.id
+                            videoId = this.bunnyId
+                            isPlayByPlayButton = false
+//                            var bundle = Bundle()
+//                            bundle.putString(PrefConstent.PLAY_BACK_DURATION, newDuration)
+//                            bundle.putString(PrefConstent.VIDEO_URL, "")
+//                            bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
+//                            bundle.putString(PrefConstent.VIDEO_THUMB, this.thumbnailS3bucketId)
+//                            bundle.putString(PrefConstent.VIDEO_ID, videoId)
+//                            bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
+                            withContext(Dispatchers.Main) {
+                                toGotoVideo(
+                                    newDuration,
+                                    thumbnailS3bucketId,
+                                    videoId,
+                                    mediaId
+                                )
+                                //  findNavController().navigate(R.id.videofragment, bundle)
+                            }
+                        }
+                    }
+                }
             }
 
             adapter = mediaAdapter
@@ -712,24 +656,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), images as ArrayList<Any>) {
                 Log.e("sjncsjncb", "trailer video $it")
-                // drawerLayout.closeDrawer(GravityCompat.END)
-                //  binding.rvBackgVideo.backScroll(it)
-                images[0]?.run {
-                    var hlsPlaylistUrl = this.hlsPlaylistUrl
-                    var thumbnailS3bucketId = this.thumbnailSBucketId
-                    var playbackDuration = "0"
-                    videoId = this.bunnyId
-                    val bundle = Bundle()
-                    bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
-                    bundle.putString(
-                        PrefConstent.PLAY_BACK_DURATION,
-                        playbackDuration
-                    )
-                    bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
-                    bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
-                    bundle.putString(PrefConstent.VIDEO_ID, videoId)
-                    bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
-                    findNavController().navigate(R.id.videofragment, bundle)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    images[it].run {
+                        var thumbnailS3bucketId = this.thumbnailSBucketId
+                        videoId = this.bunnyId
+//                        val bundle = Bundle()
+//                        bundle.putString(PrefConstent.VIDEO_URL, hlsPlaylistUrl)
+//                        bundle.putString(PrefConstent.PLAY_BACK_DURATION, "0")
+//                        bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
+//                        bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
+//                        bundle.putString(PrefConstent.VIDEO_ID, videoId)
+//                        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
+                        // findNavController().navigate(R.id.videofragment, bundle)
+                        withContext(Dispatchers.Main) {
+                            toGotoVideo(
+                                "0",
+                                thumbnailS3bucketId,
+                                videoId,
+                                mediaId
+                            )
+                        }
+
+                    }
                 }
             }
             adapter = mediaAdapter
@@ -743,57 +691,62 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos, type ->
                 selectedTitle = eventList[pos].eventTitle
-
                 Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
                 eventVideoIndex = pos
                 mediaIndex = 0
                 when (type) {
                     StreamEnum.SINGLE -> {
-                        if (eventList[pos].media != null) {
-                            if (eventList[pos].media?.size!! >= 1) {
-                                eventList[pos].media?.get(0)?.run {
-                                    isPlayByPlayButton = false
-                                    mediaId = this.id
-                                    videoId = this.bunnyId
-                                    val bundle = Bundle()
-                                    bundle.putString(PrefConstent.VIDEO_URL, "")
-                                    bundle.putString(
-                                        PrefConstent.PLAY_BACK_DURATION,
-                                        this.playbackDuration
-                                    )
-                                    bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
-                                    bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
-                                    bundle.putString(PrefConstent.VIDEO_ID, videoId)
-                                    bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
-                                    findNavController().navigate(R.id.videofragment, bundle)
-                                }
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            if (eventList[pos].media != null) {
+                                if (eventList[pos].media?.size!! >= 1) {
+                                    eventList[pos].media?.get(0)?.run {
+
+                                        var newDuration = this.playbackDuration
+//                                        if (this.playbackDuration.isNotEmpty()) {
+//                                            if (this.playbackDuration.toLong() >= totalDuration) {
+//                                                newDuration = "0"
+//                                            }
+//                                        }
+
+                                        var totalDuration: Long =
+                                            convertToMillis(this.totalVideoDuration)
+
+                                        totalDuration = if (totalDuration > 10000L) {
+                                            totalDuration - 11000
+                                        } else {
+                                            totalDuration - 4000
+                                        }
+
+                                        if (totalDuration.toLong() >= totalDuration) {
+                                            newDuration = "0"
+                                        }
 
 
-//                                eventList[pos].media?.forEach {
-//                                    if (it.isLastPlayed) {
-//                                        isPlayByPlayButton = false
-//                                        mediaId = it.id
-//                                        videoId = it.bunnyId
+                                        isPlayByPlayButton = false
+                                        mediaId = this.id
+                                        videoId = this.bunnyId
+
+
 //                                        val bundle = Bundle()
-//                                        bundle.putString(PrefConstent.VIDEO_URL, "")
-//                                        bundle.putString(
-//                                            PrefConstent.PLAY_BACK_DURATION,
-//                                            it. playbackDuration
-//                                        )
-//                                        bundle.putBoolean(PrefConstent.ISRESUME, isPlayByPlayButton)
-//                                        bundle.putString(
-//                                            PrefConstent.VIDEO_THUMB,
-//                                            it.thumbnailS3bucketId
-//                                        )
+//                                        bundle.putString(PrefConstent.PLAY_BACK_DURATION, newDuration)
+//                                        bundle.putString(PrefConstent.VIDEO_THUMB, thumbnailS3bucketId)
 //                                        bundle.putString(PrefConstent.VIDEO_ID, videoId)
 //                                        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
-//                                        findNavController().navigate(R.id.videofragment, bundle)
-//                                    }
-//                                }
-
+                                        withContext(Dispatchers.Main) {
+                                            toGotoVideo(
+                                                newDuration,
+                                                thumbnailS3bucketId,
+                                                videoId,
+                                                mediaId
+                                            )
+                                            //findNavController().navigate(R.id.videofragment, bundle)
+                                        }
+                                    }
+                                }
                             }
                         }
+
                     }
 
                     StreamEnum.MORE -> {
@@ -835,6 +788,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
+    fun toGotoVideo(duration: String, thumb: String, bunneId: String, mediaId: Int) {
+        val bundle = Bundle()
+        bundle.putString(PrefConstent.PLAY_BACK_DURATION, duration)
+        bundle.putString(PrefConstent.VIDEO_THUMB, thumb)
+        bundle.putString(PrefConstent.VIDEO_ID, bunneId)
+        bundle.putString(PrefConstent.MEDIA_ID, mediaId.toString())
+        findNavController().navigate(R.id.videofragment, bundle)
+
+    }
+
     fun eventVideosMore() {
         viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
@@ -868,12 +831,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             page++
                             isEventPagination = true
                             eventList.clear()
-                            // binding.ivLogout.visible()
-                            /// background
 
                             // event video
 
-//                            events?.filter { if (it.media?.filter { if (it.isLastPlayed)})}
                             lifecycleScope.launch(Dispatchers.IO) {
                                 data.backgroundMedia?.run {
                                     if (this.isNotEmpty()) {
@@ -883,48 +843,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         }
                                     }
                                 }
-//                                val filteredEvents = events?.filter { event ->
-//                                    event.media?.any { it.isLastPlayed } == true
-//                                }
-//
-//                                if (filteredEvents != null && filteredEvents.isNotEmpty()) {
-//                                    filteredEvents.forEach {
-//                                        var media = it.media?.filter { it.isLastPlayed }
-//                                        Log.e("hhutyuigjf", "knkndv ${it?.media?.size} data $media")
-//                                        if (media != null && media.size > 0) {
-//                                            if (media[0].isLastPlayed) {
-//                                                isLastPlay = true
-//                                                lastVideoUrl =""
-//                                                lastVideoDuration = media[0].playbackDuration
-//                                                lastVideoThumb = media[0].thumbnailS3bucketId
-////                                                mediaId = media[0].id
-//                                                videoId = media[0].bunnyId
-//                                                lifecycleScope.launch(Dispatchers.Main) {
-//                                                    binding.tvPlay.setText(
-//                                                        "resume"
-//                                                    )
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//                                } else {
-//                                    var media = events?.get(0)?.media
-//                                    media?.get(0)?.run {
-//                                        isLastPlay = false
-//                                        lastVideoUrl = ""
-//                                        lastVideoDuration = "0"
-//                                        lastVideoThumb = thumbnailS3bucketId
-////                                        mediaId = id
-//                                        videoId = this.bunnyId
-//                                        lifecycleScope.launch(Dispatchers.Main) {
-//                                            binding.tvPlay.setText(
-//                                                "play"
-//                                            )
-//                                        }
-//                                    }
-//                                }
-
-
                                 var found = false
                                 if (events != null && events.size > 0) {
                                     var reverseList = events.reversed()
@@ -934,12 +852,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             for (j in 0 until mediaReverseList.size) {
                                                 var media = mediaReverseList[j]
                                                 if (media.isLastPlayed) {
-                                                    lastVideoDuration = media.playbackDuration
+
                                                     lastVideoThumb = media.thumbnailS3bucketId
                                                     videoId = media.bunnyId
                                                     lastVideoUrl = ""
                                                     mediaId = media.id
                                                     isLastPlay = true
+                                                    lastVideoDuration= media.playbackDuration
+                                                    var totalDuration: Long = convertToMillis(media.totalVideoDuration)
+
+                                                    totalDuration = if (totalDuration > 10000L) {
+                                                        totalDuration - 11000
+                                                    } else {
+                                                        totalDuration - 4000
+                                                    }
+
+                                                    lastVideoDuration =
+                                                        if (lastVideoDuration.toLong() >= totalDuration) {
+                                                            "0"
+                                                        } else {
+                                                            media.playbackDuration
+                                                        }
+
                                                     // Log the captured media details
                                                     Log.e(
                                                         "loglisrtss",
@@ -955,34 +889,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             break
                                         }
                                     }
-
-//                                    events?.reversed()?.forEach { event ->
-//                                        // Reverse the media list for each event
-//                                        event.media?.reversed()?.forEach { media ->
-//                                            if (media.isLastPlayed) {
-//                                                // Once a match is found, capture the details and exit
-//                                                lastVideoDuration = media.playbackDuration
-//                                                lastVideoThumb = media.thumbnailS3bucketId
-//                                                videoId = media.bunnyId
-//                                                lastVideoUrl = ""
-//
-//                                                // Log the captured media details
-//                                                Log.e(
-//                                                    "lastmediapllll",
-//                                                    "Duration: $lastVideoDuration, Thumb: $lastVideoThumb, VideoID: $videoId"
-//                                                )
-//                                                binding.tvPlay.setText(
-//                                                    "resume"
-//                                                )
-//                                                found = true
-//                                                return@forEach  // Exit the inner loop (media list)
-//                                            }
-//                                        }
-//
-//                                        // If found, break the outer loop as well
-//                                        if (found) return@forEach
-//
-//                                    }
                                     if (!found) {
                                         var media = events?.get(0)?.media
                                         media?.get(0)?.run {
@@ -996,8 +902,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                 binding.tvPlay.setText("play")
                                             }
                                         }
-                                    }else{
-                                         withContext(Dispatchers.Main){ binding.tvPlay.setText("resume")}
+                                    } else {
+                                        withContext(Dispatchers.Main) { binding.tvPlay.setText("resume") }
                                     }
                                 }
                             }
@@ -1099,26 +1005,52 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-    fun filterItem(eventId: Int, mediaId: Int, duration: Long) {
+    fun filterItem(
+        eventId: Int,
+        mediaId: Int,
+        duration: Long,
+        bunneyId: String,
+        thumb: String,
+        isEnded: Boolean
+    ) {
         lifecycleScope.launch(Dispatchers.IO) {
             var newList = homeFragment.eventAdapter.getList()
+            videoId = bunneyId
+            lastVideoThumb = thumb
+            lastVideoDuration = if (isEnded) {
+                "0"
+            } else {
+                duration.toString()
+            }
 
             val eventIndex = newList.indexOfFirst { it.eventId == eventId }
-            Log.e("filteridwith", "duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList")
+            Log.e(
+                "filteridwith",
+                "isEnded $isEnded duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList"
+            )
             try {
                 var newMedia = newList[eventIndex].media
                 if (newMedia != null && newMedia.isNotEmpty()) {
                     var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
                     delay(1000)
+                    if (mediaIndex != null) {
+                        homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
 
-                    homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
+                        if (isDrawerOpen) {
+                            if (!isTrailer) {
+                                mediaAdapter.updateDuration(
+                                    mediaIndex!!,
+                                    duration
+                                )
+                            }
+                        }
+                    }
                     var after = homeFragment.eventAdapter.getList()
                     Log.e("filteridwith", "$mediaId after media index $mediaIndex update$after")
                 }
             } catch (e: Exception) {
                 Log.e("filteridwith", "crashed $e")
             }
-
         }
     }
 
@@ -1152,17 +1084,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
             isFirstVideo = true
 
-            /// check if user played video or not
-
             if (isLastPlay) {
                 tvPlay.setText("resume")
             } else {
                 tvPlay.setText("play")
             }
         }
-//        if (!isTrailer) {
-//            savePlayback()
-//        }
 
     }
 

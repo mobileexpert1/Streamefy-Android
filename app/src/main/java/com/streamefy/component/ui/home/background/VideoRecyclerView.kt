@@ -170,13 +170,13 @@ class VideoRecyclerView : RecyclerView {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> {
-                        Log.e("jnjddc", " STATE_BUFFERING")
                     }
 
                     Player.STATE_ENDED -> {
                         Log.e("jnjddc", " STATE_ENDED")
                         // playerHandler.release()
                         homeFragment.apply {
+                            currentVideoDuration=0
                             toolsCount = 0
                             showTools()
                         }
@@ -184,8 +184,6 @@ class VideoRecyclerView : RecyclerView {
                     }
 
                     Player.STATE_IDLE -> {
-                        Log.e("jnjddc", " STATE_IDLE")
-
                     }
 
                     Player.STATE_READY -> {
@@ -266,7 +264,7 @@ class VideoRecyclerView : RecyclerView {
         }
 
 //        playerHandler.seekWithInitialise(homeFragment.mediaUrl, homeFragment.currentVideoDuration)
-        resumeVideo(homeFragment.currentVideoDuration)
+        resumeVideo()
         //  playerHandler = holder.playerHandler
     }
 
@@ -508,10 +506,17 @@ class VideoRecyclerView : RecyclerView {
         }
     }
 
-    fun resumeVideo(pos: Long) {
-        Log.e("bxbxb", "$pos scmlcm ${homeFragment.mediaUrl}")
-//        playerHandler.seekWithInitialise(homeFragment.mediaUrl, pos)
-        playerHandler.seekTo(pos)
+    fun resumeVideo() {
+        if (playerHandler.player!=null) {
+//            playerHandler.seekTo(homeFragment.currentVideoDuration)
+            Log.e("checkcurrentv","jcjdc video ${homeFragment.mediaUrl}")
+            homeFragment.binding.rvBackgVideo.scrollToPosition(targetPosition)
+            playerHandler.seekTo(0)
+            playerHandler.play()
+//            if (recyclerview?.layoutManager !=null) {
+//                play() {}
+//            }
+        }
     }
 
     // Remove the old player
@@ -537,29 +542,9 @@ class VideoRecyclerView : RecyclerView {
             // frameLayout!!.viewAnimate()
             videoSurfaceView!!.viewAnimate()
             //  thumbnail?.goneAnimate()
-
             homeFragment.apply {
-                // focusView = StreamEnum.INDECATOR_VIEW
-//                binding.rvCategory.clearFocus()
                 Log.e("testingdhfht", "$eventFocusPos dmvdmv $focusView ")
                 viewFocus()
-
-//                if (focusView == StreamEnum.INDECATOR_VIEW) {
-//                    binding.customIndicator.requestFocus()
-//                } else if (focusView == StreamEnum.BACKGROUND_VIDEO) {
-////                    binding.apply {
-////                        tvPlay.requestFocus()
-////                        tvPlay.setText("pause")
-////                        tvPlay.setCompoundDrawablesWithIntrinsicBounds(
-////                            ContextCompat.getDrawable(
-////                                requireActivity(),
-////                                R.drawable.ic_backg_pause
-////                            ), null, null, null
-////                        )
-////                    }
-//                } else {
-//                    eventFocus()
-//                }
             }
         }
     }

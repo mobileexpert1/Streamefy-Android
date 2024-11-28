@@ -26,15 +26,19 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
                 .penaltyLog()
                 .build())
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
+        setRetainInstance(true)
     }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
-        progressDialog= CircularProgressDialog(requireContext())
+//        binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
+        if (!::binding.isInitialized) {
+            binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
+            progressDialog= CircularProgressDialog(requireContext())
+        }
+
         return binding.root
     }
 
@@ -62,5 +66,10 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         FirebaseCrashlytics.getInstance().recordException(e)
         throw RuntimeException("Base class")
         Log.e("BaseFragment", "Handled exception: ${e.message}", e)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        progressDialog?.dismiss()
     }
 }

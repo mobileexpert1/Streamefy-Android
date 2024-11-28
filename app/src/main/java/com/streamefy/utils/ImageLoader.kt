@@ -2,14 +2,15 @@ package com.streamefy.utils
 
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.squareup.picasso.Picasso
 
 fun ImageView.loadUrl( url:String){
-    Glide.with(this.context).load(url).into(this)
+    Glide.with(this.context).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).into(this)
 
 }
 fun ImageView.loadAny( url:Any){
-    Glide.with(this.context).load(url).into(this)
+    Glide.with(this.context).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).into(this)
 }
 
 fun ImageView.loadPicaso( url:String){

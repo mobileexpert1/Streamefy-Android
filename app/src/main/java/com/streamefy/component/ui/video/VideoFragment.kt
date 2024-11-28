@@ -103,12 +103,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
-//            videoUrl = getString(PrefConstent.VIDEO_URL).toString()
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
-//            isResume = getBoolean(PrefConstent.ISRESUME)
-            if (getString(PrefConstent.PLAY_BACK_DURATION).toString().isNotEmpty()) {
-                playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
-            }
+            playbackduration = getString(PrefConstent.PLAY_BACK_DURATION).toString().toLong()
+
             nextVideoId = getString(PrefConstent.VIDEO_ID).toString()
             if (getString(PrefConstent.MEDIA_ID).toString().isNotEmpty()) {
                 mediaId = getString(PrefConstent.MEDIA_ID).toString().toInt()
@@ -125,6 +122,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.apply {
             ivVideoThumb.loadUrl(thumbnailS3bucketId)
             updatePlayer()
+            thumbShow()
             newVideo()
             clickme()
             listener()
@@ -505,17 +503,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
             params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
             ivPlay.layoutParams = params
-            if (playerHandler.isPlaying()!!) {
-                playerHandler.pause()
-                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-            } else {
-                if (isEnded) {
-                    playerHandler.player?.seekTo(0)
+            if (playerHandler.player!=null) {
+                if (playerHandler.isPlaying()!!) {
+                    playerHandler.pause()
+                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
                 } else {
-                    playerHandler.play()
+                    if (isEnded) {
+                        playerHandler.player?.seekTo(0)
+                    } else {
+                        playerHandler.play()
+                    }
+                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                    updateProgressBar()
                 }
-                ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                updateProgressBar()
             }
         }
         ivSkipForward.setOnClickListener {
@@ -627,7 +627,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_READY) {
-
+                    dismissProgress()
                     if (isEnded) {
                         lifecycleScope.launch(Dispatchers.IO) {
                             if (bunneyIdList.none { it.bunneyId == nextVideoId }) {
@@ -656,7 +656,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
                     }
                     isEnded = false
-                    dismissProgress()
+
                     updateProgressBar()
 
                 } else if (playbackState == Player.STATE_ENDED) {
@@ -665,6 +665,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
                     playNextVideo()
+                    viewFocus()
                 }
             }
 
@@ -740,7 +741,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
             .start()
     }
+    fun thumbShow()= with(binding) {
+        ivVideoThumb.run {
+            alpha=0f
+            visible()
+            animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(DecelerateInterpolator())
+                .setDuration(5000)
+                .start()
+        }
 
+    }
     fun volumeUp() {
         if (volumeCount <= 99) {
             volumeCount += 1
@@ -796,36 +810,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                toShowBackButton()
-                focusView = VideoEnum.VIDEO_PLAY
-                if (playerHandler.isPlaying()!!) {
-                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                } else {
-                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-                }
-            } else {
-                if (playerHandler.isPlaying()!!) {
-                    ivPlay.setImageResource(R.drawable.ic_video_pause)
-                } else {
-                    ivPlay.setImageResource(R.drawable.ic_video_play)
-                }
+            if (playerHandler.player!=null) {
+                if (hasFocus) {
+                    toShowBackButton()
+                    focusView = VideoEnum.VIDEO_PLAY
 
+                    if (playerHandler.isPlaying()!!) {
+                        ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                    } else {
+                        ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+                    }
+                } else {
+                    if (playerHandler.isPlaying()!!) {
+                        ivPlay.setImageResource(R.drawable.ic_video_pause)
+                    } else {
+                        ivPlay.setImageResource(R.drawable.ic_video_play)
+                    }
+
+                }
             }
-
-
-//            if (playerHandler.isPlaying()!!) {
-//                playerHandler.pause()
-//                ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-//            } else {
-//                if (isEnded) {
-//                    playerHandler.player?.seekTo(0)
-//                } else {
-//                    playerHandler.play()
-//                }
-//                ivPlay.setImageResource(R.drawable.ic_selected_pause)
-//                updateProgressBar()
-//            }
 
         }
 
@@ -1121,77 +1124,79 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     var time = 10000
     private fun updateProgressBar() {
-        val duration = playerHandler.getDuration()
-        val currentPosition = playerHandler.getCurrentPosition()
-        val progress = (currentPosition * 100 / duration.toDouble()).toInt()
-        binding.sbVideoSeek.progress = progress
-        binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
+        if (playerHandler.player!=null) {
+            val duration = playerHandler.getDuration()
+            val currentPosition = playerHandler.getCurrentPosition()
+            val progress = (currentPosition * 100 / duration.toDouble()).toInt()
+            binding.sbVideoSeek.progress = progress
+            binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
 
-        if (playerHandler.isPlaying()!!) {
-            playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
-        }
-        visibilityCount++
-        if (visibilityCount == 15) {
-            visibilityCount = 0
-            binding.ivBack.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-            binding.llTools.animate().alpha(0f).setDuration(1000).setStartDelay(50)
-            binding.playerView.requestFocus()
-            binding.clSettingsMenu.gone()
-        }
-//             lifecycleScope.launch(Dispatchers.IO) {
-        Log.e("focussss", "timmer $focusView bunneyIdList")
-        if (isNewVideoAvailable) {
-            var video_show_count = duration - currentPosition
-            if (duration > 10000) {
-                if (video_show_count <= 10000) {
-                    if (!binding.timerLayout.isVisible) {
-                        time = 10
-                        focusView = VideoEnum.NEXT_VIDEO
-                        binding.timerLayout.apply {
-                            visible()
-                            isFocusable = true
-                            isFocusableInTouchMode = true
-                            requestFocus()
-                        }
-                        binding.tvRemains.setText("Playing Next Video in $time s")
-                        Log.e("sbhsbc", "10000 now visible $video_show_count")
-                        viewFocus()
-                        newVideo()
-                    } else {
-                        time--
-                        binding.tvRemains.setText("Playing Next Video in $time s")
-                    }
-                } else if (binding.timerLayout.isVisible) {
-                    binding.timerLayout.gone()
-                }
-
-            } else {
-                if (video_show_count <= 3000) {
-                    if (!binding.timerLayout.isVisible) {
-                        focusView = VideoEnum.NEXT_VIDEO
-                        binding.timerLayout.apply {
-                            visible()
-                            isFocusable = true
-                            isFocusableInTouchMode = true
-                            requestFocus()
-                        }
-                        time = 3
-                        binding.tvRemains.setText("Playing Next Video in $time s")
-                        Log.e("sbhsbc", "3000 now visible $video_show_count")
-                        viewFocus()
-                        newVideo()
-                    } else {
-                        time--
-                        binding.tvRemains.setText("Playing Next Video in $time s")
-                    }
-                } else if (binding.timerLayout.isVisible) {
-                    binding.timerLayout.gone()
-                }
-
+            if (playerHandler.isPlaying()!!) {
+                playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
             }
-        } else {
-            binding.timerLayout.apply {
-                gone()
+            visibilityCount++
+            if (visibilityCount == 15) {
+                visibilityCount = 0
+                binding.ivBack.animate().alpha(0f).setDuration(1200).setStartDelay(10)
+                binding.llTools.animate().alpha(0f).setDuration(1200).setStartDelay(10)
+                binding.playerView.requestFocus()
+                binding.clSettingsMenu.gone()
+            }
+//             lifecycleScope.launch(Dispatchers.IO) {
+            Log.e("focussss", "timmer $focusView bunneyIdList")
+            if (isNewVideoAvailable) {
+                var video_show_count = duration - currentPosition
+                if (duration > 10000) {
+                    if (video_show_count <= 10000) {
+                        if (!binding.timerLayout.isVisible) {
+                            time = 10
+                            focusView = VideoEnum.NEXT_VIDEO
+                            binding.timerLayout.apply {
+                                visible()
+                                isFocusable = true
+                                isFocusableInTouchMode = true
+                                requestFocus()
+                            }
+                            binding.tvRemains.setText("Playing Next Video in $time s")
+                            Log.e("sbhsbc", "10000 now visible $video_show_count")
+                            viewFocus()
+                            newVideo()
+                        } else {
+                            time--
+                            binding.tvRemains.setText("Playing Next Video in $time s")
+                        }
+                    } else if (binding.timerLayout.isVisible) {
+                        binding.timerLayout.gone()
+                    }
+
+                } else {
+                    if (video_show_count <= 3000) {
+                        if (!binding.timerLayout.isVisible) {
+                            focusView = VideoEnum.NEXT_VIDEO
+                            binding.timerLayout.apply {
+                                visible()
+                                isFocusable = true
+                                isFocusableInTouchMode = true
+                                requestFocus()
+                            }
+                            time = 3
+                            binding.tvRemains.setText("Playing Next Video in $time s")
+                            Log.e("sbhsbc", "3000 now visible $video_show_count")
+                            viewFocus()
+                            newVideo()
+                        } else {
+                            time--
+                            binding.tvRemains.setText("Playing Next Video in $time s")
+                        }
+                    } else if (binding.timerLayout.isVisible) {
+                        binding.timerLayout.gone()
+                    }
+
+                }
+            } else {
+                binding.timerLayout.apply {
+                    gone()
+                }
             }
         }
 
@@ -1267,8 +1272,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     override fun onStop() {
+        super.onStop()
+    }
 
+    override fun onDestroy() {
         requireActivity().window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        homeFragment.viewFocus()
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
@@ -1279,31 +1288,30 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 var newMediaId = 0
                 var newBunneyId = ""
                 var newThumb = ""
-                bunneyIdList[bunneyIdList.size - 1].let {
-                    newEventId = it.eventId
-                    newMediaId = it.mediaId
-                    newBunneyId = it.bunneyId
-                    newThumb = it.thumb
-                }
+                if (bunneyIdList.size>0) {
+                    bunneyIdList[bunneyIdList.size - 1].let {
+                        newEventId = it.eventId
+                        newMediaId = it.mediaId
+                        newBunneyId = it.bunneyId
+                        newThumb = it.thumb
+                    }
 
-                savePlayback(
-                    newEventId,
-                    newMediaId,
-                    newBunneyId,
-                    oldVideoDuration,
-                    newThumb
-                )
+                    savePlayback(
+                        newEventId,
+                        newMediaId,
+                        newBunneyId,
+                        oldVideoDuration,
+                        newThumb
+                    )
+                }
             }
 
             playerHandler.pause()
             playerHandler.release()
             volumeManager.stopMonitoring()
         }
-        super.onStop()
-    }
-
-    override fun onDestroy() {
         super.onDestroy()
+
     }
 
     override fun onResume() {
@@ -1311,6 +1319,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.playerView.onResume()
         if (playerHandler.player != null) {
             playerHandler.play()
+            updateProgressBar()
         }
         isOpenSettingFirst = false
     }

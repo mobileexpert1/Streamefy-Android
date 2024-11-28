@@ -2,6 +2,7 @@ package com.streamefy.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
 import android.net.ConnectivityManager
@@ -175,109 +176,23 @@ fun convertToMillis(duration: String): Long {
     val hours = parts[0].toLong()
     val minutes = parts[1].toLong()
     val seconds = parts[2].toLong()
-
     return (hours * 3600 + minutes * 60 + seconds) * 1000 // Convert to milliseconds
 }
 
-fun View.moveDown(context: Context) {
-    apply {
-        val moveDownAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_down)
-        startAnimation(moveDownAnimation)
 
-    }
+
+
+fun View.transition(up:Float,down:Float){
+    val anim = ObjectAnimator.ofFloat(this, "translationY", up, down)
+    anim.duration = 600
+    anim.interpolator = DecelerateInterpolator()
+    anim.start()
 }
 
-fun View.moveUp(context: Context){
-    apply {
-        clearAnimation()
-        val moveUpAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_up)
-        startAnimation(moveUpAnimation)
-    }
-}
 
-fun View.hideTransition(context: Context){
-    apply {
-        val moveDownAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_down)
-        moveDownAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-            }
-            override fun onAnimationEnd(animation: Animation?) {
-                alpha=0f
-                visibility = View.GONE
-            }
-            override fun onAnimationRepeat(animation: Animation?) {
-            }
-        })
-        startAnimation(moveDownAnimation)
 
-    }
-//    apply {
-//
-//            animate().cancel()
-//               animate().setDuration(0)
-//        val parentHeight = (parent as View).height-height.toFloat()
-//        alpha = 1f
-//        animate()
-//            .translationX(0f) // Move to the left (if not already at 0)
-//            .translationY(parentHeight) // Move down
-//            .alpha(0f) // Fade out
-//            .rotationBy(20f)
-//            .setInterpolator(DecelerateInterpolator()) // Smooth transition
-//            .setDuration(5050) // Duration of the animation
-//            .setListener(object : AnimatorListenerAdapter() {
-//                override fun onAnimationEnd(animation: Animator) {
-//                    super.onAnimationEnd(animation)
-//                    visibility = View.GONE // Hide the view after the animation
-//                    //requestLayout()
-//                    Log.e("smcksmc", "skcmks gone $parentHeight")
-//                }
-//            })
-//            .withEndAction {
-//                Log.e("smcksmc", "ended true $parentHeight")
-//            }
-//            .start()
-//    }
-}
-fun View.showTransition(context: Context){
-    apply {
-//        clearAnimation()
-        val moveUpAnimation = AnimationUtils.loadAnimation(context, R.anim.anim_up)
-        moveUpAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                visibility = View.VISIBLE
-                alpha=1f
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-              //  visibility = View.VISIBLE
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {
-            }
-        })
-        startAnimation(moveUpAnimation)
-    }
-
-//    apply {
-//        animate().cancel()
-//        val parentHeight = (parent as View).height
-//        alpha = 0f
-//        translationY = parentHeight.toFloat()
-//        visible()
-//        animate()
-//            .alpha(1f) // Fade in
-//            .translationX(0f) // Move to the left (if not already at 0)
-//            .translationY(0f) // Move to the original position
-//            .setInterpolator(DecelerateInterpolator()) // Smooth transition
-//            .setDuration(1000) // Adjust duration as needed
-//            .setListener(object : AnimatorListenerAdapter() {
-//                override fun onAnimationEnd(animation: Animator) {
-//                    super.onAnimationEnd(animation)
-//                    visibility = View.VISIBLE // Hide the view after the animation
-//                    requestLayout()
-//                    Log.e("smcksmc", "skcmks visible")
-//                }
-//            })
-//            .start()
-//    }
+fun View.customAlfa(fadeIn:Float,fadeOut:Float){
+    val fadeOutT2 = ObjectAnimator.ofFloat(this, "alpha", fadeIn, fadeOut)
+    fadeOutT2.duration = 600
+    fadeOutT2.start()
 }

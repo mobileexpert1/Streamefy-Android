@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -23,8 +22,6 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.video.MediaCodecVideoRenderer
-import com.google.android.exoplayer2.video.VideoRendererEventListener
 import com.streamefy.component.ui.video.model.QualityModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,9 +58,13 @@ class PlayerHandler(
 //            val renderersFactory = DefaultRenderersFactory(context)
 //                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
             val renderersFactory = DefaultRenderersFactory(context)
-
-
                 .setEnableDecoderFallback(true)
+
+            val trackSelector = DefaultTrackSelector(context)
+            trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+                .setForceLowestBitrate(true) // Optional: Forces lower bitrate, which may help in some cases
+                .build()
+
             val loadControl = DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
                     DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
@@ -79,6 +80,8 @@ class PlayerHandler(
                         .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF) // Disable extension renderers
                         .setEnableDecoderFallback(true))
                 .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
+
                 .build()
             playerView.player = player
 

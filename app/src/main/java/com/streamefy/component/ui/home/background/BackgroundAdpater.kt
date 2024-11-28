@@ -32,13 +32,9 @@ class BackgroundAdpater(
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         var data = backgroundList[position]
-        Log.e("scnskjnc","sbcjhv $data")
         binding.apply {
             (holder as BackgroundHolder).onBind(
-                context,
                 data.thumbnailSBucketId,
-                data.hlsPlaylistUrl,
-                holder.absoluteAdapterPosition
             )
         }
     }

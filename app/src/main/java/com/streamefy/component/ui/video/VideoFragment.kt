@@ -56,6 +56,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notifyAll
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -129,14 +130,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             keyMove()
         }
         volume()
-
-        // bitPlayer()
         selectorFocus()
 
-        Log.e(
-            "ckdanmcn",
-            "duration $playbackduration video id ${nextVideoId} volumeCount $volumeCount mkadnc ${videoUrl}"
-        )
+        Log.e("ckdanmcn", "duration $playbackduration video id ${nextVideoId} volumeCount $volumeCount mkadnc ${videoUrl}")
         binding.sbVolumeSeek.setProgress(volumeCount)
 
     }
@@ -1058,12 +1054,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 clSettingsMenu.gone()
 
             } else {
-                clSettingsMenu.visible()
-//                clSettingsMenu.requestFocus()
-//                rvQuality.requestFocus()
-//                rvQuality.post {
-//                    rvQuality.getChildAt(0)?.requestFocus()
-//                }
                 qualityList.forEachIndexed { index, qualityModel ->
                     if (qualityModel.isSelected) {
                         clSettingsMenu.requestFocus()
@@ -1071,28 +1061,39 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         rvQuality.post {
                             rvQuality.getChildAt(index)?.requestFocus()
                         }
+                    }else{
+                        rvQuality.post {
+                            rvQuality.getChildAt(index)?.clearFocus()
+                        }
                     }
-
                 }
+                qualityAdapter.notifyDataSetChanged()
+                rvQuality.adapter=qualityAdapter
+                clSettingsMenu.visible()
             }
         }
+        qualityInit()
 
+    }
+
+    fun qualityInit()= with(binding){
         rvQuality.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
             qualityAdapter = QualityAdapter(requireActivity(), qualityList) {
+
                 clSettingsMenu.gone()
+                ivSetting.requestFocus()
+
                 if (qualityList[it].title == "Auto") {
                     playerHandler.setAutoResolutionBasedOnBandwidth()
                 } else {
                     playerHandler.setQuality(qualityList[it])
-                    ivSetting.requestFocus()
                 }
             }
             adapter = qualityAdapter
         }
     }
-
     private fun volume() = with(binding) {
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
@@ -1142,14 +1143,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 binding.playerView.requestFocus()
                 binding.clSettingsMenu.gone()
             }
+            10000/1000
 //             lifecycleScope.launch(Dispatchers.IO) {
             Log.e("focussss", "timmer $focusView bunneyIdList")
             if (isNewVideoAvailable) {
                 var video_show_count = duration - currentPosition
-                if (duration > 10000) {
-                    if (video_show_count <= 10000) {
+                if (duration > 15000) {
+                    if (video_show_count <= 15000) {
+                        visibilityCount = 0
                         if (!binding.timerLayout.isVisible) {
-                            time = 10
+                            time = 15
                             focusView = VideoEnum.NEXT_VIDEO
                             binding.timerLayout.apply {
                                 visible()
@@ -1165,12 +1168,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             time--
                             binding.tvRemains.setText("Playing Next Video in $time s")
                         }
-                    } else if (binding.timerLayout.isVisible) {
+                    }
+                    else if (binding.timerLayout.isVisible) {
                         binding.timerLayout.gone()
+                        time = 15
                     }
 
-                } else {
-                    if (video_show_count <= 3000) {
+                }
+                else {
+                    if (video_show_count <= 15000) {
+                        visibilityCount = 0
                         if (!binding.timerLayout.isVisible) {
                             focusView = VideoEnum.NEXT_VIDEO
                             binding.timerLayout.apply {
@@ -1179,7 +1186,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 isFocusableInTouchMode = true
                                 requestFocus()
                             }
-                            time = 3
+                            time = 7
                             binding.tvRemains.setText("Playing Next Video in $time s")
                             Log.e("sbhsbc", "3000 now visible $video_show_count")
                             viewFocus()
@@ -1188,12 +1195,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             time--
                             binding.tvRemains.setText("Playing Next Video in $time s")
                         }
-                    } else if (binding.timerLayout.isVisible) {
+                    }
+                    else if (binding.timerLayout.isVisible) {
+                        time = 7
                         binding.timerLayout.gone()
                     }
 
                 }
-            } else {
+            }
+            else {
                 binding.timerLayout.apply {
                     gone()
                 }

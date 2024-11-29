@@ -60,9 +60,12 @@ class PlayerHandler(
             val renderersFactory = DefaultRenderersFactory(context)
                 .setEnableDecoderFallback(true)
 
+
+
             val trackSelector = DefaultTrackSelector(context)
             trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-                .setForceLowestBitrate(true) // Optional: Forces lower bitrate, which may help in some cases
+                .setForceLowestBitrate(true)
+                .setMaxVideoSize(854, 480)
                 .build()
 
             val loadControl = DefaultLoadControl.Builder()
@@ -81,7 +84,6 @@ class PlayerHandler(
                         .setEnableDecoderFallback(true))
                 .setLoadControl(loadControl)
                 .setTrackSelector(trackSelector)
-
                 .build()
             playerView.player = player
 
@@ -293,27 +295,12 @@ class PlayerHandler(
 
     fun setQuality(resolution: QualityModel) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
-//        val dimensions = when (resolution) {
-//            // "360p" -> Pair(640, 360)// Pair(352, 240)
-//            "480p" -> Pair(854, 480)// Pair(640, 360)
-//            "1080p" -> Pair(1920, 1080)// Pair(640, 360)
-//            "2080p" -> Pair(3840, 2160)// Pair(640, 360)
-//            // "720p" -> Pair(1280, 720)// Pair(842, 480)
-//            //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
-//            // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
-//            //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
-//            else -> return
-//        }
-//
-//        val (width, height) = dimensions
         val trackSelectionParameters = trackSelector.buildUponParameters()
             .setMaxVideoSize(resolution.width, resolution.height)
-//            .setMaxVideoSize(1920, 1080)
-//            .setMaxVideoSizeSd()
-//            .setMaxAudioBitrate(6000)
             .build()
-
+        Log.e("dcbdhbcd","cjdc testing $resolution")
         trackSelector.setParameters(trackSelectionParameters)
+       // player?.prepare()
     }
 
 

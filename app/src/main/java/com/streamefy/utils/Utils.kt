@@ -184,7 +184,7 @@ fun convertToMillis(duration: String): Long {
 
 fun View.transition(up:Float,down:Float){
     val anim = ObjectAnimator.ofFloat(this, "translationY", up, down)
-    anim.duration = 600
+    anim.duration = 1000
     anim.interpolator = DecelerateInterpolator()
     anim.start()
 }
@@ -193,6 +193,6 @@ fun View.transition(up:Float,down:Float){
 
 fun View.customAlfa(fadeIn:Float,fadeOut:Float){
     val fadeOutT2 = ObjectAnimator.ofFloat(this, "alpha", fadeIn, fadeOut)
-    fadeOutT2.duration = 600
+    fadeOutT2.duration = 1000
     fadeOutT2.start()
 }

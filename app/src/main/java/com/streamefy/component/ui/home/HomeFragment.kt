@@ -45,6 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.math.floor
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
@@ -588,7 +589,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     mediaList[it].run {
                         if (this.playbackDuration.isNotEmpty()) {
-                            var newDuration = this.playbackDuration
+                            val number: Double = this.playbackDuration.toDouble()
+                            val intValue = floor(number).toInt()
+
+                            var newDuration = intValue.toString()
                             var totalDuration: Long =
                                 convertToMillis(this.totalVideoDuration)
 
@@ -668,8 +672,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             if (eventList[pos].media != null) {
                                 if (eventList[pos].media?.size!! >= 1) {
                                     eventList[pos].media?.get(0)?.run {
+                                        val number: Double = this.playbackDuration.toDouble()
+                                        val intValue = floor(number).toInt()
+                                        var newDuration = intValue.toString()
 
-                                        var newDuration = this.playbackDuration
                                         var totalDuration: Long =
                                             convertToMillis(this.totalVideoDuration)
                                         totalDuration = if (totalDuration > 10000L) {
@@ -808,7 +814,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                     lastVideoUrl = ""
                                                     mediaId = media.id
                                                     isLastPlay = true
-                                                    lastVideoDuration = media.playbackDuration
+                                                    val number: Double = media.playbackDuration.toDouble()
+                                                    val intValue = floor(number).toInt()
+                                                    lastVideoDuration = intValue.toString()
+
                                                     var totalDuration: Long =
                                                         convertToMillis(media.totalVideoDuration)
 

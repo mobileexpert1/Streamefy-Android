@@ -3,6 +3,7 @@ package com.streamefy.component.ui.video
 import VolumeManager
 import android.media.AudioManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.StrictMode
 import android.util.Log
 import android.view.KeyEvent
@@ -50,6 +51,7 @@ import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
+import com.streamefy.utils.startCountdownTimer
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -132,7 +134,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volume()
         selectorFocus()
 
-        Log.e("ckdanmcn", "duration $playbackduration video id ${nextVideoId} volumeCount $volumeCount mkadnc ${videoUrl}")
+        Log.e(
+            "ckdanmcn",
+            "duration $playbackduration video id ${nextVideoId} volumeCount $volumeCount mkadnc ${videoUrl}"
+        )
         binding.sbVolumeSeek.setProgress(volumeCount)
 
     }
@@ -451,10 +456,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             playerHandler.setMediaUri(videoUrl, playbackduration)
                             if (data.nextVideo != null) {
                                 isNewVideoAvailable = true
+                                thumbnailS3bucketId = videoThumb
                                 videoThumb = data.nextVideo?.nextVideoThumbnail!!
                                 oldBunnyId = nextVideoId
-                                nextVideoId = data?.nextVideo?.nextVideoId.toString()
-                                binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
+                                nextVideoId = data.nextVideo?.nextVideoId.toString()
+                                binding.ivNextVideo.loadUrl(thumbnailS3bucketId)
                             } else {
                                 isNewVideoAvailable = false
                             }
@@ -467,7 +473,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 videoThumb = data.nextVideo?.nextVideoThumbnail!!
                                 oldBunnyId = nextVideoId
                                 nextVideoId = data.nextVideo?.nextVideoId.toString()
-                                binding.ivNextVideo.loadUrl(data.nextVideo?.nextVideoThumbnail!!)
+                                binding.ivNextVideo.loadUrl(videoThumb)
                                 binding.ivVideoThumb.loadUrl(videoThumb)
                                 videoCount++
                             } else {
@@ -499,7 +505,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
             params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
             ivPlay.layoutParams = params
-            if (playerHandler.player!=null) {
+            if (playerHandler.player != null) {
                 if (playerHandler.isPlaying()!!) {
                     playerHandler.pause()
                     ivPlay.setImageResource(R.drawable.ic_seleceted_play)
@@ -571,7 +577,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun playNextVideo() = with(binding) {
 
-
         if (isNewVideoAvailable) {
             if (!HomeFragment.isTrailer) {
                 oldVideoDuration = playerHandler.getCurrentPosition()
@@ -597,9 +602,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             isNextVideoStarted = true
             getLengthOnce = true
             isEnded = true
-//            ivNextVideo.invisible()
             timerLayout.invisible()
-
             tvCurrentLenght.setText("")
             tvCurrentLenght.invalidate()
             tvDuration.setText("")
@@ -612,7 +615,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.stopHandler()
             binding.sbVideoSeek.progress = 0
             playerHandler.setMediaUri(videoUrl, 0)
-        } else {
+            focusView = VideoEnum.BACKWARD
+        }
+        else {
             findNavController().popBackStack()
         }
 
@@ -622,7 +627,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         showProgress()
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_READY) {
+                if (playbackState == Player.STATE_BUFFERING) {
+                    showProgress()
+                } else if (playbackState == Player.STATE_READY) {
                     dismissProgress()
                     if (isEnded) {
                         lifecycleScope.launch(Dispatchers.IO) {
@@ -636,6 +643,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                     )
                                 )
                             }
+                           withContext(Dispatchers.Main){ newVideo()}
                         }
                     }
 
@@ -661,6 +669,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
                     playNextVideo()
+
                     viewFocus()
                 }
             }
@@ -737,9 +746,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
             .start()
     }
-    fun thumbShow()= with(binding) {
+
+    fun thumbShow() = with(binding) {
         ivVideoThumb.run {
-            alpha=0f
+            alpha = 0f
             visible()
             animate()
                 .alpha(1f)
@@ -751,6 +761,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
     }
+
     fun volumeUp() {
         if (volumeCount <= 99) {
             volumeCount += 1
@@ -765,16 +776,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.setVolume(volumeCount / 100.0f)
             volumeManager.setVolumePercentage(volumeCount)
         }
-    }
-
-    private fun updateDuration() {
-//        val position = player.currentPosition
-//        HomeFragment.homeFragment.currentVideoDuration = position
-//        if (player.playWhenReady) {
-//            playerHandler.handler.postDelayed({ updateDuration() }, 500)
-//        } else {
-//            playerHandler.stopHandler()
-//        }
     }
 
     fun forward() {
@@ -806,7 +807,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
         ivPlay.setOnFocusChangeListener { _, hasFocus ->
-            if (playerHandler.player!=null) {
+            if (playerHandler.player != null) {
                 if (hasFocus) {
                     toShowBackButton()
                     focusView = VideoEnum.VIDEO_PLAY
@@ -1061,14 +1062,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         rvQuality.post {
                             rvQuality.getChildAt(index)?.requestFocus()
                         }
-                    }else{
+                    } else {
                         rvQuality.post {
                             rvQuality.getChildAt(index)?.clearFocus()
                         }
                     }
                 }
                 qualityAdapter.notifyDataSetChanged()
-                rvQuality.adapter=qualityAdapter
+                rvQuality.adapter = qualityAdapter
                 clSettingsMenu.visible()
             }
         }
@@ -1076,7 +1077,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
-    fun qualityInit()= with(binding){
+    fun qualityInit() = with(binding) {
         rvQuality.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
@@ -1094,6 +1095,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             adapter = qualityAdapter
         }
     }
+
     private fun volume() = with(binding) {
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
@@ -1123,9 +1125,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.startMonitoring()
     }
 
-    var time = 10000
+    var time: Long = 10
     private fun updateProgressBar() {
-        if (playerHandler.player!=null) {
+        if (playerHandler.player != null) {
             val duration = playerHandler.getDuration()
             val currentPosition = playerHandler.getCurrentPosition()
             val progress = (currentPosition * 100 / duration.toDouble()).toInt()
@@ -1143,16 +1145,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 binding.playerView.requestFocus()
                 binding.clSettingsMenu.gone()
             }
-            10000/1000
+
 //             lifecycleScope.launch(Dispatchers.IO) {
-            Log.e("focussss", "timmer $focusView bunneyIdList")
+            Log.e("focussss", "timmer $focusView progress ${progress} duration $currentPosition isNewVideoAvailable $isNewVideoAvailable")
             if (isNewVideoAvailable) {
                 var video_show_count = duration - currentPosition
-                if (duration > 15000) {
-                    if (video_show_count <= 15000) {
+                if (duration > 10000) {
+                    if (video_show_count <= 10000) {
                         visibilityCount = 0
+                        time = video_show_count+1000
+                        while (time >= 10) {
+                            time /= 10
+                        }
+                        Log.e("timechecks", "$time timmer $video_show_count duration $currentPosition")
                         if (!binding.timerLayout.isVisible) {
-                            time = 15
                             focusView = VideoEnum.NEXT_VIDEO
                             binding.timerLayout.apply {
                                 visible()
@@ -1161,24 +1167,38 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 requestFocus()
                             }
                             binding.tvRemains.setText("Playing Next Video in $time s")
+                            if (time>=1L) {
+                                binding.tvRemains.setText("Playing Next Video in $time s")
+                            }
                             Log.e("sbhsbc", "10000 now visible $video_show_count")
                             viewFocus()
-                            newVideo()
+                          //  newVideo()
+
                         } else {
-                            time--
-                            binding.tvRemains.setText("Playing Next Video in $time s")
+
+                            if (time>=1L) {
+                                binding.tvRemains.setText("Playing Next Video in $time s")
+                            }
                         }
-                    }
-                    else if (binding.timerLayout.isVisible) {
+                        time--
+                    } else if (binding.timerLayout.isVisible) {
                         binding.timerLayout.gone()
-                        time = 15
+                        time = 0
+//                        if (::countDownTimer.isInitialized) {
+//                            countDownTimer.onFinish()
+//                        }
                     }
 
-                }
-                else {
-                    if (video_show_count <= 15000) {
+                } else {
+                    if (video_show_count <= 10000) {
                         visibilityCount = 0
+                        time = video_show_count+1000
+                        while (time >= 10) {
+                            time /= 10
+                        }
                         if (!binding.timerLayout.isVisible) {
+                            //  showRemainsTime(time)
+
                             focusView = VideoEnum.NEXT_VIDEO
                             binding.timerLayout.apply {
                                 visible()
@@ -1186,29 +1206,87 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 isFocusableInTouchMode = true
                                 requestFocus()
                             }
-                            time = 7
-                            binding.tvRemains.setText("Playing Next Video in $time s")
+                            if (time>=1L) {
+                                binding.tvRemains.setText("Playing Next Video in $time s")
+                            }
                             Log.e("sbhsbc", "3000 now visible $video_show_count")
                             viewFocus()
-                            newVideo()
+                          //  newVideo()
                         } else {
-                            time--
-                            binding.tvRemains.setText("Playing Next Video in $time s")
+                            if (time>=1L) {
+                                binding.tvRemains.setText("Playing Next Video in $time s")
+                            }
                         }
-                    }
-                    else if (binding.timerLayout.isVisible) {
-                        time = 7
+                        time--
+                    } else if (binding.timerLayout.isVisible) {
+                        time = 0
+//                        if (::countDownTimer.isInitialized) {
+//                            countDownTimer.onFinish()
+//                        }
                         binding.timerLayout.gone()
                     }
 
                 }
-            }
-            else {
+            } else {
                 binding.timerLayout.apply {
                     gone()
                 }
             }
         }
+
+    }
+
+    lateinit var countDownTimer: CountDownTimer
+
+    fun showRemainsTime(time: Long) = with(binding) {
+//        tvRemains.startCountdownTimer(
+//            time,
+//            onFinish = {
+//                timerLayout.gone()
+//            },
+//            onTick = { seconds ->
+//
+//                val formattedSeconds = seconds.toString().padStart(2, '0')
+//
+//                if (formattedSeconds != "00") {
+//                    timerLayout.visible()
+//                    tvRemains.apply {
+////                        text = "Resend OTP in 00:" + formattedSeconds
+//                        text= "Playing Next Video in $formattedSeconds s"
+//                       // text = "00:" + formattedSeconds
+////                        isEnabled = false
+////                        if (isAdded) {
+////                            setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+////                        }
+//                        //clearFocus()
+//                    }
+//                }
+//            }
+//        )
+
+        countDownTimer = object : CountDownTimer(time, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = (millisUntilFinished / 1000).toLong()
+                if (seconds == 0L) {
+                    onFinish()
+                    timerLayout.gone()
+                } else {
+
+//                    val formattedSeconds = seconds.toString().padStart(2, '0')
+                    //  if (formattedSeconds != "00") {
+                    timerLayout.visible()
+                    tvRemains.apply {
+                        text = "Playing Next Video in $seconds s"
+                    }
+                    // }
+                }
+            }
+
+            override fun onFinish() {
+                onFinish()
+            }
+        }
+        countDownTimer.start()
 
     }
 
@@ -1298,7 +1376,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 var newMediaId = 0
                 var newBunneyId = ""
                 var newThumb = ""
-                if (bunneyIdList.size>0) {
+                if (bunneyIdList.size > 0) {
                     bunneyIdList[bunneyIdList.size - 1].let {
                         newEventId = it.eventId
                         newMediaId = it.mediaId
@@ -1381,7 +1459,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     var focusView = VideoEnum.BACKWARD
     fun viewFocus() = with(binding) {
-        Log.e("focussss", "focus $focusView")
+        Log.e("handlefocus", "focus $focusView")
+        playerView.clearFocus()
         when (focusView) {
             VideoEnum.BACKWARD -> {
                 ivSkipBack.requestFocus()

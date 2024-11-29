@@ -64,7 +64,7 @@ class PlayerHandler(
 
             val trackSelector = DefaultTrackSelector(context)
             trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-                .setForceLowestBitrate(true)
+                .setForceLowestBitrate(false)
                 .setMaxVideoSize(854, 480)
                 .build()
 
@@ -81,7 +81,9 @@ class PlayerHandler(
                 .setRenderersFactory(
                     DefaultRenderersFactory(context)
                         .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF) // Disable extension renderers
-                        .setEnableDecoderFallback(true))
+                        .setEnableDecoderFallback(true)
+
+                )
                 .setLoadControl(loadControl)
                 .setTrackSelector(trackSelector)
                 .build()
@@ -300,7 +302,6 @@ class PlayerHandler(
             .build()
         Log.e("dcbdhbcd","cjdc testing $resolution")
         trackSelector.setParameters(trackSelectionParameters)
-       // player?.prepare()
     }
 
 

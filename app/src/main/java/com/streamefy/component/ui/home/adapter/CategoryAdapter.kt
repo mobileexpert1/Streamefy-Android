@@ -169,7 +169,9 @@ class CategoryAdapter(
             }
 
             tvMore.setOnClickListener {
+                homeFragment.focusView = StreamEnum.DRAWER_VIEW
                 callBack.invoke(position, StreamEnum.MORE)
+
             }
 
             tvMore.setOnFocusChangeListener { _, hasFocus ->

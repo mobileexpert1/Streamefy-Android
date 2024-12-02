@@ -88,7 +88,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     findNavController().popBackStack()
                 }
                 else {
-                    ExitDialog(requireActivity()).show()
+                    ExitDialog(requireContext()).show()
                 }
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->

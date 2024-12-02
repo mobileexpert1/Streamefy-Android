@@ -27,6 +27,10 @@ class LogoutDialog(context: Context,var callBack:()->Unit) :
                 }
 
             }
+            tvContinue.isFocusable = true
+            tvContinue.isFocusableInTouchMode = true
+            tvContinue.requestLayout()
+            tvContinue.requestFocus()
 //            ivClose.setOnClickListener { dismiss() }
 //            ivClose.requestFocus()
 //            ivClose.remoteKey {

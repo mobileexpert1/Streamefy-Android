@@ -513,6 +513,7 @@ class VideoRecyclerView : RecyclerView {
             homeFragment.binding.rvBackgVideo.scrollToPosition(targetPosition)
             playerHandler.seekTo(0)
             playerHandler.play()
+            updateDuration()
 //            if (recyclerview?.layoutManager !=null) {
 //                play() {}
 //            }

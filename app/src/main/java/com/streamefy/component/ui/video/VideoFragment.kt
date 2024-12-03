@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -948,6 +949,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             if (hasFocus) {
                 toShowBackButton()
                 focusView = VideoEnum.BACK_TO_VIDEO
+                val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._62sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._33sdp)
+                ivBack.layoutParams = params
+            }else{
+                val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+                params.width = resources.getDimensionPixelSize(R.dimen._60sdp) // Original size
+                params.height = resources.getDimensionPixelSize(R.dimen._31sdp)
+                ivBack.layoutParams = params
             }
         }
         ivRefresh.setOnFocusChangeListener { _, hasFocus ->
@@ -1421,12 +1431,18 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
             }
             if (playerHandler.isPlaying()!!) {
+
                 playerHandler.pause()
             }
         }
     }
 
     override fun onStop() {
+
+        super.onStop()
+    }
+
+    override fun onDestroy() {
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
@@ -1460,11 +1476,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             volumeManager.stopMonitoring()
         }
         requireActivity().window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-
         // homeFragment.viewFocus()
         super.onDestroy()
 
@@ -1474,8 +1485,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         super.onResume()
         binding.playerView.onResume()
         if (playerHandler.player != null) {
+            playerHandler.seekTo(HomeFragment.videoduraion)
             playerHandler.play()
             updateProgressBar()
+            if (playerHandler.player?.isPlaying!!){
+                binding.ivPlay.setImageResource(R.drawable.ic_selected_pause)
+            }
         }
         isOpenSettingFirst = false
     }

@@ -15,12 +15,12 @@ android {
         minSdk = 21
         targetSdk = 34
 //        fire stick
-//        versionCode = 6
-//        versionName = "1.0.7"
+        versionCode = 7
+        versionName = "1.0.8"
 
 //        google
-        versionCode = 2
-        versionName = "1.0.2"
+//        versionCode = 2
+//        versionName = "1.0.2"
         vectorDrawables {
             useSupportLibrary = true
         }

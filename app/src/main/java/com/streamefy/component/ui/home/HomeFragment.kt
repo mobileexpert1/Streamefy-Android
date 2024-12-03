@@ -116,7 +116,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         if (isFirst) {
             getUserData()
             //playbackObserver()
-            transitionValue = dpToPx(150f)
+            transitionValue = dpToPx(140f)
         }
 
         eventView()
@@ -526,7 +526,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         tvProjectDesc.visible()
         rvCreators.visible()
         tvProjectTitle.visible()
-
 
         tvProjectDesc.transition(transitionValue, 0f)
         rvCreators.transition(transitionValue, 0f)
@@ -1035,6 +1034,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             } else {
                 tvPlay.setText("play")
             }
+            showTools()
             rvBackgVideo.resumeVideo()
             viewFocus()
         }
@@ -1102,6 +1102,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun onPause() {
         binding.rvBackgVideo.apply {
             pauseVideo()
+            toolsCount=0
             // playerHandler.release()
         }
         Log.e("homefocus", "onpause home $focusView")

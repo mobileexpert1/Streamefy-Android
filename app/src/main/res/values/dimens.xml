@@ -19,5 +19,9 @@
     <dimen name="_40sdp">80dp</dimen>
     <dimen name="_90sdp">90dp</dimen>
     <dimen name="_50sdp">50dp</dimen>
+    <dimen name="_60sdp">60dp</dimen>
+    <dimen name="_62sdp">62dp</dimen>
+    <dimen name="_31sdp">31dp</dimen>
+    <dimen name="_33sdp">33dp</dimen>
 
 </resources>

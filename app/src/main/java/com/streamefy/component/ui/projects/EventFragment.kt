@@ -32,6 +32,8 @@ import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
     override fun bindView(): Int = R.layout.fragment_event
@@ -45,6 +47,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
     companion object {
         lateinit var eventFragment: EventFragment
+        var focusedIndex = 0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,6 +136,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     rvEvent.requestFocus()
+//                    rvEvent.isFocusable = true
+//                    rvEvent.isFocusableInTouchMode = true
+//                    rvEvent.post { rvEvent.getChildAt(focusedIndex)?.requestFocus() }
+//                    rvEvent.scrollToPosition(focusedIndex)
                 }
 
                 else -> {}
@@ -157,12 +164,13 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
+                StreamEnum.LEFT_DPAD_KEY -> {
 
+                }
                 else -> {}
             }
         }
     }
-
 
     private fun observe() {
         viewModel.projectLiveData.observe(viewLifecycleOwner) {
@@ -216,6 +224,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
     override fun onResume() {
         super.onResume()
+        focusedIndex=0
         viewModel.getProject(requireContext(), ProjectRequest(phone))
         observe()
     }

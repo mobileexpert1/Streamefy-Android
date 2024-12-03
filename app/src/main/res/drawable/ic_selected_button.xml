@@ -5,13 +5,19 @@
     <shape>
         <corners android:radius="@dimen/_30sdp" />
         <stroke android:color="@color/unselect_border"
-            android:width="@dimen/_1sdp"/>
+            android:width=".5dp"/>
     </shape>
     </item>
-    <item android:left="@dimen/_1sdp" android:top="@dimen/_1sdp"
-        android:bottom="@dimen/_1sdp" android:right="@dimen/_1sdp">
+    <item android:left=".5dp" android:top=".5dp"
+        android:bottom=".5dp" android:right=".5dp">
         <shape>
-            <solid android:color="@color/unselect"/>
+
+            <gradient
+                android:angle="0"
+                android:startColor="#F6EBFF"
+                android:endColor="#F8EFE6"
+                android:centerColor="#F3E6FD"
+                android:type="linear" />
             <corners android:radius="@dimen/_30sdp" />
         </shape>
     </item>

@@ -193,12 +193,13 @@
                 android:textColor="@color/input_field_color_selector"
                 app:layout_constraintBottom_toTopOf="@+id/clRv"
                 app:layout_constraintStart_toStartOf="@+id/clRv"
-                app:drawableTint="@color/play_icon_tint" />
+                app:drawableTint="@color/play_icon_tint"
+                 />
 
             <ImageView
                 android:id="@+id/ivTrailer"
-                android:layout_width="@dimen/_16sdp"
-                android:layout_height="@dimen/_16sdp"
+                android:layout_width="@dimen/_17sdp"
+                android:layout_height="@dimen/_17sdp"
                 android:layout_marginStart="@dimen/_7sdp"
                 android:clickable="true"
                 android:focusable="true"

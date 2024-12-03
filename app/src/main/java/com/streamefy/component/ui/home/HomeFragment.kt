@@ -222,7 +222,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //
 //            }
 //        }
-        ivTrailer.requestFocus()
+       // ivTrailer.requestFocus()
         ivHomeCross.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -766,11 +766,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 is MyResource.isSuccess -> {
-
-                    Log.e(
-                        "hfhddnub",
-                        "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString()
-                    )
+                    Log.e("hfhddnub", "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString())
                     it.data?.data?.run {
                         var data = this
                         if (isEventPagination) {
@@ -990,33 +986,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
             isLastPlay = true
             val eventIndex = newList.indexOfFirst { it.eventId == eventId }
-            Log.e(
-                "filteridwith",
-                "isEnded $isEnded duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList"
-            )
+            Log.e("filteridwith", "isEnded $isEnded duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList")
             try {
                 var newMedia = newList[eventIndex].media
                 if (newMedia != null && newMedia.isNotEmpty()) {
                     var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
                     delay(1000)
                     if (mediaIndex != null) {
-
+                        Log.e("drawerindex","mediaId $mediaId mediaIndex $mediaIndex eventIndex $eventIndex")
                         homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
                         if (isDrawerOpen) {
                             if (!isTrailer) {
-//                                mediaAdapter.updateDuration(
-//                                    mediaIndex!!,
-//                                    duration
-//                                )
+                               // mediaAdapter.updateDuration(mediaIndex!!, duration)
+                               //
                                 withContext(Dispatchers.Main) {
                                     binding.rvDrawer.adapter = mediaAdapter
-                                    viewFocus()
-                                    Log.e(
-                                        "focusdrawer",
-                                        "drawerItemFocus $drawerItemFocus focus $focusView"
-                                    )
                                 }
-
+                                viewFocus()
                             }
                         }
 
@@ -1071,7 +1057,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun viewFocus() = with(binding) {
-        Log.e("homefocus", "focus $focusView")
+        Log.e("homefocus", " on resume focus $focusView")
         when (focusView) {
             StreamEnum.LOGOUT_VIEW -> {
                 ivLogout.requestFocus()
@@ -1118,6 +1104,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             pauseVideo()
             // playerHandler.release()
         }
+        Log.e("homefocus", "onpause home $focusView")
         binding.rvBackgVideo.isfirst = true
         super.onPause()
     }

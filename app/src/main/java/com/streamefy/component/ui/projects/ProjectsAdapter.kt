@@ -49,12 +49,17 @@ class ProjectsAdapter(
 
             clEvent.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
+
                     itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
-                        .start()
+                        .withEndAction {
+                            eventFragment.binding.rvEvent.scrollToPosition(absoluteAdapterPosition)
+                            itemView.invalidate()
+                            itemView.requestLayout()
+                        }.start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                     clThumb.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                     clThumb.setBackgroundResource(R.drawable.item_focused)
-                    eventFragment.binding.rvEvent.scrollToPosition(absoluteAdapterPosition)
+
                 } else {
                     itemView.animate().scaleX(1f).scaleY(1f).setDuration(200)
                         .start()

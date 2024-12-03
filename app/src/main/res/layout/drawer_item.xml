@@ -33,6 +33,18 @@
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/caegory_radious"
                 android:scaleType="centerCrop"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivTrailerThumb"
+                android:layout_width="@dimen/_200sdp"
+                android:layout_height="@dimen/_70sdp"
+                android:background="@drawable/caegory_radious"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -651,6 +651,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.stopHandler()
             binding.sbVideoSeek.progress = 0
             //playerHandler.setMediaUri(videoUrl, 0)
+            playbackduration=0
             newVideo()
             focusView = VideoEnum.BACKWARD
         } else {

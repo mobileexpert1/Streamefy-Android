@@ -5,6 +5,7 @@ import com.streamefy.databinding.DrawerItemBinding
 
 import android.app.Activity
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -62,11 +63,9 @@ class DrawerAdapter(
                             tvDuration.visible()
                         }
                     }
-//            var current = getcurrent(data.playbackDuration)
-//            tvDuration.text = "$current of ${data.totalVideoDuration}"
-
                     tvSubtitle.text = data.description
                    // ivCate.loadUrl(data.thumbnailS3bucketId)
+                    ivTrailerThumb.gone()
                     Glide.with(context).load(data.thumbnailS3bucketId)
                         .error(R.drawable.caegory_radious)
                         .placeholder(R.drawable.caegory_radious)
@@ -98,14 +97,20 @@ class DrawerAdapter(
                             homeFragment.drawerItemFocus = viewHolder.absoluteAdapterPosition
                         }
                     }
-                    clParent.post {
-                        val layoutParams = ivCate.layoutParams
-                        layoutParams.width =500
-                        val dynamicHeight = 200
-                        layoutParams.height = dynamicHeight
-                        ivCate.layoutParams = layoutParams
-                    }
-                    ivCate.loadUrl(data.thumbnailSBucketId)
+                    ivTrailerThumb.visible()
+                    ivCate.gone()
+//                    clParent.post {
+//                        val layoutParams = ivCate.layoutParams
+//                        layoutParams.width =500
+//                        val dynamicHeight = 200
+//                        layoutParams.height = dynamicHeight
+//                        ivCate.layoutParams = layoutParams
+//                    }
+                    Glide.with(context).load(data.thumbnailSBucketId)
+                        .error(R.drawable.caegory_radious)
+                        .placeholder(R.drawable.caegory_radious)
+                        .into(ivTrailerThumb)
+
 
                     viewHolder.itemView.setOnClickListener {
                         Log.e("shhssd", "skmxksmx ${data.id}")
@@ -148,37 +153,37 @@ class DrawerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrawerView {
-        binding = DrawerItemBinding.inflate(context.layoutInflater)
+//        binding = DrawerItemBinding.inflate(context.layoutInflater)
+//        var inflator=LayoutInflater.from(context).inflate(R.layout.drawer_item, parent, false)
+        binding = DrawerItemBinding.inflate(LayoutInflater.from(context),parent,false)
         return DrawerView(binding)
     }
 
     fun updateDuration(mediaIndex: Int, duraton: Long) {
-//        eventList.clear()
-//        mediaList[mediaIndex].run {
-//            when (this) {
-//                is MediaItem -> {
-//                    playbackDuration = duraton.toString()
-//                    notifyItemChanged(mediaIndex)
-//                }
-//            }
-//
-//        }
-
         if (mediaIndex!=null && mediaList.size>mediaIndex) {
             mediaList[mediaIndex].run {
-                when (this) {
-                    is MediaItem -> {
-                        playbackDuration = duraton.toString()
-                        notifyItemChanged(mediaIndex)
+                for (i in 0 until mediaList.size){
+                    if (i==mediaIndex){
+                        when (this) {
+                            is MediaItem -> {
+                                playbackDuration = duraton.toString()
+                                notifyItemChanged(mediaIndex)
+                            }
+                        }
+                        break
                     }
                 }
 
             }
         }
+    }
 
-        //eventList[position].media?.get(mediaIndex)?.playbackDuration=duraton.toString()
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
+    }
 
-
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
     }
 
     override fun getItemCount(): Int = mediaList.size

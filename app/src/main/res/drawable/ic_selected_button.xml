@@ -12,6 +12,14 @@
         android:bottom=".5dp" android:right=".5dp">
         <shape>
 
+<!--            <gradient-->
+<!--                android:angle="0"-->
+<!--                android:startColor="#F2DEC9F1"-->
+<!--                android:endColor="#F0ECD9C7"-->
+<!--                android:centerColor="#F0DFCEEF"-->
+<!--                android:type="linear" />-->
+
+
             <gradient
                 android:angle="0"
                 android:startColor="#F6EBFF"

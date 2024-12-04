@@ -463,4 +463,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         Log.e("skcnmskncm", "skcnsk destroyview")
         progressDialog.dismiss()
     }
+    override fun netStatus() {
+    }
 }

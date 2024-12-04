@@ -11,13 +11,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.streamefy.data.KoinCompo.progress
+import com.streamefy.MainActivity
+import com.streamefy.component.ui.networkui.NetDialog
+import com.streamefy.network.NetworkReceiver
+import com.streamefy.network.NetworkStatusListener
 
-abstract class BaseFragment<B : ViewBinding> : Fragment() {
+abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener {
     lateinit var binding: B
 
-    lateinit var progressDialog:CircularProgressDialog
 
+    companion object{
+        var isNetworkAvailable=false
+        lateinit var progressDialog:CircularProgressDialog
+    }
+    var dialog:NetDialog?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.setThreadPolicy(
@@ -26,7 +33,9 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
                 .penaltyLog()
                 .build())
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        setRetainInstance(true)
+//        setRetainInstance(true)
+        (requireContext().applicationContext as MyApp).setNetworkStatusListener(this)
+         dialog=NetDialog(requireActivity())
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,4 +81,24 @@ abstract class BaseFragment<B : ViewBinding> : Fragment() {
         super.onPause()
         progressDialog?.dismiss()
     }
+
+    override fun onResume() {
+        super.onResume()
+        MainActivity().showNetwork(isNetworkAvailable)
+    }
+
+    override fun onNetworkStatusChanged(isAvailable: Boolean) {
+        Log.e("BaseFragment", "network available $isAvailable")
+        netStatus()
+        if (isAvailable){
+            dialog?.dismiss()
+            isNetworkAvailable=true
+        }else{
+            dialog?.show()
+            isNetworkAvailable=false
+        }
+    }
+
+    abstract fun netStatus()
+
 }

@@ -56,7 +56,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
 
     var isResend = false
     private val viewModel: OTPVM by viewModel()
-
+    override fun netStatus() {
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {

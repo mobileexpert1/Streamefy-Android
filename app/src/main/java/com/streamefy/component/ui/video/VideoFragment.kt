@@ -1484,17 +1484,46 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onResume() {
         super.onResume()
         binding.playerView.onResume()
-        if (playerHandler.player != null) {
-            playerHandler.seekTo(HomeFragment.videoduraion)
-            playerHandler.play()
-            updateProgressBar()
-            if (playerHandler.player?.isPlaying!!){
-                binding.ivPlay.setImageResource(R.drawable.ic_selected_pause)
+        if (isNetworkAvailable) {
+            if (playerHandler.player != null) {
+                playerHandler.seekTo(HomeFragment.videoduraion)
+                playerHandler.play()
+                updateProgressBar()
+                if (playerHandler.player?.isPlaying!!) {
+                    binding.ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                }
             }
+            isOpenSettingFirst = false
         }
-        isOpenSettingFirst = false
     }
 
+    override fun netStatus() {
+        Log.e("videoscreen", "videotest $isNetworkAvailable isNewVideoAvailable $isNewVideoAvailable")
+//        if (isNetworkAvailable){
+//            if (isNewVideoAvailable) {
+//                if (playerHandler.player != null) {
+//                    playerHandler.seekTo(HomeFragment.videoduraion)
+//                    playerHandler.play()
+//                    updateProgressBar()
+//                    if (playerHandler.player?.isPlaying!!) {
+//                        binding.ivPlay.setImageResource(R.drawable.ic_selected_pause)
+//                    }
+//                }
+//                isOpenSettingFirst = false
+//            }
+//        }else{
+//            if (playerHandler.player != null) {
+//                if (!HomeFragment.isTrailer) {
+//                    playerHandler.player?.run {
+//                        HomeFragment.videoduraion = currentPosition
+//                    }
+//                }
+//                if (playerHandler.isPlaying()!!) {
+//                    playerHandler.pause()
+//                }
+//            }
+//        }
+    }
     fun savePlayback(
         event: Int,
         mediaId: Int,

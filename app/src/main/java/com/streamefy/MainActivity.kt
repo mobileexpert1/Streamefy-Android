@@ -2,21 +2,32 @@ package com.streamefy
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.streamefy.component.base.BaseFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
+import com.streamefy.network.NetworkReceiver
+import com.streamefy.utils.gone
+import com.streamefy.utils.isNetworkAvailable
+import com.streamefy.utils.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
@@ -27,6 +38,10 @@ class MainActivity : AppCompatActivity() {
     var navHostFragment: Fragment? = null
     private lateinit var navController: NavController
   lateinit var wakeLock: PowerManager.WakeLock
+    private lateinit var networkReceiver: NetworkReceiver
+    lateinit var tvMessage:TextView
+    var isNetwork=true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,8 +49,12 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         wakelock()
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
+        tvMessage=findViewById(R.id.tvNetworkMessaage)
         navController = (navHostFragment as NavHostFragment).navController
-        getLocationFromIP()
+        if (isNetworkAvailable()) {
+            getLocationFromIP()
+        }
+
 //        if (FirebaseApp.getApps(this).isEmpty()) {
 //            FirebaseApp.initializeApp(this)
 //
@@ -43,7 +62,11 @@ class MainActivity : AppCompatActivity() {
 //        }else{
 //            Log.e("mdckld","slmclsmc not initialize")
 //        }
-
+//        networkReceiver = NetworkReceiver(this)
+//
+//        // Register the receiver with a filter for connectivity changes
+//        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+//        registerReceiver(networkReceiver, filter)
     }
     fun getDialingCode(countryIso: String?): Int {
         val phoneNumberUtil = PhoneNumberUtil.getInstance()
@@ -60,6 +83,8 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
             client.newCall(request).execute().use { response ->
+             try {
+
                 if (response.isSuccessful) {
                     // Parse the JSON response
                     val json = JSONObject(response.body!!.string())
@@ -76,6 +101,9 @@ class MainActivity : AppCompatActivity() {
                         Log.d("hhhhthth", "Failed to retrieve location ")
                     }
                 }
+            }catch (e:Exception){
+            Log.e("cjbjdbc","exception $e")
+        }
             }
         }
     }
@@ -115,10 +143,41 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         wakeLock.let {
             if (it.isHeld) {
-                it.release() // Release only if the WakeLock is currently held
+                it.release()
             }
         }
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        //unregisterReceiver(networkReceiver)
     }
+//    override fun onNetworkAvailable() {
+//        isNetwork=true
+//        BaseFragment.run {
+//            isNetworkAvailable=isNetwork
+//             }
+//    }
+//
+//    override fun onNetworkUnavailable() {
+//        isNetwork=false
+//        BaseFragment.isNetworkAvailable=isNetwork
+//        tvMessage.visible()
+//        tvMessage.setText(getString(R.string.network_message))
+//        lifecycleScope.launch {
+//            delay(5000)
+//            withContext(Dispatchers.Main){
+//                tvMessage.gone()
+//            }
+//        }
+//    }
+
+    fun showNetwork(isNetworkAvailable: Boolean) {
+        if (!isNetwork){
+        tvMessage.visible()
+        tvMessage.setText(getString(R.string.network_message))
+        lifecycleScope.launch {
+            delay(5000)
+            withContext(Dispatchers.Main){
+                tvMessage.gone()
+            }
+        }
+    }}
 
 }

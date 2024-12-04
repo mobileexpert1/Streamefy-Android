@@ -1023,21 +1023,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onResume() {
         super.onResume()
-        binding.apply {
-            Log.e(
-                "resumehandle",
-                " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
-            )
-            isFirstVideo = true
-            if (isLastPlay) {
-                tvPlay.setText("resume")
-            } else {
-                tvPlay.setText("play")
+        if (isNetworkAvailable) {
+            binding.apply {
+                Log.e("resumehandle", " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
+                isFirstVideo = true
+                if (isLastPlay) {
+                    tvPlay.setText("resume")
+                } else {
+                    tvPlay.setText("play")
+                }
+                showTools()
+                rvBackgVideo.resumeVideo()
+                viewFocus()
             }
-            showTools()
-            rvBackgVideo.resumeVideo()
-            viewFocus()
         }
+    }
+
+    override fun netStatus() {
+    bindView()
     }
 
 

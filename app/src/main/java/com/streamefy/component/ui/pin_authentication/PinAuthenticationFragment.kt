@@ -42,6 +42,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>() {
+    override fun netStatus() {}
     override fun bindView(): Int = R.layout.fragment_pin_authentication
     var projectId = "0"
     var phone = ""

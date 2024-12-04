@@ -19,4 +19,15 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/main_nav_graph" />
 
+    <TextView
+         android:visibility="gone"
+        android:id="@+id/tvNetworkMessaage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:gravity="center_horizontal"
+        android:paddingVertical="@dimen/_3sdp"
+        android:text="@string/network_message"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_5sdp" />
 </FrameLayout>

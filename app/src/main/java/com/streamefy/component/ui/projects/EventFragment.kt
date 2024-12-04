@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
+    override fun netStatus() {}
     override fun bindView(): Int = R.layout.fragment_event
     lateinit var projectAdapter: ProjectsAdapter
     var list = ArrayList<ResponseItem>()

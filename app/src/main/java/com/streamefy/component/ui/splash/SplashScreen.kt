@@ -24,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
+    override fun netStatus() {}
     override fun bindView(): Int = R.layout.fragment_splash_screen
     var isLogin = false
     var realnumer=""

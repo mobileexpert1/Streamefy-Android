@@ -1,17 +1,24 @@
 package com.streamefy.component.base
 
 import android.app.Application
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
 import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.data.SharedPref
 import com.streamefy.data.appModule
+import com.streamefy.network.NetworkReceiver
+import com.streamefy.network.NetworkStatusListener
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
-class MyApp : Application() {
+class MyApp : Application(),NetworkReceiver.NetworkStatusListener {
 //    val startTime = System.currentTimeMillis()
+private lateinit var networkReceiver: NetworkReceiver
+ var statusListener: NetworkStatusListener?=null
 
     override fun onCreate() {
 //        if (FirebaseApp.getApps(this).isEmpty()) {
@@ -19,7 +26,7 @@ class MyApp : Application() {
 //            Log.e("firebasecrass", "Firebase initialized: ${FirebaseApp.getApps(this).isNotEmpty()}")
 //        }
         super.onCreate()
-
+        statusListener?.onNetworkStatusChanged(false)
         startKoin {
             androidContext(this@MyApp)
             modules(appModule)
@@ -28,14 +35,30 @@ class MyApp : Application() {
 
         SharedPref.init(this@MyApp)
 
-//        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-//            // Log the exception to Crashlytics
-//            FirebaseCrashlytics.getInstance().recordException(throwable)
-//            Log.e("appdede", "Uncaught exception: ${throwable.message}", throwable)
-//            // Optionally rethrow the exception to let the app crash
-//            throw throwable//  RuntimeException("Application cll")
-//        }
-
+        networkReceiver = NetworkReceiver(this)
+        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(networkReceiver, filter)
 
     }
+    fun setNetworkStatusListener(listener:NetworkStatusListener){
+        statusListener=listener
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        // Unregister the receiver to prevent memory leaks
+            unregisterReceiver(networkReceiver)
+
+    }
+    override fun onNetworkAvailable() {
+        Log.e("BaseFragment", "Application network available")
+        statusListener?.onNetworkStatusChanged(true)
+
+    }
+
+    override fun onNetworkUnavailable() {
+        Log.e("BaseFragment", "Application network available")
+        statusListener?.onNetworkStatusChanged(false)
+    }
+
 }

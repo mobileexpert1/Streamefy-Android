@@ -162,13 +162,16 @@ fun phoneNumber(number: String) = when {
         false
 
     }
-//    number.length != 10 -> {
-//        ErrorCodeManager.PHONE_LENGTH
-//        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
-//        false
-//
-//    }
-
+    number.length >= 16 -> {
+        ErrorCodeManager.PHONE_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+        false
+    }
+    number.length <= 4 -> {
+        ErrorCodeManager.PHONE_LENGTH
+        ShowError.handleError.handleError(ErrorCodeManager.PHONE_LENGTH)
+        false
+    }
     else -> {
         true
     }

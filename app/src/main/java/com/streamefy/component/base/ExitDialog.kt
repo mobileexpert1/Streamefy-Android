@@ -31,17 +31,49 @@ class ExitDialog(context: Context) :
                     MainActivity().exitApp()
                 }
             }
-            ivClose.setOnClickListener { dismiss() }
-            ivClose.requestFocus()
-            ivClose.remoteKey {
+            tvContinue.isFocusable = true
+            tvContinue.isFocusableInTouchMode = true
+            tvContinue.requestLayout()
+            tvContinue.requestFocus()
+//            ivClose.setOnClickListener { dismiss() }
+//            ivClose.requestFocus()
+//            ivClose.remoteKey {
+//                when(it){
+//                    StreamEnum.DOWN_DPAD_KEY->{
+//                        tvContinue.requestFocus()
+//                    }
+//                    StreamEnum.UP_DPAD_KEY->{
+//                        tvContinue.requestFocus()
+//                    }
+//                    else->{
+//                    }
+//                }
+//            }
+
+            tvExit.remoteKey {
                 when(it){
-                    StreamEnum.DOWN_DPAD_KEY->{
+                    StreamEnum.RIGHT_DPAD_KEY->{
                         tvContinue.requestFocus()
                     }
-                    StreamEnum.UP_DPAD_KEY->{
+                    StreamEnum.LEFT_DPAD_KEY->{
                         tvContinue.requestFocus()
                     }
                     else->{
+
+                    }
+                }
+            }
+
+            tvContinue.remoteKey {
+                when(it){
+                    StreamEnum.RIGHT_DPAD_KEY->{
+                        tvExit.requestFocus()
+                    }
+                    StreamEnum.LEFT_DPAD_KEY->{
+                        tvExit.requestFocus()
+                    }
+                    else->{
+
                     }
                 }
             }

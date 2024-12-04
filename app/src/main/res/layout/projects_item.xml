@@ -2,11 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/_110sdp"
+    android:layout_width="@dimen/_120sdp"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/_2sdp"
+    android:layout_marginHorizontal="@dimen/_3sdp"
     android:descendantFocusability="afterDescendants"
     android:focusable="true"
+    android:layout_gravity="center_horizontal"
     android:focusableInTouchMode="true"
     android:padding="@dimen/_3sdp">
 
@@ -83,7 +84,6 @@
                     app:layout_constraintEnd_toStartOf="@+id/tvProjectCount"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:text="Friday 22 March, 2024" />
-
 
                 <TextView
                     android:id="@+id/tvProjectCount"

@@ -24,11 +24,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
+    override fun netStatus() {}
     override fun bindView(): Int = R.layout.fragment_splash_screen
     var isLogin = false
+    var realnumer=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
+        realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
         lifecycleScope.launch {
             delay(2000)
             logException()
@@ -38,20 +41,11 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     }
 
     private fun navigateToHome() {
-//        val navOptions = androidx.navigation.NavOptions.Builder()
-//            .setPopUpTo(R.id.splashScreen, true)
-//            .build()
-        Log.e("sjndjsn", "sknks $isLogin")
+        Log.e("sjndjsn", "realnumer $realnumer sknks $isLogin")
         if (isLogin) {
-
-//            findNavController().navigate(R.id.homefragment, null, navOptions)
             findNavController().navigate(R.id.homefragment)
         } else {
             findNavController().navigate(R.id.loginFragment)
-//            var bundle=Bundle()
-//            bundle.putString(PrefConstent.VIDEO_URL,"")
-//            findNavController().navigate(R.id.videofragment,bundle)
-////            findNavController().navigate(R.id.dynamicscreen)
         }
     }
 

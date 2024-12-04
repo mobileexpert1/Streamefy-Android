@@ -22,6 +22,9 @@ import kotlinx.coroutines.launch
 
 class DynamicPlayer : BaseFragment<FragmentDynamicPlayerBinding>() {
     override fun bindView(): Int = R.layout.fragment_dynamic_player
+    override fun netStatus() {
+    }
+
     var videoUrl =""
        // "https://iframe.mediadelivery.net/play/292623/06a93993-df8b-44c5-bf95-24d107ff5a95"
 

@@ -1,0 +1,6 @@
+package com.streamefy.component.ui.video
+
+enum class VideoEnum {
+    VIDEO_PLAY,BACKWARD,FORWARD,VIDEO_SEEK,SETTING,VOLUME,VOLUME_SEEK,REFRESH,NEXT_VIDEO,BACK_TO_VIDEO,RESULATION
+
+}

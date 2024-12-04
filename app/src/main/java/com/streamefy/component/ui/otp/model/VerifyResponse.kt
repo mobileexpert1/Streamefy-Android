@@ -7,7 +7,7 @@ data class Response(
     @SerializedName("message")
     val message: String = "",
     @SerializedName("email")
-    val email: String = "",
+    val email: String? = null,
     @SerializedName("isPrimaryuser")
     val isPrimaryuser: Boolean = false
 )

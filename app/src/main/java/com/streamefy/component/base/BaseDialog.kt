@@ -17,9 +17,13 @@ abstract class BaseDialog<T : ViewDataBinding>(
         DataBindingUtil.inflate(LayoutInflater.from(context), layoutId, null, false)
     }
 
+  //  lateinit var progressDialog:CircularProgressDialog
+
     init {
+      //  progressDialog= CircularProgressDialog(context)
         setContentView(binding.root)
         setupViews()
+
     }
 
     protected abstract fun setupViews()

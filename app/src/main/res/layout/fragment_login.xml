@@ -22,7 +22,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="@dimen/_150sdp"
+            android:layout_width="@dimen/_180sdp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/bg_round_corners"
@@ -64,7 +64,7 @@
                 android:id="@+id/llNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
+
                 android:background="@drawable/inputfield_selector"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +73,7 @@
                 <com.hbb20.CountryCodePicker
                     android:id="@+id/ccCode"
                     style="@style/filson_14_whiteTV"
-                    android:layout_width="@dimen/_25sdp"
+                    android:layout_width="@dimen/_30sdp"
                     android:layout_height="0dp"
                     android:focusable="true"
                     android:importantForAccessibility="yes"
@@ -96,7 +96,7 @@
                     app:ccp_autoFormatNumber="true"
                     android:clickable="true"
                     app:ccp_autoDetectCountry="true"
-                    app:ccp_textSize="@dimen/_5sdp"
+                    app:ccp_textSize="@dimen/_7sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -124,11 +124,13 @@
                     android:gravity="center_vertical"
                     android:minEms="4"
                     android:maxLines="1"
+                    android:maxLength="16"
                     android:paddingVertical="@dimen/_5sdp"
                     android:paddingStart="@dimen/_2sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:singleLine="true"
                     android:text=""
+                    android:textSize="@dimen/_7sdp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"

@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -195,8 +196,7 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:padding="@dimen/_1sdp"
-                android:src="@drawable/ic_refresh_selector"
-                />
+                android:src="@drawable/ic_refresh_selector" />
 
         </LinearLayout>
         <!--       settings-->
@@ -221,8 +221,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                />
+                android:focusableInTouchMode="true" />
 
 
             <TextView
@@ -265,7 +264,8 @@
                 android:paddingVertical="@dimen/_1sdp"
                 android:text="2080p"
 
-                android:textColor="@color/black"  android:visibility="gone"/>
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 style="@style/filson_14_whiteTV"
@@ -307,6 +307,44 @@
                 android:textColor="@color/black"
                 android:visibility="gone" />
         </LinearLayout>
+
+        <!--        show next video suggestion-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/timer_layout"
+            android:layout_width="@dimen/_120sdp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_3sdp"
+            android:background="@drawable/ic_video_timer_backg"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:padding="@dimen/_5sdp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/llTools"
+            app:layout_constraintEnd_toEndOf="@+id/llTools">
+
+            <ImageView
+                android:id="@+id/ivNextVideo"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tvRemains"
+                style="@style/filson_14_whiteTV"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:fontFamily="@font/filsonpro_bold"
+                android:text="Playing Next video in 9s"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/ivNextVideo"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

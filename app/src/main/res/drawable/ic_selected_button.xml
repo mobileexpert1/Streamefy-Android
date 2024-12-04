@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:drawable="@drawable/bg_round_gradient_purple_orange" />
-    <item android:start="@dimen/_1sdp" android:top="@dimen/_1sdp"
-        android:bottom="@dimen/_1sdp" android:end="@dimen/_1sdp">
+    <item>
+<!--       /> android:drawable="@drawable/bg_round_gradient_purple_orange"-->
+    <shape>
+        <corners android:radius="@dimen/_30sdp" />
+        <stroke android:color="@color/unselect_border"
+            android:width=".5dp"/>
+    </shape>
+    </item>
+    <item android:left=".5dp" android:top=".5dp"
+        android:bottom=".5dp" android:right=".5dp">
         <shape>
-            <solid android:color="@color/white"/>
+
+<!--            <gradient-->
+<!--                android:angle="0"-->
+<!--                android:startColor="#F2DEC9F1"-->
+<!--                android:endColor="#F0ECD9C7"-->
+<!--                android:centerColor="#F0DFCEEF"-->
+<!--                android:type="linear" />-->
+
+
+            <gradient
+                android:angle="0"
+                android:startColor="#F6EBFF"
+                android:endColor="#F8EFE6"
+                android:centerColor="#F3E6FD"
+                android:type="linear" />
             <corners android:radius="@dimen/_30sdp" />
         </shape>
     </item>
-
 </layer-list>

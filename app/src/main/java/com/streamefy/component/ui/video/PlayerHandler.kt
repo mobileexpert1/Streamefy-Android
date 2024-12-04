@@ -12,16 +12,14 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.analytics.AnalyticsCollector
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DataSource.Factory
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.streamefy.component.ui.video.model.QualityModel
@@ -54,13 +52,22 @@ class PlayerHandler(
         initializePlayer()
     }
 
-    private fun initializePlayer() {
+    fun initializePlayer() {
         try {
 
 //            val renderersFactory = DefaultRenderersFactory(context)
 //                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
             val renderersFactory = DefaultRenderersFactory(context)
                 .setEnableDecoderFallback(true)
+
+
+
+            val trackSelector = DefaultTrackSelector(context)
+            trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+                .setForceLowestBitrate(false)
+                .setMaxVideoSize(854, 480)
+                .build()
+
             val loadControl = DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
                     DefaultLoadControl.DEFAULT_MIN_BUFFER_MS,
@@ -71,10 +78,18 @@ class PlayerHandler(
                 .build()
 
             player = ExoPlayer.Builder(context)
-                .setRenderersFactory(renderersFactory)
+                .setRenderersFactory(
+                    DefaultRenderersFactory(context)
+                        .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF) // Disable extension renderers
+                        .setEnableDecoderFallback(true)
+
+                )
                 .setLoadControl(loadControl)
+                .setTrackSelector(trackSelector)
                 .build()
             playerView.player = player
+
+
 //
 //            val trackSelector = DefaultTrackSelector(context)
 //            val renderersFactory = DefaultRenderersFactory(context).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
@@ -155,18 +170,40 @@ class PlayerHandler(
                         release()
                         initializePlayer()
                     }
+                    Log.e("videourlssss", "$lastDuration player: $uri")
                     CoroutineScope(Dispatchers.IO).launch {
+
                         val dataSourceFactory = DefaultHttpDataSource.Factory()
                         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
                             .createMediaSource(MediaItem.fromUri(uri))
                         // Prepare player with media source
                         withContext(Dispatchers.Main) {
-                            player?.setMediaSource(mediaSource)
-                            player?.prepare()
-                            player?.seekTo(lastDuration)
-                            player?.play()
+//                            player?.stop()
+//                            player?.clearMediaItems()
+//
+//
+//                            player?.setMediaSource(mediaSource)
+//                            player?.prepare()
+//                            player?.seekTo(lastDuration)
+//                            player?.play()
+
+
+                            player?.apply {
+                                // Clear media items and stop playback before setting a new media source
+                                stop()
+                                clearMediaItems()
+
+                                setMediaSource(mediaSource)
+                                prepare()
+                                seekTo(lastDuration)
+                                play()
+                            }
+
                         }
                     }
+
+
+
                 }
             }
         }
@@ -190,6 +227,7 @@ class PlayerHandler(
 
         //  playTokenise()
     }
+
 
     fun seekWithInitialise(uri: String, currentDuration: Long) {
 
@@ -259,26 +297,40 @@ class PlayerHandler(
 
     fun setQuality(resolution: QualityModel) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
-//        val dimensions = when (resolution) {
-//            // "360p" -> Pair(640, 360)// Pair(352, 240)
-//            "480p" -> Pair(854, 480)// Pair(640, 360)
-//            "1080p" -> Pair(1920, 1080)// Pair(640, 360)
-//            "2080p" -> Pair(3840, 2160)// Pair(640, 360)
-//            // "720p" -> Pair(1280, 720)// Pair(842, 480)
-//            //  "1080p" -> Pair(1920, 1080) // Pair(1280, 720)
-//            // "1440p" -> Pair(2560, 1440) // Pair(1920, 1080)
-//            //  "4K" -> Pair(3840, 2160) //Pair(3840, 2160)
-//            else -> return
-//        }
-//
-//        val (width, height) = dimensions
         val trackSelectionParameters = trackSelector.buildUponParameters()
             .setMaxVideoSize(resolution.width, resolution.height)
-//            .setMaxVideoSize(1920, 1080)
-//            .setMaxVideoSizeSd()
-//            .setMaxAudioBitrate(6000)
             .build()
+        Log.e("dcbdhbcd","cjdc testing $resolution")
+        trackSelector.setParameters(trackSelectionParameters)
+    }
 
+
+    fun setAutoResolutionBasedOnBandwidth() {
+        val trackSelector = player?.trackSelector as DefaultTrackSelector
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
+        val estimatedBandwidth = bandwidthMeter.getBitrateEstimate()
+        val resolution = when {
+            estimatedBandwidth >= 5000000 -> {
+                // High bandwidth, select 1080p (landscape)
+                Pair(1920, 1080)
+            }
+            estimatedBandwidth >= 3000000 -> {
+                // Medium bandwidth, select 720p
+                Pair(1280, 720)
+            }
+            estimatedBandwidth >= 1000000 -> {
+                // Lower bandwidth, select 480p
+                Pair(854, 480)
+            }
+            else -> {
+                // Very low bandwidth, select 1080p (portrait mode)
+                Pair(1080, 1920)
+            }
+        }
+        Log.e("resulation"," resulation $resolution bandwidth $estimatedBandwidth  ")
+        val trackSelectionParameters = trackSelector.buildUponParameters()
+            .setMaxVideoSize(resolution.first, resolution.second)  // Set the dynamic resolution
+            .build()
         trackSelector.setParameters(trackSelectionParameters)
     }
 
@@ -293,7 +345,9 @@ class PlayerHandler(
 
     }
     fun pause() {
-        player?.playWhenReady = false
+        if (player!=null) {
+            player?.playWhenReady = false
+        }
     }
 
     fun seekTo(positionMs: Long) {

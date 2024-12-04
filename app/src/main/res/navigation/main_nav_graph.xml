@@ -1,16 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
     app:startDestination="@id/splashScreen">
-
     <fragment
-        android:name="com.streamefy.component.ui.splash.SplashScreen"
         android:id="@+id/splashScreen"
+        android:name="com.streamefy.component.ui.splash.SplashScreen"
         android:label="splashScreen"
-        tools:layout="@layout/fragment_splash_screen"
-        />
+        tools:layout="@layout/fragment_splash_screen" />
     <fragment
         android:id="@+id/homefragment"
         android:name="com.streamefy.component.ui.home.HomeFragment"
@@ -19,8 +16,8 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.streamefy.component.ui.login.LoginFragment"
-        tools:layout="@layout/fragment_login"
-        android:label="LoginFragment">
+        android:label="LoginFragment"
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_otpFragment"
             app:destination="@id/otpFragment" />
@@ -28,40 +25,41 @@
     <fragment
         android:id="@+id/otpFragment"
         android:name="com.streamefy.component.ui.otp.OtpFragment"
-        tools:layout="@layout/fragment_otp"
-        android:label="OtpFragment">
+        android:label="OtpFragment"
+        tools:layout="@layout/fragment_otp">
         <action
             android:id="@+id/action_otpFragment_to_pinAuthenticationFragment"
             app:destination="@id/pinAuthenticationFragment" />
+        <action
+            android:id="@+id/action_otpFragment_to_projectfragment"
+            app:destination="@id/projectfragment" />
     </fragment>
     <fragment
         android:id="@+id/pinAuthenticationFragment"
         android:name="com.streamefy.component.ui.pin_authentication.PinAuthenticationFragment"
-        tools:layout="@layout/fragment_pin_authentication"
-        android:label="PinAuthenticationFragment">
+        android:label="PinAuthenticationFragment"
+        tools:layout="@layout/fragment_pin_authentication">
         <action
             android:id="@+id/action_pinAuthenticationFragment_to_homefragment"
             app:destination="@id/homefragment" />
     </fragment>
-
     <fragment
-        android:name="com.streamefy.component.ui.video.VideoFragment"
         android:id="@+id/videofragment"
+        android:name="com.streamefy.component.ui.video.VideoFragment"
         android:label="videofragment"
-        tools:layout="@layout/fragment_video"
-        />
+        tools:layout="@layout/fragment_video" />
     <fragment
-        android:name="com.streamefy.component.ui.dynamicview.DynamicPlayer"
         android:id="@+id/dynamicscreen"
+        android:name="com.streamefy.component.ui.dynamicview.DynamicPlayer"
         android:label="dynamicscreen"
-        tools:layout="@layout/fragment_dynamic_player"
-        />
-
+        tools:layout="@layout/fragment_dynamic_player" />
     <fragment
-        android:name="com.streamefy.component.ui.projects.EventFragment"
         android:id="@+id/projectfragment"
+        android:name="com.streamefy.component.ui.projects.EventFragment"
         android:label="projectfragment"
-        tools:layout="@layout/fragment_event"
-        />
-
+        tools:layout="@layout/fragment_event">
+        <action
+            android:id="@+id/action_projectfragment_to_pinAuthenticationFragment"
+            app:destination="@id/pinAuthenticationFragment" />
+    </fragment>
 </navigation>

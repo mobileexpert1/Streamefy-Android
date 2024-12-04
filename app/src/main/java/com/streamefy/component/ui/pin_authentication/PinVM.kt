@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.streamefy.component.ui.home.model.HomeResponse
+import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
+import com.streamefy.component.ui.pin_authentication.model.ResetPinResponse
 import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
@@ -24,13 +26,14 @@ class PinVM(var repo: ApiService) : ViewModel() {
     fun setPin(
         context: Context,
         userPin: String,
+        projectId:Int,
 
     ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
                 _pinData.value = MyResource.isLoading()
                 try {
-                    var response = repo.verifyPin(userPin)
+                    var response = repo.verifyPin(userPin,projectId)
                     if (response.body()?.isSuccess!!) {
                         _pinData.value = MyResource.isSuccess(response.body())
                     } else {
@@ -54,33 +57,31 @@ class PinVM(var repo: ApiService) : ViewModel() {
     }
 
     // reset pin
-    var _resetData = SingleLiveEvent<MyResource<PinResponse>>()
-    var resetData :LiveData<MyResource<PinResponse>> =_resetData
+    var _resetData = SingleLiveEvent<MyResource<ResetPinResponse>>()
+    var resetData :LiveData<MyResource<ResetPinResponse>> =_resetData
     fun resetPin(
         context: Context,
-        userPin: String,
+        userPin: ResetPinRequest,
         ) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {
-                _pinData.value = MyResource.isLoading()
+                _resetData.value = MyResource.isLoading()
                 try {
-                    var response = repo.verifyPin(userPin)
+                    var response = repo.resetPin(userPin)
                     if (response.body()?.isSuccess!!) {
-                        _pinData.value = MyResource.isSuccess(response.body())
+                        _resetData.value = MyResource.isSuccess(response.body())
                     } else {
                         ShowError.handleError.message(response.body()?.error?.userMessage.toString())
-                        _pinData.value =
-                            MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                        _resetData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
                     }
                 } catch (e: Exception) {
-                    LogMessage.logeMe(e.toString())
-                    //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    _pinData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+                      ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    _resetData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
-                _pinData.value =
+                _resetData.value =
                     MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
 
             }

@@ -40,13 +40,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
     var countryCode = 91
+    var realnumer=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty()) {
             countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
-
+        realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
 
 
         initClickListeners()
@@ -60,16 +61,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         Log.e("newcode", " code: $countryCode country code")
         binding.ivApplogo.loadAny(R.drawable.ic_logo)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            (requireActivity() as MainActivity).exitApp()
+            MainActivity().exitApp()
         }
 
     }
 
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
-            //   CountryPicker.loadDataFromXML(requireContext())
-            //  var list=    CountryPicker.loadedLibraryMaterList
-            //    Log.e("newcode", " code: $countryCode country code $list")
+
 
             var validate =
 //                nameWithNumber(etFullname.text.toString(), etPhoneNumber.text.toString())
@@ -86,14 +85,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 //                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
                     )
                     observe()
-
-//                    var bundle = Bundle()
-//                    bundle.putString(
-//                        PrefConstent.PHONE_NUMBER,
-//                        binding.etPhoneNumber.text.toString()
-//                    )
-//                    bundle.putString(PrefConstent.FULL_NAME, binding.etFullname.text.toString())
-//                    findNavController().navigate(R.id.otpFragment, bundle)
 
                 } else {
                     onAttach(requireActivity())
@@ -362,10 +353,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     override fun onResume() {
         super.onResume()
-
+        Log.e("resumelogin", "onResume $realnumer")
         binding.apply {
             etFullname.setText("")
-            etPhoneNumber.setText("")
+            if (realnumer!=null){
+                if (realnumer.toString().isNotEmpty()){
+                    etPhoneNumber.setText(realnumer)
+                }
+            }
+            ccCode.setCountryForPhoneCode(countryCode)
+//
         }
 
     }
@@ -383,25 +380,21 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     try {
 
                         var data = it.data?.response
+
+                        var formated_Number=binding.ccCode.formattedFullNumber.toString()
+                       var updated_number=replaceSpaceFromLastIfMoreThanTwo(formated_Number)
+                        Log.e("sncskn","skncsknv $updated_number")
+
                         data?.run {
                             SharedPref.setString(PrefConstent.TOKEN, accessToken)
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
-                            SharedPref.setString(
-                                PrefConstent.PHONE_NUMBER,
-                                binding.ccCode.formattedFullNumber.toString()
-                                //binding.etPhoneNumber.text.toString()
-                            )
+                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
+                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())
                             Log.e("slcnslnc", "onResume ${ binding.ccCode.formattedFullNumber.toString()}")
-                            SharedPref.setString(
-                                PrefConstent.FULL_NAME,
-                                "appdev"
-//                                binding.etFullname.text.toString()
-                            )
+                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
+                            SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
+                            SharedPref.setString(PrefConstent.COUNTRY_CODE,binding.ccCode.selectedCountryCode)
 
-                            SharedPref.setString(
-                                PrefConstent.APP_LOGO,
-                                data.logo
-                            )
 //                        data.profileImage?.run {
 //                            SharedPref.setString(
 //                                PrefConstent.AUTH_BACKGROUND,
@@ -415,7 +408,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         var bundle = Bundle()
                         bundle.putString(
                             PrefConstent.PHONE_NUMBER,
-                            binding.ccCode.formattedFullNumber.toString()
+                            updated_number.toString()
                         )
                         if (isAdded) {
                             findNavController().navigate(R.id.otpFragment, bundle)
@@ -437,7 +430,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
         }
     }
-
+    fun replaceSpaceFromLastIfMoreThanTwo(str: String): String {
+        val spaceCount = str.count { it == ' ' }
+        if (spaceCount >= 2) {
+            val lastSpaceIndex = str.lastIndexOf(' ')
+            return str.substring(0, lastSpaceIndex) + "-" + str.substring(lastSpaceIndex + 1)
+        }
+        return str
+    }
     private fun causeNullPointerCrash() {
         val nullObject: String? = null
         // This will cause a NullPointerException
@@ -462,5 +462,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         super.onDestroyView()
         Log.e("skcnmskncm", "skcnsk destroyview")
         progressDialog.dismiss()
+    }
+    override fun netStatus() {
     }
 }

@@ -3,6 +3,7 @@ package com.streamefy.component.ui.home.background
 import android.app.Activity
 import android.util.Log
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.Player
 import com.streamefy.component.ui.home.HomeFragment.Companion.homeFragment
@@ -18,80 +19,37 @@ class BackgroundHolder(var binding: ItemSliderBinding) : RecyclerView.ViewHolder
     lateinit var dimen: Pair<Int, Int>
     var oldAdapterPos = -1
     var adapter: BackgroundAdpater? = null
-   // lateinit var playerHandler:PlayerHandler
     init {
         parent = itemView
     }
 
     fun onBind(
-        context: Activity,thumbnailSBucketId:String,videoUrl:String,position:Int
+       thumbnailSBucketId:String
     ) {
         this.oldAdapterPos = oldAdapterPos
         parent.setTag(this)
         binding.apply {
-           Log.e("nckdnvd","ncksdnc $thumbnailSBucketId")
             if (thumbnailSBucketId.isNotEmpty()) {
-                imageView.visible()
-//                imageView.loadPicaso(thumbnailSBucketId)
+               // imageView.visible()
                 imageView.loadUrl(thumbnailSBucketId)
             } else {
                 imageView.gone()
             }
-
-//
-//             playerHandler = PlayerHandler(context, videoview)
-//          //  playerHandler.pause()
-//
-//            playerHandler.setMediaUri(videoUrl)
-//
-//
-//
-//            playerHandler!!.player?.addListener(object : Player.Listener {
-//            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-//                when (playbackState) {
-//                    Player.STATE_BUFFERING -> {
-//                        Log.e("jnjddc", " STATE_BUFFERING")
-//                    }
-//
-//                    Player.STATE_ENDED -> {
-//                        Log.e("jnjddc", " STATE_ENDED")
-////                       if (mediaObjects.size>currentVideo){
-////                           recyclerview?.scrollToPosition(currentVideo+1)
-////                       }
-//                        homeFragment.binding.rvBackgVideo.scrollMe()
-//                    }
-//
-//                    Player.STATE_IDLE -> {
-//                        Log.e("jnjddc", " STATE_IDLE")
-//
-//                    }
-//
-//                    Player.STATE_READY -> {
-//                        Log.e("jnjddc", " STATE_READY")
-//
-////                        if (!isVideoViewAdded) {
-////                            try {
-////                                addVideoView()
-////                                updateDuration()
-////                            } catch (e: Exception) {
-////
-////                            }
-////                        }
-//
-//                    }
-//
-//                    else -> {
-//                    }
-//                }
-//            }
-//
-//        })
-
-
         }
     }
 
+    fun thumbShow()= with(binding) {
+        imageView.run {
+            visible()
+            animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setInterpolator(DecelerateInterpolator())
+                .setDuration(2000)
+                .start()
+        }
 
-
+    }
 
 }

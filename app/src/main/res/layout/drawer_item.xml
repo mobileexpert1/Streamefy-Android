@@ -5,28 +5,26 @@
     android:id="@+id/clParent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/_10sdp"
-    android:focusableInTouchMode="true"
-    android:focusable="true"
     android:background="@drawable/ic_drawer_selector"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:paddingHorizontal="@dimen/_10sdp"
     android:paddingVertical="@dimen/_3sdp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/clThumb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/_5sdp"
         app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="@dimen/_10sdp"
+        app:cardCornerRadius="@dimen/_5sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clVideoThumb"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/_1sdp"
-            android:id="@+id/clVideoThumb"
             >
 
             <ImageView
@@ -35,7 +33,18 @@
                 android:layout_height="@dimen/_35sdp"
                 android:background="@drawable/caegory_radious"
                 android:scaleType="centerCrop"
-                android:src="@drawable/caegory_radious"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivTrailerThumb"
+                android:layout_width="@dimen/_200sdp"
+                android:layout_height="@dimen/_70sdp"
+                android:background="@drawable/caegory_radious"
+                android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -83,8 +92,8 @@
         android:layout_width="0dp"
         android:layout_marginTop="@dimen/_5sdp"
         android:fontFamily="@font/filsonpro_light"
-        android:paddingBottom="@dimen/_3sdp"
         android:justificationMode="inter_word"
+        android:paddingBottom="@dimen/_3sdp"
         android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has"
         app:layout_constraintEnd_toEndOf="@+id/lpVideoProgres"
         app:layout_constraintStart_toStartOf="@+id/tvDuration"

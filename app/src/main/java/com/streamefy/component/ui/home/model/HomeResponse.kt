@@ -50,8 +50,6 @@ data class MediaItem(
     val size: String = "",
     @SerializedName("format")
     val format: String = "",
-//    @SerializedName("hlsPlaylistUrl")
-//    val hlsPlaylistUrl: String = "",
     @SerializedName("description")
     val description: String = "",
     @SerializedName("bunnyId")

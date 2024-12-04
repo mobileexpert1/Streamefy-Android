@@ -6,19 +6,18 @@
                 android:angle="0"
                 android:endColor="#EFBD8A"
                 android:startColor="#941AF2"
-                android:centerColor="@color/transparent"
+                android:centerColor="#941AF2"
                 android:type="linear" />
             <corners android:radius="@dimen/_3sdp" />
         </shape>
     </item>
     <item
         android:bottom="1dp"
-        android:left="1.56dp"
+        android:left="1dp"
         android:right="1dp"
         android:top="1dp">
         <shape>
             <solid android:color="@color/white" />
-            />
             <corners android:radius="@dimen/_3sdp" />
         </shape>
     </item>

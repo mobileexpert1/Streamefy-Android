@@ -106,12 +106,27 @@ class ConfirmPinDialog(context: Context, var callBack: (Boolean) -> Unit) :
 
     fun maskEmail(email: String): String {
 
-        val visiblePartLength = email.length - 4
+//        val visiblePartLength = email.length - 4
+//        val maskedPartLength = 4
+//        val maskedPart = "*".repeat(maskedPartLength)
+//        val visiblePart = email.take(visiblePartLength)
+//
+//        return "$maskedPart$visiblePart"
+
+
         val maskedPartLength = 4
+//        val visiblePartLength = email.length - maskedPartLength
+
+        // Ensure that the email has at least 4 characters
+        if (email.length <= maskedPartLength) {
+            return "*".repeat(email.length)
+        }
+
         val maskedPart = "*".repeat(maskedPartLength)
-        val visiblePart = email.take(visiblePartLength)
+        val visiblePart = email.substring(maskedPartLength)
 
         return "$maskedPart$visiblePart"
+
     }
 
 }

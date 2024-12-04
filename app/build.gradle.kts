@@ -14,8 +14,13 @@ android {
         applicationId = "com.streamefy"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.2"
+//        fire stick
+        versionCode = 7
+        versionName = "1.0.8"
+
+//        google
+//        versionCode = 2
+//        versionName = "1.0.2"
         vectorDrawables {
             useSupportLibrary = true
         }

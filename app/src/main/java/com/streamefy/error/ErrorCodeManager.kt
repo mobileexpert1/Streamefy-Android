@@ -29,9 +29,11 @@ object ErrorCodeManager {
     const val PHONE_EMPTY=17
     const val PHONE_LENGTH=18
 
+
     const val PIN_LENGTH=19
     const val PIN_EMPTY=20
     const val INVALID_EMAIL=21
+    const val PHONE_MIN_LENGHT=122
 
     private val errorMessages = mapOf(
         LOGIN_FAIL to "Server error, please try again later.",
@@ -54,6 +56,7 @@ object ErrorCodeManager {
         PIN_LENGTH to "Invalid PIN",
         INVALID_EMAIL to "Invalid email",
         PHONE_LENGTH to  "Invalid phone number",
+        PHONE_MIN_LENGHT to  "Invalid phone number",
         UNKNOWN_ERROR to "Something went wrong, please try again later.",
         NETWORK_ISSUE to "Please check your internet connection"
     )

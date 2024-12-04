@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,10 @@ import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -62,7 +67,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         binding.apply {
             if (isPrimaryuser) {
                 if (isHome) {
-                   ivBack.invisible()
+                    ivBack.invisible()
                 }
             }
         }
@@ -93,19 +98,27 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
-                SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
-                SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-                SharedPref.setString(PrefConstent.PROJECT_ID,list[index].id.toString())
-                val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
-                val bundle = Bundle()
-                bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
-                bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                bundle.putString(PrefConstent.FULL_NAME, name)
-                bundle.putBoolean(PrefConstent.ISHOME, false)
-                findNavController().navigate(
-                    R.id.action_projectfragment_to_pinAuthenticationFragment,
-                    bundle
-                )
+
+                when (streamEnum) {
+                    StreamEnum.LAST_EVENT -> {
+                        // handle event add functionality
+                    }
+
+                    StreamEnum.SINGLE -> {
+                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+                        SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
+                        SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
+                        val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+                        val bundle = Bundle()
+                        bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
+                        bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                        bundle.putString(PrefConstent.FULL_NAME, name)
+
+                        bundle.putBoolean(PrefConstent.ISHOME, false)
+                        findNavController().navigate(
+                            R.id.action_projectfragment_to_pinAuthenticationFragment,
+                            bundle
+                        )
 //                ConfirmPinDialog(requireContext()) {
 //                    if (it) {
 //                        projectId = list[index].id
@@ -113,6 +126,11 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 //                        observe()
 //                    }
 //                }.show()
+                    }
+
+                    else -> {}
+                }
+
             }
             adapter = projectAdapter
         }
@@ -165,9 +183,11 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
+
                 StreamEnum.LEFT_DPAD_KEY -> {
 
                 }
+
                 else -> {}
             }
         }
@@ -189,12 +209,22 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
+                           // list.add(ResponseItem(isLast = true))
                             projectAdapter.update(list)
+
                             binding.rvEvent.apply {
                                 post {
                                     getChildAt(0)?.requestFocus()
                                 }
                             }
+//                            lifecycleScope.launch {
+//                                delay(200)
+//                                withContext(Dispatchers.Main){
+//                                    projectAdapter.addItem(ResponseItem(isLast = true))
+//                                    binding.rvEvent.adapter=projectAdapter
+//                                    projectAdapter.notifyDataSetChanged()
+//                                }
+//                            }
                         }
                     }
                     dismissProgress()
@@ -202,10 +232,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
-                    if (it.error=="No primary projects found for the user."){
+                    if (it.error == "No primary projects found for the user.") {
                         SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "")
-                        SharedPref.setString(PrefConstent.PROJECT_ID,"0")
+                        SharedPref.setString(PrefConstent.PROJECT_ID, "0")
                         val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                         val bundle = Bundle()
                         bundle.putInt(PrefConstent.PROJECT_ID, 0)
@@ -225,7 +255,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
     override fun onResume() {
         super.onResume()
-        focusedIndex=0
+        focusedIndex = 0
         viewModel.getProject(requireContext(), ProjectRequest(phone))
         observe()
     }

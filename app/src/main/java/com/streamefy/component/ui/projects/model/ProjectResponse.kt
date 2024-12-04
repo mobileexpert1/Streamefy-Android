@@ -23,7 +23,8 @@ data class ResponseItem(
     @SerializedName("id")
     val id: Int = 0,
     @SerializedName("createDate")
-    val createDate: String = ""
+    val createDate: String = "",
+    var isLast:Boolean=false
 )
 
 data class error(

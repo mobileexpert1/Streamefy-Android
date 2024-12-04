@@ -1056,7 +1056,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         rvDrawer.post {
             rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
         }
-
     }
 
     fun viewFocus() = with(binding) {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import com.streamefy.component.ui.projects.EventFragment.Companion.eventFragment
 import com.streamefy.component.ui.projects.EventFragment.Companion.focusedIndex
 import com.streamefy.component.ui.projects.model.ResponseItem
 import com.streamefy.utils.gone
+import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.visible
@@ -43,17 +45,33 @@ class ProjectsAdapter(
         viewHolder.apply {
             itemView.isFocusable = true
             itemView.isClickable = true
-            tvTitle.text = data.name
+            Log.e("membercheck", "newlist ${data.isLast}")
+            if (data.isLast){
+                thumb.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
+                thumb.loadAny(R.drawable.ic_add_event)
+                tvAddEvent.visible()
+                tvTitle.gone()
+                tvProjectCount.gone()
+                tvSubtitle.gone()
+                mview.gone()
+                clEvent.setOnClickListener {
+                    callBack.invoke(position, StreamEnum.LAST_EVENT)
+                }
+            }else {
+                tvTitle.text = data.name
 //            tvSubtitle.text = data.createDate
-            tvProjectCount.text = data.mediaCount.toString()
-            var date = updateDate(data.createDate)
-            tvSubtitle.text = date
+                tvProjectCount.text = data.mediaCount.toString()
+                var date = updateDate(data.createDate)
+                tvSubtitle.text = date
 
-            if (data.thumbnail != null) {
-                // Picasso.get().load(data.thumbnail).into(thumb)
-                thumb.loadUrl(data.thumbnail)
+                if (data.thumbnail != null) {
+                    // Picasso.get().load(data.thumbnail).into(thumb)
+                    thumb.loadUrl(data.thumbnail)
+                }
+                clEvent.setOnClickListener {
+                    callBack.invoke(position, StreamEnum.SINGLE)
+                }
             }
-
             clEvent.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
 
@@ -63,7 +81,7 @@ class ProjectsAdapter(
                             itemView.invalidate()
                             itemView.requestLayout()
                         }.start()
-                    clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
+                    clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                     clThumb.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                     clThumb.setBackgroundResource(R.drawable.item_focused)
 
@@ -132,9 +150,7 @@ class ProjectsAdapter(
 //                }
 //                false
 //            }
-            clEvent.setOnClickListener {
-                callBack.invoke(position, StreamEnum.SINGLE)
-            }
+
 //            if (position == focusedIndex) {
 //                clEvent.requestFocus()
 //               // eventFragment.binding.rvEvent.scrollToPosition(focusedIndex)
@@ -157,7 +173,6 @@ class ProjectsAdapter(
             Log.e("sjcbnsjbc", "ncnvdj $e")
             ""
         }
-
     }
 
     class ProjectView(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -167,6 +182,8 @@ class ProjectsAdapter(
         val clEvent: ConstraintLayout = itemView.findViewById(R.id.clEvent)
         val clThumb: LinearLayout = itemView.findViewById(R.id.clThumb)
         val thumb: ImageView = itemView.findViewById(R.id.ivThumb)
+        val tvAddEvent: TextView = itemView.findViewById(R.id.tvAddEvent)
+        val mview: View = itemView.findViewById(R.id.view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectView {
@@ -180,11 +197,23 @@ class ProjectsAdapter(
         notifyDataSetChanged()
     }
 
+    fun addItem(newlist: ResponseItem) {
+        Log.e("djjvdbv","vduvud $newlist")
+        eventList.add(eventList.size-1,newlist)
+       // notifyDataSetChanged()
+//       notifyItemChanged(eventList.size-1)
+    }
     fun pagination(newlist: ArrayList<ResponseItem>) {
         eventList.addAll(eventList.size - 1, newlist)
         notifyDataSetChanged()
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return super.getItemViewType(position)
+    }
 
+    override fun getItemId(position: Int): Long {
+        return super.getItemId(position)
+    }
     override fun getItemCount(): Int = eventList.size
 }

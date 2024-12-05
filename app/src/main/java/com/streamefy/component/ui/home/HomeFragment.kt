@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.base.CircularProgressDialog
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.CreatorsAdapter
@@ -98,7 +99,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         var mediaIndex = 0
         var isTrailer = false
     }
-
+    lateinit var progressDialog:CircularProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -107,6 +108,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        progressDialog= CircularProgressDialog(requireContext())
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
@@ -114,6 +116,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         homeFragment = this
         isEventPagination = false
         if (isFirst) {
+            showProgress()
             getUserData()
             //playbackObserver()
             transitionValue = dpToPx(140f)
@@ -555,6 +558,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     private fun getUserData() {
+        dismissProgress()
         viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
@@ -761,10 +765,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         viewModel._homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                    showProgress()
+//                    showProgress()
+                    progressDialog.show()
                 }
 
                 is MyResource.isSuccess -> {
+                    dismissProgress()
+//                    showProgress()
                     Log.e("hfhddnub", "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString())
                    binding.ivHomeCross.visible()
                     it.data?.data?.run {
@@ -782,9 +789,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             page++
                             isEventPagination = true
                             eventList.clear()
-
                             // event video
-
                             lifecycleScope.launch(Dispatchers.IO) {
                                 data.backgroundMedia?.run {
                                     if (this.isNotEmpty()) {
@@ -894,26 +899,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             isFirst = false
 
 
-
-                            Log.e(
-                                "hhutyuigjf",
-                                "last video data $isLastPlay $lastVideoDuration video url $lastVideoUrl thumb $lastVideoThumb"
-                            )
+                            // dismissProgress()
 
                         }
-
-
-
-                        dismissProgress()
-                        Log.e(
-                            "dadaewed",
-                            crewList.toString() + "dhbdh \n" + this.crewMembers.toString()
-                        )
                     }
-
+                    progressDialog.dismiss()
+                    dismissProgress()
                 }
 
                 is MyResource.isError -> {
+                    progressDialog.dismiss()
                     dismissProgress()
                     binding.ivHomeCross.visible()
                     if (it.error == "Incorrect PIN") {
@@ -1042,7 +1037,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     override fun netStatus() {
-    bindView()
+  //  bindView()
     }
 
 

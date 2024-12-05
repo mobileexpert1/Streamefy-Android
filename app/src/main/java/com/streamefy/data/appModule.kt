@@ -21,7 +21,8 @@ var appModule= module {
 
     single {  ErrorHandler(androidContext()) }
     single {  CircularProgressDialog(androidContext()) }
-    single <AuthService> { AuthClient.retrofit(androidContext()).create(AuthService::class.java) }
+//    single <AuthService> { AuthClient.retrofit(androidContext()).create(AuthService::class.java) }
+    factory  <AuthService> { AuthClient.retrofit(androidContext()).create(AuthService::class.java) }
     single <ApiService> { RetrofitClient.retrofit(androidContext()).create(ApiService::class.java) }
     viewModel { LoginViewmodel(get()) }
     viewModel { OTPVM(get()) }

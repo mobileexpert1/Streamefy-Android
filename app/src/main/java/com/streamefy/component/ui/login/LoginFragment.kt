@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hbb20.CountryCodePicker
+import com.streamefy.BuildConfig
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -41,6 +42,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun bindView(): Int = R.layout.fragment_login
     var countryCode = 91
     var realnumer=""
+    var admin_email=""
+    var admin_password=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -48,7 +51,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
-
+        admin_email = BuildConfig.Admin_email
+        admin_password = BuildConfig.Password
+//        val userApiUrl = BuildConfig.USER_API_URL
 
         initClickListeners()
 //        requireActivity().onBackPressedDispatcher.addCallback {
@@ -58,8 +63,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         binding.etPhoneNumber.requestFocus()
 
 
-        Log.e("newcode", " code: $countryCode country code")
-        binding.ivApplogo.loadAny(R.drawable.ic_logo)
+        Log.e("newcode", " code: $countryCode country code email $admin_email password $admin_password")
+        binding.ivApplogo.loadAny(R.drawable.ic_logo_ori)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             MainActivity().exitApp()
         }
@@ -81,7 +86,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 if (isAdded) {
                     viewmodel.login(
                         requireActivity(),
-                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+                        LoginRequest(admin_email, admin_password)
+//                        LoginRequest("cupcakeproductions13@gmail.com", "Admin123#")
+//                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
 //                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
                     )
                     observe()
@@ -412,9 +419,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         )
                         if (isAdded) {
                             findNavController().navigate(R.id.otpFragment, bundle)
-                        } else {
-                            progressDialog.dismiss()
                         }
+                      //  else {
+                            progressDialog.dismiss()
+                       // }
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e)
                         throw RuntimeException("login getotp")

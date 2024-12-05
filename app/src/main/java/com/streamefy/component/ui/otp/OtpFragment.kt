@@ -430,11 +430,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                         if (isSuccess) {
                             ShowError.handleError.message(this.response.message)
                             lifecycleScope.launch {
-                                SharedPref.setBoolean(
-                                    PrefConstent.ISPRIMARY_USER,
-                                    data.isPrimaryuser
-                                )
-                                SharedPref.setBoolean(PrefConstent.ISAUTH, false)
+                                SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, data.isPrimaryuser)
                                 delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)

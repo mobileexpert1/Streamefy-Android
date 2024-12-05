@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
+import com.streamefy.utils.loadAny
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +52,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     var projectId: Int = 0
     var isHome = false
     var isPrimaryuser = false
-
+    var   applogo=""
     companion object {
         lateinit var eventFragment: EventFragment
         var focusedIndex = 0
@@ -61,9 +63,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         eventFragment = this
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
+        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
+        binding.ivApplogo.loadAny(applogo)
         binding.apply {
             if (isPrimaryuser) {
                 if (isHome) {
@@ -233,6 +238,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 is MyResource.isError -> {
                     dismissProgress()
                     if (it.error == "No primary projects found for the user.") {
+                        SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, false)
                         SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "")
                         SharedPref.setString(PrefConstent.PROJECT_ID, "0")
@@ -242,9 +248,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                         bundle.putString(PrefConstent.FULL_NAME, name)
                         bundle.putBoolean(PrefConstent.ISHOME, false)
+                        val navOptions = NavOptions.Builder()
+                            .setPopUpTo(R.id.projectfragment, true) // Pop fragment B from the stack
+                            .build()
                         findNavController().navigate(
-                            R.id.action_projectfragment_to_pinAuthenticationFragment,
-                            bundle
+                            R.id.event_to_pin_no_projects_found,
+                            bundle,navOptions
                         )
                     }
 

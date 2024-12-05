@@ -60,6 +60,13 @@
         tools:layout="@layout/fragment_event">
         <action
             android:id="@+id/action_projectfragment_to_pinAuthenticationFragment"
-            app:destination="@id/pinAuthenticationFragment" />
+            app:destination="@id/pinAuthenticationFragment"
+            />
+        <action
+            android:id="@+id/event_to_pin_no_projects_found"
+            app:destination="@id/pinAuthenticationFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            />
     </fragment>
 </navigation>

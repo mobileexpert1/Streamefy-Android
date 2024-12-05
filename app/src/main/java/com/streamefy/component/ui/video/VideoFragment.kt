@@ -30,6 +30,7 @@ import com.streamefy.component.ui.video.viewmodel.VideoVM
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentVideoBinding
+import com.streamefy.media.MediaHandler
 import com.streamefy.network.MyResource
 import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
@@ -83,6 +84,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     private val viewModel: VideoVM by viewModel()
+    private lateinit var mediaHandler: MediaHandler
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -102,11 +104,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             playbackduration = newDuration.toDouble().toInt().toString().toLong()
 
-
-
             //  bunneyIdList.add(BunneyIds(mediaId=mediaId, eventId = eventId, bunneyId = nextVideoId))
         }
-
+        mediaHandler = MediaHandler(requireActivity())
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)

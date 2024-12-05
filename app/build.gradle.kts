@@ -14,9 +14,12 @@ android {
         applicationId = "com.streamefy"
         minSdk = 21
         targetSdk = 34
+//        cupcake
+        versionCode = 1
+        versionName = "1.0.1"
 //        fire stick
-        versionCode = 7
-        versionName = "1.0.8"
+//        versionCode = 7
+//        versionName = "1.0.8"
 
 //        google
 //        versionCode = 2
@@ -24,17 +27,41 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
     }
     flavorDimensions += "default"
+    signingConfigs {
+        create("streamefy") {
+            storeFile = file("D:\\work splace\\Streamefy\\Streamefy_info\\streamefy.jks")
+            storePassword = "android"
+            keyAlias = "android"
+            keyPassword = "android"
+        }
+
+        create("cupcake") {
+//            storeFile = file("D:\\work splace\\Streamefy\\cupcake_info\\cupcake.jks")
+            storeFile = file("D:\\work splace\\Streamefy\\Streamefy_info\\streamefy.jks")
+            storePassword = "android"
+            keyAlias = "android"
+            keyPassword = "android"
+        }
+    }
+
     productFlavors {
         create("streamefy") {
             applicationId = "com.streamefy"
             versionNameSuffix = "-streamefy"
+            signingConfig = signingConfigs.getByName("streamefy")
+            buildConfigField("String", "Admin_email", "\"appsdev096@gmail.com\"")
+            buildConfigField("String", "Password", "\"Appsdev096#\"")
         }
         create("cupcake") {
-            applicationId = "com.streamefy.cupcake"
+            applicationId = "com.tech.cupcake"
             versionNameSuffix = "-cupcake"
+            signingConfig = signingConfigs.getByName("cupcake")
+            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
+            buildConfigField("String", "Password", "\"Admin123#\"")
+//            for json name
+//            "package_name": "com.streamefy.cupcake"
         }
     }
 

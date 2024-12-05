@@ -36,9 +36,10 @@ object AuthClient {
             .writeTimeout(10, TimeUnit.MINUTES)
             .readTimeout(10, TimeUnit.MINUTES)
 
-        val token = if (!SharedPref.getBoolean(PrefConstent.ISLOGIN)) "" else SharedPref.getString(
-            PrefConstent.TOKEN
-        )
+        val token = SharedPref.getString(PrefConstent.TOKEN).toString()
+//            if (!SharedPref.getBoolean(PrefConstent.ISLOGIN)) "" else SharedPref.getString(
+//            PrefConstent.TOKEN
+//        )
 
         Log.e("sjkdnskjnf", "sknbcksj$token")
 
@@ -48,8 +49,10 @@ object AuthClient {
                 .addHeader("accept", "text/plain")
                 .addHeader("Content-Type", "application/json")
                 .apply {
-                    if (token?.isNotEmpty()!!) {
-                        addHeader("Authorization", "Bearer ${token}")
+                    if (token!=null) {
+                        if (token?.isNotEmpty()!!) {
+                            addHeader("Authorization", "Bearer ${token}")
+                        }
                     }
                 }.method(origin.method, origin.body)
                 .build()

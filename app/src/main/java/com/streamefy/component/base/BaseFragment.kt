@@ -43,9 +43,9 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
         savedInstanceState: Bundle?
     ): View? {
 //        binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
+        progressDialog= CircularProgressDialog(requireContext())
         if (!::binding.isInitialized) {
             binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
-            progressDialog= CircularProgressDialog(requireContext())
         }
 
         return binding.root

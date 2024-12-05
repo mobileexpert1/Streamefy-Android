@@ -52,7 +52,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     private val viewModel: PinVM by viewModel()
     var isPrimaryuser = false
     var isHome = false
-
+    var isLogin=false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,6 +61,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             projectId = getInt(PrefConstent.PROJECT_ID).toString()
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
+        isLogin=  SharedPref.getBoolean(PrefConstent.ISLOGIN)
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
@@ -87,6 +88,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 //                findNavController().navigate(R.id.loginFragment)
                 if (isPrimaryuser){
                     findNavController().popBackStack()
+                } else if (!isLogin){
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(R.id.pinAuthenticationFragment, true)
+                        .build()
+                    findNavController().navigate(
+                        R.id.loginFragment,
+                        null,navOptions
+                    )
                 }
                 else {
                     ExitDialog(requireContext()).show()
@@ -169,6 +178,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                         // Show the custom dialog when back is pressed
                         if (isPrimaryuser){
                             findNavController().popBackStack()
+                        }else if (!isLogin){
+                            val navOptions = NavOptions.Builder()
+                                .setPopUpTo(R.id.pinAuthenticationFragment, true) // Pop fragment B from the stack
+                                .build()
+                            findNavController().navigate(
+                                R.id.loginFragment,
+                                null,navOptions
+                            )
                         }
                         else {
                            // findNavController().navigate(R.id.loginFragment)
@@ -196,91 +213,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     }
 
     private fun otpFieldFocus() = with(binding) {
-        et1.requestFocus()
-        et1.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et2.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et2.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et1.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et3.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et3.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et2.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    et4.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        et4.remoteKey {
-            when (it) {
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    et3.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvProceed.requestFocus()
-                }
-
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivBack.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
 
         otpView.setOnFocusChangeListener { v, hasFocus ->
             Log.e("smskmc", "$hasFocus setOnFocusChangeListener")
@@ -409,13 +341,14 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     showProgress()
                 }
                 is MyResource.isSuccess -> {
+
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (isAdded) {
                         findNavController().navigate(R.id.homefragment)
-
                     }
+                    dismissProgress()
                 }
 
                 is MyResource.isError -> {
@@ -450,6 +383,11 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("skcnmskncm", "skcnsk destroyview")
+        dismissProgress()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
         dismissProgress()
     }
 }

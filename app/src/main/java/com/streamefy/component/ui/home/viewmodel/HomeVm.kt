@@ -18,6 +18,7 @@ import com.streamefy.utils.LogMessage
 import com.streamefy.utils.isNetworkAvailable
 import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.time.delay
 
 class HomeVm(var repo: ApiService) : ViewModel() {
     var _homeLiveData = SingleLiveEvent<MyResource<HomeResponse>>()
@@ -34,6 +35,7 @@ class HomeVm(var repo: ApiService) : ViewModel() {
                 _homeLiveData.value = MyResource.isLoading()
                 try {
                     var response = repo.getUserVideos(page,itemsPerPage,userPin,projectId,phoneNumber)
+
                     if (response.body()?.isSuccess!!) {
                         _homeLiveData.value = MyResource.isSuccess(response.body())
                     } else {

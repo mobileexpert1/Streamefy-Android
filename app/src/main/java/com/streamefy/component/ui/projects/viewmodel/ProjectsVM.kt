@@ -19,7 +19,7 @@ import com.streamefy.utils.isNetworkAvailable
 import com.streamefy.utils.showMessage
 import kotlinx.coroutines.launch
 
-class ProjectsVM(var repo:ApiService):ViewModel() {
+class ProjectsVM(var repo: ApiService) : ViewModel() {
     var _projectLiveData = SingleLiveEvent<MyResource<ProjectResponse>>()
     val projectLiveData: LiveData<MyResource<ProjectResponse>> get() = _projectLiveData
 
@@ -33,19 +33,22 @@ class ProjectsVM(var repo:ApiService):ViewModel() {
                         _projectLiveData.value = MyResource.isSuccess(response.body())
                     } else {
                         //ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
-                        context.showMessage(response.body()?.error?.userMessage.toString())
-                        _projectLiveData.value= MyResource.isError(response.body()?.error?.userMessage.toString())
+                        if (response.body()?.error?.userMessage.toString() != "No primary projects found for the user.") {
+                            context.showMessage(response.body()?.error?.userMessage.toString())
+                        }
+                        _projectLiveData.value =
+                            MyResource.isError(response.body()?.error?.userMessage.toString())
                     }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
                     //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
-                    _projectLiveData.value=
+                    _projectLiveData.value =
                         MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
 
                 }
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
-                _projectLiveData.value=
+                _projectLiveData.value =
                     MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
 
             }

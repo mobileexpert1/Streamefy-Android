@@ -50,7 +50,7 @@ class DrawerAdapter(
                                 if (left.isNotEmpty()) {
                                     tvDuration.text = "$left "
                                 } else {
-                                    tvDuration.text = "0s "
+                                    tvDuration.text = context.getString(R.string.watch_again)
                                 }
                                 tvDuration.visible()
                             }

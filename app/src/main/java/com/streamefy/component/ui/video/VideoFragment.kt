@@ -112,7 +112,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.setVolumePercentage(5)
 
         binding.apply {
-            ivVideoThumb.loadUrl(thumbnailS3bucketId)
+//            if (playbackduration<=0) {
+//                ivVideoThumb.loadUrl(thumbnailS3bucketId)
+//            }
             updatePlayer()
             thumbShow()
             newVideo()

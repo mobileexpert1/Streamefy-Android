@@ -766,6 +766,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isSuccess -> {
                     Log.e("hfhddnub", "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString())
+                   binding.ivHomeCross.visible()
                     it.data?.data?.run {
                         var data = this
                         if (isEventPagination) {
@@ -914,6 +915,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
+                    binding.ivHomeCross.visible()
                     if (it.error == "Incorrect PIN") {
                         SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
                         val navOptions = NavOptions.Builder()

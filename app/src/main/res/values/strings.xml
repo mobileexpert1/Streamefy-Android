@@ -37,5 +37,6 @@
     <string name="want_to_reset_pin">Are you sure you want to rest the PIN for the event “Arjun Weds Rhea”.</string>
     <string name="network_message">Internet connection unavailable. Please check your connection and try again.</string>
     <string name="try_again">Try Again</string>
+    <string name="watch_again">Watch Again</string>
 
 </resources>

@@ -113,9 +113,14 @@ class CategoryAdapter(
                     homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
                     itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
                         .withEndAction {
-                            homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
-                            itemView.invalidate()
-                            itemView.requestLayout()
+//                            itemView.invalidate()
+//                            itemView.requestLayout()
+//                            homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
+                            itemView.post {
+                                itemView.requestLayout()
+                                homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
+                            }
+
                         }.start()
                     clEvent.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gray))
                 } else {

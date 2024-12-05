@@ -41,7 +41,7 @@
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/ivTrailerThumb"
-                android:layout_width="@dimen/_200sdp"
+                android:layout_width="@dimen/_140sdp"
                 android:layout_height="@dimen/_70sdp"
                 android:background="@drawable/caegory_radious"
                 android:scaleType="centerCrop"

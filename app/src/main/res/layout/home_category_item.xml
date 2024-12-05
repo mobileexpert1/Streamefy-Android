@@ -20,7 +20,6 @@
         app:layout_constraintBottom_toTopOf="@+id/clThumb"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         />
 
     <LinearLayout
@@ -32,7 +31,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tvMore"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-        android:paddingStart="@dimen/_2sdp"
+        android:paddingHorizontal="@dimen/_2sdp"
 
         >
 

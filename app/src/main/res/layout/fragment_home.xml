@@ -151,6 +151,7 @@
                 android:background="@drawable/ic_home_cross"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="invisible"
                 android:focusableInTouchMode="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -226,7 +227,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:paddingStart="@dimen/_2sdp"
-                    android:paddingRight="@dimen/_3sdp"
+                    android:paddingRight="@dimen/_7sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

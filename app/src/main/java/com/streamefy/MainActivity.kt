@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mediaHandler = MediaHandler(this)
-
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         wakelock()
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
@@ -112,10 +111,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mediaHandler: MediaHandler
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        // Forward key events to the MediaHandler in the activity
+//
+//        return mediaHandler.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+//    }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        // Forward key events to the MediaHandler in the activity
-        Log.e("knckdnc","skmckdmnc $keyCode")
-        return mediaHandler.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+        Log.d("MainActivity", "Key pressed: $keyCode")
+
+        return when (keyCode) {
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                // Handle Play/Pause
+                Log.d("MainActivity", "Media Play/Pause key pressed")
+                true
+            }
+            KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                // Handle Next
+                Log.d("MainActivity", "Media Next key pressed")
+                true
+            }
+            KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                // Handle Previous
+                Log.d("MainActivity", "Media Previous key pressed")
+                true
+            }
+            else -> super.onKeyDown(keyCode, event)
+        }
     }
 
     fun wakelock(){

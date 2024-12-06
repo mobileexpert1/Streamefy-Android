@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
+import com.streamefy.component.ui.video.VideoFragment.Companion.videoFragment
 import com.streamefy.component.ui.video.model.QualityModel
 import com.streamefy.databinding.CreatorsItemBinding
 import com.streamefy.databinding.QualityItemBinding
+import com.streamefy.utils.remoteKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,6 +104,11 @@ class QualityAdapter(
 
                 }
             }
+
+//            tvquality.remoteKey {
+//                videoFragment.mediaKey(it)
+//            }
+
         }
     }
 

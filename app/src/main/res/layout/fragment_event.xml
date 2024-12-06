@@ -69,18 +69,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
+       <androidx.constraintlayout.widget.ConstraintLayout
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           app:layout_constraintBottom_toTopOf="@+id/powerBy"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toBottomOf="@+id/view3"
+           android:layout_marginHorizontal="@dimen/_10sdp"
+           >
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/rvEvent"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvEvent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_10sdp"
-            android:paddingHorizontal="@dimen/_5sdp"
-            app:layout_constraintBottom_toTopOf="@+id/powerBy"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view3" />
-
+               android:paddingHorizontal="@dimen/_5sdp"
+               app:layout_constraintEnd_toEndOf="parent"
+               app:layout_constraintStart_toStartOf="parent"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintBottom_toBottomOf="parent"
+               />
+       </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/view"

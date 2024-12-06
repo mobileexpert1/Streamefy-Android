@@ -33,7 +33,6 @@ import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.media.MediaHandler
 import com.streamefy.network.MyResource
-import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
@@ -41,10 +40,10 @@ import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.math.floor
 
 
 class VideoFragment : BaseFragment<FragmentVideoBinding>() {
@@ -137,14 +136,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.sbVolumeSeek.setProgress(volumeCount)
 
 
-
-
-
     }
-//
+
+    //
     fun keyMove() = with(binding) {
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-            toShowBackButton()
             if (event.action == KeyEvent.ACTION_DOWN) {
                 toShowBackButton()
                 when (keyCode) {
@@ -165,6 +161,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         playerHandler.seekBackward(30)
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_REWIND)
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
                         return@OnKeyListener true
                     }
                 }
@@ -229,37 +240,55 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         return@OnKeyListener true
                     }
 
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_REWIND)
+                        return@OnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
+                        return@OnKeyListener true
+                    }
                 }
             }
             false // Don't consume other events
         })
         ivSkipBack.remoteKey {
+            visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivRefresh.requestFocus()
-                    visibilityCount = 0
+
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
                     ivBack.requestFocus()
-                    visibilityCount = 0
+
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-                    visibilityCount = 0
+
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     ivPlay.requestFocus()
-                    visibilityCount = 0
+
                 }
+
 
                 else -> {}
             }
         }
 
         ivPlay.remoteKey {
+            mediaKey(it)
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivSkipBack.requestFocus()
@@ -286,6 +315,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivSkipForward.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivPlay.requestFocus()
@@ -308,6 +338,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivSetting.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     sbVideoSeek.requestFocus()
@@ -330,6 +361,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivVolume.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivSetting.requestFocus()
@@ -354,6 +386,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivBack.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     if (timerLayout.isVisible) {
@@ -380,6 +413,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         ivRefresh.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     ivBack.requestFocus()
@@ -406,6 +440,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
         timerLayout.remoteKey {
             visibilityCount = 0
+            mediaKey(it)
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     ivRefresh.requestFocus()
@@ -425,6 +460,48 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                 else -> {}
             }
+        }
+    }
+
+    fun mediaKey(streamEnum: StreamEnum) = with(binding) {
+//        toShowBackButton()
+//        viewFocus()
+        when (streamEnum) {
+            StreamEnum.KEYCODE_MEDIA_FAST_FORWARD -> {
+                forward10()
+                ivMedia.setImageResource(R.drawable.ic_remote_forward)
+                ivMedia.visible()
+                ivMedia.alpha = 1f
+                lifecycleScope.launch {
+                    delay(2000)
+                    withContext(Dispatchers.Main) {
+                        // ivMedia.gone()
+                        ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                            .withEndAction { ivMedia.gone() }.start()
+                    }
+                }
+            }
+
+            StreamEnum.KEYCODE_MEDIA_REWIND -> {
+                playerHandler.seekBackward(10)
+                ivMedia.setImageResource(R.drawable.ic_remote_backward)
+                ivMedia.visible()
+                ivMedia.alpha = 1f
+                lifecycleScope.launch {
+                    delay(2000)
+                    withContext(Dispatchers.Main) {
+                        ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                            .withEndAction { ivMedia.gone() }.start()
+                    }
+                }
+            }
+
+            StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                playPauseHandle()
+
+            }
+
+            else -> {}
         }
     }
 
@@ -550,20 +627,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 resources.getDimensionPixelSize(R.dimen._16sdp) // Adjust to your desired size
             params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
             ivPlay.layoutParams = params
-            if (playerHandler.player != null) {
-                if (playerHandler.isPlaying()!!) {
-                    playerHandler.pause()
-                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
-                } else {
-                    if (isEnded) {
-                        playerHandler.player?.seekTo(0)
-                    } else {
-                        playerHandler.play()
-                    }
-                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
-                    updateProgressBar()
-                }
-            }
+            playPauseHandle()
+//            if (playerHandler.player != null) {
+//                if (playerHandler.isPlaying()!!) {
+//                    playerHandler.pause()
+//                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+//                } else {
+//                    if (isEnded) {
+//                        playerHandler.player?.seekTo(0)
+//                    } else {
+//                        playerHandler.play()
+//                    }
+//                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
+//                    updateProgressBar()
+//                }
+//            }
         }
         ivSkipForward.setOnClickListener {
             toShowBackButton()
@@ -621,6 +699,36 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    fun playPauseHandle() = with(binding) {
+//        val params = ivPlay.layoutParams as LinearLayout.LayoutParams
+//        params.width = resources.getDimensionPixelSize(R.dimen._16sdp)
+//        params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
+//        ivPlay.layoutParams = params
+        if (playerHandler.player != null) {
+            if (playerHandler.isPlaying()!!) {
+                playerHandler.pause()
+                if (ivPlay.isFocused) {
+                    ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+                } else {
+                    ivPlay.setImageResource(R.drawable.ic_video_play)
+                }
+            } else {
+                if (isEnded) {
+                    playerHandler.player?.seekTo(0)
+                } else {
+                    playerHandler.play()
+                }
+                if (ivPlay.isFocused) {
+                    ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                } else {
+                    ivPlay.setImageResource(R.drawable.ic_video_pause)
+                }
+                updateProgressBar()
+            }
+        }
+
+    }
+
     fun playNextVideo() = with(binding) {
 
         if (isNewVideoAvailable) {
@@ -663,7 +771,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.stopHandler()
             binding.sbVideoSeek.progress = 0
             //playerHandler.setMediaUri(videoUrl, 0)
-            playbackduration=0
+            playbackduration = 0
             newVideo()
             focusView = VideoEnum.BACKWARD
         } else {
@@ -864,8 +972,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.seekTo(duration)
             }
         }
+
     }
 
+    fun forward10() {
+        if (::playerHandler.isInitialized) {
+            var current = playerHandler.player?.currentPosition
+            var duration = playerHandler.player?.duration
+            var count = current!! + 10000
+            if (duration!! > count) {
+                playerHandler.seekTo(count)
+            } else {
+                playerHandler.seekTo(duration)
+            }
+        }
+    }
 
     fun selectorFocus() = with(binding) {
         ivSkipBack.requestFocus()
@@ -964,7 +1085,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 params.width = resources.getDimensionPixelSize(R.dimen._62sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._33sdp)
                 ivBack.layoutParams = params
-            }else{
+            } else {
                 val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
                 params.width = resources.getDimensionPixelSize(R.dimen._60sdp) // Original size
                 params.height = resources.getDimensionPixelSize(R.dimen._31sdp)
@@ -1184,23 +1305,26 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
+            Log.e("sjbcjsbc", "remote volume before $volumeCount after $volumePercentage")
             lifecycleScope.launch(Dispatchers.Main) {
                 volumeCount = volumePercentage
-                toShowBackButton()
+               // toShowBackButton()
                 sbVolumeSeek.setProgress(volumeCount)
             }
-            if (ivVolume.requestFocus()) {
+            if (ivVolume.isFocused) {
                 if (volumePercentage <= 0) {
-                    // ivVolume.requestFocus()
+                    playerHandler.mute()
                     ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
                 } else {
+                    playerHandler.setVolume(volumeCount / 100.0f)
                     ivVolume.setImageResource(R.drawable.ic_selected_volume)
                 }
             } else {
                 if (volumePercentage <= 0) {
-                    //  ivVolume.requestFocus()
+                    playerHandler.mute()
                     ivVolume.setImageResource(R.drawable.ic_mute)
                 } else {
+                    playerHandler.setVolume(volumeCount / 100.0f)
                     ivVolume.setImageResource(R.drawable.ic_video_volume)
                 }
             }
@@ -1224,8 +1348,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             visibilityCount++
             if (visibilityCount == 15) {
                 visibilityCount = 0
-                binding.ivBack.animate().alpha(0f).setDuration(1200).setStartDelay(10)
-                binding.llTools.animate().alpha(0f).setDuration(1200).setStartDelay(10)
+                binding.ivBack.animate().alpha(0f).setDuration(400).setStartDelay(10)
+                binding.llTools.animate().alpha(0f).setDuration(400).setStartDelay(10)
                 binding.playerView.requestFocus()
                 binding.clSettingsMenu.gone()
             }
@@ -1387,15 +1511,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.playerView.clearFocus()
     }
 
-
     fun handleKey(view: View) {
 
         view.setFocusableInTouchMode(true)
         view.requestFocus()
         view.setOnKeyListener { v, keyCode, event ->
-
+            Log.e("mremote", "kckdnc $keyCode event $event")
             if (event.action == KeyEvent.ACTION_DOWN) {
-                Log.e("sncjdnvjd", "sncksdnc handling focus $event")
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         toShowBackButton()
@@ -1424,6 +1546,49 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //                        binding.ivRefresh.requestFocus()
                         return@setOnKeyListener true
                     }
+
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                        forward10()
+                        binding.apply {
+                            ivMedia.setImageResource(R.drawable.ic_remote_forward)
+                            ivMedia.visible()
+                            ivMedia.alpha = 1f
+                            lifecycleScope.launch {
+                                delay(2000)
+                                withContext(Dispatchers.Main) {
+                                    // ivMedia.gone()
+                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                                        .withEndAction { ivMedia.gone() }.start()
+                                }
+                            }
+                        }
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        playerHandler.seekBackward(10)
+                        binding.apply {
+                            ivMedia.setImageResource(R.drawable.ic_remote_backward)
+                            ivMedia.visible()
+                            ivMedia.alpha = 1f
+                            lifecycleScope.launch {
+                                delay(2000)
+                                withContext(Dispatchers.Main) {
+                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                                        .withEndAction { ivMedia.gone() }.start()
+                                }
+                            }
+                        }
+                        return@setOnKeyListener true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                        playPauseHandle()
+                        return@setOnKeyListener true
+                    }
+
+
+
 
                 }
             }
@@ -1509,7 +1674,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     override fun netStatus() {
-        Log.e("videoscreen", "videotest $isNetworkAvailable isNewVideoAvailable $isNewVideoAvailable")
+        Log.e(
+            "videoscreen",
+            "videotest $isNetworkAvailable isNewVideoAvailable $isNewVideoAvailable"
+        )
 //        if (isNetworkAvailable){
 //            if (isNewVideoAvailable) {
 //                if (playerHandler.player != null) {
@@ -1535,6 +1703,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //            }
 //        }
     }
+
     fun savePlayback(
         event: Int,
         mediaId: Int,
@@ -1635,5 +1804,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
 
     }
+
+
+
 
 }

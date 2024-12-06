@@ -72,7 +72,9 @@ fun EditText.previousFocusOnDigit(nextEditText: EditText) {
 
 
 fun View.remoteKey(keyBack: (StreamEnum) -> Unit) {
+
     setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        Log.e("mremote","kckdnc $keyCode event $event")
         if (event.action == KeyEvent.ACTION_DOWN) {
             when (keyCode) {
                 KeyEvent.KEYCODE_DPAD_DOWN -> {
@@ -94,6 +96,20 @@ fun View.remoteKey(keyBack: (StreamEnum) -> Unit) {
                     keyBack.invoke(StreamEnum.RIGHT_DPAD_KEY)
                     return@OnKeyListener true
                 }
+
+                KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                    return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_REWIND)
+                    return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
+                    return@OnKeyListener true
+                }
+
             }
         }
         false

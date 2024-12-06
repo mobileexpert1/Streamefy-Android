@@ -15,11 +15,11 @@ android {
         minSdk = 21
         targetSdk = 34
 //        cupcake
-        versionCode = 1
-        versionName = "1.0.1"
+//        versionCode = 2
+//        versionName = "1.0.2"
 //        fire stick
-//        versionCode = 7
-//        versionName = "1.0.8"
+        versionCode = 10
+        versionName = "1.0.11"
 
 //        google
 //        versionCode = 2

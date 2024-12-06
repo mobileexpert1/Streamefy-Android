@@ -8,7 +8,7 @@ class VolumeManager(private val context: Context) {
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     private var currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
-    private val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).toFloat()
+    private var maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC).toFloat()
     private val handler = Handler(Looper.getMainLooper())
     private val volumeCheckRunnable = object : Runnable {
         override fun run() {
@@ -21,6 +21,7 @@ class VolumeManager(private val context: Context) {
     private var volumeChangeListener: ((Int) -> Unit)? = null
 
     fun setOnVolumeChangeListener(listener: (Int) -> Unit) {
+
         this.volumeChangeListener = listener
     }
 
@@ -35,25 +36,38 @@ class VolumeManager(private val context: Context) {
     private fun checkVolume() {
         val newVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()
         if (newVolume != currentVolume) {
+//            val volumePercentage = (newVolume / maxVolume * 100).toInt()
             val volumePercentage = (newVolume / maxVolume * 100).toInt()
             // Notify listeners of the volume change
             onVolumeChanged(volumePercentage)
             currentVolume = newVolume
         }
 
-     //   Log.e("hdhhdhds", "newVolume $newVolume gdgrgr $currentVolume   volumePercentage" )
+
+        Log.e("hdhhdhds", "newVolume $newVolume gdgrgr $currentVolume   volumePercentage " )
     }
 
     private fun onVolumeChanged(volumePercentage: Int) {
         // Call the listener with the new volume percentage
+        Log.e("VolumeControl", "$volumePercentage ")
+
         volumeChangeListener?.invoke(volumePercentage)
     }
 
     fun setVolumePercentage(percentage: Int) {
-        val volume = (percentage / 100f * maxVolume).toInt()
+//        val volume = (percentage / 100f * maxVolume).toInt()
+//
+//        Log.e("hdhhdhds", "percentage $percentage gdgrgr $volume" )
+//
+//        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
 
-        Log.e("hdhhdhds", "percentage $percentage gdgrgr $volume" )
+
+        val clampedPercentage = percentage.coerceIn(0, 100)
+        var maxvolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val volume = (clampedPercentage / 100f * maxvolume).toInt()
+        Log.e("hdhhdhds", "Percentage: $clampedPercentage, Volume: $volume, Max Volume: $maxVolume")
 
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
+
     }
 }

@@ -208,7 +208,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 is MyResource.isSuccess -> {
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
-                        requireActivity().showMessage("PIN updated successfully")
+                       // requireActivity().showMessage("PIN updated successfully")
                         findNavController().popBackStack()
                     } else {
                         it.data?.run {

@@ -64,6 +64,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
 
         Log.e("newcode", " code: $countryCode country code email $admin_email password $admin_password")
+//        binding.ivApplogo.loadAny(R.drawable.ic_logo_ori)
         binding.ivApplogo.loadAny(R.drawable.ic_logo_ori)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             MainActivity().exitApp()
@@ -151,17 +152,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             false
         })
 
-
+        ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(),android.R.color.transparent))
         ccCode.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                ccCode.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.semi_transparent
-                    )
-                )
+//                ccCode.setBackgroundColor(
+//                    ContextCompat.getColor(
+//                        requireContext(),
+//                        R.color.semi_transparent
+//                    )
+//                )
+
+                ccCode.setBackgroundResource(R.drawable.ic_country_code_selected_bg)
             } else {
-                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(),android.R.color.transparent))
             }
         }
         ccCode.setCountryForPhoneCode(countryCode)

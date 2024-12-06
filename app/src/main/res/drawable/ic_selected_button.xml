@@ -11,21 +11,34 @@
     <item android:left=".5dp" android:top=".5dp"
         android:bottom=".5dp" android:right=".5dp">
         <shape>
+            <gradient
+                android:angle="0"
+                android:startColor="#941af2"
+                android:endColor="#EFBD89"
+                android:centerColor="#941af2"
+                android:type="linear" />
+
 
 <!--            <gradient-->
 <!--                android:angle="0"-->
-<!--                android:startColor="#F2DEC9F1"-->
-<!--                android:endColor="#F0ECD9C7"-->
-<!--                android:centerColor="#F0DFCEEF"-->
+<!--                android:startColor="#F2C8B5D8"-->
+<!--                android:endColor="#F0CFBFAE"-->
+<!--                android:centerColor="#F0BFB1CD"-->
 <!--                android:type="linear" />-->
 
-
-            <gradient
-                android:angle="0"
-                android:startColor="#F6EBFF"
-                android:endColor="#F8EFE6"
-                android:centerColor="#F3E6FD"
-                android:type="linear" />
+<!--         origional-->
+<!--            <gradient-->
+<!--                android:angle="0"-->
+<!--                android:startColor="#F6EBFF"-->
+<!--                android:endColor="#F8EFE6"-->
+<!--                android:centerColor="#F3E6FD"-->
+<!--                android:type="linear" />-->
+            <corners android:radius="@dimen/_30sdp" />
+        </shape>
+    </item>
+    <item >
+        <shape>
+            <solid android:color="#8D6A6969"/>
             <corners android:radius="@dimen/_30sdp" />
         </shape>
     </item>

@@ -1,8 +1,10 @@
 package com.streamefy.component.ui.home
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -99,22 +101,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         var mediaIndex = 0
         var isTrailer = false
     }
-    lateinit var progressDialog:CircularProgressDialog
+
+    lateinit var progressDialog: CircularProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progressDialog= CircularProgressDialog(requireContext())
+        progressDialog = CircularProgressDialog(requireContext())
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
         projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         homeFragment = this
         isEventPagination = false
+       // screenHeight =getScreenHeight()
         if (isFirst) {
             showProgress()
             getUserData()
@@ -125,6 +130,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         eventView()
         creatorView()
         foucusView()
+        keyMove()
         binding.apply {
 //            ivLogout.setOnClickListener {
 //                LogoutDialog(requireContext()) {
@@ -179,9 +185,126 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
             })
 
-
     }
 
+    fun keyMove() = with(binding) {
+        ivHomeCross.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+//                    customIndicator.requestFocus()
+//                    eventVideoFocus()
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+//                    ivLogout.requestFocus()
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+//                    ivLogout.requestFocus()
+                    tvPlay.requestFocus()
+                }
+
+
+                else -> {}
+            }
+        }
+        rvBackgVideo.remoteKey {
+            Log.e("dkvdknv", "ncjxcnbd backvideo")
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    eventVideoFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    // ivLogout.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                    // ivLogout.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        customIndicator.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+
+                    if (rvBackgVideo.targetPosition == 0) {
+                        ivHomeCross.requestFocus()
+                    } else {
+                        val currenPos = rvBackgVideo.targetPosition - 1
+                        binding.rvBackgVideo.backScroll(currenPos)
+
+                    }
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
+//                        tvPlay.requestFocus()
+                    } else {
+                        val currenPos = rvBackgVideo.targetPosition + 1
+                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
+                    }
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    tvPlay.requestFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+                }
+
+                else -> {}
+            }
+        }
+        tvPlay.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+                    ivHomeCross.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    eventVideoFocus()
+                }
+
+                StreamEnum.RIGHT_DPAD_KEY -> {
+//                    customIndicator.requestFocus()
+                    ivTrailer.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+        ivTrailer.remoteKey {
+            when (it) {
+                StreamEnum.UP_DPAD_KEY -> {
+//                    ivLogout.requestFocus()
+                    ivHomeCross.requestFocus()
+                }
+
+                StreamEnum.DOWN_DPAD_KEY -> {
+                    eventVideoFocus()
+                }
+
+                StreamEnum.LEFT_DPAD_KEY -> {
+                    tvPlay.requestFocus()
+                }
+
+                else -> {}
+            }
+        }
+    }
 
     private fun foucusView() = with(binding) {
 //        ivLogout.remoteKey {
@@ -225,33 +348,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //
 //            }
 //        }
-       // ivTrailer.requestFocus()
-        ivHomeCross.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
+        // ivTrailer.requestFocus()
 
-                StreamEnum.DOWN_DPAD_KEY -> {
-//                    customIndicator.requestFocus()
-//                    eventVideoFocus()
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-//                    ivLogout.requestFocus()
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-//                    ivLogout.requestFocus()
-                    tvPlay.requestFocus()
-                }
-
-
-                else -> {}
-            }
-        }
         ivHomeCross.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 focusView = StreamEnum.HOME_CLOSE
@@ -284,61 +382,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
             }
 
-        }
-        rvBackgVideo.remoteKey {
-            Log.e("dkvdknv", "ncjxcnbd backvideo")
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    // ivLogout.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    // ivLogout.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-
-        customIndicator.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-
-                    if (rvBackgVideo.targetPosition == 0) {
-                        ivHomeCross.requestFocus()
-                    } else {
-                        val currenPos = rvBackgVideo.targetPosition - 1
-                        binding.rvBackgVideo.backScroll(currenPos)
-
-                    }
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
-//                        tvPlay.requestFocus()
-                    } else {
-                        val currenPos = rvBackgVideo.targetPosition + 1
-                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
-                    }
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                }
-
-                else -> {}
-            }
         }
         customIndicator.setOnFocusChangeListener { v, hasFocus ->
             Log.e("backgvideo", "skcsk $hasFocus")
@@ -377,24 +420,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 focusView = StreamEnum.PLAY_RESUME
             }
         }
-        tvPlay.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-                    ivHomeCross.requestFocus()
-                }
 
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-//                    customIndicator.requestFocus()
-                    ivTrailer.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
         tvPlay.setOnClickListener {
             focusView = StreamEnum.PLAY_RESUME
             Log.e("lcsdwdw", "clicked ${tvPlay.text.toString()}")
@@ -404,25 +430,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 playEventVideo()
             }
 
-        }
-
-        ivTrailer.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-//                    ivLogout.requestFocus()
-                    ivHomeCross.requestFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
-
-                else -> {}
-            }
         }
         ivTrailer.setOnFocusChangeListener { _, hasFocus ->
             Log.e("lcsdwdw", "scnsivn $hasFocus")
@@ -444,7 +451,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 ivTrailer.setImageResource(R.drawable.ic_unselect_trailer)
             }
         }
-
         ivTrailer.setOnClickListener {
             isTrailer = true
             drawerLayout.openDrawer(GravityCompat.END)
@@ -551,7 +557,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         rvCreators.transition(0f, transitionValue)
         projectlogo.transition(0f, transitionValue)
         tvProjectTitle.transition(0f, transitionValue)
-
         tvProjectDesc.customAlfa(1f, 0f)
         rvCreators.customAlfa(1f, 0f)
 
@@ -761,6 +766,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         observe()
     }
 
+    fun getScreenHeight(): Int {
+        val displayMetrics = DisplayMetrics()
+        val windowManager =
+            requireActivity().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+       // screenHeight = displayMetrics.heightPixels
+        return displayMetrics.heightPixels
+    }
+
     private fun observe() {
         viewModel._homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
@@ -772,8 +786,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 is MyResource.isSuccess -> {
                     dismissProgress()
 //                    showProgress()
-                    Log.e("hfhddnub", "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString())
-                   binding.ivHomeCross.visible()
+                    Log.e(
+                        "hfhddnub",
+                        "$isEventPagination page $page pagination ${it.data?.data?.events?.size}" + it.data?.data.toString()
+                    )
+                    binding.ivHomeCross.visible()
                     it.data?.data?.run {
                         var data = this
                         if (isEventPagination) {
@@ -898,9 +915,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             }
                             isFirst = false
 
-
                             // dismissProgress()
+                            binding.apply {
+                                lifecycleScope.launch {
+                                    if (crewMembers!=null){
+                                       if (crewMembers.size==3){
+                                           transitionValue= tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+70
+                                        }else if (crewMembers.size==2){
+                                           transitionValue= tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+60
+                                        }
+                                    }
 
+//                                    delay(300)
+//                                    val location = IntArray(2)
+//                                    location[1]
+                                   // tvPlay.getLocationOnScreen(location)
+                                    Log.e("dbchdbv", "$transitionValue dbjdbv tvPlay ${tvPlay.top} tvProjectDesc ${tvProjectTitle.bottom}  tvProjectDesc top ${tvProjectTitle.top}")
+                                }
+
+                            }
                         }
                     }
                     progressDialog.dismiss()
@@ -982,19 +1015,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
             isLastPlay = true
             val eventIndex = newList.indexOfFirst { it.eventId == eventId }
-            Log.e("filteridwith", "isEnded $isEnded duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList")
+            Log.e(
+                "filteridwith",
+                "isEnded $isEnded duration $duration media id $mediaId eventId $eventId before event index $eventIndex update $newList"
+            )
             try {
                 var newMedia = newList[eventIndex].media
                 if (newMedia != null && newMedia.isNotEmpty()) {
                     var mediaIndex = newList[eventIndex].media?.indexOfFirst { it.id == mediaId }
                     delay(1000)
                     if (mediaIndex != null) {
-                        Log.e("drawerindex","mediaId $mediaId mediaIndex $mediaIndex eventIndex $eventIndex")
+                        Log.e(
+                            "drawerindex",
+                            "mediaId $mediaId mediaIndex $mediaIndex eventIndex $eventIndex"
+                        )
                         homeFragment.eventAdapter.updateDuration(eventIndex, mediaIndex, duration)
                         if (isDrawerOpen) {
                             if (!isTrailer) {
-                               // mediaAdapter.updateDuration(mediaIndex!!, duration)
-                               //
+                                // mediaAdapter.updateDuration(mediaIndex!!, duration)
+                                //
                                 withContext(Dispatchers.Main) {
                                     binding.rvDrawer.adapter = mediaAdapter
                                 }
@@ -1022,7 +1061,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         super.onResume()
         if (isNetworkAvailable) {
             binding.apply {
-                Log.e("resumehandle", " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}")
+                Log.e(
+                    "resumehandle",
+                    " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
+                )
                 isFirstVideo = true
                 if (isLastPlay) {
                     tvPlay.setText("resume")
@@ -1037,7 +1079,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     override fun netStatus() {
-  //  bindView()
+        //  bindView()
     }
 
 
@@ -1101,7 +1143,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun onPause() {
         binding.rvBackgVideo.apply {
             pauseVideo()
-            toolsCount=0
+            toolsCount = 0
             // playerHandler.release()
         }
         Log.e("homefocus", "onpause home $focusView")

@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
+import android.view.KeyEvent
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +20,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
+import com.streamefy.media.MediaHandler
 import com.streamefy.network.NetworkReceiver
 import com.streamefy.utils.gone
 import com.streamefy.utils.isNetworkAvailable
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mediaHandler = MediaHandler(this)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         wakelock()
@@ -107,6 +110,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private lateinit var mediaHandler: MediaHandler
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        // Forward key events to the MediaHandler in the activity
+        Log.e("knckdnc","skmckdmnc $keyCode")
+        return mediaHandler.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+    }
+
     fun wakelock(){
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
             wakeLock = powerManager.newWakeLock(

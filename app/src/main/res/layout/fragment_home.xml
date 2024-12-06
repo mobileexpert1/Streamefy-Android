@@ -227,7 +227,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:paddingStart="@dimen/_2sdp"
-                    android:paddingRight="@dimen/_7sdp"
+                    android:paddingRight="@dimen/_15sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

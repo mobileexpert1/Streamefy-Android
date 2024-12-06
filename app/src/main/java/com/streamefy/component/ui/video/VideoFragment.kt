@@ -1,6 +1,7 @@
 package com.streamefy.component.ui.video
 
 import VolumeManager
+import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -85,6 +86,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     private val viewModel: VideoVM by viewModel()
     private lateinit var mediaHandler: MediaHandler
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mediaHandler = MediaHandler(context)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,7 +111,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             //  bunneyIdList.add(BunneyIds(mediaId=mediaId, eventId = eventId, bunneyId = nextVideoId))
         }
-        mediaHandler = MediaHandler(requireActivity())
+//        mediaHandler = MediaHandler(requireActivity())
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
         volumeManager.setVolumePercentage(5)
@@ -131,8 +136,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         )
         binding.sbVolumeSeek.setProgress(volumeCount)
 
-    }
 
+
+
+
+    }
+//
     fun keyMove() = with(binding) {
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             toShowBackButton()

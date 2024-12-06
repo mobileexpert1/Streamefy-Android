@@ -364,10 +364,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                         } else {
                             if (isAdded) {
-                                viewModel.otpVerification(
-                                    requireContext(),
-                                    VerificationRequest(phone, this)
-                                )
+                                viewModel.otpVerification(requireContext(), VerificationRequest(phone, this))
                                 verificationObserv()
                             } else {
                                 Log.e("otpfragment", "Fragment is not added, navigation aborted.")

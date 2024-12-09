@@ -45,9 +45,9 @@ class CustomIndicator(context: Context, attrs: AttributeSet) : LinearLayout(cont
 
             dot.setOnClickListener {
                 Log.e("sjbjsbsd","click index $i")
-                homeFragment.binding.rvBackgVideo.post {
-                    homeFragment.binding.rvBackgVideo.smoothScrollToPosition(i)
-                }
+//                homeFragment.binding.rvBackgVideo.post {
+//                    homeFragment.binding.rvBackgVideo.smoothScrollToPosition(i)
+//                }
                 //homeFragment.binding.rvBackgVideo.scrollToPosition(i)
             }
             addView(dot)

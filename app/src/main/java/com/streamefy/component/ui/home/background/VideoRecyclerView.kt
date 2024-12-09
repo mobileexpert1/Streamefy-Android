@@ -272,19 +272,19 @@ class VideoRecyclerView : RecyclerView {
         var mNewPos = pos + 1
         Log.e("smcskmc", "up $pos new $mNewPos size ${mediaObjects.size}")
         if (mNewPos < mediaObjects.size) {
-            homeFragment.binding.rvBackgVideo.smoothScrollToPosition(mNewPos)
+          //  homeFragment.binding.rvBackgVideo.smoothScrollToPosition(mNewPos)
 //            removeVideoView(videoSurfaceView)
             scrollPlay {}
 //            homeFragment.binding.rvBackgVideo.scrollTo(pos,mNewPos)
         } else {
             //  recyclerview?.scrollToPosition(0)
-            homeFragment.binding.rvBackgVideo.smoothScrollToPosition(0)
+          //  homeFragment.binding.rvBackgVideo.smoothScrollToPosition(0)
         }
     }
 
     fun backScroll(pos: Int) {
         Log.e("smcskmc", "back $pos new $pos size ${mediaObjects.size}")
-        homeFragment.binding.rvBackgVideo.smoothScrollToPosition(pos)
+       // homeFragment.binding.rvBackgVideo.smoothScrollToPosition(pos)
         removeVideoView(videoSurfaceView)
 
 
@@ -345,7 +345,7 @@ class VideoRecyclerView : RecyclerView {
 
         homeFragment.mediaUrl = mediaObjects[targetPosition].hlsPlaylistUrl
         currentVideo = targetPosition
-        player = playerHandler.getPLayer()!!
+//        player = playerHandler.getPLayer()!!
         Log.e(
             "skncksnc",
             "skcks thumb ${mediaObjects[targetPosition].thumbnailSBucketId}\n video ${homeFragment.mediaUrl}"
@@ -496,10 +496,10 @@ class VideoRecyclerView : RecyclerView {
         if (position >= 30000) {
             homeFragment?.run {
                 if (targetPosition == mediaObjects.size - 1) {
-                    binding.rvBackgVideo.smoothScrollToPosition(0)
+                   // binding.rvBackgVideo.smoothScrollToPosition(0)
                     scrollPlay{}
                 } else {
-                    binding.rvBackgVideo.smoothScrollToPosition(targetPosition + 1)
+                  //  binding.rvBackgVideo.smoothScrollToPosition(targetPosition + 1)
                     scrollPlay{}
                 }
             }
@@ -510,7 +510,7 @@ class VideoRecyclerView : RecyclerView {
         if (playerHandler.player!=null) {
 //            playerHandler.seekTo(homeFragment.currentVideoDuration)
             Log.e("checkcurrentv","jcjdc video ${homeFragment.mediaUrl}")
-            homeFragment.binding.rvBackgVideo.scrollToPosition(targetPosition)
+          //  homeFragment.binding.rvBackgVideo.scrollToPosition(targetPosition)
             playerHandler.seekTo(0)
             playerHandler.play()
             updateDuration()
@@ -553,7 +553,7 @@ class VideoRecyclerView : RecyclerView {
     private fun resetVideoView() {
         if (isVideoViewAdded) {
             removeVideoView(videoSurfaceView)
-            playPosition = -1
+            playPosition = 0
             videoSurfaceView!!.visibility = View.INVISIBLE
             // thumbnail!!.visibility = View.GONE
         }

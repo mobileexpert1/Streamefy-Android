@@ -18,8 +18,8 @@ android {
 //        versionCode = 2
 //        versionName = "1.0.2"
 //        fire stick
-        versionCode = 10
-        versionName = "1.0.11"
+        versionCode = 11
+        versionName = "1.0.12"
 
 //        google
 //        versionCode = 2

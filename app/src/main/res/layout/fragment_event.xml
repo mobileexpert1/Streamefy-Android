@@ -26,10 +26,11 @@
 
         <ImageView
             android:id="@+id/ivApplogo"
-            android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_190sdp"
+            android:layout_height="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_30sdp"
             android:src="@drawable/ic_logo_ori"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

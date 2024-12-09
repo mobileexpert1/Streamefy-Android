@@ -49,10 +49,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     var list = ArrayList<ResponseItem>()
     private val viewModel: ProjectsVM by viewModel()
     var phone = ""
-    var projectId: Int = 0
     var isHome = false
     var isPrimaryuser = false
     var   applogo=""
+    var projectId=""
     companion object {
         lateinit var eventFragment: EventFragment
         var focusedIndex = 0
@@ -63,12 +63,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         eventFragment = this
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
-        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-
+//        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        projectId=SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
-        binding.ivApplogo.loadAny(applogo)
+//        binding.ivApplogo.loadAny(applogo)
         binding.apply {
             if (isPrimaryuser) {
                 if (isHome) {
@@ -76,9 +76,13 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 }
             }
         }
+
+        observe()
         focusable()
         clicable()
         rvInit()
+       // focusedIndex = 0
+        viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        observe()
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -110,20 +114,30 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                     StreamEnum.SINGLE -> {
-                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
-                        SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-                        SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
-                        val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
-                        val bundle = Bundle()
-                        bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
-                        bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                        bundle.putString(PrefConstent.FULL_NAME, name)
+                        if(projectId==list[index].id.toString()){
+                            SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
+                         //  var pin= SharedPref.getString(PrefConstent.AUTH_PIN)
+                            SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
+                            if (isAdded) {
+                                findNavController().navigate(R.id.homefragment)
+                            }
+                        }else {
 
-                        bundle.putBoolean(PrefConstent.ISHOME, false)
-                        findNavController().navigate(
-                            R.id.action_projectfragment_to_pinAuthenticationFragment,
-                            bundle
-                        )
+                            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+                            SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
+//                            SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
+                            val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+                            val bundle = Bundle()
+                            bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
+                            bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                            bundle.putString(PrefConstent.FULL_NAME, name)
+
+                            bundle.putBoolean(PrefConstent.ISHOME, false)
+                            findNavController().navigate(
+                                R.id.action_projectfragment_to_pinAuthenticationFragment,
+                                bundle
+                            )
+                        }
 //                ConfirmPinDialog(requireContext()) {
 //                    if (it) {
 //                        projectId = list[index].id
@@ -219,7 +233,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                             binding.rvEvent.apply {
                                 post {
-                                    getChildAt(0)?.requestFocus()
+                                    getChildAt(focusedIndex)?.requestFocus()
                                 }
                             }
 //                            lifecycleScope.launch {
@@ -264,8 +278,6 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
     override fun onResume() {
         super.onResume()
-        focusedIndex = 0
-        viewModel.getProject(requireContext(), ProjectRequest(phone))
-        observe()
+
     }
 }

@@ -344,6 +344,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
+                    SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (isAdded) {
                         findNavController().navigate(R.id.homefragment)

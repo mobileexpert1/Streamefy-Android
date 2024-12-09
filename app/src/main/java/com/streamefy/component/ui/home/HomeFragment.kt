@@ -2,24 +2,26 @@ package com.streamefy.component.ui.home
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Tracks
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.CircularProgressDialog
@@ -27,13 +29,15 @@ import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.home.adapter.CategoryAdapter
 import com.streamefy.component.ui.home.adapter.CreatorsAdapter
 import com.streamefy.component.ui.home.adapter.DrawerAdapter
-import com.streamefy.component.ui.home.background.BackgroundAdpater
 import com.streamefy.component.ui.home.model.BackgroundMediaItem
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.home.model.MediaItem
 import com.streamefy.component.ui.home.model.crewMembers
 import com.streamefy.component.ui.home.viewmodel.HomeVm
+import com.streamefy.component.ui.video.PlayerHandler
+import com.streamefy.component.ui.video.VideoEnum
 import com.streamefy.component.ui.video.model.PlayBackRequest
+import com.streamefy.component.ui.video.model.QualityModel
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentHomeBinding
@@ -41,6 +45,7 @@ import com.streamefy.network.MyResource
 import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.customAlfa
 import com.streamefy.utils.gone
+import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.transition
 import com.streamefy.utils.visible
@@ -54,6 +59,7 @@ import kotlin.math.floor
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
     private val viewModel: HomeVm by viewModel()
+    lateinit var playerHandler: PlayerHandler
 
     val images = ArrayList<BackgroundMediaItem>()
     val crewList = ArrayList<crewMembers>()
@@ -68,6 +74,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var proDesc = ""
     var proLogo = ""
     var projectId = "0"
+    var videoPlayingIndex = 0
 
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
@@ -89,7 +96,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var lastVideoThumb = ""
     var isPlayByPlayButton = false
     var isPrimaryuser = false
-    var transitionValue = 0f
+    var transitionValue4 = 0f
+    var transitionValue3 = 0f
+    var transitionValue2 = 0f
 
     companion object {
         lateinit var homeFragment: HomeFragment
@@ -119,12 +128,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         homeFragment = this
         isEventPagination = false
-       // screenHeight =getScreenHeight()
+        // screenHeight =getScreenHeight()
         if (isFirst) {
             showProgress()
             getUserData()
             //playbackObserver()
-            transitionValue = dpToPx(140f)
+            playerHandler = PlayerHandler(requireActivity(), binding.playerView)
+            transitionValue4 = dpToPx(140f)
+            transitionValue3 = dpToPx(120f)
+            transitionValue2 = dpToPx(85f)
+           //
+            playerInitialization()
+
         }
 
         eventView()
@@ -214,60 +229,60 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 else -> {}
             }
         }
-        rvBackgVideo.remoteKey {
-            Log.e("dkvdknv", "ncjxcnbd backvideo")
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-                    eventVideoFocus()
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    // ivLogout.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                    // ivLogout.requestFocus()
-                }
-
-                else -> {}
-            }
-        }
-        customIndicator.remoteKey {
-            when (it) {
-                StreamEnum.UP_DPAD_KEY -> {
-
-                    if (rvBackgVideo.targetPosition == 0) {
-                        ivHomeCross.requestFocus()
-                    } else {
-                        val currenPos = rvBackgVideo.targetPosition - 1
-                        binding.rvBackgVideo.backScroll(currenPos)
-
-                    }
-                }
-
-                StreamEnum.DOWN_DPAD_KEY -> {
-                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
-//                        tvPlay.requestFocus()
-                    } else {
-                        val currenPos = rvBackgVideo.targetPosition + 1
-                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
-                    }
-                }
-
-                StreamEnum.LEFT_DPAD_KEY -> {
-                    tvPlay.requestFocus()
-                }
-
-                StreamEnum.RIGHT_DPAD_KEY -> {
-                }
-
-                else -> {}
-            }
-        }
+//        rvBackgVideo.remoteKey {
+//            Log.e("dkvdknv", "ncjxcnbd backvideo")
+//            when (it) {
+//                StreamEnum.UP_DPAD_KEY -> {
+//                    eventVideoFocus()
+//                }
+//
+//                StreamEnum.DOWN_DPAD_KEY -> {
+//                    tvPlay.requestFocus()
+//                }
+//
+//                StreamEnum.LEFT_DPAD_KEY -> {
+//                    // ivLogout.requestFocus()
+//                }
+//
+//                StreamEnum.RIGHT_DPAD_KEY -> {
+//                    // ivLogout.requestFocus()
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//        customIndicator.remoteKey {
+//            when (it) {
+//                StreamEnum.UP_DPAD_KEY -> {
+//
+//                    if (rvBackgVideo.targetPosition == 0) {
+//                        ivHomeCross.requestFocus()
+//                    } else {
+//                        val currenPos = rvBackgVideo.targetPosition - 1
+//                        binding.rvBackgVideo.backScroll(currenPos)
+//
+//                    }
+//                }
+//
+//                StreamEnum.DOWN_DPAD_KEY -> {
+//                    if (rvBackgVideo.targetPosition == rvBackgVideo.mediaObjects.size - 1) {
+////                        tvPlay.requestFocus()
+//                    } else {
+//                        val currenPos = rvBackgVideo.targetPosition + 1
+//                        binding.rvBackgVideo.smoothScrollToPosition(currenPos)
+//                    }
+//                }
+//
+//                StreamEnum.LEFT_DPAD_KEY -> {
+//                    tvPlay.requestFocus()
+//                }
+//
+//                StreamEnum.RIGHT_DPAD_KEY -> {
+//                }
+//
+//                else -> {}
+//            }
+//        }
         tvPlay.remoteKey {
             when (it) {
                 StreamEnum.UP_DPAD_KEY -> {
@@ -485,30 +500,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var toolsCount: Long = 0
     fun sliderInit() = with(binding) {
 
-        rvBackgVideo.apply {
-            gone()
-            alpha = 0f
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
-            setList(images)
-            var backgadapter = BackgroundAdpater(requireActivity(), images) { index -> }
-            adapter = backgadapter
-
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        var newPos =
-                            (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                        Log.e(
-                            "skncksnc",
-                            "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
-                        )
-                    }
-                }
-            })
-        }
+//        rvBackgVideo.apply {
+//            gone()
+//            alpha = 0f
+//            setHasFixedSize(true)
+//            layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
+//            setList(images)
+//            var backgadapter = BackgroundAdpater(requireActivity(), images) { index -> }
+//            adapter = backgadapter
+//
+//            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//                @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//                    super.onScrollStateChanged(recyclerView, newState)
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        var newPos =
+//                            (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+//                        Log.e(
+//                            "skncksnc",
+//                            "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
+//                        )
+//                    }
+//                }
+//            })
+//        }
         thumbShow()
         //  customIndicator.setIndicatorCount(images.size, 0)
 //        if (images.size > 1) {
@@ -517,16 +532,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun thumbShow() = with(binding) {
-        rvBackgVideo.run {
-            visible()
-            animate()
-                .alpha(1f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .setInterpolator(DecelerateInterpolator())
-                .setDuration(5000)
-                .start()
-        }
+//        rvBackgVideo.run {
+//            visible()
+//            animate()
+//                .alpha(1f)
+//                .scaleX(1f)
+//                .scaleY(1f)
+//                .setInterpolator(DecelerateInterpolator())
+//                .setDuration(5000)
+//                .start()
+//        }
 
     }
 
@@ -536,10 +551,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         rvCreators.visible()
         tvProjectTitle.visible()
 
-        tvProjectDesc.transition(transitionValue, 0f)
-        rvCreators.transition(transitionValue, 0f)
-        projectlogo.transition(transitionValue, 0f)
-        tvProjectTitle.transition(transitionValue, 0f)
+        tvProjectDesc.transition(transitionValue4, 0f)
+        rvCreators.transition(transitionValue4, 0f)
+        projectlogo.transition(transitionValue4, 0f)
+        tvProjectTitle.transition(transitionValue4, 0f)
 
         tvProjectDesc.customAlfa(0f, 1f)
         rvCreators.customAlfa(0f, 1f)
@@ -552,14 +567,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     }
 
     fun hideTools() = with(binding) {
-
-        tvProjectDesc.transition(0f, transitionValue)
-        rvCreators.transition(0f, transitionValue)
-        projectlogo.transition(0f, transitionValue)
-        tvProjectTitle.transition(0f, transitionValue)
-        tvProjectDesc.customAlfa(1f, 0f)
-        rvCreators.customAlfa(1f, 0f)
-
+        if (rvCreators.isVisible) {
+            tvProjectDesc.transition(0f, transitionValue4)
+            rvCreators.transition(0f, transitionValue4)
+            projectlogo.transition(0f, transitionValue4)
+            tvProjectTitle.transition(0f, transitionValue4)
+            tvProjectDesc.customAlfa(1f, 0f)
+            rvCreators.customAlfa(1f, 0f)
+        }
     }
 
     private fun getUserData() {
@@ -726,7 +741,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.UP_DPAD_KEY -> {
-                        rvBackgVideo.clearFocus()
+                       // rvBackgVideo.clearFocus()
                         tvPlay.isFocusable = true
                         tvPlay.isFocusableInTouchMode = true
                         tvPlay.post {
@@ -771,7 +786,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         val windowManager =
             requireActivity().getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getMetrics(displayMetrics)
-       // screenHeight = displayMetrics.heightPixels
+        // screenHeight = displayMetrics.heightPixels
         return displayMetrics.heightPixels
     }
 
@@ -806,13 +821,23 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             page++
                             isEventPagination = true
                             eventList.clear()
+                           var projectData=project?.get(0)
                             // event video
                             lifecycleScope.launch(Dispatchers.IO) {
                                 data.backgroundMedia?.run {
                                     if (this.isNotEmpty()) {
                                         images.addAll(this as ArrayList<BackgroundMediaItem>)
                                         withContext(Dispatchers.Main) {
-                                            sliderInit()
+                                            //sliderInit()
+                                            if (images.isNotEmpty()) {
+                                                if (images[0].hlsPlaylistUrl.isNotEmpty()) {
+                                                    play(images[0].hlsPlaylistUrl)
+                                                    showRemainsTime(30000)
+                                                    countDownTimer.start()
+                                                    isTimerRunning = true
+                                                }
+                                            }
+
                                         }
                                     }
                                 }
@@ -884,27 +909,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         withContext(Dispatchers.Main) { binding.tvPlay.setText("resume") }
                                     }
                                 }
-                            }
-
-
-                            eventAdapter.update(events as ArrayList<EventsItem>)
-                            binding.let {
-                                this.project?.get(0)?.run {
-                                    proTitle = projectTitle.toString()
-                                    proDesc = projectDescription.toString()
-                                    it.tvProjectTitle.text = proTitle.toString()
-                                    it.tvProjectDesc.text = proDesc.toString()
-                                    it.clTitle.visible()
-                                    it.ivTrailer.visible()
-                                    it.tvPlay.visible()
-                                    showTools()
+                                withContext(Dispatchers.Main){
+                                    binding.let {
+                                        projectData?.run {
+                                            proTitle = projectTitle.toString()
+                                            proDesc = projectDescription.toString()
+                                            it.tvProjectTitle.text = proTitle.toString()
+                                            it.tvProjectDesc.text = proDesc.toString()
+                                            it.clTitle.visible()
+                                            it.ivTrailer.visible()
+                                            it.tvPlay.visible()
+                                            showTools()
+                                        }
+                                        proLogo = data.logo
+                                    }
+                                    eventAdapter.update(events as ArrayList<EventsItem>)
                                 }
-//                                it. rvBackgVideo.requestFocus()
-//                                it.projectlogo.loadUrl(this.logo)
-                                proLogo = this.logo
-
-
                             }
+
                             crewList.clear()
                             //  this.crewMembers?.let { it1 -> crewList.addAll(it1) }
 
@@ -918,19 +940,24 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             // dismissProgress()
                             binding.apply {
                                 lifecycleScope.launch {
-                                    if (crewMembers!=null){
-                                       if (crewMembers.size==3){
-                                           transitionValue= tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+70
-                                        }else if (crewMembers.size==2){
-                                           transitionValue= tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+60
+                                    if (crewMembers != null) {
+                                        if (crewMembers.size == 3) {
+                                            transitionValue4 =
+                                                transitionValue3//tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+70
+                                        } else if (crewMembers.size == 2) {
+                                            transitionValue4 = transitionValue2
+                                            // transitionValue= //tvPlay.top.toFloat()-tvProjectTitle.bottom.toFloat()+60
                                         }
                                     }
 
 //                                    delay(300)
 //                                    val location = IntArray(2)
 //                                    location[1]
-                                   // tvPlay.getLocationOnScreen(location)
-                                    Log.e("dbchdbv", "$transitionValue dbjdbv tvPlay ${tvPlay.top} tvProjectDesc ${tvProjectTitle.bottom}  tvProjectDesc top ${tvProjectTitle.top}")
+                                    // tvPlay.getLocationOnScreen(location)
+                                    Log.e(
+                                        "dbchdbv",
+                                        "crewMembers.size ${crewMembers?.size} four $transitionValue4 dbjdbv $transitionValue3, $transitionValue2 tvPlay ${tvPlay.top} tvProjectDesc ${tvProjectTitle.bottom}  tvProjectDesc top ${tvProjectTitle.top}"
+                                    )
                                 }
 
                             }
@@ -1057,26 +1084,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (isNetworkAvailable) {
-            binding.apply {
-                Log.e(
-                    "resumehandle",
-                    " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
-                )
-                isFirstVideo = true
-                if (isLastPlay) {
-                    tvPlay.setText("resume")
-                } else {
-                    tvPlay.setText("play")
-                }
-                showTools()
-                rvBackgVideo.resumeVideo()
-                viewFocus()
-            }
-        }
-    }
 
     override fun netStatus() {
         //  bindView()
@@ -1139,25 +1146,245 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
+//    handle video play functionality
+
+    fun playerInitialization()  {
+       if (::playerHandler.isInitialized) {
+           playerHandler.player?.addListener(object : Player.Listener {
+               override fun onPlaybackStateChanged(playbackState: Int) {
+                   if (playbackState == Player.STATE_BUFFERING) {
+                   } else if (playbackState == Player.STATE_READY) {
+                   } else if (playbackState == Player.STATE_ENDED) {
+                       Log.e("filteridwith", "video ended ")
+                   }
+               }
+
+               override fun onTracksChanged(tracks: Tracks) {
+               }
+
+               override fun onPlayerError(error: PlaybackException) {
+                   Log.e(
+                       "ExoPlayerError",
+                       "by video fragment Playback error: " + error.message,
+                       error
+                   )
+               }
+
+               override fun onPlayerErrorChanged(error: PlaybackException?) {
+                   super.onPlayerErrorChanged(error)
+                   Log.e("ExoPlayerError", "onPlayerErrorChanged " + error?.message, error)
+               }
+           })
+       }
+
+    }
+
+    fun play(videoUrl: String) {
+        if (::playerHandler.isInitialized) {
+            mediaUrl=videoUrl
+            playerHandler.setMediaUri(videoUrl, 0)
+        }
+    }
+
+    fun playNextVideo() = with(binding) {
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                playerHandler.pause()
+                this.stop()
+               // this.release()
+            }
+        }
+        toolsCount=0
+        playerView.requestLayout()
+        playerView.invalidate()
+        playerHandler.stopHandler()
+
+        if (images.isNotEmpty()) {
+            if (videoPlayingIndex < images.size) {
+                if (videoPlayingIndex == images.size - 1) {
+                    videoPlayingIndex = 0
+                } else {
+                    videoPlayingIndex++
+                }
+                if (images[videoPlayingIndex].hlsPlaylistUrl.isNotEmpty()) {
+                    play(images[videoPlayingIndex].hlsPlaylistUrl)
+                   // if (::countDownTimer.isInitialized) {
+                        showRemainsTime(30000)
+                        countDownTimer.start()
+                        isTimerRunning = true
+                   // }
+                }
+            }
+
+        }
+
+    }
+
+    private fun updateDuration() {
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                // val position = player.currentPosition
+                homeFragment.currentVideoDuration = this.currentPosition
+                if (this.playWhenReady) {
+                    playerHandler.handler.postDelayed({ updateDuration() }, 500)
+                } else {
+                    playerHandler.stopHandler()
+                }
+
+                toolsCount += 500
+                Log.e("homevideotest", "videoPlayingIndex $videoPlayingIndex toolsCount $toolsCount currentPosition ${this.currentPosition} total duration ${this.duration} playWhenReady ${this.playWhenReady}")
+                if (toolsCount == 5000L) {
+                    hideTools()
+                }
+                if (this.currentPosition >= 30000) {
+                    playerHandler.stopHandler()
+                    playNextVideo()
+                    playerHandler = PlayerHandler(requireActivity(), binding.playerView)
+                    if (images.isNotEmpty()) {
+                        if (videoPlayingIndex < images.size) {
+                            if (videoPlayingIndex == images.size - 1) {
+                                videoPlayingIndex = 0
+                            } else {
+                                videoPlayingIndex++
+                            }
+                            if (images[videoPlayingIndex].hlsPlaylistUrl.isNotEmpty()) {
+                                lifecycleScope.launch {
+                                    delay(500)
+                                    withContext(Dispatchers.Main){
+                                        play(images[videoPlayingIndex].hlsPlaylistUrl)
+                                    }
+                                }
+
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    lateinit var countDownTimer: CountDownTimer
+    private var millisRemaining: Long = 30000
+    private var isTimerRunning = false
+
+    fun showRemainsTime(timeInMillis: Long) {
+        toolsCount=0
+        Log.e("homevideotest", " start timer $timeInMillis")
+       // countDownTimer.cancel()
+        countDownTimer = object : CountDownTimer(timeInMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+               millisRemaining = millisUntilFinished
+                Log.e("homevideotest", "videoPlayingIndex $videoPlayingIndex millisUntilFinished $millisUntilFinished ")
+                toolsCount++
+                if (millisUntilFinished <= 24000L) {
+                    if (toolsCount==10L) {
+                        hideTools()
+                    }
+                }
+                else if(millisUntilFinished <= 1000L){
+                    onFinish()
+                }
+
+            }
+
+            override fun onFinish() {
+                millisRemaining = 0
+                toolsCount=0L
+                playNextVideo()
+                playerInitialization()
+                showTools()
+                toolsCount=0L
+//                onFinish()
+            }
+        }
+       // countDownTimer.start()
+
+    }
+    fun pauseCountdown() {
+        if (isTimerRunning) {
+           // if (::countDownTimer.isInitialized) {
+                countDownTimer.cancel()  // Cancel the timer
+//            countDownTimer.onFinish()
+                isTimerRunning = false
+          //  }
+            Log.e("homevideotest", "Timer Paused")
+        }
+    }
+
+    // Function to resume the countdown timer from where it was paused
+    fun resumeCountdown() {
+        if (!isTimerRunning) {
+            if (::countDownTimer.isInitialized) {
+                showRemainsTime(millisRemaining)
+                countDownTimer.start()// Start from the remaining time
+                isTimerRunning = true
+            }
+            Log.e("homevideotest", "Timer Resumed")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isNetworkAvailable) {
+            binding.apply {
+                Log.e(
+                    "resumehandle",
+                    " $isLastPlay videoduraion $videoduraion isFirstVideo $isFirstVideo  hfhh $eventFocusPos ncdjknv ${isDrawerOpen}"
+                )
+                isFirstVideo = true
+                if (isLastPlay) {
+                    tvPlay.setText("resume")
+                } else {
+                    tvPlay.setText("play")
+                }
+                showTools()
+                //  rvBackgVideo.resumeVideo()
+                if (playerHandler.player != null) {
+                    if (::playerHandler.isInitialized){
+                    playerHandler.player?.run {
+                        if (isTimerRunning) {
+                            playerHandler.setMediaUri(mediaUrl, this.currentPosition)
+                        }
+                        resumeCountdown()
+                    }
+                }}
+                viewFocus()
+            }
+        }
+    }
 
     override fun onPause() {
-        binding.rvBackgVideo.apply {
-            pauseVideo()
-            toolsCount = 0
-            // playerHandler.release()
+//        binding.rvBackgVideo.apply {
+//            pauseVideo()
+//            toolsCount = 0
+//            // playerHandler.release()
+//        }
+//        Log.e("homefocus", "onpause home $focusView")
+//        binding.rvBackgVideo.isfirst = true
+
+        if (playerHandler.player != null) {
+            playerHandler.player?.run {
+                playerHandler.pause()
+                pauseCountdown()
+            }
         }
-        Log.e("homefocus", "onpause home $focusView")
-        binding.rvBackgVideo.isfirst = true
+
         super.onPause()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         requireActivity()?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        binding.rvBackgVideo.apply {
-            pauseVideo()
+        if (playerHandler.player != null) {
+            pauseCountdown()
+            playerHandler.pause()
             playerHandler.release()
         }
+//        binding.rvBackgVideo.apply {
+//            pauseVideo()
+//            playerHandler.release()
+//        }
     }
 
 }

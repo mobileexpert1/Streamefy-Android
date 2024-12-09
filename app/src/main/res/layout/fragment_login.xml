@@ -11,10 +11,11 @@
 
         <ImageView
             android:id="@+id/ivApplogo"
-            android:layout_width="@dimen/_150sdp"
-            android:layout_height="@dimen/_30sdp"
+            android:layout_width="@dimen/_230sdp"
+            android:layout_height="@dimen/_55sdp"
             android:layout_marginTop="@dimen/_40sdp"
             android:contentDescription="@string/app_name"
+            android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
             app:layout_constraintTop_toTopOf="parent"

@@ -3,6 +3,7 @@ package com.streamefy.component.ui.projects
 import android.app.Activity
 import android.util.Log
 import android.view.KeyEvent
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -43,8 +44,8 @@ class ProjectsAdapter(
         var data = eventList[position]
 
         viewHolder.apply {
-            itemView.isFocusable = true
-            itemView.isClickable = true
+//            itemView.isFocusable = true
+//            itemView.isClickable = true
             Log.e("membercheck", "newlist ${data.isLast}")
             if (data.isLast){
                 thumb.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
@@ -187,7 +188,8 @@ class ProjectsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectView {
-        val inflate = context.layoutInflater.inflate(R.layout.projects_item, parent, false)
+        var inflator= LayoutInflater.from(context)
+        val inflate = inflator.inflate(R.layout.projects_item, parent, false)
         return ProjectView(inflate)
     }
 
@@ -208,12 +210,12 @@ class ProjectsAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return super.getItemViewType(position)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
-    }
+//    override fun getItemViewType(position: Int): Int {
+//        return super.getItemViewType(position)
+//    }
+//
+//    override fun getItemId(position: Int): Long {
+//        return super.getItemId(position)
+//    }
     override fun getItemCount(): Int = eventList.size
 }

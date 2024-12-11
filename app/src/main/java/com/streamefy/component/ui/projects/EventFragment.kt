@@ -2,10 +2,7 @@ package com.streamefy.component.ui.projects
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -13,15 +10,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
-import com.streamefy.component.ui.home.HomeFragment
-import com.streamefy.component.ui.home.model.EventsItem
-import com.streamefy.component.ui.pin_authentication.PinVM
-import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ResponseItem
 import com.streamefy.component.ui.projects.viewmodel.ProjectsVM
@@ -29,19 +23,15 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
-import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
-import com.streamefy.utils.loadAny
 import com.streamefy.utils.remoteKey
-import com.streamefy.utils.showMessage
+import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
 import java.util.Collections
-import java.util.Locale
+
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
     override fun netStatus() {}
@@ -52,8 +42,9 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     var phone = ""
     var isHome = false
     var isPrimaryuser = false
-    var   applogo=""
-    var projectId=""
+    var applogo = ""
+    var projectId = ""
+
     companion object {
         lateinit var eventFragment: EventFragment
         var focusedIndex = 0
@@ -65,7 +56,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
 //        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-        projectId=SharedPref.getString(PrefConstent.PROJECT_ID).toString()
+        projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
@@ -74,6 +65,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             if (isPrimaryuser) {
                 if (isHome) {
                     ivBack.invisible()
+//                    ivBack.visible()
                 }
             }
         }
@@ -82,7 +74,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         focusable()
         clicable()
         rvInit()
-       // focusedIndex = 0
+        // focusedIndex = 0
         viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        observe()
@@ -115,14 +107,14 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                     StreamEnum.SINGLE -> {
-                        if(projectId==list[index].id.toString()){
+                        if (projectId == list[index].id.toString()) {
                             SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
-                         //  var pin= SharedPref.getString(PrefConstent.AUTH_PIN)
+                            //  var pin= SharedPref.getString(PrefConstent.AUTH_PIN)
                             SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
                             if (isAdded) {
                                 findNavController().navigate(R.id.homefragment)
                             }
-                        }else {
+                        } else {
 
                             SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
@@ -223,27 +215,39 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 is MyResource.isSuccess -> {
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
-                       // requireActivity().showMessage("PIN updated successfully")
+                        // requireActivity().showMessage("PIN updated successfully")
                         findNavController().popBackStack()
                     } else {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-                           // list.add(ResponseItem(isLast = true))
+                            // list.add(ResponseItem(isLast = true))
+//                            Collections.reverse(list);
                             if (projectId.isNotEmpty()) {
                                 focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
                             }
-                            Collections.swap(list, focusedIndex,0)
+                             Collections.swap(list, focusedIndex,0)
                             projectAdapter.update(list)
-                            binding.rvEvent.apply {
-                                Log.e("skncksn","slmcls focus $focusedIndex")
-                                requestFocus()
-                                isFocusable = true
-                                isFocusableInTouchMode = true
-                                post {
-                                    getChildAt(focusedIndex)?.requestFocus()
-                                    smoothScrollToPosition(focusedIndex)
+
+                            Log.e("skncksn", "slmcls focus $focusedIndex")
+                            lifecycleScope.launch {
+//                                binding.rvEvent.smoothScrollToPosition(focusedIndex)
+//                                binding.rvEvent.scrollTo(0,focusedIndex)
+                                binding.rvEvent.apply {
+//                                    adapter=projectAdapter
+//                                    clearFocus()
+                                    binding.ivBack.clearFocus()
+                                    isFocusable = true
+                                    isFocusableInTouchMode = true
+                                    delay(1000)
+                                    requestFocus()
+                                   post {
+                                       getChildAt(0)?.requestFocus()
+                                   }
+
                                 }
+//                                 binding.rvEvent.adapter = projectAdapter
+
                             }
 //                            lifecycleScope.launch {
 //                                delay(200)
@@ -276,7 +280,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                             .build()
                         findNavController().navigate(
                             R.id.event_to_pin_no_projects_found,
-                            bundle,navOptions
+                            bundle, navOptions
                         )
                     }
 

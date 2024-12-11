@@ -50,6 +50,7 @@ import com.streamefy.utils.remoteKey
 import com.streamefy.utils.transition
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -170,14 +171,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
                 override fun onDrawerOpened(drawerView: View) {
                     // Set focus to the first item if needed
-                    Log.e("dndjvn", "drawer open")
+                    Log.e("dndjvn", "$eventVideoIndex drawer open $eventFocusPos")
                     focusView = StreamEnum.DRAWER_VIEW
                     isDrawerOpen = true
                     rvDrawer.post { rvDrawer.getChildAt(drawerItemFocus)?.requestFocus() }
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
-                    Log.e("dndjvn", "drawer close")
+                    Log.e("dndjvn", "$eventVideoIndex drawer close $eventFocusPos")
                     isDrawerOpen = false
                     if (isTrailer) {
                         ivTrailer.requestFocus()
@@ -199,6 +200,42 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     showCustomDialog()
                 }
             })
+
+        lifecycleScope.launch {
+            Log.d("ThreadTest", "Current thread: ${Thread.currentThread().name}")
+//            launch {
+//                delay(300)
+//                Log.d("ThreadTest", "Current thread1: ${Thread.currentThread().name}")
+//            }
+//            launch(Dispatchers.IO) {
+//                delay(200)
+//                Log.d("ThreadTest", "Current thread2: ${Thread.currentThread().name}")
+//            }
+//            launch(Dispatchers.Default) {
+//                delay(100)
+//                Log.d("ThreadTest", "Current thread3: ${Thread.currentThread().name}")
+//            }
+
+            var job1= async {  delay(500)
+                Log.d("ThreadTest", "Current thread1: ${Thread.currentThread().name} ")
+                return@async "job one"
+                }
+
+            var job2= async {  delay(200)
+                Log.d("ThreadTest", "Current thread3: ${Thread.currentThread().name} ")
+               return@async 56
+            }
+           /// var result1=job1.await()
+
+          //  var result2=  job2.await()
+
+
+
+//            withContext(Dispatchers.Main){
+                delay(50)
+                Log.d("ThreadTest", "Main thread: ${Thread.currentThread().name}")
+//            }
+        }
 
     }
 
@@ -686,8 +723,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos, type ->
                 selectedTitle = eventList[pos].eventTitle
-                Log.e("feffefef", "fnsdsnfs $type ")
                 eventFocusPos = pos
+                Log.e("feffefef", "fnsdsnfs $type eventFocusPos $eventFocusPos")
+
                 eventVideoIndex = pos
                 mediaIndex = 0
                 when (type) {
@@ -1093,7 +1131,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     fun eventVideoFocus() = with(binding) {
         rvCategory.apply {
             post {
-                getChildAt(eventFocusPos)?.requestFocus()
+//                getChildAt(eventFocusPos)?.requestFocus()
+                getChildAt(eventVideoIndex)?.requestFocus()
             }
         }
     }
@@ -1175,8 +1214,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                    Log.e("ExoPlayerError", "onPlayerErrorChanged " + error?.message, error)
                }
            })
+           playerHandler.mute()
        }
-
     }
 
     fun play(videoUrl: String) {
@@ -1343,9 +1382,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 if (playerHandler.player != null) {
                     if (::playerHandler.isInitialized){
                     playerHandler.player?.run {
-                        if (isTimerRunning) {
                             playerHandler.setMediaUri(mediaUrl, this.currentPosition)
-                        }
+
                         resumeCountdown()
                     }
                 }}

@@ -775,7 +775,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             newVideo()
             focusView = VideoEnum.BACKWARD
         } else {
-            findNavController().popBackStack()
+            findNavController().navigateUp()
         }
 
     }

@@ -68,7 +68,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
 //        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
 //        binding.ivApplogo.loadAny(applogo)
-
+        val token = SharedPref.getString(PrefConstent.TOKEN).toString()
         initClickListeners()
         binding.tvResend.clearFocus()
         otpFieldFocus()
@@ -83,7 +83,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     findNavController().navigate(R.id.loginFragment)
                 }
             })
-
+        Log.e("sjkdnskjnf", "otp $token")
     }
 
     private fun otpFieldFocus() = with(binding) {

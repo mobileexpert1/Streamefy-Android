@@ -13,6 +13,7 @@ import com.streamefy.network.NetworkReceiver
 import com.streamefy.network.NetworkStatusListener
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.logger.Level
 
 class MyApp : Application(),NetworkReceiver.NetworkStatusListener {
@@ -40,6 +41,19 @@ private lateinit var networkReceiver: NetworkReceiver
         registerReceiver(networkReceiver, filter)
 
     }
+
+    fun reinitializeKoin() {
+        // Stop the current Koin context
+        stopKoin()
+
+        // Reinitialize Koin with the same or new configuration
+        startKoin {
+            androidContext(this@MyApp)
+            modules(appModule)  // You can change the modules if needed
+            printLogger(Level.DEBUG)
+        }
+    }
+
     fun setNetworkStatusListener(listener:NetworkStatusListener){
         statusListener=listener
     }

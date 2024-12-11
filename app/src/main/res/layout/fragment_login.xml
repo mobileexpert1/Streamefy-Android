@@ -6,7 +6,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ic_background_blur">
+        android:background="@drawable/ic_background_blur"
+        android:id="@+id/loginParent"
+        android:visibility="invisible"
+        >
 
 
         <ImageView

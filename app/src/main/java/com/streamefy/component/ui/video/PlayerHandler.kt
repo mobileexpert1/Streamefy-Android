@@ -163,7 +163,7 @@ class PlayerHandler(
 //
 //        // Create media source
         try {
-            if (player != null) {
+            if (player != null && uri.isNotEmpty()) {
 
                 player?.let {
                     if (player?.isPlaying!!) {

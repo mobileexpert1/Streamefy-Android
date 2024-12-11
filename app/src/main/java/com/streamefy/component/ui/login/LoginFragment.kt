@@ -16,6 +16,7 @@ import com.streamefy.BuildConfig
 import com.streamefy.MainActivity
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
+import com.streamefy.component.base.MyApp
 import com.streamefy.component.base.StreamEnum
 import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.country_code.model.CountryCodeModel
@@ -25,9 +26,11 @@ import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
 import com.streamefy.utils.loadAny
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.phoneNumber
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.removeSpacesOnTextChange
+import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,9 +44,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     val viewmodel: LoginViewmodel by viewModel()
     override fun bindView(): Int = R.layout.fragment_login
     var countryCode = 91
-    var realnumer=""
-    var admin_email=""
-    var admin_password=""
+    var realnumer = ""
+    var admin_email = ""
+    var admin_password = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,6 +56,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
         admin_email = BuildConfig.Admin_email
         admin_password = BuildConfig.Password
+
+
+        viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
+        observe()
+
 //        val userApiUrl = BuildConfig.USER_API_URL
 
         initClickListeners()
@@ -63,7 +71,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         binding.etPhoneNumber.requestFocus()
 
 
-        Log.e("newcode", " code: $countryCode country code email $admin_email password $admin_password")
+        Log.e(
+            "newcode",
+            " code: $countryCode country code email $admin_email password $admin_password"
+        )
 //        binding.ivApplogo.loadAny(R.drawable.ic_logo_ori)
         binding.ivApplogo.loadAny(R.drawable.ic_logo_ori)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -83,16 +94,37 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             if (validate) {
                 // ShowError.handleError.handleError(validate as Int)
                 //   } else {
-                SharedPref.setString(PrefConstent.TOKEN, "")
+               //
                 if (isAdded) {
-                    viewmodel.login(
-                        requireActivity(),
-                        LoginRequest(admin_email, admin_password)
-//                        LoginRequest("cupcakeproductions13@gmail.com", "Admin123#")
-//                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-//                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
+                    var formated_Number = binding.ccCode.formattedFullNumber.toString()
+                    var updated_number = replaceSpaceFromLastIfMoreThanTwo(formated_Number)
+                    SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
+                    SharedPref.setString(
+                        PrefConstent.REALNUMBER,
+                        binding.etPhoneNumber.text.toString()
                     )
-                    observe()
+                    SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
+                    SharedPref.setString(
+                        PrefConstent.COUNTRY_CODE,
+                        binding.ccCode.selectedCountryCode
+                    )
+                    var bundle = Bundle()
+                    bundle.putString(
+                        PrefConstent.PHONE_NUMBER,
+                        updated_number.toString()
+                    )
+                    if (isAdded) {
+                        findNavController().navigate(R.id.otpFragment, bundle)
+                    }
+
+//                    viewmodel.login(
+//                        requireActivity(),
+//                        LoginRequest(admin_email, admin_password)
+////                        LoginRequest("cupcakeproductions13@gmail.com", "Admin123#")
+////                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
+////                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
+//                    )
+//                    observe()
 
                 } else {
                     onAttach(requireActivity())
@@ -152,7 +184,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             false
         })
 
-        ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(),android.R.color.transparent))
+        ccCode.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                android.R.color.transparent
+            )
+        )
         ccCode.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
 //                ccCode.setBackgroundColor(
@@ -164,7 +201,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
                 ccCode.setBackgroundResource(R.drawable.ic_country_code_selected_bg)
             } else {
-                ccCode.setBackgroundColor(ContextCompat.getColor(requireContext(),android.R.color.transparent))
+                ccCode.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        android.R.color.transparent
+                    )
+                )
             }
         }
         ccCode.setCountryForPhoneCode(countryCode)
@@ -366,8 +408,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         Log.e("resumelogin", "onResume $realnumer")
         binding.apply {
             etFullname.setText("")
-            if (realnumer!=null){
-                if (realnumer.toString().isNotEmpty()){
+            if (realnumer != null) {
+                if (realnumer.toString().isNotEmpty()) {
                     etPhoneNumber.setText(realnumer)
                 }
             }
@@ -391,19 +433,23 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
                         var data = it.data?.response
 
-                        var formated_Number=binding.ccCode.formattedFullNumber.toString()
-                       var updated_number=replaceSpaceFromLastIfMoreThanTwo(formated_Number)
-                        Log.e("sncskn","skncsknv $updated_number")
-
+//                        var formated_Number=binding.ccCode.formattedFullNumber.toString()
+//                       var updated_number=replaceSpaceFromLastIfMoreThanTwo(formated_Number)
+                        Log.e("sncskn", "skncsknv $data")
+                        SharedPref.setString(PrefConstent.TOKEN, "")
                         data?.run {
                             SharedPref.setString(PrefConstent.TOKEN, accessToken)
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
-                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
-                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())
-                            Log.e("slcnslnc", "onResume ${ binding.ccCode.formattedFullNumber.toString()}")
-                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
                             SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
-                            SharedPref.setString(PrefConstent.COUNTRY_CODE,binding.ccCode.selectedCountryCode)
+                            if ( data.logo.isNotEmpty()) {
+                                binding.ivApplogo.loadUrl(data.logo)
+                            }
+                          //  MyApp().reinitializeKoin()
+//
+//                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
+//                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())
+//                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
+//                            SharedPref.setString(PrefConstent.COUNTRY_CODE,binding.ccCode.selectedCountryCode)
 
 //                        data.profileImage?.run {
 //                            SharedPref.setString(
@@ -415,17 +461,18 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
 //                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
                         }
-                        var bundle = Bundle()
-                        bundle.putString(
-                            PrefConstent.PHONE_NUMBER,
-                            updated_number.toString()
-                        )
-                        if (isAdded) {
-                            findNavController().navigate(R.id.otpFragment, bundle)
-                        }
-                      //  else {
-                            progressDialog.dismiss()
-                       // }
+//                        var bundle = Bundle()
+//                        bundle.putString(
+//                            PrefConstent.PHONE_NUMBER,
+//                            updated_number.toString()
+//                        )
+//                        if (isAdded) {
+//                            findNavController().navigate(R.id.otpFragment, bundle)
+//                        }
+                        //  else {
+                        binding.loginParent.visible()
+                        progressDialog.dismiss()
+                        // }
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e)
                         throw RuntimeException("login getotp")
@@ -441,6 +488,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
         }
     }
+
     fun replaceSpaceFromLastIfMoreThanTwo(str: String): String {
         val spaceCount = str.count { it == ' ' }
         if (spaceCount >= 2) {
@@ -449,6 +497,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         return str
     }
+
     private fun causeNullPointerCrash() {
         val nullObject: String? = null
         // This will cause a NullPointerException
@@ -474,6 +523,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         Log.e("skcnmskncm", "skcnsk destroyview")
         progressDialog.dismiss()
     }
+
     override fun netStatus() {
     }
 }

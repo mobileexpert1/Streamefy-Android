@@ -109,7 +109,7 @@ class CategoryAdapter(
                     if (viewHolder.absoluteAdapterPosition == eventList.size - 2 && homeFragment.isEventPagination) {
                         callBack.invoke(viewHolder.absoluteAdapterPosition, StreamEnum.PAGINATION)
                     }
-                    homeFragment.eventFocusPos = viewHolder.absoluteAdapterPosition
+                   // HomeFragment.eventVideoIndex = viewHolder.absoluteAdapterPosition
                     homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
                     itemView.animate().scaleX(1.1f).scaleY(1.05f).setDuration(200)
                         .withEndAction {
@@ -181,12 +181,15 @@ class CategoryAdapter(
 
             tvMore.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
+                  //  HomeFragment.eventVideoIndex = viewHolder.absoluteAdapterPosition
+//                    homeFragment.eventFocusPos = viewHolder.absoluteAdapterPosition
                     homeFragment.focusView = StreamEnum.BOTTOM_EVENT_VIEW
                     // itemView.animate().scaleX(1.03f).scaleY(1f).setDuration(200).start()
                     tvMore.animate().scaleX(1.03f).scaleY(1f).setDuration(200)
                         .withEndAction {
                         itemView.post {
                             itemView.requestLayout()
+
                             homeFragment.binding.rvCategory.scrollToPosition(absoluteAdapterPosition)
                         }
                     }.start()

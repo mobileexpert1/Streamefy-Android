@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
+import java.util.Collections
 import java.util.Locale
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
@@ -229,11 +230,19 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
                            // list.add(ResponseItem(isLast = true))
+                            if (projectId.isNotEmpty()) {
+                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
+                            }
+                            Collections.swap(list, focusedIndex,0)
                             projectAdapter.update(list)
-
                             binding.rvEvent.apply {
+                                Log.e("skncksn","slmcls focus $focusedIndex")
+                                requestFocus()
+                                isFocusable = true
+                                isFocusableInTouchMode = true
                                 post {
                                     getChildAt(focusedIndex)?.requestFocus()
+                                    smoothScrollToPosition(focusedIndex)
                                 }
                             }
 //                            lifecycleScope.launch {

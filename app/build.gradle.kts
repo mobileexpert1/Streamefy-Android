@@ -14,16 +14,19 @@ android {
         applicationId = "com.streamefy"
         minSdk = 21
         targetSdk = 34
-//        cupcake
-//        versionCode = 2
-//        versionName = "1.0.2"
-//        fire stick
-        versionCode = 11
-        versionName = "1.0.12"
+//        cupcake google play store
+//        versionCode = 5
+//        versionName = "1.0.5"
+        // cupcake for amazon
+//        versionCode = 6
+//        versionName = "1.0.6"
+//        fire stick streamefy
+//        versionCode = 13
+//        versionName = "1.0.14"
 
-//        google
-//        versionCode = 2
-//        versionName = "1.0.2"
+//        streameyf google playe store
+        versionCode = 7
+        versionName = "1.0.7"
         vectorDrawables {
             useSupportLibrary = true
         }

@@ -22,6 +22,7 @@ import com.streamefy.component.ui.home.HomeFragment
 import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.pin_authentication.PinVM
 import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
+import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ResponseItem
 import com.streamefy.component.ui.projects.viewmodel.ProjectsVM
@@ -111,7 +112,29 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
-                        // handle event add functionality
+                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+                        SharedPref.setString(PrefConstent.PROJECT_NAME, "Add Event")
+                        val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
+                        val bundle = Bundle()
+                        bundle.putInt(PrefConstent.PROJECT_ID,0)
+                        bundle.putString(PrefConstent.PHONE_NUMBER, phone)
+                        bundle.putString(PrefConstent.FULL_NAME, name)
+                        bundle.putString(PrefConstent.PROJECT_NAME, "Add Event")
+
+                        bundle.putBoolean(PrefConstent.ISHOME, false)
+                        findNavController().navigate(
+                            R.id.action_projectfragment_to_pinAuthenticationFragment,
+                            bundle
+                        )
+                    }
+                    StreamEnum.RESET_PIN -> {
+                       /// handle reset pin functionality
+                        ConfirmPinDialog(requireContext()) {
+                            if (it) {
+                                viewModel.resetPin(requireContext(), ResetPinRequest(projectId.toInt(),phone))
+                                resetObserve()
+                            }
+                        }.show()
                     }
 
                     StreamEnum.SINGLE -> {
@@ -126,12 +149,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                             SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-//                            SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
                             val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                             val bundle = Bundle()
                             bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
                             bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                             bundle.putString(PrefConstent.FULL_NAME, name)
+                            bundle.putString(PrefConstent.PROJECT_NAME, list[index].name)
 
                             bundle.putBoolean(PrefConstent.ISHOME, false)
                             findNavController().navigate(
@@ -229,7 +252,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-                           // list.add(ResponseItem(isLast = true))
+                            list.add(ResponseItem(isLast = true))
                             if (projectId.isNotEmpty()) {
                                 focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
                             }
@@ -284,7 +307,24 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             }
         }
     }
+    private fun resetObserve() {
+        viewModel.resetData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                    showProgress()
+                }
+                is MyResource.isSuccess -> {
+                    dismissProgress()
+                    requireContext().showMessage(it.data?.response.toString())
+                }
 
+                is MyResource.isError -> {
+                    dismissProgress()
+                }
+                else->{}
+            }
+        }
+    }
     override fun onResume() {
         super.onResume()
 

@@ -34,6 +34,7 @@ import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
@@ -96,36 +97,42 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 //   } else {
                //
                 if (isAdded) {
-                    var formated_Number = binding.ccCode.formattedFullNumber.toString()
-                    var updated_number = replaceSpaceFromLastIfMoreThanTwo(formated_Number)
-                    SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
-                    SharedPref.setString(
-                        PrefConstent.REALNUMBER,
-                        binding.etPhoneNumber.text.toString()
-                    )
-                    SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
-                    SharedPref.setString(
-                        PrefConstent.COUNTRY_CODE,
-                        binding.ccCode.selectedCountryCode
-                    )
-                    var bundle = Bundle()
-                    bundle.putString(
-                        PrefConstent.PHONE_NUMBER,
-                        updated_number.toString()
-                    )
-                    if (isAdded) {
-                        findNavController().navigate(R.id.otpFragment, bundle)
+//                    var formated_Number = ccCode.formattedFullNumber.toString()
+                    var formated_Number = ccCode.formattedFullNumber.toString()
+                    var updated_number=formated_Number
+
+                    lifecycleScope.launch {
+                        if (ccCode.selectedCountryName=="India") {
+                            updated_number = replaceSpaceFromLastIfMoreThanTwo(formated_Number)
+                        }
+
+                        Log.e("snksnc", "name ${ccCode.selectedCountryName} actual number $formated_Number cjdbc number $updated_number")
+
+//                    }
+                        withContext(Dispatchers.Main) {
+                            SharedPref.setString(
+                                PrefConstent.PHONE_NUMBER,
+                                updated_number.toString()
+                            )
+                            SharedPref.setString(
+                                PrefConstent.REALNUMBER,
+                                binding.etPhoneNumber.text.toString()
+                            )
+                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
+                            SharedPref.setString(
+                                PrefConstent.COUNTRY_CODE,
+                                binding.ccCode.selectedCountryCode
+                            )
+                            var bundle = Bundle()
+                            bundle.putString(
+                                PrefConstent.PHONE_NUMBER,
+                                updated_number.toString()
+                            )
+                            if (isAdded) {
+                                findNavController().navigate(R.id.otpFragment, bundle)
+                            }
+                        }
                     }
-
-//                    viewmodel.login(
-//                        requireActivity(),
-//                        LoginRequest(admin_email, admin_password)
-////                        LoginRequest("cupcakeproductions13@gmail.com", "Admin123#")
-////                        LoginRequest("appsdev096@gmail.com", "Appsdev096#")
-////                        LoginRequest("ekamjot-kaur@cssoftsolutions.com", "Admin@123#")
-//                    )
-//                    observe()
-
                 } else {
                     onAttach(requireActivity())
                     Log.e("login fragment", "Fragment is not added, navigation aborted.")
@@ -219,7 +226,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             setMaxLength(20)
             Log.e(
                 "testtetrttr",
-                "${ccCode.isValidFullNumber} countryCodeName.... $countryCodeName countryCode $countryCode"
+                "${ccCode.isValidFullNumber} countryCodeName.... $countryCodeName countryCode $countryCode formatted number ${ccCode.formattedFullNumber}"
             )
         }
         ccCode.setPhoneNumberValidityChangeListener(CountryCodePicker.PhoneNumberValidityChangeListener {

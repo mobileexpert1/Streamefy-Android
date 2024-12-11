@@ -32,6 +32,7 @@ import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
@@ -49,10 +50,11 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     var otp = ""
     var applogo = ""
     var app_background = ""
+    var projectName = ""
     private val viewModel: PinVM by viewModel()
     var isPrimaryuser = false
     var isHome = false
-    var isLogin=false
+    var isLogin = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -60,44 +62,41 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         arguments?.run {
             projectId = getInt(PrefConstent.PROJECT_ID).toString()
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
+            phone = getString(PrefConstent.PHONE_NUMBER).toString()
+            projectName = getString(PrefConstent.PROJECT_NAME).toString()
         }
-        isLogin=  SharedPref.getBoolean(PrefConstent.ISLOGIN)
+        isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         // binding.ivApplogo.loadAny(applogo)
-        Log.e("sjncsjbc","skncksnc project id $projectId and phone $phone  projectId $projectId" )
+        Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
         otpFieldFocus()
         binding.apply {
             if (isPrimaryuser) {
-                tvResetPin.visible()
+                tvResetPin.invisible()
+                if (projectName.isNotEmpty()) {
+                    textView2.setText(projectName)
+                } else {
+                    textView2.setText("Welcome")
+                }
+            } else {
+                textView2.setText("Welcome")
             }
-//            textView2.setText("Welcome ${capitalizeFirstLetter(name)}! We are thrilled to have you here")
-            textView2.setText("Welcome")
 
-            // pinView.requestFocusOTP()
-            // pinView.requestFocus()
-//            pinView.otpListener = object : OTPListener {
-//                override fun onInteractionListener() {
-//                }
-//                override fun onOTPComplete(otp: String) {
-//                   // requireActivity().hideKey()
-//                }
-//            }
+
             ivBack.setOnClickListener {
-//                findNavController().navigate(R.id.loginFragment)
-                if (isPrimaryuser){
+                if (isPrimaryuser) {
                     findNavController().popBackStack()
-                } else if (!isLogin){
+                } else if (!isLogin) {
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.pinAuthenticationFragment, true)
                         .build()
                     findNavController().navigate(
                         R.id.loginFragment,
-                        null,navOptions
+                        null, navOptions
                     )
-                }
-                else {
+                } else {
                     ExitDialog(requireContext()).show()
                 }
             }
@@ -118,10 +117,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
             }
             tvProceed.setOnClickListener {
-//                otp = et1.text.toString().trim() +
-//                        et2.text.toString().trim() +
-//                        et3.text.toString().trim() +
-//                        et4.text.toString().trim()
 
                 otp = otpView.text.toString()
                 otp.run {
@@ -132,42 +127,24 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                         ShowError.handleError.handleError(ErrorCodeManager.PIN_LENGTH)
                     } else {
 
-//                    SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
-//                    SharedPref.setString(PrefConstent.AUTH_PIN, otp)
-//                    findNavController().navigate(R.id.homefragment)
-
-                        viewModel.setPin(requireActivity(), otp,projectId.toInt())
+                        viewModel.setPin(requireActivity(), otp, projectId.toInt())
                         observe()
                     }
                 }
             }
-//            et1.setupNextFocusOnDigit(et2)
-//            et2.setupNextFocusOnDigit(et3)
-//            et3.setupNextFocusOnDigit(et4)
-//
-//            //previous
-//            et4.previousFocusOnDigit(et3)
-//            et3.previousFocusOnDigit(et2)
-//            et2.previousFocusOnDigit(et1)
+
             otpView.requestFocus()
             otpView.setOtpCompletionListener {
                 tvProceed.requestFocus()
                 requireActivity().hideKey()
             }
-//
-//            otpView.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
-//                if (hasFocus) {
-//                    otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
-//                }
-//            }
+
             otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
 
             otpView.addTextChangedListener {
                 var cursorIndex = otpView.selectionStart
                 Log.e("smskmc", "$cursorIndex slxmskmc ${it.toString()}")
-//                otpView.setCursorColor(ContextCompat.getColor(requireContext(),R.color.red))
                 otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
-//                otpView.setItemBackground(ContextCompat.getDrawable(requireContext(),R.drawable.indecator_bg))
             }
 
 
@@ -176,19 +153,20 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        if (isPrimaryuser){
+                        if (isPrimaryuser) {
                             findNavController().popBackStack()
-                        }else if (!isLogin){
+                        } else if (!isLogin) {
                             val navOptions = NavOptions.Builder()
-                                .setPopUpTo(R.id.pinAuthenticationFragment, true) // Pop fragment B from the stack
+                                .setPopUpTo(
+                                    R.id.pinAuthenticationFragment,
+                                    true
+                                ) // Pop fragment B from the stack
                                 .build()
                             findNavController().navigate(
                                 R.id.loginFragment,
-                                null,navOptions
+                                null, navOptions
                             )
-                        }
-                        else {
-                           // findNavController().navigate(R.id.loginFragment)
+                        } else {
                             ExitDialog(requireActivity()).show()
                         }
                     }
@@ -199,11 +177,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
                 ConfirmPinDialog(requireContext()) {
                     if (it) {
-                        /// changes it
-//                        findNavController().navigate(R.id.projectfragment)
-                        // viewModel.resetPin(requireContext(),"")
-
-                        viewModel.resetPin(requireContext(), ResetPinRequest(projectId.toInt(),phone))
+                        viewModel.resetPin(
+                            requireContext(),
+                            ResetPinRequest(projectId.toInt(), phone)
+                        )
                         resetObserve()
                     }
                 }.show()
@@ -340,6 +317,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isLoading -> {
                     showProgress()
                 }
+
                 is MyResource.isSuccess -> {
 
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
@@ -355,16 +333,19 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isError -> {
                     dismissProgress()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }
+
     private fun resetObserve() {
         viewModel.resetData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()
                 }
+
                 is MyResource.isSuccess -> {
                     dismissProgress()
                     requireContext().showMessage(it.data?.response.toString())
@@ -373,14 +354,17 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 is MyResource.isError -> {
                     dismissProgress()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         binding.otpView.setText("")
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         Log.e("skcnmskncm", "skcnsk destroyview")

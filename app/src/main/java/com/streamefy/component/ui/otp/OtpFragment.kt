@@ -49,8 +49,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var completeOtp = "000000"
     override fun bindView(): Int = R.layout.fragment_otp
-    var phone: String = "6280830819"
-    var name: String = "appdev096"
+    var phone: String = ""
+    var name: String = ""
     var applogo = ""
     var app_background = ""
 

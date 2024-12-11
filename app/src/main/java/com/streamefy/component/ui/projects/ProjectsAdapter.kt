@@ -54,6 +54,7 @@ class ProjectsAdapter(
                 tvProjectCount.gone()
                 tvSubtitle.gone()
                 mview.gone()
+                tvResetPin.gone()
                 clEvent.setOnClickListener {
                     callBack.invoke(position, StreamEnum.LAST_EVENT)
                 }
@@ -104,6 +105,39 @@ class ProjectsAdapter(
                 }
             }
 
+          //  if (data.isPrimary!=null && data.isPrimary!!) {
+                tvResetPin.apply {
+                    visible()
+                    setOnClickListener {
+                        callBack.invoke(position, StreamEnum.RESET_PIN)
+                    }
+                    setOnFocusChangeListener { _, hasFocus ->
+                        if (hasFocus) {
+                            setBackgroundResource(R.drawable.ic_button_selector)
+                            eventFragment.binding.rvEvent.scrollToPosition(
+                                absoluteAdapterPosition
+                            )
+//                            animate().scaleX(1.03f).scaleY(1f).setDuration(200)
+//                                .withEndAction {
+//                                    itemView.post {
+//                                        itemView.requestLayout()
+//                                        eventFragment.binding.rvEvent.scrollToPosition(
+//                                            absoluteAdapterPosition
+//                                        )
+//                                    }
+//                                }.start()
+                        } else {
+                            setBackgroundColor(
+                                ContextCompat.getColor(
+                                    context,
+                                    com.otpview.R.color.transparent
+                                )
+                            )
+//                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                        }
+                    }
+                }
+          //  }
 
 //            clEvent.remoteKey {
 //                Log.e("smfsfms", "sncd b $it focusedIndex $focusedIndex")
@@ -183,6 +217,7 @@ class ProjectsAdapter(
         val clThumb: LinearLayout = itemView.findViewById(R.id.clThumb)
         val thumb: ImageView = itemView.findViewById(R.id.ivThumb)
         val tvAddEvent: TextView = itemView.findViewById(R.id.tvAddEvent)
+        val tvResetPin: TextView = itemView.findViewById(R.id.tvResetPin)
         val mview: View = itemView.findViewById(R.id.view)
     }
 

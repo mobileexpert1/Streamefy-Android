@@ -24,6 +24,8 @@ data class ResponseItem(
     val id: Int = 0,
     @SerializedName("createDate")
     val createDate: String = "",
+    @SerializedName("isPrimary")
+    val isPrimary: Boolean?=null,
     var isLast:Boolean=false
 )
 

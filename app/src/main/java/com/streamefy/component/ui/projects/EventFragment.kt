@@ -285,6 +285,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                 }
+                else->{}
             }
         }
     }

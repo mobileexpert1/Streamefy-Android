@@ -105,6 +105,7 @@
                     android:layout_width="@dimen/_120sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:scaleType="fitXY"
+                    android:visibility="gone"
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:drawablePadding="@dimen/_5sdp"
                     app:layout_constraintBottom_toTopOf="@+id/tvProjectTitle"

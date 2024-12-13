@@ -429,11 +429,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
                 .build()
             // Navigate to home fragment with the options
-            if (isPrimaryuser) {
+           // if (isPrimaryuser) {
                 findNavController().navigate(R.id.projectfragment, bundle, navOptions)
-            } else {
-                findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
-            }
+//            } else {
+//                findNavController().navigate(R.id.pinAuthenticationFragment, bundle, navOptions)
+//            }
 
         }
         customIndicator.setOnFocusChangeListener { v, hasFocus ->
@@ -961,7 +961,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             showTools()
                                         }
                                         proLogo = data.logo
-                                        it.projectlogo.loadUrl(proLogo)
+//                                        it.projectlogo.loadUrl(proLogo)
+                                        it.projectlogo.gone()
                                     }
                                     eventAdapter.update(events as ArrayList<EventsItem>)
                                 }

@@ -31,16 +31,15 @@ class ProjectsVM(var repo: ApiService) : ViewModel() {
                 _projectLiveData.value = MyResource.isLoading()
                 try {
                     var response = repo.getProject(request)
-                    if (response.body()?.isSuccess!!) {
+                  //  if (response.body()?.isSuccess!!) {
                         _projectLiveData.value = MyResource.isSuccess(response.body())
-                    } else {
-                        //ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
-                        if (response.body()?.error?.userMessage.toString() != "No primary projects found for the user.") {
-                            context.showMessage(response.body()?.error?.userMessage.toString())
-                        }
-                        _projectLiveData.value =
-                            MyResource.isError(response.body()?.error?.userMessage.toString())
-                    }
+//                    } else {
+//                        //ShowError.handleError.handleError(ErrorCodeManager.NOT_FOUND)
+                       // if (response.body()?.error?.userMessage.toString() != "No primary projects found for the user.") {
+                          //  context.showMessage(response.body()?.error?.userMessage.toString())
+                       // }
+//                        _projectLiveData.value = MyResource.isError(response.body()?.error?.userMessage.toString())
+//                    }
                 } catch (e: Exception) {
                     LogMessage.logeMe(e.toString())
                     //  ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)

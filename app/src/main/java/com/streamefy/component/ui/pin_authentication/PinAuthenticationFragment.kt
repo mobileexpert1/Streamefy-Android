@@ -73,32 +73,38 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
         otpFieldFocus()
         binding.apply {
-            if (isPrimaryuser) {
-                tvResetPin.invisible()
+//            if (isPrimaryuser) {
+//                tvResetPin.invisible()
+//                if (projectName.isNotEmpty()) {
+//                    textView2.setText(projectName)
+//                } else {
+//                    textView2.setText("Welcome")
+//                }
+//            } else {
+//                textView2.setText("Welcome")
+//            }
+
+            tvResetPin.invisible()
                 if (projectName.isNotEmpty()) {
                     textView2.setText(projectName)
                 } else {
                     textView2.setText("Welcome")
                 }
-            } else {
-                textView2.setText("Welcome")
-            }
-
 
             ivBack.setOnClickListener {
-                if (isPrimaryuser) {
-                    findNavController().popBackStack()
-                } else if (!isLogin) {
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(R.id.pinAuthenticationFragment, true)
-                        .build()
-                    findNavController().navigate(
-                        R.id.loginFragment,
-                        null, navOptions
-                    )
-                } else {
-                    ExitDialog(requireContext()).show()
-                }
+               // if (isPrimaryuser) {
+                    findNavController().navigateUp()
+//                } else if (!isLogin) {
+//                    val navOptions = NavOptions.Builder()
+//                        .setPopUpTo(R.id.pinAuthenticationFragment, true)
+//                        .build()
+//                    findNavController().navigate(
+//                        R.id.loginFragment,
+//                        null, navOptions
+//                    )
+//                } else {
+//                    ExitDialog(requireContext()).show()
+//                }
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
@@ -153,22 +159,22 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
                         // Show the custom dialog when back is pressed
-                        if (isPrimaryuser) {
-                            findNavController().popBackStack()
-                        } else if (!isLogin) {
-                            val navOptions = NavOptions.Builder()
-                                .setPopUpTo(
-                                    R.id.pinAuthenticationFragment,
-                                    true
-                                ) // Pop fragment B from the stack
-                                .build()
-                            findNavController().navigate(
-                                R.id.loginFragment,
-                                null, navOptions
-                            )
-                        } else {
-                            ExitDialog(requireActivity()).show()
-                        }
+                     //   if (isPrimaryuser) {
+                            findNavController().navigateUp()
+//                        } else if (!isLogin) {
+//                            val navOptions = NavOptions.Builder()
+//                                .setPopUpTo(
+//                                    R.id.pinAuthenticationFragment,
+//                                    true
+//                                ) // Pop fragment B from the stack
+//                                .build()
+//                            findNavController().navigate(
+//                                R.id.loginFragment,
+//                                null, navOptions
+//                            )
+//                        } else {
+//                            ExitDialog(requireActivity()).show()
+//                        }
                     }
                 })
 

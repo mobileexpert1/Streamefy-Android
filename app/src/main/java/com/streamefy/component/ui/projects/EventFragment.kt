@@ -30,6 +30,7 @@ import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
+import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -67,11 +68,11 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         }
 //        binding.ivApplogo.loadAny(applogo)
         binding.apply {
-            if (isPrimaryuser) {
+           // if (isPrimaryuser) {
                 if (isHome) {
                     ivBack.invisible()
                 }
-            }
+           // }
         }
 
         observe()
@@ -86,15 +87,15 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (isPrimaryuser) {
+                   // if (isPrimaryuser) {
                         if (!isHome) {
                             findNavController().navigate(R.id.loginFragment)
                         } else {
                             ExitDialog(requireActivity()).show()
                         }
-                    } else {
-                        findNavController().navigate(R.id.loginFragment)
-                    }
+//                    } else {
+//                        findNavController().navigate(R.id.loginFragment)
+//                    }
                 }
             })
     }
@@ -243,25 +244,38 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
                        // requireActivity().showMessage("PIN updated successfully")
-                        findNavController().popBackStack()
+//                        findNavController().popBackStack()
+                        list.clear()
+                        list.add(ResponseItem(isLast = true))
+                        projectAdapter.update(list)
+                        lifecycleScope.launch {
+                            binding.rvEvent.apply {
+                                binding.ivBack.clearFocus()
+                                isFocusable = true
+                                isFocusableInTouchMode = true
+                                delay(1000)
+                                requestFocus()
+                                post {
+                                    getChildAt(0)?.requestFocus()
+                                }
+                            }
+                        }
+
                     } else {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-                           // list.add(ResponseItem(isLast = true))
-                            if (projectId.isNotEmpty()) {
-                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
-                            }
-                            Collections.swap(list, focusedIndex,0)
+                            list.add(ResponseItem(isLast = true))
+//                            if (projectId.isNotEmpty()) {
+//                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
+//                            }
+//                            Collections.swap(list, focusedIndex,0)
                             projectAdapter.update(list)
 
                             Log.e("skncksn", "slmcls focus $focusedIndex")
                             lifecycleScope.launch {
-//                                binding.rvEvent.smoothScrollToPosition(focusedIndex)
-//                                binding.rvEvent.scrollTo(0,focusedIndex)
+
                                 binding.rvEvent.apply {
-//                                    adapter=projectAdapter
-//                                    clearFocus()
                                     binding.ivBack.clearFocus()
                                     isFocusable = true
                                     isFocusableInTouchMode = true
@@ -272,7 +286,6 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                                    }
 
                                 }
-//                                 binding.rvEvent.adapter = projectAdapter
 
                             }
 //                            lifecycleScope.launch {

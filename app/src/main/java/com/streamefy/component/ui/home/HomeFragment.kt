@@ -46,6 +46,7 @@ import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.customAlfa
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.transition
 import com.streamefy.utils.visible
@@ -960,6 +961,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             showTools()
                                         }
                                         proLogo = data.logo
+                                        it.projectlogo.loadUrl(proLogo)
                                     }
                                     eventAdapter.update(events as ArrayList<EventsItem>)
                                 }

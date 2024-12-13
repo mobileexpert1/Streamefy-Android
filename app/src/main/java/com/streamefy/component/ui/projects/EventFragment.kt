@@ -2,10 +2,7 @@ package com.streamefy.component.ui.projects
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +10,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -30,19 +28,15 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
-import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
-import com.streamefy.utils.loadAny
 import com.streamefy.utils.remoteKey
-import com.streamefy.utils.showMessage
+import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
 import java.util.Collections
-import java.util.Locale
+
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
     override fun netStatus() {}
@@ -53,8 +47,9 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     var phone = ""
     var isHome = false
     var isPrimaryuser = false
-    var   applogo=""
-    var projectId=""
+    var applogo = ""
+    var projectId = ""
+
     companion object {
         lateinit var eventFragment: EventFragment
         var focusedIndex = 0
@@ -66,7 +61,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
 //        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-        projectId=SharedPref.getString(PrefConstent.PROJECT_ID).toString()
+        projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
@@ -149,6 +144,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                             SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
+//                            SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
                             val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                             val bundle = Bundle()
                             bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
@@ -252,21 +248,32 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-                            list.add(ResponseItem(isLast = true))
+                           // list.add(ResponseItem(isLast = true))
                             if (projectId.isNotEmpty()) {
                                 focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
                             }
                             Collections.swap(list, focusedIndex,0)
                             projectAdapter.update(list)
-                            binding.rvEvent.apply {
-                                Log.e("skncksn","slmcls focus $focusedIndex")
-                                requestFocus()
-                                isFocusable = true
-                                isFocusableInTouchMode = true
-                                post {
-                                    getChildAt(focusedIndex)?.requestFocus()
-                                    smoothScrollToPosition(focusedIndex)
+
+                            Log.e("skncksn", "slmcls focus $focusedIndex")
+                            lifecycleScope.launch {
+//                                binding.rvEvent.smoothScrollToPosition(focusedIndex)
+//                                binding.rvEvent.scrollTo(0,focusedIndex)
+                                binding.rvEvent.apply {
+//                                    adapter=projectAdapter
+//                                    clearFocus()
+                                    binding.ivBack.clearFocus()
+                                    isFocusable = true
+                                    isFocusableInTouchMode = true
+                                    delay(1000)
+                                    requestFocus()
+                                   post {
+                                       getChildAt(0)?.requestFocus()
+                                   }
+
                                 }
+//                                 binding.rvEvent.adapter = projectAdapter
+
                             }
 //                            lifecycleScope.launch {
 //                                delay(200)
@@ -304,6 +311,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                 }
+                else->{}
             }
         }
     }

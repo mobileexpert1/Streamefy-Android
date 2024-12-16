@@ -50,7 +50,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var completeOtp = "000000"
     override fun bindView(): Int = R.layout.fragment_otp
     var phone: String = ""
-    var name: String = ""
     var applogo = ""
     var app_background = ""
 
@@ -63,7 +62,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
-        name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
 
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
 //        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
@@ -431,7 +429,6 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                 delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                                bundle.putString(PrefConstent.FULL_NAME, name)
                                 bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
                                 if (data.email!=null) {

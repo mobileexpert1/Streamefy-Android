@@ -62,11 +62,9 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         arguments?.run {
             projectId = getInt(PrefConstent.PROJECT_ID).toString()
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
-            phone = getString(PrefConstent.PHONE_NUMBER).toString()
             projectName = getString(PrefConstent.PROJECT_NAME).toString()
         }
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
-        var name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
         // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         // binding.ivApplogo.loadAny(applogo)
@@ -325,7 +323,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 }
 
                 is MyResource.isSuccess -> {
-
+                    SharedPref.setBoolean(PrefConstent.ISRESET_PIN,false)
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
                     SharedPref.setString(PrefConstent.PROJECT_ID, projectId)

@@ -105,16 +105,14 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
-
+             var data= list[index]
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
-                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+//                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "Add Event")
-                        val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                         val bundle = Bundle()
                         bundle.putInt(PrefConstent.PROJECT_ID,0)
                         bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                        bundle.putString(PrefConstent.FULL_NAME, name)
                         bundle.putString(PrefConstent.PROJECT_NAME, "Add Event")
 
                         bundle.putBoolean(PrefConstent.ISHOME, false)
@@ -134,23 +132,23 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                     StreamEnum.SINGLE -> {
-                        if(projectId==list[index].id.toString()){
+//                        if(projectId==list[index].id.toString()){
+                        if (data.isAuthorize){
                             SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
-                         //  var pin= SharedPref.getString(PrefConstent.AUTH_PIN)
-                            SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
+                            SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER,data.isPrimary)
+                            SharedPref.setString(PrefConstent.AUTH_PIN,"")
+                            SharedPref.setString(PrefConstent.PROJECT_ID, data.id.toString())
                             if (isAdded) {
                                 findNavController().navigate(R.id.homefragment)
                             }
                         }else {
 
-                            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+//                            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
 //                            SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
-                            val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
                             val bundle = Bundle()
                             bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
                             bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                            bundle.putString(PrefConstent.FULL_NAME, name)
                             bundle.putString(PrefConstent.PROJECT_NAME, list[index].name)
 
                             bundle.putBoolean(PrefConstent.ISHOME, false)
@@ -266,10 +264,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
                             list.add(ResponseItem(isLast = true))
-//                            if (projectId.isNotEmpty()) {
-//                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
-//                            }
-//                            Collections.swap(list, focusedIndex,0)
+                            if (projectId.isNotEmpty()) {
+                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
+                            }
+                            Collections.swap(list, focusedIndex,0)
                             projectAdapter.update(list)
 
                             Log.e("skncksn", "slmcls focus $focusedIndex")
@@ -305,7 +303,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     dismissProgress()
                     if (it.error == "No primary projects found for the user.") {
                         SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, false)
-                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+//                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "")
                         SharedPref.setString(PrefConstent.PROJECT_ID, "0")
                         val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
@@ -336,7 +334,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 }
                 is MyResource.isSuccess -> {
                     dismissProgress()
+                    SharedPref.setBoolean(PrefConstent.ISRESET_PIN,true)
                     requireContext().showMessage(it.data?.response.toString())
+                    viewModel.getProject(requireContext(), ProjectRequest(phone))
+
                 }
 
                 is MyResource.isError -> {

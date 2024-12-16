@@ -25,7 +25,11 @@ data class ResponseItem(
     @SerializedName("createDate")
     val createDate: String = "",
     @SerializedName("isPrimary")
-    val isPrimary: Boolean?=null,
+    val isPrimary: Boolean=false,
+    @SerializedName("email")
+    val email: String?=null,
+    @SerializedName("isAuthorize")
+    val isAuthorize: Boolean=false,
     var isLast:Boolean=false
 )
 

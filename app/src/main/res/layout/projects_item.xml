@@ -72,7 +72,7 @@
 
                     <TextView
                         android:id="@+id/tvTitle"
-                        style="@style/filson_regular_21_whiteTV"
+                        style="@style/filson_19_whiteTV"
                         android:layout_width="match_parent"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:maxLines="1"
@@ -94,7 +94,7 @@
 
                     <TextView
                         android:id="@+id/tvSubtitle"
-                        style="@style/filson_14_whiteTV"
+                        style="@style/filson_regular_12_whiteTV"
                         android:layout_width="0dp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:ellipsize="end"
@@ -111,7 +111,7 @@
 
                     <TextView
                         android:id="@+id/tvProjectCount"
-                        style="@style/filson_14_whiteTV"
+                        style="@style/filson_regular_12_whiteTV"
                         android:drawableStart="@drawable/ic_project_video"
                         android:drawablePadding="@dimen/_2sdp"
                         android:fontFamily="@font/filsonpro_regular"

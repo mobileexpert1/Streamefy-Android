@@ -25,6 +25,8 @@ object PrefConstent {
     const val MEDIA_ID = "media_id"
     const val PROJECT_ID = "project_id"
     const val REALNUMBER = "real_number"
+    const val ISRESET_PIN = "reset_pit"
+
 
     const val dummy_token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYW1laWQiOiI1NyIsInVuaXF1ZV9uYW1lIjoiTW9iaWxlIiwiZW1haWwiOiJhcHBzZGV2MDk2QGdtYWlsLmNvbSIsIklzU3Vic2NyaXB0aW9uQ2FuY2VsbGVkIjoiZmFsc2UiLCJJc0VuYWJsZWQiOiJGYWxzZSIsIklzUHJvZmlsZUFjdGl2ZSI6ImZhbHNlIiwibmJmIjoxNzI1NjIyODEzLCJleHAiOjE3MjU3MDkyMTMsImlhdCI6MTcyNTYyMjgxM30.NOrIWHJ3pLacQKaa-auSNWAkbwx_-9_YN1L9rpzHCHg"

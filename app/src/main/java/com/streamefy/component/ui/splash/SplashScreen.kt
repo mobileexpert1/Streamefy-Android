@@ -22,28 +22,41 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     override fun netStatus() {}
     override fun bindView(): Int = R.layout.fragment_splash_screen
     var isLogin = false
+    var isResetPin = false
     var realnumer=""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
+        isResetPin = SharedPref.getBoolean(PrefConstent.ISRESET_PIN)
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
         lifecycleScope.launch {
             delay(2000)
-            logException()
+            withContext(Dispatchers.Main) {
+//                logException()
+                navigateToHome()
+            }
         }
 
 //         causeNullPointerCrash()
     }
 
     private fun navigateToHome() {
-        Log.e("sjndjsn", "realnumer $realnumer sknks $isLogin")
+        Log.e("sjndjsn", "realnumer $realnumer sknks $isLogin reset pin $isResetPin")
         if (isLogin) {
-            findNavController().navigate(R.id.homefragment)
+            if (isResetPin){
+                var bundle = Bundle()
+                bundle.putBoolean(PrefConstent.ISHOME, true)
+                findNavController().navigate(R.id.projectfragment,bundle)
+            }
+            else {
+                findNavController().navigate(R.id.homefragment)
+            }
         } else {
             findNavController().navigate(R.id.loginFragment)
         }

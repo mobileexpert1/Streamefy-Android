@@ -52,6 +52,7 @@ import com.streamefy.utils.transition
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -229,17 +230,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
            /// var result1=job1.await()
 
           //  var result2=  job2.await()
-
-
+          launch(Dispatchers.IO) {
+              channel.send("Hi, developer i am from channel")
+          }
 
 //            withContext(Dispatchers.Main){
                 delay(50)
-                Log.d("ThreadTest", "Main thread: ${Thread.currentThread().name}")
+
+                Log.d("ThreadTest", "Main thread ttt: ${Thread.currentThread().name}  from channel ${channel.receive()}")
 //            }
         }
 
     }
-
+    private val channel = Channel<String>()
     fun keyMove() = with(binding) {
         ivHomeCross.remoteKey {
             when (it) {

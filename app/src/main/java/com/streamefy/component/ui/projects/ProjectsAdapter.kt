@@ -75,20 +75,19 @@ class ProjectsAdapter(
                     callBack.invoke(position, StreamEnum.SINGLE)
                 }
 
-
-
-               // if (data.isPrimary != null && data.isPrimary!!) {
-                    tvResetPin.apply {
-                        visible()
-                        setOnClickListener {
-                            callBack.invoke(position, StreamEnum.RESET_PIN)
-                        }
-                        setOnFocusChangeListener { _, hasFocus ->
-                            if (hasFocus) {
-                                setBackgroundResource(R.drawable.ic_button_selector)
-                                eventFragment.binding.rvEvent.scrollToPosition(
-                                    absoluteAdapterPosition
-                                )
+            }
+            if (data.isPrimary) {
+                tvResetPin.apply {
+                    visible()
+                    setOnClickListener {
+                        callBack.invoke(position, StreamEnum.RESET_PIN)
+                    }
+                    setOnFocusChangeListener { _, hasFocus ->
+                        if (hasFocus) {
+                            setBackgroundResource(R.drawable.ic_button_selector)
+                            eventFragment.binding.rvEvent.scrollToPosition(
+                                absoluteAdapterPosition
+                            )
 //                            animate().scaleX(1.03f).scaleY(1f).setDuration(200)
 //                                .withEndAction {
 //                                    itemView.post {
@@ -98,18 +97,17 @@ class ProjectsAdapter(
 //                                        )
 //                                    }
 //                                }.start()
-                            } else {
-                                setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        context,
-                                        com.otpview.R.color.transparent
-                                    )
+                        } else {
+                            setBackgroundColor(
+                                ContextCompat.getColor(
+                                    context,
+                                    com.otpview.R.color.transparent
                                 )
+                            )
 //                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
-                            }
                         }
                     }
-              //  }
+                }
             }
             clEvent.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {

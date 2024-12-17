@@ -56,15 +56,16 @@ class ProjectsAdapter(
                 tvSubtitle.gone()
                 mview.gone()
                 tvResetPin.gone()
+               // line.visible()
                 clEvent.setOnClickListener {
                     callBack.invoke(position, StreamEnum.LAST_EVENT)
                 }
             }else {
-                tvResetPin.visible()
+
                 tvTitle.text = data.name
 //            tvSubtitle.text = data.createDate
                 tvProjectCount.text = data.mediaCount.toString()
-                var date = updateDate(data.createDate)
+                var date =updateDate(data.createDate)
                 tvSubtitle.text = date
 
                 if (data.thumbnail != null) {
@@ -77,14 +78,15 @@ class ProjectsAdapter(
 
             }
             if (data.isPrimary) {
+                tvResetPin.visible()
                 tvResetPin.apply {
-                    visible()
+
                     setOnClickListener {
                         callBack.invoke(position, StreamEnum.RESET_PIN)
                     }
                     setOnFocusChangeListener { _, hasFocus ->
                         if (hasFocus) {
-                            setBackgroundResource(R.drawable.ic_button_selector)
+                             setBackgroundResource(R.drawable.ic_button_selector)
                             eventFragment.binding.rvEvent.scrollToPosition(
                                 absoluteAdapterPosition
                             )
@@ -98,7 +100,7 @@ class ProjectsAdapter(
 //                                    }
 //                                }.start()
                         } else {
-                            setBackgroundColor(
+                             setBackgroundColor(
                                 ContextCompat.getColor(
                                     context,
                                     com.otpview.R.color.transparent
@@ -106,9 +108,37 @@ class ProjectsAdapter(
                             )
 //                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
                         }
-                    }
-                }
+
+                }}
+            }else{
+                tvResetPin.gone()
             }
+
+//            tvResetPin. setOnFocusChangeListener { _, hasFocus ->
+//                if (hasFocus) {
+//                    tvResetPin. setBackgroundResource(R.drawable.ic_button_selector)
+//                    eventFragment.binding.rvEvent.scrollToPosition(
+//                        absoluteAdapterPosition
+//                    )
+////                            animate().scaleX(1.03f).scaleY(1f).setDuration(200)
+////                                .withEndAction {
+////                                    itemView.post {
+////                                        itemView.requestLayout()
+////                                        eventFragment.binding.rvEvent.scrollToPosition(
+////                                            absoluteAdapterPosition
+////                                        )
+////                                    }
+////                                }.start()
+//                } else {
+//                    tvResetPin. setBackgroundColor(
+//                        ContextCompat.getColor(
+//                            context,
+//                            com.otpview.R.color.transparent
+//                        )
+//                    )
+////                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+//                }
+//            }
             clEvent.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     focusedIndex=position
@@ -220,6 +250,7 @@ class ProjectsAdapter(
         val tvAddEvent: TextView = itemView.findViewById(R.id.tvAddEvent)
         val tvResetPin: TextView = itemView.findViewById(R.id.tvResetPin)
         val mview: View = itemView.findViewById(R.id.view)
+        val line: View = itemView.findViewById(R.id.line)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectView {

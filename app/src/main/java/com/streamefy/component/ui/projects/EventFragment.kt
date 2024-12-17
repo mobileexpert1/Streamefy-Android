@@ -35,6 +35,7 @@ import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.Collections
 
@@ -75,12 +76,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
            // }
         }
 
-        observe()
+
         focusable()
         clicable()
         rvInit()
        // focusedIndex = 0
-        viewModel.getProject(requireContext(), ProjectRequest(phone))
+
 //        viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        observe()
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -123,9 +124,10 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
                     StreamEnum.RESET_PIN -> {
                        /// handle reset pin functionality
+                        SharedPref.setString(PrefConstent.PROJECT_NAME, data.name)
                         ConfirmPinDialog(requireContext()) {
                             if (it) {
-                                viewModel.resetPin(requireContext(), ResetPinRequest(projectId.toInt(),phone))
+                                viewModel.resetPin(requireContext(), ResetPinRequest(data.id,phone))
                                 resetObserve()
                             }
                         }.show()
@@ -244,7 +246,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                        // requireActivity().showMessage("PIN updated successfully")
 //                        findNavController().popBackStack()
                         list.clear()
-                        list.add(ResponseItem(isLast = true))
+                        list.add(ResponseItem(isLast = true, isPrimary = false))
                         projectAdapter.update(list)
                         lifecycleScope.launch {
                             binding.rvEvent.apply {
@@ -263,15 +265,23 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-                            list.add(ResponseItem(isLast = true))
-                            if (projectId.isNotEmpty()) {
-                                focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
-                            }
-                            Collections.swap(list, focusedIndex,0)
-                            projectAdapter.update(list)
 
-                            Log.e("skncksn", "slmcls focus $focusedIndex")
+
                             lifecycleScope.launch {
+
+                                list.add(ResponseItem(isLast = true, isPrimary = false))
+
+
+                                Log.e("skncksn", "${list.size} slmcls focus $focusedIndex")
+                                if (projectId.isNotEmpty()) {
+                                    focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
+                                    if ( focusedIndex!=list.size-1) {
+                                        Collections.swap(list, focusedIndex, 0)
+                                    }
+                                }
+                                withContext(Dispatchers.Main) {
+                                    projectAdapter.update(list)
+                                }
 
                                 binding.rvEvent.apply {
                                     binding.ivBack.clearFocus()
@@ -349,6 +359,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     }
     override fun onResume() {
         super.onResume()
+        viewModel.getProject(requireContext(), ProjectRequest(phone))
+        observe()
 
     }
 }

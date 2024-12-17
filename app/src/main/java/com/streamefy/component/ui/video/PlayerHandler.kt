@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.streamefy.component.ui.video.model.QualityModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder
@@ -323,7 +324,6 @@ class PlayerHandler(
                 Pair(854, 480)
             }
             else -> {
-                // Very low bandwidth, select 1080p (portrait mode)
                 Pair(1080, 1920)
             }
         }
@@ -464,6 +464,20 @@ class PlayerHandler(
 //
 //        // Format minutes and seconds to always show two digits
 //        return String.format("%02d:%02d", minutes, seconds)
+    }
+     fun getRemainsDuration(): String {
+
+        val durationMillis = player?.duration ?: 0L
+        val currentDur = player?.currentPosition ?: 0L
+        var remains=durationMillis-currentDur
+        val totalSeconds = remains / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+
     }
 
     var handler = Handler()

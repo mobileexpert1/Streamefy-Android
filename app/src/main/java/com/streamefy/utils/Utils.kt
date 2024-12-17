@@ -196,3 +196,9 @@ fun View.customAlfa(fadeIn:Float,fadeOut:Float){
     fadeOutT2.duration = 1000
     fadeOutT2.start()
 }
+
+fun View.customAlfa(fadeIn:Float,fadeOut:Float,duration: Long){
+    val fadeout = ObjectAnimator.ofFloat(this, "alpha", fadeIn, fadeOut)
+    fadeout.duration = duration
+    fadeout.start()
+}

@@ -77,7 +77,8 @@ class CategoryAdapter(
                 } else {
                     tvMore.invisible()
                 }
-            } else {
+            }
+            else {
                 tvMore.invisible()
             }
             //  tvMore.visible()
@@ -161,16 +162,19 @@ class CategoryAdapter(
 
                 false
             }
-
+            Log.e("sjcjsbc","skncks medias ${data.media} is empty ${data.media.isNullOrEmpty()}")
             clEvent.setOnClickListener {
+
+                if (!data.media.isNullOrEmpty()){
                 data.media?.run {
                     if (this[0].totalVideoDuration=="00:00:00"){
                         context.showMessage("Something wrong with this Video.Please contact with Admin")
                     }else{
                         callBack.invoke(position, StreamEnum.SINGLE)
                     }
+                }}else{
+                    context.showMessage("Something wrong with this Video.Please contact with Admin")
                 }
-
             }
 
             tvMore.setOnClickListener {

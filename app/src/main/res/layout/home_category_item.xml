@@ -69,7 +69,7 @@
                     android:layout_marginHorizontal="@dimen/_1sdp"
                     android:progress="0"
                     android:visibility="gone"
-                    app:indicatorColor="@color/red"
+                    app:indicatorColor="@color/purple"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/tvSubtitle"

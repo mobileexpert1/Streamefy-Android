@@ -935,20 +935,25 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         }
                                     }
                                     if (!found) {
-                                        var media = events?.get(0)?.media
-                                        media?.get(0)?.run {
-                                            isLastPlay = false
-                                            lastVideoUrl = ""
-                                            lastVideoDuration = "0"
-                                            lastVideoThumb = thumbnailS3bucketId
-                                            mediaId = id
-                                            videoId = this.bunnyId
-                                            lifecycleScope.launch(Dispatchers.Main) {
-                                                binding.tvPlay.setText("play")
+                                        val media = events[0].media
+                                        if (!media.isNullOrEmpty()) {
+                                            media[0].run {
+                                                isLastPlay = false
+                                                lastVideoUrl = ""
+                                                lastVideoDuration = "0"
+                                                lastVideoThumb = thumbnailS3bucketId
+                                                mediaId = id
+                                                videoId = this.bunnyId
+                                                lifecycleScope.launch(Dispatchers.Main) {
+                                                    binding.tvPlay.text = "play"
+                                                }
                                             }
+                                        }else{
+                                            withContext(Dispatchers.Main) { binding.tvPlay.text = "play"
+                                            binding.ivHomeCross.requestFocus()}
                                         }
                                     } else {
-                                        withContext(Dispatchers.Main) { binding.tvPlay.setText("resume") }
+                                        withContext(Dispatchers.Main) { binding.tvPlay.text = "resume" }
                                     }
                                 }
                                 withContext(Dispatchers.Main){

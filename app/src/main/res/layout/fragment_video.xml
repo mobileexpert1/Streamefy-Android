@@ -71,6 +71,7 @@
             android:layout_height="@dimen/_33sdp"
             android:layout_marginHorizontal="@dimen/_20sdp"
             android:background="@drawable/video_bottom_border"
+
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center"
@@ -136,7 +137,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:progress="0"
-                    android:progressTint="@color/red"
+                    android:progressTint="@color/purple"
                     android:secondaryProgress="@integer/slideEdgeStart"
                     android:secondaryProgressTint="@color/white"
                     android:thumb="@drawable/seekbar_thumb"
@@ -149,8 +150,8 @@
             <TextView
                 android:id="@+id/tvDuration"
                 style="@style/filson_14_whiteTV"
-                android:layout_width="wrap_content"
-                android:layout_marginEnd="@dimen/_20sdp"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/filsonpro_light"
                 android:text="00:00" />
 
@@ -195,7 +196,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:progress="0"
-                    android:progressTint="@color/red"
+                    android:progressTint="@color/purple"
                     android:secondaryProgress="@integer/slideEdgeStart"
                     android:secondaryProgressTint="@color/white"
                     android:thumb="@drawable/seekbar_thumb"

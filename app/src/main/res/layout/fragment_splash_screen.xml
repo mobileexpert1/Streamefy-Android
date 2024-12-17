@@ -6,11 +6,13 @@
     tools:context=".component.ui.splash.SplashScreen">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/splashLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/splash_backg">
 
         <ImageView
+            android:id="@+id/ivLauncher"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"

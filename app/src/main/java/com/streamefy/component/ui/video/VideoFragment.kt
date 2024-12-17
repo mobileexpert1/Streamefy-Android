@@ -77,7 +77,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var isNextVideoStarted = false
     var phone = ""
     var videoCount = 0
-    var playFirst = true
+    var isVolume = false
 
     companion object {
         lateinit var videoFragment: VideoFragment
@@ -93,6 +93,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         videoFragment = this
+        isVolume=true
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
@@ -202,7 +203,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_DPAD_UP -> {
-
+                        isVolume=false
                         volumeUp()
                         // volumeManager.setVolumePercentage(volumeCount)
                         binding.sbVolumeSeek.progress = volumeCount
@@ -222,7 +223,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
-
+                        isVolume=false
                         volumeDown()
                         // volumeManager.setVolumePercentage(volumeCount)
                         binding.sbVolumeSeek.progress = volumeCount
@@ -837,6 +838,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     binding.sbVideoSeek.max = 100
                     if (getLengthOnce) {
                         tvDuration.setText(playerHandler.getTotalLength())
+
                         getLengthOnce = false
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
                     }
@@ -1306,30 +1308,32 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
             // Update the SeekBar with the volume percentage
             Log.e("sjbcjsbc", "remote volume before $volumeCount after $volumePercentage")
-            lifecycleScope.launch(Dispatchers.Main) {
-                volumeCount = volumePercentage
-               // toShowBackButton()
-                sbVolumeSeek.setProgress(volumeCount)
-            }
-            if (ivVolume.isFocused) {
-                if (volumePercentage <= 0) {
-                    playerHandler.mute()
-                    ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-                } else {
-                    playerHandler.setVolume(volumeCount / 100.0f)
-                    ivVolume.setImageResource(R.drawable.ic_selected_volume)
+            if (!isVolume) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    volumeCount = volumePercentage
+                    // toShowBackButton()
+                    sbVolumeSeek.setProgress(volumeCount)
                 }
-            } else {
-                if (volumePercentage <= 0) {
-                    playerHandler.mute()
-                    ivVolume.setImageResource(R.drawable.ic_mute)
+                if (ivVolume.isFocused) {
+                    if (volumePercentage <= 0) {
+                        playerHandler.mute()
+                        ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                    } else {
+                        playerHandler.setVolume(volumeCount / 100.0f)
+                        ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                    }
                 } else {
-                    playerHandler.setVolume(volumeCount / 100.0f)
-                    ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    if (volumePercentage <= 0) {
+                         playerHandler.mute()
+                        ivVolume.setImageResource(R.drawable.ic_mute)
+                    } else {
+                        playerHandler.setVolume(volumeCount / 100.0f)
+                        ivVolume.setImageResource(R.drawable.ic_video_volume)
+                    }
                 }
             }
+            isVolume=false
         }
-
         volumeManager.startMonitoring()
     }
 
@@ -1340,9 +1344,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             val currentPosition = playerHandler.getCurrentPosition()
             val progress = (currentPosition * 100 / duration.toDouble()).toInt()
             binding.sbVideoSeek.progress = progress
-            binding.tvCurrentLenght.setText(playerHandler.getcurrent().toString())
-
+            binding.tvCurrentLenght.text = playerHandler.getcurrent().toString()
             if (playerHandler.isPlaying()!!) {
+                binding.tvDuration.text = playerHandler.getRemainsDuration()
                 playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
             }
             visibilityCount++
@@ -1650,6 +1654,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             playerHandler.pause()
             playerHandler.release()
             volumeManager.stopMonitoring()
+            isVolume=true
         }
         requireActivity().window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         // homeFragment.viewFocus()

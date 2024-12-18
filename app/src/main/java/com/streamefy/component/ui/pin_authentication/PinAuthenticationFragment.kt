@@ -32,6 +32,7 @@ import com.streamefy.network.MyResource
 import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadPicaso
@@ -67,6 +68,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        binding.pinParant.imageLoadonLayout(app_background)
         // binding.ivApplogo.loadAny(applogo)
         Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
         otpFieldFocus()

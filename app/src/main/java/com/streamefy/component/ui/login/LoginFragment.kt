@@ -25,6 +25,7 @@ import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage
+import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.phoneNumber
@@ -95,18 +96,21 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             if (validate) {
                 // ShowError.handleError.handleError(validate as Int)
                 //   } else {
-               //
+                //
                 if (isAdded) {
 //                    var formated_Number = ccCode.formattedFullNumber.toString()
                     var formated_Number = ccCode.formattedFullNumber.toString()
-                    var updated_number=formated_Number
+                    var updated_number = formated_Number
 
                     lifecycleScope.launch {
-                        if (ccCode.selectedCountryName=="India") {
+                        if (ccCode.selectedCountryName == "India") {
                             updated_number = replaceSpaceFromLastIfMoreThanTwo(formated_Number)
                         }
 
-                        Log.e("snksnc", "name ${ccCode.selectedCountryName} actual number $formated_Number cjdbc number $updated_number")
+                        Log.e(
+                            "snksnc",
+                            "name ${ccCode.selectedCountryName} actual number $formated_Number cjdbc number $updated_number"
+                        )
 
 //                    }
                         withContext(Dispatchers.Main) {
@@ -448,10 +452,23 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                             SharedPref.setString(PrefConstent.TOKEN, accessToken)
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
                             SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
-                            if ( data.logo.isNotEmpty()) {
+                            if (data.backgroundTheme=="LIGHT"){
+                                SharedPref.setBoolean(PrefConstent.IS_DARK, false)
+                                binding.constraintLayout.isEnabled=false
+                            }else{
+                                SharedPref.setBoolean(PrefConstent.IS_DARK, true)
+                                binding.constraintLayout.isEnabled=true
+                            }
+                            data.backgroundImage.run {
+                                SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
+                                binding.loginParent.imageLoadonLayout(this)
+                            }
+
+
+                            if (data.logo.isNotEmpty()) {
                                 binding.ivApplogo.loadUrl(data.logo)
                             }
-                          //  MyApp().reinitializeKoin()
+                            //  MyApp().reinitializeKoin()
 //
 //                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
 //                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())

@@ -33,6 +33,7 @@ import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
+import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadPicaso
 import com.streamefy.utils.loadUrl
@@ -57,16 +58,19 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     private val viewModel: OTPVM by viewModel()
     override fun netStatus() {
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
-
+        resetColor()
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
-//        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        binding.otpParent.imageLoadonLayout(app_background)
 //        binding.ivApplogo.loadAny(applogo)
         val token = SharedPref.getString(PrefConstent.TOKEN).toString()
+
         initClickListeners()
         binding.tvResend.clearFocus()
         otpFieldFocus()
@@ -82,6 +86,17 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 }
             })
         Log.e("sjkdnskjnf", "otp $token")
+    }
+
+    fun resetColor()= with(binding) {
+     var isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
+        if (isDark) {
+            constraintLayout.isEnabled=true
+            tvInstruction.isEnabled=true
+        } else {
+            constraintLayout.isEnabled=false
+            tvInstruction.isEnabled=false
+        }
     }
 
     private fun otpFieldFocus() = with(binding) {
@@ -362,7 +377,10 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                             ShowError.handleError.handleError(ErrorCodeManager.OTP_LENGTH)
                         } else {
                             if (isAdded) {
-                                viewModel.otpVerification(requireContext(), VerificationRequest(phone, this))
+                                viewModel.otpVerification(
+                                    requireContext(),
+                                    VerificationRequest(phone, this)
+                                )
                                 verificationObserv()
                             } else {
                                 Log.e("otpfragment", "Fragment is not added, navigation aborted.")
@@ -425,20 +443,23 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                         if (isSuccess) {
                             ShowError.handleError.message(this.response.message)
                             lifecycleScope.launch {
-                                SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, data.isPrimaryuser)
+                                SharedPref.setBoolean(
+                                    PrefConstent.ISPRIMARY_USER,
+                                    data.isPrimaryuser
+                                )
                                 delay(2500)
                                 var bundle = Bundle()
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                                 bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
-                                if (data.email!=null) {
+                                if (data.email != null) {
                                     SharedPref.setString(PrefConstent.USER_EMAIL, data.email!!)
                                 }
 //                                if (response.isPrimaryuser) {
-                                    findNavController().navigate(
-                                        R.id.action_otpFragment_to_projectfragment,
-                                        bundle
-                                    )
+                                findNavController().navigate(
+                                    R.id.action_otpFragment_to_projectfragment,
+                                    bundle
+                                )
 //                                } else {
 //                                    findNavController().navigate(
 //                                        R.id.action_otpFragment_to_pinAuthenticationFragment,

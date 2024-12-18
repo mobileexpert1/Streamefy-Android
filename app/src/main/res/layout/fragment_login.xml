@@ -6,7 +6,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ic_background_blur"
         android:id="@+id/loginParent"
         android:visibility="invisible"
         >
@@ -29,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/bg_round_corners"
+            android:backgroundTint="@color/layout_color_theme"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingHorizontal="@dimen/_13sdp"

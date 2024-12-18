@@ -45,11 +45,11 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
            // ivLauncher.customAlfa(0f, 1f, 4000)
 
             ObjectAnimator.ofFloat(splashLayout, "alpha", 0f, 1f).also {
-                it.duration = 4000
+                it.duration = 2000
                 it.doOnEnd { lifecycleScope.launch {
-                    delay(2000)
+                    delay(1000)
                     ObjectAnimator.ofFloat(splashLayout, "alpha", 1f, 0f).also { inner ->
-                        inner.duration = 2000
+                        inner.duration = 1000
                         inner.doOnEnd {
                           //  navigateToHome()
                         }
@@ -61,16 +61,18 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
             }
 
             ObjectAnimator.ofFloat(ivLauncher, "alpha", 0f, 1f).also {
-                it.duration = 4000
+                it.duration = 2000
                 it.doOnEnd { lifecycleScope.launch {
-                    delay(2000)
+                    delay(1000)
                     ObjectAnimator.ofFloat(ivLauncher, "alpha", 1f, 0f).also { inner ->
-                        inner.duration = 2000
+                        inner.duration = 1000
                         inner.doOnEnd {
-                            navigateToHome()
                         }
                         inner.start()
                     }
+                    delay(500)
+                    navigateToHome()
+
                     }
                 }
                 it.start()

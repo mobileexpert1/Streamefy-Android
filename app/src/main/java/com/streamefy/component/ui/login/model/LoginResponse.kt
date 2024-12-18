@@ -12,6 +12,10 @@ data class Response(
     val refreshToken: String = "" ,
     @SerializedName("logo")
     val logo: String = "" ,
+    @SerializedName("backgroundImage")
+    val backgroundImage: String = "" ,
+    @SerializedName("backgroundTheme")
+    val backgroundTheme: String = "" ,
 //    @SerializedName("profileImage")
 //    val profileImage: Any = null
 )

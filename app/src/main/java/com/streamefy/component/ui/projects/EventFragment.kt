@@ -28,6 +28,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
+import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.invisible
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
@@ -63,24 +64,27 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
 //        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        val app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        binding.eventParant.imageLoadonLayout(app_background)
+
         projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
 //        binding.ivApplogo.loadAny(applogo)
         binding.apply {
-           // if (isPrimaryuser) {
-                if (isHome) {
-                    ivBack.invisible()
-                }
-           // }
+            // if (isPrimaryuser) {
+            if (isHome) {
+                ivBack.invisible()
+            }
+            // }
         }
 
 
         focusable()
         clicable()
         rvInit()
-       // focusedIndex = 0
+        // focusedIndex = 0
 
 //        viewModel.getProject(requireContext(), ProjectRequest(phone))
 //        observe()
@@ -88,12 +92,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                   // if (isPrimaryuser) {
-                        if (!isHome) {
-                            findNavController().navigate(R.id.loginFragment)
-                        } else {
-                            ExitDialog(requireActivity()).show()
-                        }
+                    // if (isPrimaryuser) {
+                    if (!isHome) {
+                        findNavController().navigate(R.id.loginFragment)
+                    } else {
+                        ExitDialog(requireActivity()).show()
+                    }
 //                    } else {
 //                        findNavController().navigate(R.id.loginFragment)
 //                    }
@@ -101,18 +105,19 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             })
     }
 
+    var selectedItem = 0
     private fun rvInit() = with(binding) {
         rvEvent.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
-             var data= list[index]
+                var data = list[index]
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
 //                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "Add Event")
                         val bundle = Bundle()
-                        bundle.putInt(PrefConstent.PROJECT_ID,0)
+                        bundle.putInt(PrefConstent.PROJECT_ID, 0)
                         bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                         bundle.putString(PrefConstent.PROJECT_NAME, "Add Event")
 
@@ -122,12 +127,17 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                             bundle
                         )
                     }
+
                     StreamEnum.RESET_PIN -> {
-                       /// handle reset pin functionality
+                        selectedItem = index
+                        /// handle reset pin functionality
                         SharedPref.setString(PrefConstent.PROJECT_NAME, data.name)
                         ConfirmPinDialog(requireContext()) {
                             if (it) {
-                                viewModel.resetPin(requireContext(), ResetPinRequest(data.id,phone))
+                                viewModel.resetPin(
+                                    requireContext(),
+                                    ResetPinRequest(data.id, phone)
+                                )
                                 resetObserve()
                             }
                         }.show()
@@ -135,15 +145,15 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                     StreamEnum.SINGLE -> {
 //                        if(projectId==list[index].id.toString()){
-                        if (data.isAuthorize){
+                        if (data.isAuthorize) {
                             SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
-                            SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER,data.isPrimary)
-                            SharedPref.setString(PrefConstent.AUTH_PIN,"")
+                            SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, data.isPrimary)
+                            SharedPref.setString(PrefConstent.AUTH_PIN, "")
                             SharedPref.setString(PrefConstent.PROJECT_ID, data.id.toString())
                             if (isAdded) {
                                 findNavController().navigate(R.id.homefragment)
                             }
-                        }else {
+                        } else {
 
 //                            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
@@ -243,7 +253,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 is MyResource.isSuccess -> {
                     Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
-                       // requireActivity().showMessage("PIN updated successfully")
+                        // requireActivity().showMessage("PIN updated successfully")
 //                        findNavController().popBackStack()
                         list.clear()
                         list.add(ResponseItem(isLast = true, isPrimary = false))
@@ -265,18 +275,13 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                         it.data?.run {
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
-
-
                             lifecycleScope.launch {
-
                                 list.add(ResponseItem(isLast = true, isPrimary = false))
-
-
                                 Log.e("skncksn", "${list.size} slmcls focus $focusedIndex")
                                 if (projectId.isNotEmpty()) {
                                     focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
-                                    if ( focusedIndex!=list.size-1) {
-                                        Collections.swap(list, focusedIndex, 0)
+                                    if (focusedIndex != list.size - 1) {
+                                        //  Collections.swap(list, focusedIndex, 0)
                                     }
                                 }
                                 withContext(Dispatchers.Main) {
@@ -289,9 +294,9 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                                     isFocusableInTouchMode = true
                                     delay(1000)
                                     requestFocus()
-                                   post {
-                                       getChildAt(0)?.requestFocus()
-                                   }
+                                    post {
+                                        getChildAt(0)?.requestFocus()
+                                    }
 
                                 }
 
@@ -327,36 +332,45 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                             .build()
                         findNavController().navigate(
                             R.id.event_to_pin_no_projects_found,
-                            bundle,navOptions
+                            bundle, navOptions
                         )
                     }
 
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }
+
     private fun resetObserve() {
         viewModel.resetData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
                     showProgress()
                 }
+
                 is MyResource.isSuccess -> {
                     dismissProgress()
-                    SharedPref.setBoolean(PrefConstent.ISRESET_PIN,true)
+                    SharedPref.setBoolean(PrefConstent.ISRESET_PIN, true)
                     requireContext().showMessage(it.data?.response.toString())
-                    viewModel.getProject(requireContext(), ProjectRequest(phone))
+//                    list.
+                    list[selectedItem].isAuthorize = false
+                    projectAdapter.updateAuth(selectedItem)
+                    //viewModel.getProject(requireContext(), ProjectRequest(phone))
+                    // observe()
 
                 }
 
                 is MyResource.isError -> {
                     dismissProgress()
                 }
-                else->{}
+
+                else -> {}
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         viewModel.getProject(requireContext(), ProjectRequest(phone))

@@ -29,7 +29,7 @@ data class ResponseItem(
     @SerializedName("email")
     val email: String?=null,
     @SerializedName("isAuthorize")
-    val isAuthorize: Boolean=false,
+    var isAuthorize: Boolean=false,
     var isLast:Boolean=false
 )
 

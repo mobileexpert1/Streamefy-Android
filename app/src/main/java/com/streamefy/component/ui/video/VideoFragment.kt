@@ -1350,7 +1350,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
             }
             visibilityCount++
-            if (visibilityCount == 15) {
+            if (visibilityCount == 5) {
                 visibilityCount = 0
                 binding.ivBack.animate().alpha(0f).setDuration(400).setStartDelay(10)
                 binding.llTools.animate().alpha(0f).setDuration(400).setStartDelay(10)

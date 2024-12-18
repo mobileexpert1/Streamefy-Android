@@ -26,6 +26,7 @@ object PrefConstent {
     const val PROJECT_ID = "project_id"
     const val REALNUMBER = "real_number"
     const val ISRESET_PIN = "reset_pit"
+    const val IS_DARK = "isDark"
 
 
     const val dummy_token =

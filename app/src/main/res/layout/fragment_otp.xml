@@ -6,7 +6,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/otp_parent"
+        >
 
         <ImageView
             android:id="@+id/ivApplogo"
@@ -43,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_13sdp"
             android:background="@drawable/bg_round_corners"
+            android:backgroundTint="@color/layout_color_theme"
             android:paddingHorizontal="@dimen/_20sdp"
             android:paddingVertical="@dimen/_15sdp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -57,7 +60,7 @@
                 android:paddingHorizontal="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_6sdp"
                 android:text="Enter 6 digit OTP received on your\nphone number"
-                android:textColor="@color/black"
+                android:textColor="@color/text_theme_color"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

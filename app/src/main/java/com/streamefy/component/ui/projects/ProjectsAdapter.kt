@@ -24,6 +24,7 @@ import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.projects.EventFragment.Companion.eventFragment
 import com.streamefy.component.ui.projects.EventFragment.Companion.focusedIndex
 import com.streamefy.component.ui.projects.model.ResponseItem
+import com.streamefy.component.ui.video.VideoEnum
 import com.streamefy.utils.gone
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
@@ -61,7 +62,11 @@ class ProjectsAdapter(
                     callBack.invoke(position, StreamEnum.LAST_EVENT)
                 }
             }else {
-
+                tvAddEvent.gone()
+                tvTitle.visible()
+                tvProjectCount.visible()
+                tvSubtitle.visible()
+                mview.visible()
                 tvTitle.text = data.name
 //            tvSubtitle.text = data.createDate
                 tvProjectCount.text = data.mediaCount.toString()
@@ -87,6 +92,7 @@ class ProjectsAdapter(
                     setOnFocusChangeListener { _, hasFocus ->
                         if (hasFocus) {
                              setBackgroundResource(R.drawable.ic_button_selector)
+//                             setBackgroundResource(R.drawable.ic_reset_pin_background)
                             eventFragment.binding.rvEvent.scrollToPosition(
                                 absoluteAdapterPosition
                             )
@@ -99,7 +105,8 @@ class ProjectsAdapter(
 //                                        )
 //                                    }
 //                                }.start()
-                        } else {
+                        }
+                        else {
                              setBackgroundColor(
                                 ContextCompat.getColor(
                                     context,
@@ -108,6 +115,21 @@ class ProjectsAdapter(
                             )
 //                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
                         }
+
+
+//                        if (hasFocus) {
+//                            toShowBackButton()
+//                            focusView = VideoEnum.BACK_TO_VIDEO
+//                            val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+//                            params.width = resources.getDimensionPixelSize(R.dimen._62sdp) // Original size
+//                            params.height = resources.getDimensionPixelSize(R.dimen._33sdp)
+//                            ivBack.layoutParams = params
+//                        } else {
+//                            val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+//                            params.width = resources.getDimensionPixelSize(R.dimen._60sdp) // Original size
+//                            params.height = resources.getDimensionPixelSize(R.dimen._31sdp)
+//                            ivBack.layoutParams = params
+//                        }
 
                 }}
             }else{
@@ -263,6 +285,10 @@ class ProjectsAdapter(
 
         // eventList.addAll(newlist)
         notifyDataSetChanged()
+    }
+    fun updateAuth(index: Int) {
+        eventList[index].isAuthorize=false
+        notifyItemChanged(index)
     }
 
     fun addItem(newlist: ResponseItem) {

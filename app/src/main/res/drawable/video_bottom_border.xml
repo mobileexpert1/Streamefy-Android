@@ -9,7 +9,8 @@
     </item>
     <item android:top="@dimen/_1sdp" >
         <shape>
-            <solid android:color="#101010"/>
+<!--            <solid android:color="#101010"/>-->
+            <solid android:color="@color/semi_transparent"/>
             <corners android:topRightRadius="@dimen/_10sdp" android:topLeftRadius="@dimen/_10sdp" />
         </shape>
     </item>

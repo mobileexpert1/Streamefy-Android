@@ -55,6 +55,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     var app_background = ""
 
     var isResend = false
+    var isDark=false
     private val viewModel: OTPVM by viewModel()
     override fun netStatus() {
     }
@@ -64,7 +65,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         arguments?.run {
             phone = getString(PrefConstent.PHONE_NUMBER).toString()
         }
-        resetColor()
+         isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.otpParent.imageLoadonLayout(app_background)
@@ -85,17 +86,22 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     findNavController().navigate(R.id.loginFragment)
                 }
             })
+        resetColor()
         Log.e("sjkdnskjnf", "otp $token")
     }
 
     fun resetColor()= with(binding) {
-     var isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
+
         if (isDark) {
             constraintLayout.isEnabled=true
             tvInstruction.isEnabled=true
+            tvremains.isEnabled=true
+           // tvResend.isEnabled=true
         } else {
             constraintLayout.isEnabled=false
             tvInstruction.isEnabled=false
+            tvremains.isEnabled=false
+           // tvResend.isEnabled=false
         }
     }
 
@@ -157,7 +163,11 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                 tvResend.apply {
                     text = "Resend OTP"
                     isEnabled = true
-                    setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                    if (isDark) {
+                        setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+                    }else{
+                        setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                    }
                     //  requestFocus()
                 }
             },
@@ -176,8 +186,12 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                         text = "00:" + formattedSeconds
                         isEnabled = false
                         if (isAdded) {
-                            setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                        }
+//                            setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                            if (isDark) {
+                                setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+                            }else{
+                                setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                            }                        }
                         //clearFocus()
                     }
                 }
@@ -343,12 +357,18 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                     tvResend.setTextColor(ContextCompat.getColor(requireContext(), R.color.blue))
                     requireActivity().hideKey()
                 } else {
-                    tvResend.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            com.otpview.R.color.black
-                        )
-                    )
+                    if (isDark) {
+                        tvResend.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
+                    }else{
+                        tvResend.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+                    }
+
+//                    tvResend.setTextColor(
+//                        ContextCompat.getColor(
+//                            requireContext(),
+//                            com.otpview.R.color.black
+//                        )
+//                    )
                 }
 
             }

@@ -464,7 +464,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                                 binding.loginParent.imageLoadonLayout(this)
                             }
 
-
                             if (data.logo.isNotEmpty()) {
                                 binding.ivApplogo.loadUrl(data.logo)
                             }

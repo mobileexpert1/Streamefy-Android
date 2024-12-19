@@ -18,8 +18,8 @@
             android:src="@drawable/ic_logo_ori"
             android:scaleType="fitXY"
             android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
-            app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="@+id/otp_ll"
+            app:layout_constraintStart_toStartOf="@+id/otp_ll"
             app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -38,20 +38,27 @@
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
+       <LinearLayout
+           android:id="@+id/otp_ll"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:background="@drawable/bg_round_corners"
+           android:layout_marginTop="@dimen/_13sdp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_13sdp"
+
             android:background="@drawable/bg_round_corners"
             android:backgroundTint="@color/layout_color_theme"
             android:paddingHorizontal="@dimen/_20sdp"
             android:paddingVertical="@dimen/_15sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+           >
 
             <TextView
                 android:id="@+id/tvInstruction"
@@ -265,7 +272,7 @@
                     android:gravity="right"
                     android:paddingTop="@dimen/_2sdp"
                     android:text="Resend OTP in "
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_theme_color"
                     android:textSize="9sp"
                     android:typeface="monospace"
                     app:layout_constraintEnd_toStartOf="@+id/tvResend"
@@ -280,7 +287,7 @@
                     android:focusableInTouchMode="true"
                     android:gravity="start"
                     android:paddingTop="@dimen/_2sdp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_theme_color"
                     android:textSize="9sp"
                     android:typeface="monospace"
                     app:layout_constraintEnd_toEndOf="@+id/otp_view"
@@ -324,7 +331,7 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
+       </LinearLayout>
 
         <View
             android:id="@+id/view"

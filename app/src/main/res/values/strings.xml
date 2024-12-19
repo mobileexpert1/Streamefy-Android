@@ -38,5 +38,6 @@
     <string name="network_message">Internet connection unavailable. Please check your connection and try again.</string>
     <string name="try_again">Try Again</string>
     <string name="watch_again">Watch Again</string>
+    <string name="reset_pin">Reset PIN</string>
 
 </resources>

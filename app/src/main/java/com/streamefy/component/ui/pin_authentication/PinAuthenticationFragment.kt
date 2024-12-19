@@ -71,6 +71,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         binding.pinParant.imageLoadonLayout(app_background)
         // binding.ivApplogo.loadAny(applogo)
         Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
+
         otpFieldFocus()
         binding.apply {
 //            if (isPrimaryuser) {
@@ -193,7 +194,23 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             }
 
         }
+        resetColor()
     }
+
+    fun resetColor()= with(binding) {
+        var isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
+        if (isDark) {
+            constraintLayout.isEnabled=true
+            textView2.isEnabled=true
+            tvInstruction.isEnabled=true
+
+        } else {
+            constraintLayout.isEnabled=false
+            tvInstruction.isEnabled=false
+            textView2.isEnabled=false
+        }
+    }
+
 
     private fun otpFieldFocus() = with(binding) {
 

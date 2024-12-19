@@ -53,8 +53,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
             android:fontFamily="@font/filsonpro_bold"
+            android:textColor="@color/text_theme_color"
+
             android:text="My Events"
-            android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

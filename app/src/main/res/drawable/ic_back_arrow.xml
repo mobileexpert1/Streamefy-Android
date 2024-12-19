@@ -3,10 +3,15 @@
     android:height="40dp"
     android:viewportWidth="40"
     android:viewportHeight="40">
-  <path
-      android:pathData="M20,20m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0"
-      android:fillColor="#ffffff"/>
-  <group>
+
+  <group android:translateX="1"
+      android:translateY="1"
+      android:scaleX=".95"
+      android:scaleY=".95"
+      >
+    <path
+        android:pathData="M20,20m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0"
+        android:fillColor="#ffffff"/>
     <clip-path
         android:pathData="M8,8h24v24h-24z"/>
     <path

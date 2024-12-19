@@ -8,6 +8,8 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -565,26 +567,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 //                }
 //            })
 //        }
-        thumbShow()
+       // thumbShow()
         //  customIndicator.setIndicatorCount(images.size, 0)
 //        if (images.size > 1) {
 //            binding.customIndicator.visible()
 //        }
     }
 
-    fun thumbShow() = with(binding) {
-//        rvBackgVideo.run {
-//            visible()
-//            animate()
-//                .alpha(1f)
-//                .scaleX(1f)
-//                .scaleY(1f)
-//                .setInterpolator(DecelerateInterpolator())
-//                .setDuration(5000)
-//                .start()
-//        }
-
-    }
+//    fun thumbShow() = with(binding) {
+////        rvBackgVideo.run {
+////            visible()
+////            animate()
+////                .alpha(1f)
+////                .scaleX(1f)
+////                .scaleY(1f)
+////                .setInterpolator(DecelerateInterpolator())
+////                .setDuration(5000)
+////                .start()
+////        }
+//
+//    }
 
     fun showTools() = with(binding) {
         clOpecity.visible()
@@ -873,6 +875,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             //sliderInit()
                                             if (images.isNotEmpty()) {
                                                 if (images[0].hlsPlaylistUrl.isNotEmpty()) {
+                                                    if (images[0].thumbnailSBucketId.isNotEmpty()) {
+                                                        binding.ivVideoThumb.loadUrl(images[0].thumbnailSBucketId)
+                                                    }
                                                     play(images[0].hlsPlaylistUrl)
                                                     showRemainsTime(30000)
                                                     countDownTimer.start()
@@ -1204,14 +1209,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                override fun onPlaybackStateChanged(playbackState: Int) {
                    if (playbackState == Player.STATE_BUFFERING) {
                    } else if (playbackState == Player.STATE_READY) {
+                       videoTranisition()
                    } else if (playbackState == Player.STATE_ENDED) {
                        Log.e("filteridwith", "video ended ")
                    }
                }
-
-               override fun onTracksChanged(tracks: Tracks) {
-               }
-
                override fun onPlayerError(error: PlaybackException) {
                    Log.e(
                        "ExoPlayerError",
@@ -1219,7 +1221,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                        error
                    )
                }
-
                override fun onPlayerErrorChanged(error: PlaybackException?) {
                    super.onPlayerErrorChanged(error)
                    Log.e("ExoPlayerError", "onPlayerErrorChanged " + error?.message, error)
@@ -1328,12 +1329,37 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 Log.e("homevideotest", "videoPlayingIndex $videoPlayingIndex millisUntilFinished $millisUntilFinished ")
                 toolsCount++
                 if (millisUntilFinished <= 24000L) {
-                    if (toolsCount==10L) {
+                    if (toolsCount == 10L) {
                         hideTools()
                     }
-                }
-                else if(millisUntilFinished <= 1000L){
-                    onFinish()
+                    if (millisUntilFinished <= 10000L) {
+
+                      lifecycleScope.launch(Dispatchers.IO) {
+                          if (images.isNotEmpty()) {
+                              if (videoPlayingIndex < images.size) {
+                                  if (videoPlayingIndex == images.size - 1) {
+                                      videoPlayingIndex = 0
+                                  } else {
+                                      videoPlayingIndex++
+                                  }
+                                  if (images[videoPlayingIndex].thumbnailSBucketId.isNotEmpty()) {
+                                     withContext(Dispatchers.Main){ binding.ivVideoThumb.loadUrl(images[videoPlayingIndex].thumbnailSBucketId)
+                                         if (millisUntilFinished <= 2000L) {
+                                         thumbShow()
+                                         }
+
+                                     }
+
+                                  }
+                              }
+
+                          }
+                      }
+
+                    }
+//                    if (millisUntilFinished <= 1000L) {
+//                        onFinish()
+//                    }
                 }
 
             }
@@ -1350,6 +1376,38 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
        // countDownTimer.start()
 
+    }
+    fun videoTranisition() = with(binding) {
+        ivVideoThumb.animate()
+            .alpha(0f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .setDuration(1000)
+            .withEndAction {
+                playerView.animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(DecelerateInterpolator())// Scale to original size
+                    .setDuration(2000)
+                    .start()
+            }
+            .start()
+    }
+    fun thumbShow(){
+        binding.apply {
+            ivVideoThumb.run {
+                visible()
+                animate()
+                    .alpha(1f)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(DecelerateInterpolator())
+                    .setDuration(1000)
+                    .start()
+            }
+        }
     }
     fun pauseCountdown() {
         if (isTimerRunning) {

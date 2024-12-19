@@ -56,10 +56,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     companion object {
         lateinit var eventFragment: EventFragment
         var focusedIndex = 0
+        var isDark=false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+         isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
         eventFragment = this
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
@@ -80,7 +82,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             // }
         }
 
-
+        resetColor()
         focusable()
         clicable()
         rvInit()
@@ -104,6 +106,16 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 }
             })
     }
+
+    fun resetColor()= with(binding) {
+
+        if (isDark) {
+            textView2.isEnabled=true
+        } else {
+            textView2.isEnabled=false
+        }
+    }
+
 
     var selectedItem = 0
     private fun rvInit() = with(binding) {

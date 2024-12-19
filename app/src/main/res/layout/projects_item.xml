@@ -37,8 +37,6 @@
                 android:focusableInTouchMode="true"
                 android:orientation="vertical"
                 tools:background="@drawable/selected_item">
-
-
                 <ImageView
                     android:id="@+id/ivThumb"
                     android:layout_width="match_parent"
@@ -54,6 +52,7 @@
                     android:background="#56616161"
                     android:layout_marginBottom="@dimen/_1sdp"
                     app:layout_constraintBottom_toTopOf="@+id/clBottom" />
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/clBottom"
                     android:layout_width="match_parent"
@@ -80,12 +79,12 @@
                         style="@style/filson_19_whiteTV"
                         android:layout_width="match_parent"
                         android:layout_marginBottom="@dimen/_3sdp"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
                         android:paddingHorizontal="@dimen/_5sdp"
-                        android:singleLine="true"
                         android:paddingTop="@dimen/_4sdp"
                         android:paddingBottom="@dimen/_2sdp"
-                        android:gravity="center_vertical"
+                        android:singleLine="true"
                         android:text="Mehendi ceremony"
                         app:layout_constraintBottom_toTopOf="@+id/view"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -101,12 +100,12 @@
 
                     <TextView
                         android:id="@+id/tvSubtitle"
-                        style="@style/filson_regular_12_whiteTV"
+                        style="@style/filson_19_whiteTV"
                         android:layout_width="0dp"
                         android:fontFamily="@font/filsonpro_regular"
                         android:maxLines="1"
-                        android:paddingVertical="@dimen/_2sdp"
                         android:paddingStart="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_5sdp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -117,8 +116,7 @@
                     <TextView
                         android:id="@+id/tvProjectCount"
                         style="@style/filson_regular_12_whiteTV"
-                        android:drawableStart="@drawable/ic_project_video"
-                        android:drawablePadding="@dimen/_2sdp"
+                        android:drawableStart="@drawable/ic_projects_countttt"
                         android:fontFamily="@font/filsonpro_regular"
                         android:maxLines="2"
                         android:paddingHorizontal="@dimen/_5sdp"
@@ -132,23 +130,22 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
-
     <TextView
         android:id="@+id/tvResetPin"
         style="@style/filson_19_whiteTV"
         android:layout_marginTop="@dimen/_5sdp"
-        android:drawableStart="@drawable/ic_reset_pin_svg"
+        android:drawableLeft="@drawable/ic_reset_pin_svg"
+        app:drawableTint="@color/text_theme_color"
         android:drawablePadding="@dimen/_2sdp"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:fontFamily="@font/filsonpro_bold"
-        android:paddingHorizontal="@dimen/_10sdp"
-        android:paddingVertical="@dimen/_3sdp"
-        android:text="Reset PIN"
+        android:paddingHorizontal="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_2sdp"
+        android:text="@string/reset_pin"
         android:background="@drawable/ic_reset_pin_background"
-        android:textColor="@color/white"
+        android:textColor="@color/text_theme_color"
         android:gravity="center"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,8 +1,11 @@
 package com.streamefy.component.ui.projects
 
 import android.app.Activity
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,26 +15,21 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.progressindicator.LinearProgressIndicator
-import com.squareup.picasso.Picasso
 import com.streamefy.R
 import com.streamefy.component.base.StreamEnum
-import com.streamefy.component.ui.home.HomeFragment
-import com.streamefy.component.ui.home.model.EventsItem
 import com.streamefy.component.ui.projects.EventFragment.Companion.eventFragment
 import com.streamefy.component.ui.projects.EventFragment.Companion.focusedIndex
+import com.streamefy.component.ui.projects.EventFragment.Companion.isDark
 import com.streamefy.component.ui.projects.model.ResponseItem
-import com.streamefy.component.ui.video.VideoEnum
 import com.streamefy.utils.gone
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
-import com.streamefy.utils.remoteKey
 import com.streamefy.utils.visible
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 class ProjectsAdapter(
     private val context: Activity,
@@ -48,6 +46,7 @@ class ProjectsAdapter(
 //            itemView.isFocusable = true
 //            itemView.isClickable = true
             Log.e("membercheck", "newlist ${data.isLast}")
+            Log.e("DrawableCheck", "build version ${Build.VERSION.SDK_INT}")
             if (data.isLast){
                 thumb.setBackgroundColor(ContextCompat.getColor(context,R.color.black))
                 thumb.loadAny(R.drawable.ic_add_event)
@@ -61,7 +60,8 @@ class ProjectsAdapter(
                 clEvent.setOnClickListener {
                     callBack.invoke(position, StreamEnum.LAST_EVENT)
                 }
-            }else {
+            }
+            else {
                 tvAddEvent.gone()
                 tvTitle.visible()
                 tvProjectCount.visible()
@@ -96,24 +96,73 @@ class ProjectsAdapter(
                             eventFragment.binding.rvEvent.scrollToPosition(
                                 absoluteAdapterPosition
                             )
-//                            animate().scaleX(1.03f).scaleY(1f).setDuration(200)
-//                                .withEndAction {
-//                                    itemView.post {
-//                                        itemView.requestLayout()
-//                                        eventFragment.binding.rvEvent.scrollToPosition(
-//                                            absoluteAdapterPosition
-//                                        )
-//                                    }
-//                                }.start()
+                                setTextColor(ContextCompat.getColor(context, R.color.white))
+                                val colorStateList = ColorStateList.valueOf(Color.WHITE)
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    setCompoundDrawableTintList(colorStateList);
+                                }else{
+                                    val drawables: Array<Drawable> = getCompoundDrawables()
+                                    if (drawables[0] != null) {
+
+                                        DrawableCompat.setTint(drawables[0], Color.WHITE)
+                                        setCompoundDrawablesWithIntrinsicBounds(
+                                            drawables[0],
+                                            null,
+                                            null,
+                                            null
+                                        );
+                                    }
+                                }
+
                         }
                         else {
-                             setBackgroundColor(
-                                ContextCompat.getColor(
-                                    context,
-                                    com.otpview.R.color.transparent
-                                )
-                            )
-//                            animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                            setBackgroundResource(R.drawable.ic_reset_pin_background)
+
+                            if (isDark){
+
+                                     setTextColor(ContextCompat.getColor(context, R.color.white))
+                                    val colorStateList = ColorStateList.valueOf(Color.WHITE)
+                                Log.e("DrawableCheck", "build version ${Build.VERSION.SDK_INT}")
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                       setCompoundDrawableTintList(colorStateList)
+                                    }else{
+                                        val drawables: Array<Drawable> = getCompoundDrawables()
+                                        if (drawables[0] != null) {
+                                            val drawableLeft = DrawableCompat.wrap(drawables[0])
+                                            drawableLeft.setTint(Color.WHITE)
+
+                                            setCompoundDrawablesWithIntrinsicBounds(
+                                                drawableLeft,
+                                                null,
+                                                null,
+                                                null
+                                            );
+                                        } else{
+                                            Log.e("DrawableCheck", "Drawable Left: ${drawables}")
+                                        }
+                                    }
+                                }
+                            else{
+                                    setTextColor(ContextCompat.getColor(context, R.color.black))
+                                    val colorStateList = ColorStateList.valueOf(Color.BLACK)
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                      setCompoundDrawableTintList(colorStateList);  // Apply the tint color to all compound drawables
+                                    }else{
+                                        val drawables: Array<Drawable> = getCompoundDrawables()
+                                        if (drawables[0] != null) {
+//                                            DrawableCompat.setTint(drawables[0], Color.BLACK)
+                                            val drawableLeft = DrawableCompat.wrap(drawables[0])
+                                            drawableLeft.setTint(Color.BLACK)
+
+                                            setCompoundDrawablesWithIntrinsicBounds(
+                                                drawableLeft,
+                                                null,
+                                                null,
+                                                null
+                                            );
+                                        }
+                                    }
+                                }
                         }
 
 
@@ -132,11 +181,62 @@ class ProjectsAdapter(
 //                        }
 
                 }}
-            }else{
+
+                if (isDark){
+                    tvResetPin.also {
+                        it. setTextColor(ContextCompat.getColor(context, R.color.white))
+                        val colorStateList = ColorStateList.valueOf(Color.WHITE)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            it.setCompoundDrawableTintList(colorStateList);  // Apply the tint color to all compound drawables
+                        }else{
+                            val drawables: Array<Drawable> = it.getCompoundDrawables()
+                            if (drawables[0] != null) {
+                                val drawableLeft = DrawableCompat.wrap(drawables[0])
+//                                DrawableCompat.setTint(drawableLeft, Color.WHITE)
+                                drawableLeft.setTint(Color.WHITE)
+                                it.setCompoundDrawablesWithIntrinsicBounds(
+                                    drawableLeft,
+                                    null,
+                                    null,
+                                    null
+                                );
+                            }
+                            else{
+                                Log.e("DrawableCheck", "Drawable Left: ${drawables}")
+                            }
+                        }
+                    }
+                }
+                else{
+                    tvResetPin.also {
+                        it. setTextColor(ContextCompat.getColor(context, R.color.black))
+                        val colorStateList = ColorStateList.valueOf(Color.BLACK)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            it.setCompoundDrawableTintList(colorStateList);  // Apply the tint color to all compound drawables
+                        }else{
+                            val drawables: Array<Drawable> = it.getCompoundDrawables()
+                            if (drawables[0] != null) {
+                                val drawableLeft = DrawableCompat.wrap(drawables[0])
+                                drawableLeft.setTint(Color.BLACK)
+                               // DrawableCompat.setTint(drawableLeft, Color.BLACK)
+                                it.setCompoundDrawablesWithIntrinsicBounds(
+                                    drawableLeft,
+                                    null,
+                                    null,
+                                    null
+                                );
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            else{
                 tvResetPin.gone()
             }
 
-//            tvResetPin. setOnFocusChangeListener { _, hasFocus ->
+//            tvResetPin.setOnFocusChangeListener { _, hasFocus ->
 //                if (hasFocus) {
 //                    tvResetPin. setBackgroundResource(R.drawable.ic_button_selector)
 //                    eventFragment.binding.rvEvent.scrollToPosition(

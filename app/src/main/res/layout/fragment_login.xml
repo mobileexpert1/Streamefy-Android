@@ -7,9 +7,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/loginParent"
-        android:visibility="invisible"
         >
-
+        <ImageView
+            android:id="@+id/ivbackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+            app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            />
         <ImageView
             android:id="@+id/ivApplogo"
             android:layout_width="@dimen/_230sdp"
@@ -21,14 +29,13 @@
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_logo_ori" />
-
+<!--        android:backgroundTint="@color/layout_color_theme"-->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="@dimen/_180sdp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/bg_round_corners"
-            android:backgroundTint="@color/layout_color_theme"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:paddingHorizontal="@dimen/_13sdp"
@@ -178,6 +185,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_round_corners"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_5sdp"
             app:layout_constraintBottom_toBottomOf="parent"

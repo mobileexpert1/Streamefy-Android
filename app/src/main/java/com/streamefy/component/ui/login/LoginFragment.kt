@@ -49,6 +49,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     var realnumer = ""
     var admin_email = ""
     var admin_password = ""
+    var isDark=false
+    var logo=""
+    var background=""
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -56,12 +60,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
+        isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
+        logo=SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        background= SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         admin_email = BuildConfig.Admin_email
         admin_password = BuildConfig.Password
+        resetColor()
 
-
-        viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
-        observe()
+//        viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
+//        observe()
 
 //        val userApiUrl = BuildConfig.USER_API_URL
 
@@ -84,7 +91,20 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
     }
+    fun resetColor()= with(binding) {
+        if (isDark) {
+            constraintLayout.isEnabled=true
+        } else {
+            constraintLayout.isEnabled=false
+        }
 
+        if (logo.isNotEmpty()) {
+            ivApplogo.loadUrl(logo)
+        }
+        ivbackground.loadUrl(background)
+//        loginParent.imageLoadonLayout(background)
+
+    }
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
 
@@ -431,86 +451,86 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     }
 
     val nullObject: String? = null
-    fun observe() {
-        viewmodel.loginLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is MyResource.isLoading -> {
-                    ///loading
-                    progressDialog.show()
-                }
-
-                is MyResource.isSuccess -> {
-                    try {
-
-                        var data = it.data?.response
-
-//                        var formated_Number=binding.ccCode.formattedFullNumber.toString()
-//                       var updated_number=replaceSpaceFromLastIfMoreThanTwo(formated_Number)
-                        Log.e("sncskn", "skncsknv $data")
-                        SharedPref.setString(PrefConstent.TOKEN, "")
-                        data?.run {
-                            SharedPref.setString(PrefConstent.TOKEN, accessToken)
-                            SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
-                            SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
-                            if (data.backgroundTheme=="LIGHT"){
-                                SharedPref.setBoolean(PrefConstent.IS_DARK, false)
-                                binding.constraintLayout.isEnabled=false
-                            }else{
-                                SharedPref.setBoolean(PrefConstent.IS_DARK, true)
-                                binding.constraintLayout.isEnabled=true
-                            }
-                            data.backgroundImage.run {
-                                SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
-                                binding.loginParent.imageLoadonLayout(this)
-                            }
-
-                            if (data.logo.isNotEmpty()) {
-                                binding.ivApplogo.loadUrl(data.logo)
-                            }
-                            //  MyApp().reinitializeKoin()
+//    fun observe() {
+//        viewmodel.loginLiveData.observe(viewLifecycleOwner) {
+//            when (it) {
+//                is MyResource.isLoading -> {
+//                    ///loading
+//                    progressDialog.show()
+//                }
 //
-//                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
-//                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())
-//                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
-//                            SharedPref.setString(PrefConstent.COUNTRY_CODE,binding.ccCode.selectedCountryCode)
-
-//                        data.profileImage?.run {
-//                            SharedPref.setString(
-//                                PrefConstent.AUTH_BACKGROUND,
-//                                data.profileImage
-//                            )
+//                is MyResource.isSuccess -> {
+//                    try {
+//
+//                        var data = it.data?.response
+//
+////                        var formated_Number=binding.ccCode.formattedFullNumber.toString()
+////                       var updated_number=replaceSpaceFromLastIfMoreThanTwo(formated_Number)
+//                        Log.e("sncskn", "skncsknv $data")
+//                        SharedPref.setString(PrefConstent.TOKEN, "")
+//                        data?.run {
+//                            SharedPref.setString(PrefConstent.TOKEN, accessToken)
+//                            SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
+//                            SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
+//                            if (data.backgroundTheme=="LIGHT"){
+//                                SharedPref.setBoolean(PrefConstent.IS_DARK, false)
+//                                binding.constraintLayout.isEnabled=false
+//                            }else{
+//                                SharedPref.setBoolean(PrefConstent.IS_DARK, true)
+//                                binding.constraintLayout.isEnabled=true
+//                            }
+//                            data.backgroundImage.run {
+//                                SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
+//                                binding.loginParent.imageLoadonLayout(this)
+//                            }
+//
+//                            if (data.logo.isNotEmpty()) {
+//                                binding.ivApplogo.loadUrl(data.logo)
+//                            }
+//                            //  MyApp().reinitializeKoin()
+////
+////                            SharedPref.setString(PrefConstent.PHONE_NUMBER, updated_number.toString())
+////                            SharedPref.setString(PrefConstent.REALNUMBER, binding.etPhoneNumber.text.toString())
+////                            SharedPref.setString(PrefConstent.FULL_NAME, "appdev")
+////                            SharedPref.setString(PrefConstent.COUNTRY_CODE,binding.ccCode.selectedCountryCode)
+//
+////                        data.profileImage?.run {
+////                            SharedPref.setString(
+////                                PrefConstent.AUTH_BACKGROUND,
+////                                data.profileImage
+////                            )
+////                        }
+//
+//
+////                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
 //                        }
-
-
-//                        SharedPref.setBoolean(PrefConstent.ISLOGIN,true)
-                        }
-//                        var bundle = Bundle()
-//                        bundle.putString(
-//                            PrefConstent.PHONE_NUMBER,
-//                            updated_number.toString()
-//                        )
-//                        if (isAdded) {
-//                            findNavController().navigate(R.id.otpFragment, bundle)
-//                        }
-                        //  else {
-                        binding.loginParent.visible()
-                        progressDialog.dismiss()
-                        // }
-                    } catch (e: Exception) {
-                        FirebaseCrashlytics.getInstance().recordException(e)
-                        throw RuntimeException("login getotp")
-                    }
-
-                }
-
-                is MyResource.isError -> {
-                    progressDialog.dismiss()
-                }
-
-                else -> {}
-            }
-        }
-    }
+////                        var bundle = Bundle()
+////                        bundle.putString(
+////                            PrefConstent.PHONE_NUMBER,
+////                            updated_number.toString()
+////                        )
+////                        if (isAdded) {
+////                            findNavController().navigate(R.id.otpFragment, bundle)
+////                        }
+//                        //  else {
+//                        binding.loginParent.visible()
+//                        progressDialog.dismiss()
+//                        // }
+//                    } catch (e: Exception) {
+//                        FirebaseCrashlytics.getInstance().recordException(e)
+//                        throw RuntimeException("login getotp")
+//                    }
+//
+//                }
+//
+//                is MyResource.isError -> {
+//                    progressDialog.dismiss()
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//    }
 
     fun replaceSpaceFromLastIfMoreThanTwo(str: String): String {
         val spaceCount = str.count { it == ' ' }

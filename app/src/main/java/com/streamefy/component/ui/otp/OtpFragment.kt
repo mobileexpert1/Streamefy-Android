@@ -68,7 +68,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
          isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
         applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.otpParent.imageLoadonLayout(app_background)
+        binding.ivbackground.loadUrl(app_background)
+//        binding.otpParent.imageLoadonLayout(app_background)
 //        binding.ivApplogo.loadAny(applogo)
         val token = SharedPref.getString(PrefConstent.TOKEN).toString()
 

@@ -8,7 +8,15 @@
         android:layout_height="match_parent"
         android:id="@+id/eventParant"
        >
-
+        <ImageView
+            android:id="@+id/ivbackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
         <ImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_15sdp"
@@ -109,6 +117,7 @@
             android:background="@drawable/bg_round_corners"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_5sdp"
+            android:backgroundTint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

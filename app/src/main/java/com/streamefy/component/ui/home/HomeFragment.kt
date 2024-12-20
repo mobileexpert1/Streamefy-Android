@@ -1,5 +1,6 @@
 package com.streamefy.component.ui.home
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
@@ -876,7 +878,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             if (images.isNotEmpty()) {
                                                 if (images[0].hlsPlaylistUrl.isNotEmpty()) {
                                                     if (images[0].thumbnailSBucketId.isNotEmpty()) {
-                                                        binding.ivVideoThumb.loadUrl(images[0].thumbnailSBucketId)
+                                                       // binding.ivVideoThumb.loadUrl(images[0].thumbnailSBucketId)
                                                     }
                                                     play(images[0].hlsPlaylistUrl)
                                                     showRemainsTime(30000)
@@ -1343,8 +1345,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                       videoPlayingIndex++
                                   }
                                   if (images[videoPlayingIndex].thumbnailSBucketId.isNotEmpty()) {
-                                     withContext(Dispatchers.Main){ binding.ivVideoThumb.loadUrl(images[videoPlayingIndex].thumbnailSBucketId)
-                                         if (millisUntilFinished <= 2000L) {
+                                     withContext(Dispatchers.Main){
+                                        // binding.ivVideoThumb.loadUrl(images[videoPlayingIndex].thumbnailSBucketId)
+                                         if (millisUntilFinished <= 4000L) {
                                          thumbShow()
                                          }
 
@@ -1383,32 +1386,32 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             .scaleX(1f)
             .scaleY(1f)
             .setInterpolator(AccelerateDecelerateInterpolator())
-            .setDuration(1000)
+            .setDuration(4000)
             .withEndAction {
                 playerView.animate()
                     .alpha(1f)
                     .scaleX(1f)
                     .scaleY(1f)
                     .setInterpolator(DecelerateInterpolator())// Scale to original size
-                    .setDuration(2000)
+                    .setDuration(4000)
                     .start()
             }
             .start()
     }
-    fun thumbShow(){
-        binding.apply {
-            ivVideoThumb.run {
-                visible()
-                animate()
-                    .alpha(1f)
-                    .scaleX(1f)
-                    .scaleY(1f)
-                    .setInterpolator(DecelerateInterpolator())
-                    .setDuration(1000)
-                    .start()
-            }
+    fun thumbShow()= with(binding){
+                    ivVideoThumb.run {
+                        visible()
+                        animate()
+                            .alpha(1f)
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setInterpolator(DecelerateInterpolator())
+                            .setDuration(4000)
+                            .start()
+                    }
+
         }
-    }
+
     fun pauseCountdown() {
         if (isTimerRunning) {
            // if (::countDownTimer.isInitialized) {

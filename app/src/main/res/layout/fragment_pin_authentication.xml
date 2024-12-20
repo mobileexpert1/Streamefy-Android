@@ -8,7 +8,15 @@
         android:layout_height="match_parent"
         android:id="@+id/pinParant"
         >
-
+        <ImageView
+            android:id="@+id/ivbackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitXY"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
         <ImageView
             android:id="@+id/ivBack"
             android:layout_width="@dimen/_15sdp"
@@ -79,7 +87,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
             android:background="@drawable/bg_round_corners"
-            android:backgroundTint="@color/layout_color_theme"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_10sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -318,6 +325,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_round_corners"
+            android:backgroundTint="@color/white"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_5sdp"
             app:layout_constraintBottom_toBottomOf="parent"

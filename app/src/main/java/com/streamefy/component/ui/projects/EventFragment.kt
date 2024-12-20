@@ -30,6 +30,7 @@ import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
 import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.invisible
+import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
@@ -67,7 +68,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
 //        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         val app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.eventParant.imageLoadonLayout(app_background)
+        binding.ivbackground.loadUrl(app_background)
+       // binding.eventParant.imageLoadonLayout(app_background)
 
         projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {

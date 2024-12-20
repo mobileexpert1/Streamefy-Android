@@ -68,7 +68,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
         // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
-        binding.pinParant.imageLoadonLayout(app_background)
+        binding.ivbackground.loadUrl(app_background)
+//        binding.pinParant.imageLoadonLayout(app_background)
         // binding.ivApplogo.loadAny(applogo)
         Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
 

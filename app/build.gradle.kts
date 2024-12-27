@@ -132,7 +132,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.exoplayer)
     implementation(libs.exoplayerCore)
-  //  implementation(libs.videothumbnail)
+    implementation(libs.videothumbnail)
     implementation(libs.autoimageslider)
     implementation(libs.drawerlayout)
     implementation(libs.retrofit)

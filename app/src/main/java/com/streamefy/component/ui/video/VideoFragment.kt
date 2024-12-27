@@ -3,6 +3,7 @@ package com.streamefy.component.ui.video
 import VolumeManager
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.SurfaceTexture
 import android.media.MediaMetadataRetriever
@@ -30,6 +31,11 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFprobeKit
+import com.arthenica.ffmpegkit.FFprobeSession
+import com.arthenica.ffmpegkit.FFprobeSessionCompleteCallback
+import com.arthenica.ffmpegkit.ReturnCode
 
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -60,8 +66,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.IntBuffer
@@ -699,7 +709,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             lifecycleScope.launch(Dispatchers.IO) {
                 delay(2000)
 //                extractImageAtTimestamp(current)
-              //  extractFrameAtTimestamp(current)
+                extractFrameAtTimestamp()
+
             }
         }
         ivSkipBack.setOnClickListener {
@@ -1175,7 +1186,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     private var surfaceTexture: SurfaceTexture? = null
     private var surface: Surface? = null
-    private fun extractFrameAtTimestamp() {
+    private fun extractFrameAtTimestampddd() {
         // Seek to the desired timestamp and pause the player
         playerHandler.apply {
 
@@ -1277,39 +1288,64 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
 
-    private fun extractFrameAtTimestamp(timestamp: Long) {
+    private fun extractFrameAtTimestampddddd(timestamp: Long) {
         // FFmpeg command to extract a frame at the given timestamp (in seconds)
-//        val command = arrayOf(
-//            "-i", videoUrl,                // Input video URL (HLS stream URL)
-//            "-ss", timestamp.toString(),   // Seek to the timestamp
-//            "-vframes", "1",               // Capture 1 frame
-//            "-q:v", "2",                   // Set quality of the extracted image
-//            "pipe:1"                       // Output to stdout (pipe), so we can capture it in memory
-//        )
-//        val command = "-i $videoUrl -ss $timestamp -vframes 1 -f image2 -vcodec png pipe:1"
         val timestampInSeconds = timestamp / 1000.0
-//        val command = "-ss $timestampInSeconds -i $videoUrl -vframes 1 -f image2 -vcodec png pipe:1"
-        val command = "-i $videoUrl -ss 00:00:$timestampInSeconds -vframes 1 -f image2pipe -"
+//        val command = arrayOf(
+//            "-i", videoUrl,                // Input video URL
+//            "-ss", String.format("%.3f", timestampInSeconds), // Seek to the timestamp
+//            "-vframes", "1",               // Extract one frame
+//            "-q:v", "2",                   // Set the quality of the output image
+//            "pipe:1"                       // Output to stdout (pipe)
+//        )
+//        val command = "-ss ${timestampInSeconds.toInt()} -i $videoUrl -vframes 1 -f image2 -vcodec png pipe:1"
 
-        // Run FFmpegKit asynchronously
-//
-//        FFprobeKit.executeAsync(command,object : FFprobeSessionCompleteCallback{
-//            override fun apply(session: FFprobeSession?) {
-//                val state = session!!.state
-//                val returnCode = session.returnCode
-//                // CALLED WHEN SESSION IS EXECUTED
-//                // CALLED WHEN SESSION IS EXECUTED
-//                Log.d("FFmpeg", "FFmpeg process exited with state %s and rc %s.%s, $state  returnCode$returnCode,session ${session!!.failStackTrace}"
-//
-//                )
-//            }
-//
-//        })
+//        val command = arrayOf(
+//            "-i", videoUrl,                // Input video URL
+//            "-ss", "00:00:5.000",          // Seek to the timestamp
+//            "-vframes", "1",               // Extract one frame
+//            "-q:v", "2",                   // Set the quality of the output image
+//            "-f", "image2",                // Specify the output format
+//            "pipe:1"                       // Output to stdout (pipe)
+//        )
+        val command = arrayOf(
+            "-i", videoUrl,                // Input video URL
+            "-ss", "00:00:5.000",         // Seek to the timestamp
+            "-vframes", "1",               // Extract one frame
+            "-f", "image2",                // Specify the output format
+            "-pix_fmt", "rgba",            // Set pixel format to RGBA for PNG
+            "pipe:1"                       // Output to stdout (pipe)
+        )
+        val session = FFmpegKit.execute(command.joinToString(" "))
+
+        if (!ReturnCode.isSuccess(session.getReturnCode())) {
+            Log.d("FFmpeg", "Command failed. Please check output for the details.")
+            val logs = session.getLogs()
+            logs.forEach { log ->
+                Log.d("FFmpeg Log", log.getMessage())
+            }
+        } else {
+            // Capture the output image from stdout
+            val output = session.getOutput()
+            if (output != null) {
+                // Convert the output byte array to a Bitmap
+                val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(output.toByteArray()))
+                if (bitmap != null) {
+                    Log.d("FFmpeg", "Bitmap dimensions: ${bitmap.width} x ${bitmap.height} bitmap $bitmap")
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        binding.ivSeekThumb.setImageBitmap(bitmap)
+                        Log.e("FFmpeg", "Frame extraction successful.")
+                    }
+                } else {
+                    Log.e("FFmpeg", "Bitmap is null")
+                }
+            }
+        }
         // Run FFmpegKit to execute the command
 //        FFmpegKit.executeAsync(command) { session ->
 //            val returnCode = session.returnCode
 //            Log.e("FFmpeg", "output $session")
-//            if (returnCode.isSuccess) {
+//            if (ReturnCode.isSuccess(returnCode)) {
 //                val outputData = session.output
 //               // val bitmap = getBitmapFromByteArray(outputData)
 //
@@ -1327,7 +1363,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //                val errorMessage = session.failStackTrace
 //                Log.e("FFmpeg", "FFmpeg failed: $errorMessage")
 //            }
-       // }
+//        }
     }
     private fun getByteArrayFromOutput(output: String?): ByteArray? {
         return try {
@@ -1348,6 +1384,81 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             null
         }
     }
+var timestamp=5
+    private fun extractFrameAtTimestamp() {
+          // Set the timestamp where you want to extract the frame
+//        val outputFile = File(requireActivity().filesDir, "extracted_frame.png")  // Specify output file path
+
+//
+//        val command = arrayOf(
+//            "-y",
+//            "-i", videoUrl,
+//            "-ss", "00:00:$timestamp.000",  // Timestamp
+//            "-vframes", "1",        // Single frame extraction
+//            "-an",                  // Disable audio
+//            "-f", "image2pipe",     // Output format as image pipe
+//            "-pix_fmt", "rgba",               // Output as RGBA (PNG)
+//            "-vcodec", "png",      // Output as RGBA PNG
+//            outputFile.absolutePath // Save to file
+//        )
+       // var duration = playerHandler.getDuration() / 1000
+      //  lifecycleScope.launch(Dispatchers.IO) {
+
+            val fileArray = mutableListOf<File>()
+          //  for (timestamp in 0..duration step 10) {
+                val outputFile = File(requireActivity().cacheDir, "extracted_frame_${timestamp}.png")
+                val command = arrayOf(
+                    "-y",                             // Force overwrite of existing files
+                    "-ss",
+                    String.format("00:00:%02d.000", timestamp),  // Timestamp in HH:MM:SS format
+                    "-i",
+                    videoUrl,                   // Input video URL
+                    "-vframes",
+                    "1",                  // Extract a single frame
+                    "-an",                            // Disable audio
+                    "-f",
+                    "image2pipe",               // Output format: image pipe
+                    "-pix_fmt",
+                    "rgba",               // Use RGBA for PNG
+                    "-vcodec",
+                    "png",                 // Use PNG codec
+                    outputFile.absolutePath          // Write output directly to file
+                )
+        timestamp+=5
+                val session = FFmpegKit.execute(command.joinToString(" "))
+
+                if (!ReturnCode.isSuccess(session.returnCode)) {
+                    val logs = session.logs
+                    logs.forEach { log ->
+                        Log.d("FFmpeg Log", log.message)
+                    }
+                }
+                else {
+                    val output = session.output
+                    if (output != null && output.isNotEmpty()) {
+                        val bitmap = BitmapFactory.decodeFile(outputFile.absolutePath)
+                        Log.d(
+                            "FFmpeg",
+                            "Output size: ${output.length} bytes ${bitmap.width} height ${bitmap.height} bitmap $bitmap "
+                        )
+                        if (bitmap != null) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                binding.ivSeekThumb.setImageBitmap(bitmap)  // Set the Bitmap to the ImageView
+                                Log.d("FFmpeg", "Image displayed successfully.")
+                            }
+                        } else {
+                            Log.e("FFmpeg", "Failed to decode Bitmap from file.")
+                        }
+                    } else {
+                        Log.e("FFmpeg", "Output is null or empty")
+                    }
+             //   }
+           // }
+            Log.d("FFmpeg", "Total frames extracted: ${fileArray.size}")
+
+        }
+    }
+
     fun videoTranisition() = with(binding) {
         ivVideoThumb.animate()
             .alpha(0f)

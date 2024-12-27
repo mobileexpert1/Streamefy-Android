@@ -3,6 +3,8 @@ package com.streamefy.component.ui.video
 
 import TokenAuthDataSource
 import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -14,6 +16,7 @@ import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -25,7 +28,7 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.streamefy.component.ui.video.model.QualityModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder
@@ -66,7 +69,7 @@ class PlayerHandler(
             val trackSelector = DefaultTrackSelector(context)
             trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
                 .setForceLowestBitrate(false)
-                .setMaxVideoSize(854, 480)
+                //.setMaxVideoSize(854, 480)
                 .build()
 
             val loadControl = DefaultLoadControl.Builder()
@@ -117,8 +120,9 @@ class PlayerHandler(
     }
 
     fun getPLayer() = playerView.player
+    var  videoUrl=""
     fun setMediaUri(uri: String, lastDuration: Long) {
-
+        videoUrl=uri
 //        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
 //            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
 //        }
@@ -177,20 +181,13 @@ class PlayerHandler(
                         val dataSourceFactory = DefaultHttpDataSource.Factory()
                         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
                             .createMediaSource(MediaItem.fromUri(uri))
-                        // Prepare player with media source
+
+//                        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+//                            .createMediaSource(MediaItem.fromUri(uri))
+
                         withContext(Dispatchers.Main) {
-//                            player?.stop()
-//                            player?.clearMediaItems()
-//
-//
-//                            player?.setMediaSource(mediaSource)
-//                            player?.prepare()
-//                            player?.seekTo(lastDuration)
-//                            player?.play()
-
-
                             player?.apply {
-                                // Clear media items and stop playback before setting a new media source
+
                                 stop()
                                 clearMediaItems()
 
@@ -199,7 +196,6 @@ class PlayerHandler(
                                 seekTo(lastDuration)
                                 play()
                             }
-
                         }
                     }
 
@@ -229,6 +225,42 @@ class PlayerHandler(
         //  playTokenise()
     }
 
+    var retriever:MediaMetadataRetriever?=null
+      fun initVideoFrame(videoUrl: String){
+          GlobalScope.launch(Dispatchers.IO){
+              try {
+                  if (player != null && retriever == null) {
+                      retriever = MediaMetadataRetriever()
+                      retriever?.setDataSource(videoUrl, HashMap())
+
+                  }
+              } catch (e: Exception) {
+                  e.printStackTrace()
+              }
+
+        }}
+
+     fun getFrame(callBack:(Bitmap?)->Unit){
+                 if ( player != null) {
+
+                     val currentPositionInMicroseconds = player?.currentPosition?.times(1000) ?: 0L
+                     GlobalScope.launch(Dispatchers.IO) {
+                         val retriever = MediaMetadataRetriever()
+                         retriever.setDataSource(videoUrl, HashMap())
+                         val frame = retriever.getFrameAtTime(currentPositionInMicroseconds)
+                         callBack.invoke(frame)
+                         retriever.release()
+
+//                     if (player?.bufferedPosition!! >player?.currentPosition!!) {
+//                         val currentPositionInMicroseconds = player?.currentPosition!! * 1000
+//                         val bitmap = retriever?.getFrameAtTime(currentPositionInMicroseconds)
+//                         callBack.invoke(bitmap)
+//                     }else{
+//                         Log.e("sjbcjsbc","buffers is lower ${player?.bufferedPosition!!}")
+//                     }
+                     }
+                 }
+    }
 
     fun seekWithInitialise(uri: String, currentDuration: Long) {
 
@@ -311,11 +343,12 @@ class PlayerHandler(
         val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
         val estimatedBandwidth = bandwidthMeter.getBitrateEstimate()
         val resolution = when {
-            estimatedBandwidth >= 5000000 -> {
+          //  estimatedBandwidth >= 5000000 -> {
+            estimatedBandwidth >= 3000000 -> {
                 // High bandwidth, select 1080p (landscape)
                 Pair(1920, 1080)
             }
-            estimatedBandwidth >= 3000000 -> {
+            estimatedBandwidth >= 2000000 -> {
                 // Medium bandwidth, select 720p
                 Pair(1280, 720)
             }

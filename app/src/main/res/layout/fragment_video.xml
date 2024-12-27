@@ -38,7 +38,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/llTools"
             />
-
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/ivSeekThumb"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginStart="@dimen/_130sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:background="@color/black"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@+id/llTools"
+            app:layout_constraintStart_toStartOf="parent" />
         <ImageView
             android:id="@+id/ivVideoThumb"
             android:layout_width="match_parent"

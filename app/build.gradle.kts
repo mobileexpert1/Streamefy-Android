@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.streamefy"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 34
 //        cupcake google play store
 //        versionCode = 9
@@ -131,6 +131,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.exoplayer)
+    implementation(libs.exoplayerCore)
+  //  implementation(libs.videothumbnail)
     implementation(libs.autoimageslider)
     implementation(libs.drawerlayout)
     implementation(libs.retrofit)

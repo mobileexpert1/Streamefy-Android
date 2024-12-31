@@ -26,17 +26,14 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
+import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.arthenica.ffmpegkit.FFmpegKit
-import com.arthenica.ffmpegkit.FFprobeKit
-import com.arthenica.ffmpegkit.FFprobeSession
-import com.arthenica.ffmpegkit.FFprobeSessionCompleteCallback
 import com.arthenica.ffmpegkit.ReturnCode
-
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
@@ -61,17 +58,14 @@ import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
 import com.streamefy.utils.visible
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.IntBuffer
@@ -109,6 +103,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var phone = ""
     var videoCount = 0
     var isVolume = false
+    var bufferCount = 0
 
     companion object {
         lateinit var videoFragment: VideoFragment
@@ -120,6 +115,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         super.onAttach(context)
         mediaHandler = MediaHandler(context)
     }
+
     private lateinit var frameCaptureHandler: FrameCaptureHandler
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -210,7 +206,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
-                        playerHandler.seekBackward(30)
+                        playerHandler.seekBackward(30){}
                         return@OnKeyListener true
                     }
 
@@ -309,8 +305,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             false // Don't consume other events
         })
         ivSkipBack.remoteKey {
-            visibilityCount = 0
             mediaKey(it)
+            visibilityCount = 0
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivRefresh.requestFocus()
@@ -364,8 +360,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
         ivSkipForward.remoteKey {
-            visibilityCount = 0
             mediaKey(it)
+            visibilityCount = 0
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivPlay.requestFocus()
@@ -432,7 +428,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
-
 
         ivBack.remoteKey {
             visibilityCount = 0
@@ -511,6 +506,24 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
+
+        videoSeekListener()
+    }
+
+    fun videoSeekListener() = with(binding) {
+        sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (isFraming) {
+                   }
+                    val xPosition: Float = seekBar.getWidth() * progress / 100.0f
+                    ivSeekThumb.setTranslationX(xPosition - ivSeekThumb.getWidth() / 2)
+                Log.e("djbvjdbv", "dncdknv $progress ")
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
     }
 
     fun mediaKey(streamEnum: StreamEnum) = with(binding) {
@@ -533,7 +546,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
 
             StreamEnum.KEYCODE_MEDIA_REWIND -> {
-                playerHandler.seekBackward(10)
+                playerHandler.seekBackward(10){}
                 ivMedia.setImageResource(R.drawable.ic_remote_backward)
                 ivMedia.visible()
                 ivMedia.alpha = 1f
@@ -573,13 +586,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     if (data != null) {
 
                         dismissProgress()
-                          videoUrl = data.hlsUrl
+                        videoUrl = data.hlsUrl
                         oldEventId = eventId
                         eventId = data.eventId
                         videoCount++
                         mediaId = data.mediaId
                         oldVideoDuration = playbackduration
                         ifFirst = false
+                        extractFramesToCache()
                         Log.e("skcmsknc", "play back duration $playbackduration")
                         playerHandler.setMediaUri(videoUrl, playbackduration)
                         if (data.nextVideo != null) {
@@ -693,6 +707,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //                }
 //            }
         }
+        var fCount = 1
         ivSkipForward.setOnClickListener {
             toShowBackButton()
             var current = playerHandler.player?.currentPosition
@@ -704,18 +719,33 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             } else {
                 playerHandler.seekTo(duration)
             }
-//            extractFrameFromVideo()
-          //  extractFrameAtTimestamp()
-            lifecycleScope.launch(Dispatchers.IO) {
-                delay(2000)
-//                extractImageAtTimestamp(current)
-                extractFrameAtTimestamp()
 
+//            extractFrameFromVideo()
+//                extractImageAtTimestamp(current)
+            lifecycleScope.launch(Dispatchers.IO) {
+
+                seekThumb(count)
+
+//                fCount +=1
+//                var image=getPngFramesFromCache()
+//                var thumb="https://vz-52ddfc78-e76.b-cdn.net/bcdn_token=AEykjXGwnQkbAp6xL_NQnA&expires=1735568321&token_path=%2F8f67a5e1-b743-4d3e-9d66-9234bb718ff0%2F/8f67a5e1-b743-4d3e-9d66-9234bb718ff0/480p/video$fCount.ts"
+//                withContext(Dispatchers.Main){
+//                    if (image!=null && image.isNotEmpty() && image.size>fCount) {
+//                        var file=image[fCount]
+//                        Log.e("outputfile","${file.second} output ${image}")
+//                        binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(file.second.absolutePath))
+//                        binding.ivBack.loadUrl(thumb)
+//                    }
+//                }
             }
+
+
         }
         ivSkipBack.setOnClickListener {
             toShowBackButton()
-            playerHandler.seekBackward(10)
+            playerHandler.seekBackward(10){
+                seekThumb(it)
+            }
         }
         ivRefresh.setOnClickListener {
             //  playerHandler.toggleFullScreen()
@@ -757,11 +787,41 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    fun seekThumb(seekDuration: Long) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            if (isFraming) {
+                var image = getPngFramesFromCache()
+                if (image != null && image.isNotEmpty()) {
+                    var data = image.filter { seekDuration >= it.first }
+                        .maxByOrNull { it.first }
+                    Log.e("outputfile", "custome list $seekDuration from list ${data} output ${image}")
+                    withContext(Dispatchers.Main) {
+                        binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data?.second?.absolutePath))
+                        binding.ivSeekThumb.visible()
+                    }
+                }
+            } else {
+                if ( frameList.isNotEmpty()) {
+                    var data = frameList.filter { seekDuration >= it.first }
+                        .maxByOrNull { it.first }
+                    Log.e("outputfile", "frame list  $seekDuration from list ${data} output ${frameList}")
+                    withContext(Dispatchers.Main) {
+                        binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data?.second?.absolutePath))
+                        binding.ivSeekThumb.visible()
+
+                    }
+                }
+            }
+
+        }
+    }
+
     fun playPauseHandle() = with(binding) {
 //        val params = ivPlay.layoutParams as LinearLayout.LayoutParams
 //        params.width = resources.getDimensionPixelSize(R.dimen._16sdp)
 //        params.height = resources.getDimensionPixelSize(R.dimen._16sdp)
 //        ivPlay.layoutParams = params
+        visibilityCount=0
         if (playerHandler.player != null) {
             if (playerHandler.isPlaying()!!) {
                 playerHandler.pause()
@@ -788,7 +848,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun playNextVideo() = with(binding) {
-
+        bufferCount = 0
         if (isNewVideoAvailable) {
             if (!HomeFragment.isTrailer) {
                 oldVideoDuration = playerHandler.getCurrentPosition()
@@ -865,47 +925,31 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         showProgress()
 //        val textureId = IntArray(1)
 //        GLES20.glGenTextures(1, textureId, 0)
-      //  surfaceTexture = SurfaceTexture(textureId[0])
-      //  surface = Surface(surfaceTexture)
-      //  surfaceView = SurfaceView(requireContext())
-     //   playerHandler.player?.setVideoSurface(surface)
-
+        //  surfaceTexture = SurfaceTexture(textureId[0])
+        //  surface = Surface(surfaceTexture)
+        //  surfaceView = SurfaceView(requireContext())
+        //   playerHandler.player?.setVideoSurface(surface)
 
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_BUFFERING) {
                     showProgress()
+                    bufferCount++
                 } else if (playbackState == Player.STATE_READY) {
                     dismissProgress()
-
-//                    if (isEnded) {
-//                        lifecycleScope.launch(Dispatchers.IO) {
-//                            if (bunneyIdList.none { it.bunneyId == nextVideoId }) {
-//                                bunneyIdList.add(
-//                                    BunneyIds(
-//                                        mediaId = mediaId,
-//                                        eventId = eventId,
-//                                        bunneyId = oldBunnyId,
-//                                        thumb = thumbnailS3bucketId
-//                                    )
-//                                )
-//                            }
-//                           // if (!playFirst) {
-////                            withContext(Dispatchers.Main) { newVideo() }
-//                           // }
-//                        }
-//                    }
+                    //
+                    if (bufferCount < 2) {
+//                        extractFrameAtTimestamp()
+//                        extractFramesToCache()
+                    }
 
                     homeFragment.isLastPlay = true
-                    Log.e(
-                        "idcheckstr",
-                        "isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId"
-                    )
+                    Log.e("idcheckstr", "isEnded $isEnded  isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId")
+
                     videoTranisition()
                     binding.sbVideoSeek.max = 100
                     if (getLengthOnce) {
-                        tvDuration.setText(playerHandler.getTotalLength())
-
+                        tvDuration.text = playerHandler.getTotalLength()
                         getLengthOnce = false
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
                     }
@@ -984,13 +1028,17 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //        surfaceView = binding.playerView.videoSurfaceView as SurfaceView
         //getFrameFromPlayerView()
     }
+
     var surfaceWidth = 0
-    var surfaceHeight =0
+    var surfaceHeight = 0
     private fun getFrameFromPlayerView() {
 
         val playerView = binding.playerView
         val surfaceView = playerView.videoSurfaceView as SurfaceView
-        Log.e("sknvks", "initialize the ${surfaceView::class.java.simpleName} and video holder ${surfaceView.holder}")
+        Log.e(
+            "sknvks",
+            "initialize the ${surfaceView::class.java.simpleName} and video holder ${surfaceView.holder}"
+        )
 
 
         val surfaceHolder = surfaceView.holder
@@ -1013,8 +1061,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     "sknvks",
                     "Surface Changed: width=$width, height=$height  format $format holder $holder"
                 )
-                surfaceWidth=width
-                surfaceHeight=height
+                surfaceWidth = width
+                surfaceHeight = height
                 lifecycleScope.launch(Dispatchers.IO) {
                     delay(2000)
                 }
@@ -1186,18 +1234,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     private var surfaceTexture: SurfaceTexture? = null
     private var surface: Surface? = null
-    private fun extractFrameAtTimestampddd() {
-        // Seek to the desired timestamp and pause the player
-        playerHandler.apply {
 
-            val bitmap = captureFrameFromSurface(surfaceTexture!!)
-            Log.e("sknvks", " bitmap $bitmap")
-            if (bitmap != null) {
-                binding.ivSeekThumb.setImageBitmap(bitmap)
-            }
-
-        }
-    }
 
     private fun captureFrameFromSurface(surfaceTexture: SurfaceTexture): Bitmap? {
         // Initialize OpenGL context and framebuffer
@@ -1216,11 +1253,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         // Set texture parameters
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_S,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
+        GLES20.glTexParameteri(
+            GLES20.GL_TEXTURE_2D,
+            GLES20.GL_TEXTURE_WRAP_T,
+            GLES20.GL_CLAMP_TO_EDGE
+        )
 
         // Attach the texture to the framebuffer
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureId[0], 0)
+        GLES20.glFramebufferTexture2D(
+            GLES20.GL_FRAMEBUFFER,
+            GLES20.GL_COLOR_ATTACHMENT0,
+            GLES20.GL_TEXTURE_2D,
+            textureId[0],
+            0
+        )
 
         // Clear the framebuffer
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
@@ -1254,10 +1305,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     private fun extractImageAtTimestamp(timestamp: Long) {
         if (videoUrl != null) {
             Log.e("sknvks", "Video URI is null $videoUrl")
-        //    val retriever = MediaMetadataRetriever()
+            //    val retriever = MediaMetadataRetriever()
             try {
 
-                val bitmap = Bitmap.createBitmap(surfaceWidth, surfaceHeight, Bitmap.Config.ARGB_8888)
+                val bitmap =
+                    Bitmap.createBitmap(surfaceWidth, surfaceHeight, Bitmap.Config.ARGB_8888)
 
                 // 4. Draw the Surface content onto the Canvas
                 val canvas = Canvas(bitmap)
@@ -1282,7 +1334,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             } catch (e: Exception) {
                 Log.e("sknvks", "Error extracting frame: ${e.message}")
             } finally {
-               // retriever.release()
+                // retriever.release()
             }
         }
     }
@@ -1331,7 +1383,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 // Convert the output byte array to a Bitmap
                 val bitmap = BitmapFactory.decodeStream(ByteArrayInputStream(output.toByteArray()))
                 if (bitmap != null) {
-                    Log.d("FFmpeg", "Bitmap dimensions: ${bitmap.width} x ${bitmap.height} bitmap $bitmap")
+                    Log.d(
+                        "FFmpeg",
+                        "Bitmap dimensions: ${bitmap.width} x ${bitmap.height} bitmap $bitmap"
+                    )
                     lifecycleScope.launch(Dispatchers.Main) {
                         binding.ivSeekThumb.setImageBitmap(bitmap)
                         Log.e("FFmpeg", "Frame extraction successful.")
@@ -1365,28 +1420,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //            }
 //        }
     }
-    private fun getByteArrayFromOutput(output: String?): ByteArray? {
-        return try {
-            // FFmpegKit output is a path or URL. We need to read the actual content.
-            val inputStream = FileInputStream(output) // Open the output file
-            val byteArrayOutputStream = ByteArrayOutputStream()
 
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                byteArrayOutputStream.write(buffer, 0, bytesRead)
-            }
 
-            inputStream.close()
-            byteArrayOutputStream.toByteArray()
-        } catch (e: Exception) {
-            Log.e("FFmpeg", "Error reading FFmpeg output: ${e.message}")
-            null
-        }
-    }
-var timestamp=5
-    private fun extractFrameAtTimestamp() {
-          // Set the timestamp where you want to extract the frame
+    var timestamp = 10
+    private fun extractFrameAtTimestamps() {
+        // Set the timestamp where you want to extract the frame
 //        val outputFile = File(requireActivity().filesDir, "extracted_frame.png")  // Specify output file path
 
 //
@@ -1401,40 +1439,68 @@ var timestamp=5
 //            "-vcodec", "png",      // Output as RGBA PNG
 //            outputFile.absolutePath // Save to file
 //        )
-       // var duration = playerHandler.getDuration() / 1000
-      //  lifecycleScope.launch(Dispatchers.IO) {
+        // var duration = playerHandler.getDuration() / 1000
+        //  lifecycleScope.launch(Dispatchers.IO) {
+//                    "-vf", "scale=640:360",
+        val frameList = mutableListOf<Bitmap>()
 
-            val fileArray = mutableListOf<File>()
-          //  for (timestamp in 0..duration step 10) {
-                val outputFile = File(requireActivity().cacheDir, "extracted_frame_${timestamp}.png")
-                val command = arrayOf(
-                    "-y",                             // Force overwrite of existing files
-                    "-ss",
-                    String.format("00:00:%02d.000", timestamp),  // Timestamp in HH:MM:SS format
-                    "-i",
-                    videoUrl,                   // Input video URL
-                    "-vframes",
-                    "1",                  // Extract a single frame
-                    "-an",                            // Disable audio
-                    "-f",
-                    "image2pipe",               // Output format: image pipe
-                    "-pix_fmt",
-                    "rgba",               // Use RGBA for PNG
-                    "-vcodec",
-                    "png",                 // Use PNG codec
-                    outputFile.absolutePath          // Write output directly to file
-                )
-        timestamp+=5
-                val session = FFmpegKit.execute(command.joinToString(" "))
+//            val fileArray = mutableListOf<File>()
+//          //  for (timestamp in 0..duration step 10) {
+        val outputFile = File(requireActivity().cacheDir, "extracted_frame_${timestamp}.png")
+        val command = arrayOf(
+            "-y",                             // Force overwrite of existing files
+            "-ss",
+            String.format("00:00:%02d.000", timestamp),  // Timestamp in HH:MM:SS format
+            "-i",
+            videoUrl,
+//                     "-vf", "fps=1/20,scale=640:360",
+            "-vf",
+            "scale=640:360",
+            "-map",
+            "0:v:0",                  // Select the first video stream
+            "-vframes",
+            "1",
+            "-an",                            // Disable audio
+            "-f",
+            "image2pipe",               // Output format: image pipe
+            "-pix_fmt",
+            "rgba", //"yuvj420p",               // Use RGBA for PNG
+            "-vcodec",
+            "png",               // Use PNG codec
+            "-threads",
+            "4",
+            "-copyts",                        // Copy timestamps for better performance with HLS
+            "-hls_flags",
+            "single_file",      // Treat the stream as a single file and avoid resolution switching
+            "-hls_time",
+            "10",                // Limit the segment duration to 10 seconds (or adjust as needed)
+            outputFile.absolutePath          // Write output directly to file
+        )
+//        timestamp+=10
 
-                if (!ReturnCode.isSuccess(session.returnCode)) {
-                    val logs = session.logs
-                    logs.forEach { log ->
-                        Log.d("FFmpeg Log", log.message)
-                    }
-                }
-                else {
-                    val output = session.output
+//        val command = arrayOf(
+//            "-y",                             // Force overwrite of existing files
+//            "-i", videoUrl,                   // Input video URL (HLS stream)
+//          //  "-vf", "fps=1/20,scale=640:360",  // Capture one frame every 'intervalSeconds' and resize
+//            "-vf", "scale=640:360",
+////            "-map", "0:v:0",                  // Select the first video stream
+//            "-an",                            // Disable audio
+//            "-f", "image2pipe",               // Output format: image pipe
+//            "-pix_fmt", "rgba",               // Use RGBA for PNG
+//            "-vcodec", "png",                 // Use PNG codec
+//            "-threads", "4",                   // Use 4 threads
+//            outputFile.absolutePath
+//        )
+        // Execute the FFmpeg command asynchronously
+        FFmpegKit.executeAsync(command.joinToString(" ")) { session ->
+            val returnCode = session.returnCode
+            val output = session.output
+
+            if (ReturnCode.isSuccess(returnCode)) {
+                Log.d("FFmpeg", "Command executed successfully")
+
+                // Process the image data from the output stream
+                try {
                     if (output != null && output.isNotEmpty()) {
                         val bitmap = BitmapFactory.decodeFile(outputFile.absolutePath)
                         Log.d(
@@ -1452,10 +1518,278 @@ var timestamp=5
                     } else {
                         Log.e("FFmpeg", "Output is null or empty")
                     }
-             //   }
-           // }
-            Log.d("FFmpeg", "Total frames extracted: ${fileArray.size}")
+                } catch (e: Exception) {
+                    Log.e("FFmpeg", "Error processing frames", e)
+                }
+            } else {
+                Log.e("FFmpeg", "Command execution failed with error: ${session.returnCode}")
+            }
+            Log.e("FFmpeg", "bitmap images $frameList")
+        }
 
+
+//                val session = FFmpegKit.execute(command.joinToString(" "))
+//
+//                if (!ReturnCode.isSuccess(session.returnCode)) {
+//                    val logs = session.logs
+//                    logs.forEach { log ->
+//                        Log.d("FFmpeg Log", log.message)
+//                    }
+//                }
+//                else {
+//                    val output = session.output
+//                    if (output != null && output.isNotEmpty()) {
+//                        val bitmap = BitmapFactory.decodeFile(outputFile.absolutePath)
+//                        Log.d(
+//                            "FFmpeg",
+//                            "Output size: ${output.length} bytes ${bitmap.width} height ${bitmap.height} bitmap $bitmap "
+//                        )
+//                        if (bitmap != null) {
+//                            lifecycleScope.launch(Dispatchers.Main) {
+//                                binding.ivSeekThumb.setImageBitmap(bitmap)  // Set the Bitmap to the ImageView
+//                                Log.d("FFmpeg", "Image displayed successfully.")
+//                            }
+//                        } else {
+//                            Log.e("FFmpeg", "Failed to decode Bitmap from file.")
+//                        }
+//                    } else {
+//                        Log.e("FFmpeg", "Output is null or empty")
+//                    }
+//             //   }
+//           // }
+//            Log.d("FFmpeg", "Total frames extracted: ${fileArray.size}")
+//
+//        }
+    }
+
+    var bitmaplist = ArrayList<File>()
+
+    // Function to extract frames frame by frame from a video stream
+    fun extractFrameAtTimestamp() {
+        var duration = playerHandler.player?.duration!! / 1000
+        Log.e("sjbchd", "sknsk buffer count $bufferCount duration $duration ")
+
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+//        for (timestamp in 10..duration step 10) {
+            val cacheDir = File(requireActivity().cacheDir, "frames")
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs()
+            } else {
+                val files = cacheDir.listFiles()
+                files?.forEach { it.delete() }
+            }
+            while (timestamp <= duration) {
+                val timeString = convertSecondsToTimeFormat(timestamp)
+//                val command = arrayOf(
+//                    "-y",
+//                    "-ss",timeString,
+//                    "-i",
+//                    videoUrl,
+//                    "-vf",
+//                    "scale=640:360",
+//                    "-map",
+//                    "0:v:0",
+//                    "-vframes",
+//                    "1",
+//                    "-an",
+//                    "-f",
+//                    "image2pipe",
+//                    "-pix_fmt",
+//                    "rgba", //"yuvj420p",
+//                    "-vcodec",
+//                    "png",
+//                    "-q:v", "20",
+//                    "-threads",
+//                    "4",
+//                    "-copyts",
+//                    "-hls_flags",
+//                    "single_file",
+////                    "-hls_time",
+////                    "10",
+//                    outputFile.absolutePath
+//                )
+
+
+                val outputFile = File(cacheDir, "${timestamp}.png")
+
+                val command = arrayOf(
+                    "-y",
+                    "-i",
+                    videoUrl,                    // Input video
+                    "-vf",
+                    "fps=1/10,scale=640:360",   // Extract frame every 10 seconds
+                    "-map",
+                    "0:v:0",                   // Select the video stream
+                    "-an",                             // Disable audio
+                    "-q:v",
+                    "20",
+                    "-threads",
+                    "4",                   // Use 4 threads for faster processing
+                    "-vsync",
+                    "1",                    // Ensures the frames are extracted in sync with the video
+                    "-strftime",
+                    "1", // Enable using strftime formatting in output filename
+                    outputFile.absolutePath
+                )
+
+                FFmpegKit.executeAsync(command.joinToString(" ")) { session ->
+                    val returnCode = session.returnCode
+
+                    if (ReturnCode.isSuccess(returnCode)) {
+                        try {
+
+                            Log.e("FFmpeg", "successfully  ")
+//                                bitmaplist.add(outputFile)
+//                                lifecycleScope.launch(Dispatchers.Main) {
+//                                    binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(outputFile.absolutePath))  // Set the Bitmap to the ImageView
+//                                    Log.d("FFmpeg", "Image displayed successfully.")
+//                                }
+                        } catch (e: Exception) {
+                            Log.e("FFmpeg", "Error processing frame", e)
+                        }
+                    } else {
+                        Log.e("FFmpeg", "Failed to extract frame at timestamp $timestamp")
+
+                    }
+                    Log.e("FFmpeg", "${bitmaplist.size} bitmap lsit $bitmaplist")
+                }
+                timestamp += 10
+            }
+        }
+    }
+
+    fun convertSecondsToTimeFormat(seconds: Int): String {
+        val hours = seconds / 3600
+        val minutes = (seconds % 3600) / 60
+        val remainingSeconds = seconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
+    }
+
+    /// each frames
+    fun extractFramesToCache() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            isFraming = true
+            val cacheDir = File(requireActivity().cacheDir, "frames")
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs()
+            } else {
+                val files = cacheDir.listFiles()
+                files?.forEach { it.delete() }
+            }
+            val command = arrayOf(
+                "-y",
+                "-i",
+                videoUrl,                    // Input video
+                "-vf",
+                "fps=1/10,scale=640:360",   // Extract frame every 10 seconds
+                "-map",
+                "0:v:0",                   // Select the video stream
+                "-an",                             // Disable audio
+                "-q:v",
+                "10",
+//                "-threads",
+//                "8",                   // Use 4 threads for faster processing
+                "-vsync",
+                "1",                    // Ensures the frames are extracted in sync with the video
+                // "-strftime", "1", // Enable using strftime formatting in output filename
+                File(cacheDir, "frame_%03d.png").absolutePath           // Output path
+//                File(cacheDir, "frame_%03d.png").absolutePath           // Output path
+            )
+            val commandString = command.joinToString(" ")
+            FFmpegKit.executeAsync(commandString) { session ->
+                val returnCode = session.returnCode
+                if (ReturnCode.isSuccess(returnCode)) {
+                    Log.d("FFmpeg", "Frame extracted successfully.")
+                    getPngFramesFromCache()
+                    isFraming = false
+                } else {
+                    isFraming = false
+                    Log.e("FFmpeg", "Error during frame extraction.")
+                }
+            }
+        }
+    }
+
+    var isFraming = true
+    var frameList = ArrayList<Pair<Long, File>>()
+    fun getPngFramesFromCache(): ArrayList<Pair<Long, File>>? {
+        val cacheDir = File(requireActivity().cacheDir, "frames")
+        if (!cacheDir.exists()) {
+            Log.e("Cachedirec", "Cache directory does not exist.")
+            return null
+        }
+        val pngFiles = cacheDir.listFiles { _, name ->
+            Log.e("Cachedirec", "file name $name")
+            name.endsWith(".png", ignoreCase = true)
+        }
+
+        Log.d("PNG Files", "Number of frames: ${pngFiles?.size}")
+        if (pngFiles == null || pngFiles.isEmpty()) {
+            Log.e("Cachedirec", "No PNG files found in the cache directory.")
+            return null
+        }
+        val sortedFiles = pngFiles.sortedBy { file ->
+            file.nameWithoutExtension.split("_")[1].toInt()
+        }
+
+//        var sordetList = ArrayList<Pair<Long, File>>()
+        val ascendingOrderList = sortedFiles.sortedDescending().sorted()
+        ascendingOrderList.forEachIndexed { index, file ->
+            var seek = (index + 1) * 10000L
+            frameList.add(Pair(seek, file))
+        }
+
+        return frameList //sortedFiles.sortedDescending().sorted()
+    }
+
+    fun allsegments() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val cacheDir = File(requireActivity().cacheDir, "frames")
+
+            if (!cacheDir.exists()) {
+                cacheDir.mkdirs()
+            } else {
+                val files = cacheDir.listFiles()
+                files?.forEach { it.delete() }
+            }
+            var currentTime = 10 // Start from 10 seconds
+            val interval = 10 // Frame extraction interval (10 seconds)
+
+            while (currentTime <= 180) { // For example, extracting frames for the first 3 minutes
+                val formattedTime = String.format(
+                    "%02d:%02d:%02d",
+                    currentTime / 3600,
+                    (currentTime % 3600) / 60,
+                    currentTime % 60
+                )
+                val outputPath = File(cacheDir, "frame_${currentTime}.png").absolutePath
+
+                val command = arrayOf(
+                    "-y", // Overwrite output files without asking
+                    "-ss", formattedTime, // Seek to the specified time
+                    "-i", videoUrl, // Input video URL
+                    "-vf", "scale=640:360", // Scale the frames to 640x360
+                    "-map", "0:v:0", // Select the video stream
+                    "-an", // Disable audio
+                    "-q:v", "20", // Set video quality (higher number = lower quality)
+                    "-threads", "4", // Use 4 threads for faster processing
+                    outputPath // Output path with timestamp-based filename
+                )
+
+                FFmpegKit.executeAsync(command.joinToString(" ")) { session ->
+                    val returnCode = session.returnCode
+                    if (ReturnCode.isSuccess(returnCode)) {
+                        Log.d("FFmpeg", "Frame extracted at $formattedTime")
+                    } else {
+                        Log.e("FFmpeg", "Frame extraction failed at $formattedTime")
+                    }
+                }
+
+                // Increment the time by 10 seconds
+                currentTime += interval
+
+            }
         }
     }
 
@@ -1895,15 +2229,16 @@ var timestamp=5
                 binding.tvDuration.text = playerHandler.getRemainsDuration()
                 playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
             }
-            visibilityCount++
+
             if (visibilityCount == 5) {
                 visibilityCount = 0
                 binding.ivBack.animate().alpha(0f).setDuration(400).setStartDelay(10)
                 binding.llTools.animate().alpha(0f).setDuration(400).setStartDelay(10)
                 binding.playerView.requestFocus()
                 binding.clSettingsMenu.gone()
+                binding.ivSeekThumb.invisible()
             }
-
+            visibilityCount++
 //             lifecycleScope.launch(Dispatchers.IO) {
             Log.e(
                 "focussss",
@@ -2116,7 +2451,7 @@ var timestamp=5
                     }
 
                     KeyEvent.KEYCODE_MEDIA_REWIND -> {
-                        playerHandler.seekBackward(10)
+                        playerHandler.seekBackward(10){}
                         binding.apply {
                             ivMedia.setImageResource(R.drawable.ic_remote_backward)
                             ivMedia.visible()

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.streamefy"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 34
 //        cupcake google play store
 //        versionCode = 9

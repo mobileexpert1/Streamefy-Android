@@ -34,6 +34,7 @@ exoplayer = "com.google.android.exoplayer:exoplayer:2.18.2"
 #exoplayer = "com.google.android.exoplayer:exoplayer-hls:2.18.1"
 exoplayerCore = "com.google.android.exoplayer:exoplayer-core:2.18.2"
 #videothumbnail = "com.arthenica:ffmpeg-kit-full:6.0-2"
+#videothumbnail = "com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.15"
 videothumbnail = "com.arthenica:ffmpeg-kit-full:4.5.LTS"
 #bitmovin = "com.bitmovin.player:player:3.80.0"
 

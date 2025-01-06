@@ -69,6 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -608,7 +609,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         mediaId = data.mediaId
                         oldVideoDuration = playbackduration
                         ifFirst = false
-                        extractFramesToCache()
+                       // extractFramesToCache()
                         Log.e("skcmsknc", "play back duration $playbackduration")
                         playerHandler.setMediaUri(videoUrl, playbackduration)
                         if (data.nextVideo != null) {
@@ -806,86 +807,74 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     fun seekThumb(seekDuration: Long, isForward: Boolean) {
+
         lifecycleScope.launch(Dispatchers.IO) {
-            if (isFraming) {
-                var image = getPngFramesFromCache()
-                if (image != null && image.isNotEmpty()) {
-//                    for (i in 0 until image.size){
-//                        if (isForward){
-////                            forward video frame
-//                        if (frameList[i].first>=seekDuration){
-//                            withContext(Dispatchers.Main) {
-//                                binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(image[i].second.absolutePath))
-//                                binding.ivSeekThumb.visible()
-//                            }
-//                            Log.e("outputfile", "incomplete list  $seekDuration from list ${image[i]} output ${image}")
-//                            break
-//                        }else{
-//                            withContext(Dispatchers.Main) {  binding.ivSeekThumb.gone()}
-//                        }}
-//                        else{
-//                            if (frameList[i].first<=seekDuration){
-//                                withContext(Dispatchers.Main) {
-//                                    binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(image[i].second.absolutePath))
-//                                    binding.ivSeekThumb.visible()
-//                                }
-//                                Log.e("outputfile", "incomplete list  $seekDuration from list ${image[i]} output ${image}")
-//                                break
-//                            }else{
-//                                withContext(Dispatchers.Main) {  binding.ivSeekThumb.gone()}
-//                            }}
-//
-//                    }
-
-
-                    var data = frameList.filter { seekDuration <= it.first }
-                        .minByOrNull { it.first }
-                    Log.e(
-                        "outputfile",
-                        "$isForward incomplete list  $seekDuration from list ${data} output ${image}"
-                    )
-
-                    if (data != null) {
-                        withContext(Dispatchers.Main) {
-                            binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data.second.absolutePath))
-                            binding.ivSeekThumb.visible()
-                        }
-                    }
-
+            if (seekDuration>=10000L) {
+                withContext(Dispatchers.Main) {
+                    playerHandler.pause()
                 }
-            } else {
-                if (frameList.isNotEmpty()) {
+              launch { captureThumbnail()}.join()
+                withContext(Dispatchers.Main) {
+                    delay(100)
+                    binding.ivSeekThumb.visible()  // Ensure the ImageView is visible
+                }
+            }else{
+                withContext(Dispatchers.Main) {binding.ivSeekThumb.gone()}
+            }
+//            if (isFraming) {
+//                captureThumbnail()
+//               withContext(Dispatchers.Main){
+//                  binding.ivSeekThumb.visible()  // Ensure the ImageView is visible
+//               }
+////                var image = getPngFramesFromCache()
+////                if (image != null && image.isNotEmpty()) {
+////                    var data = frameList.filter { seekDuration <= it.first }
+////                        .minByOrNull { it.first }
+////                    Log.e("outputfile", "$isForward incomplete list  $seekDuration from list ${data} output ${image}")
+////
+////                    if (data != null) {
+////                        withContext(Dispatchers.Main) {
+////                            binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data.second.absolutePath))
+////                            binding.ivSeekThumb.visible()
+////                        }
+////                    }
+////
+////                }
+//            }
+//            else {
+//                if (frameList.isNotEmpty()) {
+////
+////                    for (i in 0 until frameList.size){
+////                        if (frameList[i].first>=seekDuration){
+////                            withContext(Dispatchers.Main) {
+////                                binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(frameList[i].second.absolutePath))
+////                                binding.ivSeekThumb.visible()
+////                            }
+////                            Log.e("outputfile", "frame list  $seekDuration from list ${frameList[i]} output ${frameList}")
+////                            break
+////                        }else{
+////                            withContext(Dispatchers.Main) {  binding.ivSeekThumb.gone()}
+////                        }
+////                    }
 //
-//                    for (i in 0 until frameList.size){
-//                        if (frameList[i].first>=seekDuration){
-//                            withContext(Dispatchers.Main) {
-//                                binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(frameList[i].second.absolutePath))
-//                                binding.ivSeekThumb.visible()
-//                            }
-//                            Log.e("outputfile", "frame list  $seekDuration from list ${frameList[i]} output ${frameList}")
-//                            break
-//                        }else{
-//                            withContext(Dispatchers.Main) {  binding.ivSeekThumb.gone()}
+//                    var data =
+//                        frameList.filter { seekDuration <= it.first }.minByOrNull { it.first }
+//                    Log.e(
+//                        "outputfile",
+//                        "$isForward incomplete  $seekDuration from list ${data} output ${frameList}"
+//                    )
+//
+//                    if (data != null) {
+//                        withContext(Dispatchers.Main) {
+//                            binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data.second.absolutePath))
+//                            binding.ivSeekThumb.visible()
+//                            delay(100)
+//                            playerHandler.play()
 //                        }
 //                    }
-
-
-                    var data =
-                        frameList.filter { seekDuration <= it.first }.minByOrNull { it.first }
-                    Log.e(
-                        "outputfile",
-                        "$isForward incomplete  $seekDuration from list ${data} output ${frameList}"
-                    )
-
-                    if (data != null) {
-                        withContext(Dispatchers.Main) {
-                            binding.ivSeekThumb.setImageBitmap(BitmapFactory.decodeFile(data.second.absolutePath))
-                            binding.ivSeekThumb.visible()
-                        }
-                    }
-
-                }
-            }
+//
+//                }
+//            }
 
         }
     }
@@ -1010,20 +999,17 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //                        extractFrameAtTimestamp()
 //                        extractFramesToCache()
                     }
-
+//                    captureThumbnail()
                     homeFragment.isLastPlay = true
-                    Log.e(
-                        "idcheckstr",
-                        "isEnded $isEnded  isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId"
-                    )
+                    Log.e("idcheckstr", "isEnded $isEnded  isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId")
                     // HlsFrameExtractor().initializeMediaCodec(videoUrl, binding.playerView)
                     videoTranisition()
                     binding.sbVideoSeek.max = 100
-                    if (getLengthOnce) {
+                   // if (getLengthOnce) {
                         tvDuration.text = playerHandler.getTotalLength()
                         getLengthOnce = false
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
-                    }
+                   // }
                     isEnded = false
 
                     updateProgressBar()
@@ -1036,14 +1022,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 //                    newVideo()
                     playNextVideo()
-
                     viewFocus()
                 }
             }
 
             override fun onRenderedFirstFrame() {
                 super.onRenderedFirstFrame()
-
+                Log.d("ExoPlayer", "First frame rendered")
+                captureThumbnail()
             }
 
             override fun onTracksChanged(tracks: Tracks) {
@@ -1098,7 +1084,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 Log.e("ExoPlayerError", "onPlayerErrorChanged " + error?.message, error)
             }
         })
-
+        texture()
         // Set the Surface to the player
 
         //  surfaceView = binding.playerView.videoSurfaceView as SurfaceView
@@ -1107,8 +1093,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
 
     private fun getFrameFromPlayerView() {
-
-//
 //        surfaceTexture = SurfaceTexture(0)
 //        surface = Surface(surfaceTexture)
 //
@@ -1784,11 +1768,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 "0:v:0",                   // Select the video stream
                 "-an",                             // Disable audio
                 "-q:v", "10",
-//                "-threads",
-//                "8",                   // Use 4 threads for faster processing
+                "-threads",
+                "8",                   // Use 4 threads for faster processing
                 "-vsync",
                 "1",                    // Ensures the frames are extracted in sync with the video
-                // "-strftime", "1", // Enable using strftime formatting in output filename
+                "-sws_flags", "fast_bilinear",     // Use faster scaling method
+                "-hwaccel", "cuda",  // Enable CUDA acceleration
+                "-hwaccel_output_format", "cuda",
+                        // "-strftime", "1", // Enable using strftime formatting in output filename
                 File(cacheDir, "frame_%03d.png").absolutePath           // Output path
 //                File(cacheDir, "frame_%03d.png").absolutePath           // Output path
             )
@@ -1868,7 +1855,68 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         return null
 
     }
+    private fun captureThumbnail() {
+        try {
+            lifecycleScope.launch(Dispatchers.Main) {
+                val textureView = binding.textureView
+                if (textureView.isAvailable) {
+                    val width = textureView.width
+                    val height = textureView.height
+                    launch(Dispatchers.IO) {
+                        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                        withContext(Dispatchers.Main) {
+                            textureView.getBitmap(bitmap)
+                            Log.d(
+                                "ExoPlayer",
+                                "Thumbnail captured at timestamp: ${playerHandler.player?.currentPosition}ms"
+                            )
 
+                            binding.ivSeekThumb.apply {
+                                setImageBitmap(bitmap)
+                                // visible()
+                                delay(200)
+                                playerHandler.play()
+                                updateProgressBar()
+                            }
+                        }
+                    }
+                } else {
+                    Log.e("ExoPlayer", "TextureView is not available.")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("ExoPlayer", "Error capturing thumbnail", e)
+        }
+    }
+    private fun texture()= with(binding){
+        val textureView = binding.textureView
+        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+            override fun onSurfaceTextureAvailable(
+                surface: SurfaceTexture,
+                width: Int,
+                height: Int
+            ) {
+                val surface = Surface(surface)
+
+                playerHandler.player?.setVideoSurface(surface)
+            }
+
+            override fun onSurfaceTextureSizeChanged(
+                surface: SurfaceTexture,
+                width: Int,
+                height: Int
+            ) {
+                Log.e("surfacechan","on my surface changed $surface")
+            }
+            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+             return true
+            }
+
+            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
+               // Log.e("surfacechan","on my surface onSurfaceTextureUpdated $surface")
+            }
+        }
+    }
     fun videoTranisition() = with(binding) {
         ivVideoThumb.animate()
             .alpha(0f)
@@ -1931,6 +1979,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.seekTo(duration)
                 seekThumb(duration, true)
             }
+            playerHandler.pause()
         }
 
     }
@@ -1947,6 +1996,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 playerHandler.seekTo(duration)
                 seekThumb(duration, true)
             }
+            playerHandler.pause()
         }
     }
 

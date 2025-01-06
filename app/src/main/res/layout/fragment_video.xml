@@ -25,7 +25,14 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
             app:use_controller="false" />
-
+        <TextureView
+            android:id="@+id/textureView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="visible" />
         <ImageView
             android:id="@+id/ivMedia"
             android:layout_width="@dimen/_20sdp"
@@ -40,8 +47,8 @@
             />
         <ImageView
             android:id="@+id/ivSeekThumb"
-            android:layout_width="@dimen/_70sdp"
-            android:layout_height="@dimen/_50sdp"
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_60sdp"
             android:layout_marginStart="@dimen/_130sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="@color/gray"

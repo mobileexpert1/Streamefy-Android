@@ -390,14 +390,15 @@ class PlayerHandler(
     fun seekBackward(seconds: Long,callBack:(Long)->Unit) {
         player?.let { exoPlayer ->
             val currentPosition = exoPlayer.currentPosition
-            val newPosition = (currentPosition - seconds * 1000)//.coerceAtLeast(0)
+            val newPosition = (currentPosition - seconds * 1000)
             Log.e("xmksnc", "mxksnc $currentPosition new $newPosition")
-
             if (newPosition > (10 * 1000)) {
                 exoPlayer.seekTo(newPosition)
+                exoPlayer.pause()
                 callBack.invoke(newPosition)
             } else {
                 exoPlayer.seekTo(0)
+                exoPlayer.pause()
                 callBack.invoke(0)
             }
         }

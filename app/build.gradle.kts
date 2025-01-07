@@ -15,14 +15,14 @@ android {
         minSdk = 21
         targetSdk = 34
 //        cupcake google play store
-        versionCode = 10
-        versionName = "1.0.10"
+//        versionCode = 10
+//        versionName = "1.0.10"
         // cupcake for amazon
-//        versionCode = 7
-//        versionName = "1.0.7"
+//        versionCode = 8
+//        versionName = "1.0.8"
 //        fire stick streamefy
-//        versionCode = 17
-//        versionName = "1.0.18"
+        versionCode = 18
+        versionName = "1.0.19"
 
 //        streameyf google play store
 //        versionCode = 14

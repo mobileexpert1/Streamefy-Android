@@ -22,10 +22,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewmodel(var repo: AuthService) : ViewModel() {
 
-
     var _loginLiveData = SingleLiveEvent<MyResource<LoginResponse>>()
     var loginLiveData : LiveData<MyResource<LoginResponse>> =_loginLiveData
-
     fun login(context: Context, login: LoginRequest) {
         viewModelScope.launch {
             if (context.isNetworkAvailable()) {

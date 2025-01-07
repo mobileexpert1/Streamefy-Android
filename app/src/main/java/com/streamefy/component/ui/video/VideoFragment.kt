@@ -164,6 +164,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             clickme()
             listener()
             keyMove()
+            texture()
         }
         volume()
         selectorFocus()
@@ -912,6 +913,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     fun playNextVideo() = with(binding) {
         bufferCount = 0
+        playerHandler.player?.setVideoSurface(null)
+        ivSeekThumb.gone()
         if (isNewVideoAvailable) {
             if (!HomeFragment.isTrailer) {
                 oldVideoDuration = playerHandler.getCurrentPosition()
@@ -940,9 +943,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             getLengthOnce = true
             isEnded = true
             timerLayout.invisible()
-            tvCurrentLenght.setText("")
+            tvCurrentLenght.text = ""
             tvCurrentLenght.invalidate()
-            tvDuration.setText("")
+            tvDuration.text = ""
             tvDuration.invalidate()
             sbVideoSeek.requestLayout()
             sbVideoSeek.invalidate()
@@ -995,32 +998,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 } else if (playbackState == Player.STATE_READY) {
                     dismissProgress()
                     //
-                    if (bufferCount < 2) {
-//                        extractFrameAtTimestamp()
-//                        extractFramesToCache()
-                    }
-//                    captureThumbnail()
+
+                    playerHandler.player?.setVideoSurface(videoSurface)
                     homeFragment.isLastPlay = true
                     Log.e("idcheckstr", "isEnded $isEnded  isNextVideoStarted $isNextVideoStarted getLengthOnce $getLengthOnce oldEventId $oldEventId oldMediaId $oldMediaId oldBunnyId $oldBunnyId")
-                    // HlsFrameExtractor().initializeMediaCodec(videoUrl, binding.playerView)
                     videoTranisition()
                     binding.sbVideoSeek.max = 100
-                   // if (getLengthOnce) {
                         tvDuration.text = playerHandler.getTotalLength()
                         getLengthOnce = false
                         ivPlay.setImageResource(R.drawable.ic_video_pause)
-                   // }
                     isEnded = false
-
                     updateProgressBar()
 
                 } else if (playbackState == Player.STATE_ENDED) {
-                    // filterItem()
                     Log.e("filteridwith", "video ended ")
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
-
-//                    newVideo()
                     playNextVideo()
                     viewFocus()
                 }
@@ -1030,6 +1023,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 super.onRenderedFirstFrame()
                 Log.d("ExoPlayer", "First frame rendered")
                 captureThumbnail()
+
             }
 
             override fun onTracksChanged(tracks: Tracks) {
@@ -1074,7 +1068,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
 
             }
-
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
             }
@@ -1084,7 +1077,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 Log.e("ExoPlayerError", "onPlayerErrorChanged " + error?.message, error)
             }
         })
-        texture()
+//        texture()
         // Set the Surface to the player
 
         //  surfaceView = binding.playerView.videoSurfaceView as SurfaceView
@@ -1866,16 +1859,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                         withContext(Dispatchers.Main) {
                             textureView.getBitmap(bitmap)
-                            Log.d(
-                                "ExoPlayer",
-                                "Thumbnail captured at timestamp: ${playerHandler.player?.currentPosition}ms"
-                            )
-
                             binding.ivSeekThumb.apply {
                                 setImageBitmap(bitmap)
-                                // visible()
                                 delay(200)
                                 playerHandler.play()
+                                visibilityCount=0
+                                playerHandler.stopHandler()
                                 updateProgressBar()
                             }
                         }
@@ -1888,6 +1877,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("ExoPlayer", "Error capturing thumbnail", e)
         }
     }
+
+    var videoSurface:Surface?=null
+
     private fun texture()= with(binding){
         val textureView = binding.textureView
         textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
@@ -1896,9 +1888,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 width: Int,
                 height: Int
             ) {
-                val surface = Surface(surface)
-
-                playerHandler.player?.setVideoSurface(surface)
+                videoSurface=Surface(surface)
+                playerHandler.player?.setVideoSurface(videoSurface)
             }
 
             override fun onSurfaceTextureSizeChanged(
@@ -1906,17 +1897,20 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 width: Int,
                 height: Int
             ) {
-                Log.e("surfacechan","on my surface changed $surface")
             }
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+                Log.e("kdsncdnc","smclsn destroy")
+                playerHandler.player?.setVideoSurface(null)
              return true
             }
 
             override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-               // Log.e("surfacechan","on my surface onSurfaceTextureUpdated $surface")
+
             }
         }
     }
+
+
     fun videoTranisition() = with(binding) {
         ivVideoThumb.animate()
             .alpha(0f)
@@ -2369,7 +2363,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 binding.ivSeekThumb.invisible()
             }
             visibilityCount++
-//             lifecycleScope.launch(Dispatchers.IO) {
             Log.e(
                 "focussss",
                 "timmer $focusView progress ${progress} duration $currentPosition isNewVideoAvailable $isNewVideoAvailable"
@@ -2401,7 +2394,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             }
                             Log.e("sbhsbc", "10000 now visible $video_show_count")
                             viewFocus()
-                            //  newVideo()
 
                         } else {
 
@@ -2413,9 +2405,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     } else if (binding.timerLayout.isVisible) {
                         binding.timerLayout.gone()
                         time = 0
-//                        if (::countDownTimer.isInitialized) {
-//                            countDownTimer.onFinish()
-//                        }
                     }
 
                 } else {
@@ -2466,30 +2455,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     lateinit var countDownTimer: CountDownTimer
 
     fun showRemainsTime(time: Long) = with(binding) {
-//        tvRemains.startCountdownTimer(
-//            time,
-//            onFinish = {
-//                timerLayout.gone()
-//            },
-//            onTick = { seconds ->
-//
-//                val formattedSeconds = seconds.toString().padStart(2, '0')
-//
-//                if (formattedSeconds != "00") {
-//                    timerLayout.visible()
-//                    tvRemains.apply {
-////                        text = "Resend OTP in 00:" + formattedSeconds
-//                        text= "Playing Next Video in $formattedSeconds s"
-//                       // text = "00:" + formattedSeconds
-////                        isEnabled = false
-////                        if (isAdded) {
-////                            setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-////                        }
-//                        //clearFocus()
-//                    }
-//                }
-//            }
-//        )
 
         countDownTimer = object : CountDownTimer(time, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -2533,6 +2498,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         view.setOnKeyListener { v, keyCode, event ->
             //  Log.e("mremote", "kckdnc $keyCode event $event")
             if (event.action == KeyEvent.ACTION_DOWN) {
+                visibilityCount=0
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         toShowBackButton()

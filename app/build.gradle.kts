@@ -15,18 +15,18 @@ android {
         minSdk = 21
         targetSdk = 34
 //        cupcake google play store
-//        versionCode = 10
-//        versionName = "1.0.10"
+//        versionCode = 11
+//        versionName = "1.0.11"
         // cupcake for amazon
-//        versionCode = 8
-//        versionName = "1.0.8"
-//        fire stick streamefy
-        versionCode = 18
-        versionName = "1.0.19"
+//        versionCode = 9
+//        versionName = "1.0.9"
 
+//        fire stick streamefy
+//        versionCode = 19
+//        versionName = "1.0.20"
 //        streameyf google play store
-//        versionCode = 14
-//        versionName = "1.0.14"
+        versionCode = 15
+        versionName = "1.0.15"
         vectorDrawables {
             useSupportLibrary = true
         }

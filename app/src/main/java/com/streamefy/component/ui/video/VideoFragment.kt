@@ -1122,10 +1122,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 width: Int,
                 height: Int
             ) {
-                Log.e(
-                    "sknvks",
-                    "Surface Changed: width=$width, height=$height  format $format holder $holder"
-                )
+                Log.e("sknvks", "Surface Changed: width=$width, height=$height  format $format holder $holder")
+
                 surfaceWidth = width
                 surfaceHeight = height
 
@@ -1139,7 +1137,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
     fun captureFrameFromPlayer() {
-
         surface?.let {
             // Create a bitmap based on the current Surface's width and height
             val width = surfaceView?.width
@@ -1356,7 +1353,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
-
     private fun extractImageAtTimestamp(timestamp: Long, surfaceView: SurfaceView) {
 
         val framebufferId = 0
@@ -1411,7 +1407,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             Log.e("sknvks", "Error extracting frame: ${e.message}")
         }
     }
-
 
     private fun extractFrameAtTimestampddddd(timestamp: Long) {
         // FFmpeg command to extract a frame at the given timestamp (in seconds)
@@ -1909,7 +1904,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         }
     }
-
 
     fun videoTranisition() = with(binding) {
         ivVideoThumb.animate()

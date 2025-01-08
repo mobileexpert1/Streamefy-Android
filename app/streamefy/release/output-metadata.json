@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 18,
-      "versionName": "1.0.19-streamefy",
+      "versionCode": 19,
+      "versionName": "1.0.20-streamefy",
       "outputFile": "app-streamefy-release.apk"
     }
   ],

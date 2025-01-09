@@ -1,7 +1,6 @@
 package com.streamefy.component.ui.projects
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -10,15 +9,11 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.ExitDialog
 import com.streamefy.component.base.StreamEnum
-import com.streamefy.component.ui.home.HomeFragment
-import com.streamefy.component.ui.home.model.EventsItem
-import com.streamefy.component.ui.pin_authentication.PinVM
 import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
 import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
 import com.streamefy.component.ui.projects.model.ProjectRequest
@@ -28,19 +23,15 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentEventBinding
 import com.streamefy.network.MyResource
-import com.streamefy.utils.imageLoadonLayout
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
-import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.Collections
-
 
 class EventFragment : BaseFragment<FragmentEventBinding>() {
     override fun netStatus() {}
@@ -51,7 +42,6 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     var phone = ""
     var isHome = false
     var isPrimaryuser = false
-    var applogo = ""
     var projectId = ""
 
     companion object {
@@ -66,51 +56,39 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         eventFragment = this
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
-//        applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         val app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivbackground.loadUrl(app_background)
-       // binding.eventParant.imageLoadonLayout(app_background)
 
         projectId = SharedPref.getString(PrefConstent.PROJECT_ID).toString()
         arguments?.run {
             isHome = getBoolean(PrefConstent.ISHOME)
         }
-//        binding.ivApplogo.loadAny(applogo)
         binding.apply {
-            // if (isPrimaryuser) {
             if (isHome) {
                 ivBack.invisible()
             }
-            // }
         }
 
         resetColor()
         focusable()
         clicable()
         rvInit()
-        // focusedIndex = 0
 
-//        viewModel.getProject(requireContext(), ProjectRequest(phone))
-//        observe()
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    // if (isPrimaryuser) {
                     if (!isHome) {
                         findNavController().navigate(R.id.loginFragment)
                     } else {
                         ExitDialog(requireActivity()).show()
                     }
-//                    } else {
-//                        findNavController().navigate(R.id.loginFragment)
-//                    }
                 }
             })
     }
 
-    fun resetColor()= with(binding) {
-
+    private fun resetColor()= with(binding) {
+//handle themes
         if (isDark) {
             textView2.isEnabled=true
         } else {
@@ -119,22 +97,22 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     }
 
 
-    var selectedItem = 0
+    private var selectedItem = 0
     private fun rvInit() = with(binding) {
+//        Handle Event listing
         rvEvent.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
             projectAdapter = ProjectsAdapter(requireActivity(), list) { index, streamEnum ->
-                var data = list[index]
+                val data = list[index]
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
-//                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
+//                        navigate to the PIN screen if you want to add event
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "Add Event")
                         val bundle = Bundle()
                         bundle.putInt(PrefConstent.PROJECT_ID, 0)
                         bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                         bundle.putString(PrefConstent.PROJECT_NAME, "Add Event")
-
                         bundle.putBoolean(PrefConstent.ISHOME, false)
                         findNavController().navigate(
                             R.id.action_projectfragment_to_pinAuthenticationFragment,
@@ -158,7 +136,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     }
 
                     StreamEnum.SINGLE -> {
-//                        if(projectId==list[index].id.toString()){
+//                        Handle navigation functionality. start with landing if you already added event PIN otherwise open Pin Screen
                         if (data.isAuthorize) {
                             SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                             SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, data.isPrimary)
@@ -168,28 +146,17 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                                 findNavController().navigate(R.id.homefragment)
                             }
                         } else {
-
-//                            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                             SharedPref.setString(PrefConstent.PROJECT_NAME, list[index].name)
-//                            SharedPref.setString(PrefConstent.PROJECT_ID, list[index].id.toString())
                             val bundle = Bundle()
                             bundle.putInt(PrefConstent.PROJECT_ID, list[index].id)
                             bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                             bundle.putString(PrefConstent.PROJECT_NAME, list[index].name)
-
                             bundle.putBoolean(PrefConstent.ISHOME, false)
                             findNavController().navigate(
                                 R.id.action_projectfragment_to_pinAuthenticationFragment,
                                 bundle
                             )
                         }
-//                ConfirmPinDialog(requireContext()) {
-//                    if (it) {
-//                        projectId = list[index].id
-//                        viewModel.getProject(requireContext(), ProjectRequest(phone))
-//                        observe()
-//                    }
-//                }.show()
                     }
 
                     else -> {}
@@ -206,6 +173,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 if (!isHome) {
                     findNavController().navigate(R.id.loginFragment)
                 } else {
+//                    Show exit dialog
                     ExitDialog(requireActivity()).show()
                 }
             } else {
@@ -213,16 +181,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             }
         }
     }
-
+//    Handle button focus and key movement
     private fun focusable() = with(binding) {
         ivBack.remoteKey {
             when (it) {
                 StreamEnum.DOWN_DPAD_KEY -> {
                     rvEvent.requestFocus()
-//                    rvEvent.isFocusable = true
-//                    rvEvent.isFocusableInTouchMode = true
-//                    rvEvent.post { rvEvent.getChildAt(focusedIndex)?.requestFocus() }
-//                    rvEvent.scrollToPosition(focusedIndex)
                 }
 
                 else -> {}
@@ -232,12 +196,12 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             if (hasFocus) {
                 val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
                 params.width =
-                    resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
+                    resources.getDimensionPixelSize(R.dimen._17sdp)
                 params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
                 ivBack.layoutParams = params
             } else {
                 val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
-                params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+                params.width = resources.getDimensionPixelSize(R.dimen._15sdp)
                 params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
                 ivBack.layoutParams = params
             }
@@ -247,9 +211,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
                 }
-
                 StreamEnum.LEFT_DPAD_KEY -> {
-
                 }
 
                 else -> {}
@@ -265,10 +227,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 }
 
                 is MyResource.isSuccess -> {
-                    Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (it.data?.response == null) {
-                        // requireActivity().showMessage("PIN updated successfully")
-//                        findNavController().popBackStack()
+//                        add event if event not available
                         list.clear()
                         list.add(ResponseItem(isLast = true, isPrimary = false))
                         projectAdapter.update(list)
@@ -287,16 +247,14 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                     } else {
                         it.data?.run {
+//                            add all event to the list
                             list.clear()
                             list.addAll(this.response as ArrayList<ResponseItem>)
                             lifecycleScope.launch {
+//                                handle add event button at end of event list
                                 list.add(ResponseItem(isLast = true, isPrimary = false))
-                                Log.e("skncksn", "${list.size} slmcls focus $focusedIndex")
                                 if (projectId.isNotEmpty()) {
                                     focusedIndex = list.indexOfFirst { it.id == projectId.toInt() }
-                                    if (focusedIndex != list.size - 1) {
-                                        //  Collections.swap(list, focusedIndex, 0)
-                                    }
                                 }
                                 withContext(Dispatchers.Main) {
                                     projectAdapter.update(list)
@@ -311,18 +269,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                                     post {
                                         getChildAt(0)?.requestFocus()
                                     }
-
                                 }
-
                             }
-//                            lifecycleScope.launch {
-//                                delay(200)
-//                                withContext(Dispatchers.Main){
-//                                    projectAdapter.addItem(ResponseItem(isLast = true))
-//                                    binding.rvEvent.adapter=projectAdapter
-//                                    projectAdapter.notifyDataSetChanged()
-//                                }
-//                            }
                         }
                     }
                     dismissProgress()
@@ -330,9 +278,9 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
                 is MyResource.isError -> {
                     dismissProgress()
+//                    navigate to the PIN screen
                     if (it.error == "No primary projects found for the user.") {
                         SharedPref.setBoolean(PrefConstent.ISPRIMARY_USER, false)
-//                        SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, false)
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "")
                         SharedPref.setString(PrefConstent.PROJECT_ID, "0")
                         val name = SharedPref.getString(PrefConstent.FULL_NAME).toString()
@@ -358,6 +306,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
     }
 
     private fun resetObserve() {
+//        Handle reset PIN functionality
         viewModel.resetData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
@@ -368,12 +317,8 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     dismissProgress()
                     SharedPref.setBoolean(PrefConstent.ISRESET_PIN, true)
                     requireContext().showMessage(it.data?.response.toString())
-//                    list.
                     list[selectedItem].isAuthorize = false
                     projectAdapter.updateAuth(selectedItem)
-                    //viewModel.getProject(requireContext(), ProjectRequest(phone))
-                    // observe()
-
                 }
 
                 is MyResource.isError -> {
@@ -389,6 +334,5 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
         super.onResume()
         viewModel.getProject(requireContext(), ProjectRequest(phone))
         observe()
-
     }
 }

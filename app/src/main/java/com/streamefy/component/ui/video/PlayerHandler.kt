@@ -123,50 +123,6 @@ class PlayerHandler(
     var  videoUrl=""
     fun setMediaUri(uri: String, lastDuration: Long) {
         videoUrl=uri
-//        val httpDataSourceFactory = DefaultHttpDataSource.Factory().apply {
-//            setDefaultRequestProperties(mapOf("AccessKey" to "24c40ba2-d6bb-440f-991324192bf2-e4ad-4440"))
-//        }
-//
-//        val dataSourceFactory = DefaultHttpDataSource.Factory()
-//        val mediaSource: MediaSource = HlsMediaSource.Factory(dataSourceFactory)
-//            .createMediaSource(MediaItem.fromUri(uri))
-////        player?.setMediaSource(mediaSource)
-////        player?.prepare()
-//
-//        player = ExoPlayer.Builder(context).build().apply {
-//            setMediaSource(mediaSource)
-//            prepare()
-//          //  playWhenReady = true
-//        }
-//        playerView.player = player
-
-
-//new
-//            //Creating a media item of HLS Type
-//            val mediaItem = MediaItem.Builder()
-//                .setUri(uri)
-//                .setMimeType(MimeTypes.APPLICATION_M3U8) //m3u8 is the extension used with HLS sources
-//                .build()
-//
-//            player?.setMediaItem(mediaItem)
-//            player?.prepare()
-//            player?.play()
-
-
-//        val baseUrl = "https://example.com/path/to/playlist.m3u8"
-//        val token = "your-authentication-token" // Replace with your token
-//
-//
-//        // Append token to URL if needed
-//
-//        // Append token to URL if needed
-//        val uri = Uri.parse(uri).buildUpon()
-//            .appendQueryParameter("token", token)
-//            .build()
-//
-//        // Create media source
-//
-//        // Create media source
         try {
             if (player != null && uri.isNotEmpty()) {
 
@@ -204,25 +160,11 @@ class PlayerHandler(
                 }
             }
         }
-//        catch (e: ExoPlaybackException) {
-//            when (e.type) {
-//                ExoPlaybackException.TYPE_SOURCE -> {
-//                    Log.e("ExoPlayerError", "Source error: ${e.sourceException?.message}")
-//                }
-//                ExoPlaybackException.TYPE_RENDERER -> {
-//                    Log.e("ExoPlayerError", "Renderer error: ${e.rendererException?.message}")
-//                }
-//                ExoPlaybackException.TYPE_UNEXPECTED -> {
-//                    Log.e("ExoPlayerError", "Unexpected error: ${e.message}")
-//                }
-//            }
-//        }
         catch (e: Exception) {
             Log.e("skcmskc", "video playing error $e")
         }
         Log.e("sjkcnsakjbc", "akjcnkja play")
 
-        //  playTokenise()
     }
 
     var retriever:MediaMetadataRetriever?=null
@@ -323,17 +265,12 @@ class PlayerHandler(
         return "$baseUrl?expires=$expirationTime&signature=$signature"
     }
 
-    val baseUrl = "https://your-bunny-cdn-url/your-file.mp4"
-    val secretKey = "your-secret-key"
-    val expireTime = System.currentTimeMillis() / 1000 + 3600 // URL valid for 1 hour
-
 
     fun setQuality(resolution: QualityModel) {
         val trackSelector = player?.trackSelector as DefaultTrackSelector
         val trackSelectionParameters = trackSelector.buildUponParameters()
             .setMaxVideoSize(resolution.width, resolution.height)
             .build()
-        Log.e("dcbdhbcd","cjdc testing $resolution")
         trackSelector.setParameters(trackSelectionParameters)
     }
 
@@ -360,7 +297,6 @@ class PlayerHandler(
                 Pair(1080, 1920)
             }
         }
-        Log.e("resulation"," resulation $resolution bandwidth $estimatedBandwidth  ")
         val trackSelectionParameters = trackSelector.buildUponParameters()
             .setMaxVideoSize(resolution.first, resolution.second)  // Set the dynamic resolution
             .build()
@@ -466,16 +402,8 @@ class PlayerHandler(
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
-
-        // Format hours, minutes, and seconds to always show two digits
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
-
-//        val minutes = (durationMillis / 1000) / 60
-//        val seconds = (durationMillis / 1000) % 60
-//
-//        // Format minutes and seconds to always show two digits
-//        return String.format("%02d:%02d", minutes, seconds)
     }
 
     fun getDuration(): Long {
@@ -485,7 +413,6 @@ class PlayerHandler(
     fun getTotalLength(): String {
 
         val durationMillis = player?.duration ?: 0L
-
         val totalSeconds = durationMillis / 1000
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
@@ -493,14 +420,6 @@ class PlayerHandler(
 
         // Format hours, minutes, and seconds to always show two digits
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-
-//        val durationMillis = player?.duration ?: 0L
-//
-//        val minutes = (durationMillis / 1000) / 60
-//        val seconds = (durationMillis / 1000) % 60
-//
-//        // Format minutes and seconds to always show two digits
-//        return String.format("%02d:%02d", minutes, seconds)
     }
      fun getRemainsDuration(): String {
 
@@ -524,7 +443,6 @@ class PlayerHandler(
     }
 
     fun release() {
-     //   player?.stop()
         player?.release()
         player = null
         handler.removeMessages(0)

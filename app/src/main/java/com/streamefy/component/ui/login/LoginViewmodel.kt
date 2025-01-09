@@ -1,9 +1,7 @@
 package com.streamefy.component.ui.login
 
-import android.app.Application
 import android.content.Context
-import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +10,6 @@ import com.streamefy.component.ui.login.model.LoginResponse
 import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
-import com.streamefy.network.ApiService
 import com.streamefy.network.AuthService
 import com.streamefy.network.MyResource
 import com.streamefy.utils.LogMessage.logeMe
@@ -37,7 +34,6 @@ class LoginViewmodel(var repo: AuthService) : ViewModel() {
                     }
                 } catch (e: Exception) {
                     logeMe(e.toString())
-                   // ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
                     _loginLiveData.value=MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
                 }
             } else {

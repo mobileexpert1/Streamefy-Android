@@ -1,10 +1,6 @@
 package com.streamefy
 
-import android.app.ActivityManager
 import android.content.Context
-import android.content.IntentFilter
-import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.util.Log
@@ -17,11 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.streamefy.component.base.BaseFragment
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.media.MediaHandler
-import com.streamefy.network.NetworkReceiver
 import com.streamefy.utils.gone
 import com.streamefy.utils.isNetworkAvailable
 import com.streamefy.utils.visible
@@ -39,10 +33,9 @@ import kotlin.system.exitProcess
 class MainActivity : AppCompatActivity() {
     var navHostFragment: Fragment? = null
     private lateinit var navController: NavController
-  lateinit var wakeLock: PowerManager.WakeLock
-    private lateinit var networkReceiver: NetworkReceiver
-    lateinit var tvMessage:TextView
-    var isNetwork=true
+    lateinit var wakeLock: PowerManager.WakeLock
+    lateinit var tvMessage: TextView
+    var isNetwork = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,25 +44,14 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         wakelock()
         navHostFragment = supportFragmentManager.findFragmentById(R.id.navigationview)
-        tvMessage=findViewById(R.id.tvNetworkMessaage)
+        tvMessage = findViewById(R.id.tvNetworkMessaage)
         navController = (navHostFragment as NavHostFragment).navController
         if (isNetworkAvailable()) {
+//            get ipaddress for spacific country
             getLocationFromIP()
         }
-
-//        if (FirebaseApp.getApps(this).isEmpty()) {
-//            FirebaseApp.initializeApp(this)
-//
-//
-//        }else{
-//            Log.e("mdckld","slmclsmc not initialize")
-//        }
-//        networkReceiver = NetworkReceiver(this)
-//
-//        // Register the receiver with a filter for connectivity changes
-//        val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-//        registerReceiver(networkReceiver, filter)
     }
+
     fun getDialingCode(countryIso: String?): Int {
         val phoneNumberUtil = PhoneNumberUtil.getInstance()
         return phoneNumberUtil.getCountryCodeForRegion(countryIso)
@@ -85,92 +67,71 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
             client.newCall(request).execute().use { response ->
-             try {
+                try {
 
-                if (response.isSuccessful) {
-                    // Parse the JSON response
-                    val json = JSONObject(response.body!!.string())
-                    val country = json.optString("country", "Unknown")
+                    if (response.isSuccessful) {
+                        // Parse the JSON response
+                        val json = JSONObject(response.body!!.string())
+                        val country = json.optString("country", "Unknown")
 
-                    // Show location info based on IP
-                    runOnUiThread {
-                        var code=  getDialingCode(country)
-                        SharedPref.setString(PrefConstent.COUNTRY_CODE,code.toString())
-                        Log.d("hhhhthth", "$code local result $response")
+                        // Show location info based on IP
+                        runOnUiThread {
+                            val code = getDialingCode(country)
+                            SharedPref.setString(PrefConstent.COUNTRY_CODE, code.toString())
+                        }
                     }
-                } else {
-                    runOnUiThread {
-                        Log.d("hhhhthth", "Failed to retrieve location ")
-                    }
+
+                } catch (e: Exception) {
+                    Log.e("cjbjdbc", "exception $e")
                 }
-            }catch (e:Exception){
-            Log.e("cjbjdbc","exception $e")
-        }
             }
         }
     }
 
     private lateinit var mediaHandler: MediaHandler
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        // Forward key events to the MediaHandler in the activity
-//
-//        return mediaHandler.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-//    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        Log.d("MainActivity", "Key pressed: $keyCode")
 
         return when (keyCode) {
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
-                // Handle Play/Pause
-                Log.d("MainActivity", "Media Play/Pause key pressed")
                 true
             }
+
             KeyEvent.KEYCODE_MEDIA_NEXT -> {
-                // Handle Next
-                Log.d("MainActivity", "Media Next key pressed")
                 true
             }
+
             KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
-                // Handle Previous
-                Log.d("MainActivity", "Media Previous key pressed")
                 true
             }
+
             else -> super.onKeyDown(keyCode, event)
         }
     }
 
-    fun wakelock(){
+    //    wake lock to prevent screen off
+    private fun wakelock() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            wakeLock = powerManager.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                "MainActivity::WakeLock"
-            )
-            wakeLock?.acquire()
+        wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "MainActivity::WakeLock"
+        )
+        wakeLock?.acquire()
 
     }
+
     fun exitApp() {
         if (!isFinishing && !isDestroyed) {
             // First, finish all activities in the task
             finishAffinity()
         }
-//        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-//        activityManager.clearApplicationUserData()
         exitProcess(0)
-//        finishAffinity()
-//        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-//        activityManager.clearApplicationUserData()
-//        exitProcess(0)
     }
 
     override fun onPause() {
         super.onPause()
-//        wakeLock.let {
-//            if (it.isHeld) {
-//                it.release() // Release only if the WakeLock is currently held
-//            }
-//        }
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
+
     override fun onDestroy() {
         super.onDestroy()
         wakeLock.let {
@@ -178,38 +139,19 @@ class MainActivity : AppCompatActivity() {
                 it.release()
             }
         }
-        //unregisterReceiver(networkReceiver)
     }
-//    override fun onNetworkAvailable() {
-//        isNetwork=true
-//        BaseFragment.run {
-//            isNetworkAvailable=isNetwork
-//             }
-//    }
-//
-//    override fun onNetworkUnavailable() {
-//        isNetwork=false
-//        BaseFragment.isNetworkAvailable=isNetwork
-//        tvMessage.visible()
-//        tvMessage.setText(getString(R.string.network_message))
-//        lifecycleScope.launch {
-//            delay(5000)
-//            withContext(Dispatchers.Main){
-//                tvMessage.gone()
-//            }
-//        }
-//    }
 
     fun showNetwork(isNetworkAvailable: Boolean) {
-        if (!isNetwork){
-        tvMessage.visible()
-        tvMessage.setText(getString(R.string.network_message))
-        lifecycleScope.launch {
-            delay(5000)
-            withContext(Dispatchers.Main){
-                tvMessage.gone()
+        if (!isNetwork) {
+            tvMessage.visible()
+            tvMessage.text = getString(R.string.network_message)
+            lifecycleScope.launch {
+                delay(5000)
+                withContext(Dispatchers.Main) {
+                    tvMessage.gone()
+                }
             }
         }
-    }}
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.streamefy.network
 
-import com.streamefy.component.ui.home.model.HomeResponse
 import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.component.ui.login.model.LoginResponse
 import com.streamefy.component.ui.otp.model.OTPRequest
@@ -9,9 +8,7 @@ import com.streamefy.component.ui.otp.model.VerificationRequest
 import com.streamefy.component.ui.otp.model.VerifyResponse
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface AuthService {
     //@Header("authorization": "Basic YWRtaW46cGFzc3dvcmQ=")

@@ -49,12 +49,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     var projectId = "0"
     var phone = ""
     var otp = ""
-    var applogo = ""
     var app_background = ""
     var projectName = ""
     private val viewModel: PinVM by viewModel()
     var isPrimaryuser = false
-    var isHome = false
     var isLogin = false
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,26 +64,10 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             projectName = getString(PrefConstent.PROJECT_NAME).toString()
         }
         isLogin = SharedPref.getBoolean(PrefConstent.ISLOGIN)
-        // applogo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivbackground.loadUrl(app_background)
-//        binding.pinParant.imageLoadonLayout(app_background)
-        // binding.ivApplogo.loadAny(applogo)
-        Log.e("sjncsjbc", "skncksnc project id $projectId and phone $phone  projectId $projectId")
-
         otpFieldFocus()
         binding.apply {
-//            if (isPrimaryuser) {
-//                tvResetPin.invisible()
-//                if (projectName.isNotEmpty()) {
-//                    textView2.setText(projectName)
-//                } else {
-//                    textView2.setText("Welcome")
-//                }
-//            } else {
-//                textView2.setText("Welcome")
-//            }
-
             tvResetPin.invisible()
                 if (projectName.isNotEmpty()) {
                     textView2.setText(projectName)
@@ -94,19 +76,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 }
 
             ivBack.setOnClickListener {
-               // if (isPrimaryuser) {
                     findNavController().navigateUp()
-//                } else if (!isLogin) {
-//                    val navOptions = NavOptions.Builder()
-//                        .setPopUpTo(R.id.pinAuthenticationFragment, true)
-//                        .build()
-//                    findNavController().navigate(
-//                        R.id.loginFragment,
-//                        null, navOptions
-//                    )
-//                } else {
-//                    ExitDialog(requireContext()).show()
-//                }
             }
             ivBack.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
@@ -150,8 +120,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
             otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
 
             otpView.addTextChangedListener {
-                var cursorIndex = otpView.selectionStart
-                Log.e("smskmc", "$cursorIndex slxmskmc ${it.toString()}")
                 otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
             }
 
@@ -160,23 +128,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
-                        // Show the custom dialog when back is pressed
-                     //   if (isPrimaryuser) {
                             findNavController().navigateUp()
-//                        } else if (!isLogin) {
-//                            val navOptions = NavOptions.Builder()
-//                                .setPopUpTo(
-//                                    R.id.pinAuthenticationFragment,
-//                                    true
-//                                ) // Pop fragment B from the stack
-//                                .build()
-//                            findNavController().navigate(
-//                                R.id.loginFragment,
-//                                null, navOptions
-//                            )
-//                        } else {
-//                            ExitDialog(requireActivity()).show()
-//                        }
                     }
                 })
 
@@ -198,8 +150,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         resetColor()
     }
 
-    fun resetColor()= with(binding) {
-        var isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
+    private fun resetColor()= with(binding) {
+        val isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
         if (isDark) {
             constraintLayout.isEnabled=true
             textView2.isEnabled=true
@@ -216,7 +168,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
     private fun otpFieldFocus() = with(binding) {
 
         otpView.setOnFocusChangeListener { v, hasFocus ->
-            Log.e("smskmc", "$hasFocus setOnFocusChangeListener")
             if (hasFocus) {
                 otpView.setItemBackground(
                     ContextCompat.getDrawable(
@@ -257,33 +208,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         tvResetPin.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 tvResetPin.setBackgroundResource(R.drawable.ic_button_selector)
-//                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//                    tvResetPin.compoundDrawableTintList = ColorStateList.valueOf(
-//                        ContextCompat.getColor(
-//                            requireActivity(),
-//                            R.color.purple
-//                        )
-//                    )
-//                }
-//                else {
-//                    val drawables = tvResetPin.compoundDrawables
-//                    val drawableStart =
-//                        drawables[0]  // You can adjust this for top, end, bottom as needed
-//                    if (drawableStart != null) {
-//                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-//                        DrawableCompat.setTint(
-//                            wrappedDrawable,
-//                            ContextCompat.getColor(requireActivity(), R.color.purple)
-//                        )
-//                        tvResetPin.setCompoundDrawablesWithIntrinsicBounds(
-//                            wrappedDrawable,
-//                            drawables[1],
-//                            drawables[2],
-//                            drawables[3]
-//                        )
-//                    }
-//                }
-//                tvResetPin.setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
             } else {
                 tvResetPin.setBackgroundColor(
                     ContextCompat.getColor(
@@ -291,34 +215,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                         com.otpview.R.color.transparent
                     )
                 )
-//                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-//                    tvResetPin.compoundDrawableTintList = ColorStateList.valueOf(
-//                        ContextCompat.getColor(
-//                            requireActivity(),
-//                            R.color.white
-//                        )
-//                    )
-//
-//                }
-//                else {
-//                    val drawables = tvResetPin.compoundDrawables
-//                    val drawableStart =
-//                        drawables[0]  // You can adjust this for top, end, bottom as needed
-//                    if (drawableStart != null) {
-//                        val wrappedDrawable = DrawableCompat.wrap(drawableStart)
-//                        DrawableCompat.setTint(
-//                            wrappedDrawable,
-//                            ContextCompat.getColor(requireActivity(), R.color.white)
-//                        )
-//                        tvResetPin.setCompoundDrawablesWithIntrinsicBounds(
-//                            wrappedDrawable,
-//                            drawables[1],
-//                            drawables[2],
-//                            drawables[3]
-//                        )
-//                    }
-//                }
-//                tvResetPin.setTextColor(ContextCompat.getColor(requireActivity(), R.color.white))
             }
         }
         tvResetPin.remoteKey {
@@ -347,7 +243,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                     SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                     SharedPref.setString(PrefConstent.AUTH_PIN, otp)
                     SharedPref.setString(PrefConstent.PROJECT_ID, projectId)
-                    Log.e("sjxbjsbc", "ksjnckjanc ${it.data}")
                     if (isAdded) {
                         findNavController().navigate(R.id.homefragment)
                     }
@@ -391,7 +286,6 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e("skcnmskncm", "skcnsk destroyview")
         dismissProgress()
     }
 

@@ -2,37 +2,22 @@ package com.streamefy.component.ui.splash
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.window.SplashScreen
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.BuildConfig
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
-import com.streamefy.component.base.MyApp
 import com.streamefy.component.ui.login.LoginViewmodel
 import com.streamefy.component.ui.login.model.LoginRequest
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentSplashScreenBinding
-import com.streamefy.network.Constants
 import com.streamefy.network.MyResource
-import com.streamefy.utils.customAlfa
-import com.streamefy.utils.imageLoadonLayout
-import com.streamefy.utils.loadUrl
-import com.streamefy.utils.visible
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
@@ -54,12 +39,11 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
         admin_email = BuildConfig.Admin_email
         admin_password = BuildConfig.Password
         binding.apply {
-
+//            get application details from server
             viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
             observe()
-//            splashLayout.customAlfa(0f, 1f, 4000)
-           // ivLauncher.customAlfa(0f, 1f, 4000)
 
+//            add transition
             ObjectAnimator.ofFloat(splashLayout, "alpha", 0f, 1f).also {
                 it.duration = 2000
                 it.doOnEnd { lifecycleScope.launch {
@@ -67,7 +51,6 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
                     ObjectAnimator.ofFloat(splashLayout, "alpha", 1f, 0f).also { inner ->
                         inner.duration = 1000
                         inner.doOnEnd {
-                          //  navigateToHome()
                         }
                         inner.start()
                     }
@@ -96,49 +79,26 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 
         }
 
-//        lifecycleScope.launch {
-//            delay(4000)
-//            binding.apply {
-//                splashLayout.customAlfa(1f, 0f,2000)
-//               // ivLauncher.customAlfa(1f, 0f,2000)
-//                val fadeout = ObjectAnimator.ofFloat(ivLauncher, "alpha", 1f, 0f)
-//                fadeout.duration = 2000
-//                fadeout.doOnEnd {
-//                  //  withContext(Dispatchers.Main) {
-////                logException()
-//                        navigateToHome()
-//                  //  }
-//                }
-//                fadeout.start()
-//               // ivLauncher.animation=fadeout
-//            }
-//           // delay(1000)
-//
-//        }
-
-//         causeNullPointerCrash()
     }
 
 
-    fun observe() {
+    private fun observe() {
         viewmodel.loginLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                    ///loading
-                  //  progressDialog.show()
                 }
 
                 is MyResource.isSuccess -> {
                     try {
 
-                        var data = it.data?.response
+                        val data = it.data?.response
 
-                        Log.e("sncskn", "skncsknv $data")
                         SharedPref.setString(PrefConstent.TOKEN, "")
                         data?.run {
                             SharedPref.setString(PrefConstent.TOKEN, accessToken)
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
                             SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
+//                            implement theme setting
                             if (data.backgroundTheme=="LIGHT"){
                                 SharedPref.setBoolean(PrefConstent.IS_DARK, false)
                             }else{
@@ -148,7 +108,6 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
                                 SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
                             }
                         }
-                      //  progressDialog.dismiss()
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e)
                         throw RuntimeException("login getotp")
@@ -156,7 +115,6 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
                 }
 
                 is MyResource.isError -> {
-                   // progressDialog.dismiss()
                 }
 
                 else -> {}
@@ -165,16 +123,10 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     }
 
     private fun navigateToHome() {
-        Log.e("sjndjsn", "realnumer $realnumer sknks $isLogin reset pin $isResetPin")
         if (isLogin) {
-            // if (isResetPin){
-            var bundle = Bundle()
+            val bundle = Bundle()
             bundle.putBoolean(PrefConstent.ISHOME, true)
             findNavController().navigate(R.id.projectfragment, bundle)
-//            }
-//            else {
-//                findNavController().navigate(R.id.homefragment)
-//            }
         } else {
             findNavController().navigate(R.id.loginFragment)
         }

@@ -10,7 +10,6 @@ constraintlayout = "2.1.4"
 lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
 composeBom = "2023.08.00"
-media3ExoplayerHls = "1.4.1"
 crashlytics="3.0.2"
 googledervice="4.4.2"
 [libraries]
@@ -34,9 +33,7 @@ exoplayer = "com.google.android.exoplayer:exoplayer:2.18.2"
 #exoplayer = "com.google.android.exoplayer:exoplayer-hls:2.18.1"
 exoplayerCore = "com.google.android.exoplayer:exoplayer-core:2.18.2"
 #videothumbnail = "com.arthenica:ffmpeg-kit-full:6.0-2"
-#videothumbnail = "com.github.wseemann:FFmpegMediaMetadataRetriever:1.0.15"
-videothumbnail = "com.arthenica:ffmpeg-kit-full:4.5.LTS"
-#bitmovin = "com.bitmovin.player:player:3.80.0"
+#videothumbnail = "com.arthenica:ffmpeg-kit-full:4.5.LTS"
 
 autoimageslider = "com.github.smarteist:autoimageslider:1.4.0"
 drawerlayout = "androidx.drawerlayout:drawerlayout:1.1.1"
@@ -58,7 +55,6 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3ExoplayerHls" }
 
 
 
@@ -67,7 +63,3 @@ androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 crashlyticsFirebase = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 googleService = { id = "com.google.gms.google-services", version.ref = "googledervice" }
-
-
-#implementation "androidx.media3:media3-exoplayer:1.5.1"
-#implementation "androidx.media3:media3-exoplayer-hls:1.5.1"

@@ -3,7 +3,9 @@ package com.streamefy.component.ui.dynamicview
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
@@ -35,20 +37,11 @@ class DynamicPlayer : BaseFragment<FragmentDynamicPlayerBinding>() {
             val webSettings = webview.settings
             webSettings.javaScriptEnabled = true
             webSettings.domStorageEnabled = true
-//            webSettings.userAgentString =
-//                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-
-            // Set a WebViewClient to handle navigation within the WebView
             webview.webViewClient = WebViewClient()
-
-            val tokenSecurityKey = "6cbb39d2-d451-4393-a3da-e4d33e5090f7"
-            val videoId = "06a93993-df8b-44c5-bf95-24d107ff5a95"
-            val expirationTimestamp = HashUtil.getExpirationTimestamp()
-
-            // Generate hash
-            val hash = HashUtil.generateHash(tokenSecurityKey, videoId, expirationTimestamp)
-
-
+            webview.webChromeClient = WebChromeClient()
+           // webview.isFocusable = true
+           // webview.isFocusableInTouchMode = true
+           // webview.requestFocus()
 //            videoUrl =
 //                "https://iframe.mediadelivery.net/embed/292623/06a93993-df8b-44c5-bf95-24d107ff5a95?token=$hash&expires=$expirationTimestamp"
 //            Log.e("sjncsjcnsj", "$expirationTimestamp sjncsjc $hash\n$videoUrl")
@@ -163,11 +156,60 @@ class DynamicPlayer : BaseFragment<FragmentDynamicPlayerBinding>() {
         webview.loadData(htmlContent, "text/html", "UTF-8")
     }
 
-    fun iframe(){
-        val url = "https://iframe.mediadelivery.net/embed/292623/06a93993-df8b-44c5-bf95-24d107ff5a95?token=2792dd697ee4b6184c421f65e99ded4a910692f1c84b401b71e6a857e4ce066c&expires=1726143915&autoplay=true&loop=false&muted=false&preload=true&responsive=true"
+    fun iframe()= with(binding){
+        val url="https://iframe.mediadelivery.net/embed/348613/73011535-0341-4e4f-8f7f-42a1a6246e88?token=efadd6587f7383f8f194cdb3fee8cb1d20ad30c4683a009b92b7a9608c9a6364&expires=1737122553&autoplay=true&loop=true&muted=true&preload=true&responsive=true"
+
+        webview.isFocusable = true
+        webview.isFocusableInTouchMode = true
+        webview.requestFocus()
+
+        webview.setOnKeyListener { v, keyCode, event ->
+            if (event?.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_LEFT,
+                    KeyEvent.KEYCODE_DPAD_RIGHT,
+                    KeyEvent.KEYCODE_DPAD_UP,
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        // Handle D-Pad navigation inside WebView content
+                        return@setOnKeyListener true
+                    }
+                    KeyEvent.KEYCODE_ENTER -> {
+                        // Handle the 'Enter' key to trigger actions in the WebView
+                        return@setOnKeyListener true
+                    }
+                    else -> {
+                        return@setOnKeyListener false
+                    }
+                }
+            }
+            return@setOnKeyListener false
+        }
+        webview.evaluateJavascript("""
+     document.addEventListener('DOMContentLoaded', function() {
+        // Select buttons like fullscreen, forward, backward, settings
+        var fullscreenButton = document.querySelector('button.fullscreen');  // Adjust selector
+        var forwardButton = document.querySelector('button.forward');  // Adjust selector
+        var backwardButton = document.querySelector('button.backward');  // Adjust selector
+        var settingsButton = document.querySelector('button.settings');  // Adjust selector
+
+        // Focus on specific buttons
+        if (fullscreenButton) {
+            fullscreenButton.focus();  // Focus on fullscreen button
+        }
+        if (forwardButton) {
+            forwardButton.focus();  // Focus on forward button
+        }
+        if (backwardButton) {
+            backwardButton.focus();  // Focus on backward button
+        }
+        if (settingsButton) {
+            settingsButton.focus();  // Focus on settings button
+        }
+    });
+""", null)
 
         // Load the URL into the WebView
-        binding.webview.loadUrl(url)
+        webview.loadUrl(url)
     }
 
 

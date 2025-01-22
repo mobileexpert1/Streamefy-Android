@@ -48,6 +48,7 @@
         android:name="com.streamefy.component.ui.video.VideoFragment"
         android:label="videofragment"
         tools:layout="@layout/fragment_video" />
+
     <fragment
         android:id="@+id/dynamicscreen"
         android:name="com.streamefy.component.ui.dynamicview.DynamicPlayer"

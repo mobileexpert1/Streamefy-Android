@@ -30,7 +30,7 @@ object AuthClient {
 
 
         val gson = GsonBuilder().setLenient().create()
-        var okHttpClient = OkHttpClient.Builder()
+        val okHttpClient = OkHttpClient.Builder()
             .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
             .connectTimeout(10, TimeUnit.MINUTES)
             .writeTimeout(10, TimeUnit.MINUTES)
@@ -44,13 +44,13 @@ object AuthClient {
         Log.e("sjkdnskjnf", "sknbcksj$token")
 
         okHttpClient.addInterceptor { chain ->
-            var origin = chain.request()
-            var newRequest = origin.newBuilder()
+            val origin = chain.request()
+            val newRequest = origin.newBuilder()
                 .addHeader("accept", "text/plain")
                 .addHeader("Content-Type", "application/json")
                 .apply {
                     if (token!=null) {
-                        if (token?.isNotEmpty()!!) {
+                        if (token.isNotEmpty()) {
                             addHeader("Authorization", "Bearer ${token}")
                         }
                     }
@@ -63,7 +63,7 @@ object AuthClient {
 
 
         okHttpClient.addInterceptor(interceptor)
-        var retrofit = Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .baseUrl(ServerUrls.BASE_AUTH_URL)

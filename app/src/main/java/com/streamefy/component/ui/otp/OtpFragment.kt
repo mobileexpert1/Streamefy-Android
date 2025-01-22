@@ -295,7 +295,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
-
+//     get otp and resent otp response
     private fun getOtp() {
         viewModel.getOtp(requireActivity(), OTPRequest(phone))
         viewModel.otpLiveData.observe(viewLifecycleOwner) {
@@ -324,6 +324,7 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
         }
     }
 
+//    get verification result and navigate to the Project Screen
     private fun verificationObserv() {
         viewModel.vericationData.observe(viewLifecycleOwner) {
             when (it) {

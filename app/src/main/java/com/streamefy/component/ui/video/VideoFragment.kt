@@ -22,6 +22,9 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.C.TrackType
+import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
@@ -50,7 +53,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-
 
 
 class VideoFragment : BaseFragment<FragmentVideoBinding>() {
@@ -101,7 +103,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         arguments?.run {
             thumbnailS3bucketId = getString(PrefConstent.VIDEO_THUMB).toString()
-            var newDuration = getString(PrefConstent.PLAY_BACK_DURATION).toString()
+            val newDuration = getString(PrefConstent.PLAY_BACK_DURATION).toString()
 
             nextVideoId = getString(PrefConstent.VIDEO_ID).toString()
             if (getString(PrefConstent.MEDIA_ID).toString().isNotEmpty()) {
@@ -136,7 +138,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
-
+    //     Key movement for all buttons
     private fun keyMove() = with(binding) {
         sbVideoSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
@@ -452,6 +454,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Handle video thumb transition and listener of video seekbar
     private fun videoSeekListener() = with(binding) {
         sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -467,6 +470,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         })
     }
 
+    //    Handle remote forward, backward and play/pause key
     private fun mediaKey(streamEnum: StreamEnum) = with(binding) {
         when (streamEnum) {
             StreamEnum.KEYCODE_MEDIA_FAST_FORWARD -> {
@@ -512,18 +516,19 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         playerHandler = PlayerHandler(requireActivity(), playerView)
     }
 
+    //      Get new video from server
     private fun newVideo() {
         viewModel.getVideo(requireContext(), nextVideoId)
         observe()
     }
 
+    //     Handle video response
     private fun observe() {
         viewModel.videoLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isSuccess -> {
                     val data = it.data?.response
                     if (data != null) {
-
                         dismissProgress()
                         videoUrl = data.hlsUrl
                         oldEventId = eventId
@@ -568,9 +573,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     private var isNewVideoAvailable = false
+
+    //    Handle all buttons clicks
     private fun clickme() = with(binding) {
         ivBack.setOnClickListener { findNavController().popBackStack() }
-
         ivPlay.setOnClickListener {
             toShowBackButton()
             val params = ivPlay.layoutParams as LinearLayout.LayoutParams
@@ -638,24 +644,26 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //    Show thumb while seeking the video
     private fun seekThumb(seekDuration: Long, isForward: Boolean) {
 
         lifecycleScope.launch(Dispatchers.IO) {
-            if (seekDuration>=10000L) {
+            if (seekDuration >= 10000L) {
                 withContext(Dispatchers.Main) {
                     playerHandler.pause()
                 }
-              launch { captureThumbnail()}.join()
+                launch { captureThumbnail() }.join()
                 withContext(Dispatchers.Main) {
                     delay(100)
                     binding.ivSeekThumb.visible()  // Ensure the ImageView is visible
                 }
-            }else{
-                withContext(Dispatchers.Main) {binding.ivSeekThumb.gone()}
+            } else {
+                withContext(Dispatchers.Main) { binding.ivSeekThumb.gone() }
             }
         }
     }
 
+    //    Handle play/pause functionality
     fun playPauseHandle() = with(binding) {
         visibilityCount = 0
         if (playerHandler.player != null) {
@@ -683,6 +691,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Handle next video play functionality
     fun playNextVideo() = with(binding) {
         bufferCount = 0
         playerHandler.player?.setVideoSurface(null)
@@ -735,6 +744,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Reset all view after ended the video
     private fun resetView() = with(binding) {
         if (playerHandler.player != null) {
             playerHandler.player?.stop()
@@ -756,7 +766,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.sbVideoSeek.progress = 0
     }
 
-    private var surfaceView: SurfaceView? = null
+    //    Video listener
     private fun listener() = with(binding) {
         showProgress()
 
@@ -772,12 +782,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     homeFragment.isLastPlay = true
                     videoTranisition()
                     binding.sbVideoSeek.max = 100
-                        tvDuration.text = playerHandler.getTotalLength()
-                        getLengthOnce = false
-                        ivPlay.setImageResource(R.drawable.ic_video_pause)
+                    tvDuration.text = playerHandler.getTotalLength()
+                    getLengthOnce = false
+                    ivPlay.setImageResource(R.drawable.ic_video_pause)
                     isEnded = false
                     updateProgressBar()
-
+                    //updateResulation()
                 } else if (playbackState == Player.STATE_ENDED) {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
@@ -793,41 +803,61 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
 
             override fun onTracksChanged(tracks: Tracks) {
+//                Get all video resolution
                 if (!isOpenSettingFirst) {
                     isOpenSettingFirst = true
                     qualityList.clear()
+
                     lifecycleScope.launch(Dispatchers.IO) {
                         val data =
                             QualityModel(
-                                "Auto", true,
+                                "Auto", false,
                                 480,
                                 854
                             )
                         qualityList.add(data)
                         for (group in tracks.getGroups()) {
-                            val trackCount = group.length
-                            for (j in 0 until trackCount) {
-                                val format = group.getTrackFormat(j)
-                                // Check if the format is a video format using supported properties
-                                if (format.width > 0 && format.height > 0) {
-                                    val width = format.width
-                                    val height = format.height
-                                    val isSelected = false
+                            if (group.getType() == C.TRACK_TYPE_VIDEO) {
+                                // Log.d("ExoPlayer", "Current resolution playing: $group")
 
-                                    qualityList.add(QualityModel(
-                                        height.toString() + "p", isSelected,
-                                        height,
-                                        width))
 
+                                val trackCount = group.length
+                                for (j in 0 until trackCount) {
+                                    val format = group.getTrackFormat(j)
+                                    val isSelected = group.isTrackSelected(j)
+                                    Log.d(
+                                        "ExoPlayer",
+                                        "All resolution playing: $isSelected \nformat $format\n"
+                                    )
+                                    // Check if the format is a video format using supported properties
+
+                                    if (format.width > 0 && format.height > 0) {
+                                        val mwidth = format.width
+                                        val mheight = format.height
+                                        val isSelected = false
+
+                                        qualityList.add(
+                                            QualityModel(
+                                                title = mheight.toString() + "p",
+                                                height = mheight,
+                                                width = mwidth
+                                            )
+                                        )
+
+                                    }
                                 }
                             }
 
                         }
-                        withContext(Dispatchers.Main) { quality() }
+
+                        withContext(Dispatchers.Main) {
+                            quality()
+                        }
                     }
                 }
 
             }
+
             override fun onPlayerError(error: PlaybackException) {
                 Log.e("ExoPlayerError", "by video fragment Playback error: " + error.message, error)
             }
@@ -838,13 +868,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
         })
 
-       // getFrameFromPlayerView()
+        // getFrameFromPlayerView()
     }
 
 
+    var isFraming = true
+    var frameList = ArrayList<Pair<Long, File>>()
 
-
-
+    //    Video frame extraction by ffmpeg library which is not in use
     fun extractFramesToCache() {
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -873,7 +904,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 "-sws_flags", "fast_bilinear",     // Use faster scaling method
                 "-hwaccel", "cuda",  // Enable CUDA acceleration
                 "-hwaccel_output_format", "cuda",
-                        // "-strftime", "1", // Enable using strftime formatting in output filename
+                // "-strftime", "1", // Enable using strftime formatting in output filename
                 File(cacheDir, "frame_%03d.png").absolutePath           // Output path
 //                File(cacheDir, "frame_%03d.png").absolutePath           // Output path
             )
@@ -892,8 +923,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
-    var isFraming = true
-    var frameList = ArrayList<Pair<Long, File>>()
+    //    Get saved frame from cache
     fun getPngFramesFromCache(): ArrayList<Pair<Long, File>>? {
         val cacheDir = File(requireActivity().cacheDir, "frames")
         if (!cacheDir.exists()) {
@@ -919,6 +949,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         return frameList
     }
 
+    //    Capture video frame
     private fun captureThumbnail() {
         try {
             lifecycleScope.launch(Dispatchers.Main) {
@@ -934,7 +965,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 setImageBitmap(bitmap)
                                 delay(200)
                                 playerHandler.play()
-                                visibilityCount=0
+                                visibilityCount = 0
                                 playerHandler.stopHandler()
                                 updateProgressBar()
                             }
@@ -949,9 +980,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
-    var videoSurface:Surface?=null
+    var videoSurface: Surface? = null
 
-    private fun texture()= with(binding){
+    //    Add textureview view to play the video and initialize video frame
+    private fun texture() = with(binding) {
         val textureView = binding.textureView
         textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(
@@ -959,7 +991,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 width: Int,
                 height: Int
             ) {
-                videoSurface=Surface(surface)
+                videoSurface = Surface(surface)
                 playerHandler.player?.setVideoSurface(videoSurface)
             }
 
@@ -969,9 +1001,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 height: Int
             ) {
             }
+
             override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
                 playerHandler.player?.setVideoSurface(null)
-             return true
+                return true
             }
 
             override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
@@ -980,6 +1013,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //    Handle video and thumb transition
     fun videoTranisition() = with(binding) {
         ivVideoThumb.animate()
             .alpha(0f)
@@ -999,6 +1033,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             .start()
     }
 
+    //    Show video thumb
     private fun thumbShow() = with(binding) {
         ivVideoThumb.run {
             alpha = 0f
@@ -1014,6 +1049,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Handle volume increase
     private fun volumeUp() {
         if (volumeCount <= 99) {
             volumeCount += 1
@@ -1022,6 +1058,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //     Handle volume decrease
     private fun volumeDown() {
         if (volumeCount >= 1) {
             volumeCount -= 1
@@ -1030,6 +1067,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //    Handle video forwarding functionality
     private fun forward() {
         if (::playerHandler.isInitialized) {
             val current = playerHandler.player?.currentPosition
@@ -1047,6 +1085,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Handle video forwarding by 10 sec
     private fun forward10() {
         if (::playerHandler.isInitialized) {
             val current = playerHandler.player?.currentPosition
@@ -1063,6 +1102,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //    Handle all view focus
     private fun selectorFocus() = with(binding) {
         ivSkipBack.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
@@ -1106,7 +1146,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 focusView = VideoEnum.SETTING
             }
         }
-
         ivVolume.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
@@ -1173,35 +1212,42 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
 
+    //    Handle video quality and setting button click
     private fun quality() = with(binding) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            launch(Dispatchers.Main) {
+                updateResulation()
+            }.join()
+            withContext(Dispatchers.Main) {
+                ivSetting.setOnClickListener {
+                    if (clSettingsMenu.isVisible) {
+                        clSettingsMenu.gone()
 
-        ivSetting.setOnClickListener {
-            if (clSettingsMenu.isVisible) {
-                clSettingsMenu.gone()
-
-            } else {
-                qualityList.forEachIndexed { index, qualityModel ->
-                    if (qualityModel.isSelected) {
-                        clSettingsMenu.requestFocus()
-                        rvQuality.requestFocus()
-                        rvQuality.post {
-                            rvQuality.getChildAt(index)?.requestFocus()
-                        }
                     } else {
-                        rvQuality.post {
-                            rvQuality.getChildAt(index)?.clearFocus()
+                        qualityList.forEachIndexed { index, qualityModel ->
+                            if (qualityModel.isSelected) {
+                                clSettingsMenu.requestFocus()
+                                rvQuality.requestFocus()
+                                rvQuality.post {
+                                    rvQuality.getChildAt(index)?.requestFocus()
+                                }
+                            } else {
+                                rvQuality.post {
+                                    rvQuality.getChildAt(index)?.clearFocus()
+                                }
+                            }
                         }
+                        qualityAdapter.notifyDataSetChanged()
+                        rvQuality.adapter = qualityAdapter
+                        clSettingsMenu.visible()
                     }
                 }
-                qualityAdapter.notifyDataSetChanged()
-                rvQuality.adapter = qualityAdapter
-                clSettingsMenu.visible()
+                qualityInit()
             }
         }
-        qualityInit()
-
     }
 
+    //    Initialize video quality list
     private fun qualityInit() = with(binding) {
         rvQuality.apply {
             setHasFixedSize(true)
@@ -1219,8 +1265,61 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
             adapter = qualityAdapter
         }
+
     }
 
+    private fun updateResulation() {
+        if (playerHandler.player != null) {
+            if (playerHandler.player?.isPlaying!!) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    var height = 0
+                    //  var data = ArrayList<QualityModel>()
+                    launch(Dispatchers.Main) {
+                        playerHandler.player?.run {
+                            if (videoFormat != null) {
+                                videoFormat?.run {
+                                    height = this.width
+                                }
+
+                            }
+                        }
+                    }.join()
+
+                    launch(Dispatchers.IO) {
+                        if (height > 0) {
+                            // val data = qualityList.indexOfLast  { height == it.width }
+                            if (qualityList.isEmpty()) {
+                                qualityList.forEachIndexed { index, qualityModel ->
+                                    if (qualityModel.width == height) {
+                                        qualityModel.isSelected = true
+                                    } else {
+                                        qualityModel.isSelected = false
+                                    }
+                                }
+
+                            }
+
+//                            qualityAdapter.currentResolution(qualityList)
+//                            withContext(Dispatchers.Main){
+//                               binding.rvQuality.apply {
+//                                    adapter=qualityAdapter
+//                                }
+//                            }
+                            Log.d(
+                                "ExoPlayer",
+                                "Current resolution playing: detected $height \n ${qualityList}"
+                            )
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+
+
+    //    Handle video volume functionality
     private fun volume() = with(binding) {
 
         volumeManager.setOnVolumeChangeListener { volumePercentage ->
@@ -1252,6 +1351,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         volumeManager.startMonitoring()
     }
 
+    //    Handle following functionality
+//    - update video seek every second
+//    - Hide video tools after 5 seconds
+//    - Show next video thumb before 10 seconds
     var time: Long = 10
     private fun updateProgressBar() {
         if (playerHandler.player != null) {
@@ -1352,6 +1455,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    //    Show video tolls
     private fun toShowBackButton() = with(binding) {
         binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
         binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
@@ -1360,13 +1464,14 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.playerView.clearFocus()
     }
 
+    //    Handle remote key after all tools where hide
     private fun handleKey(view: View) {
 
         view.setFocusableInTouchMode(true)
         view.requestFocus()
         view.setOnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN) {
-                visibilityCount=0
+                visibilityCount = 0
                 when (keyCode) {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         toShowBackButton()
@@ -1521,6 +1626,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     override fun netStatus() {
     }
 
+    //    Save video play back duration
     private fun savePlayback(
         event: Int,
         mediaId: Int,
@@ -1558,6 +1664,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+    //    Handle all view focus
     var focusView = VideoEnum.BACKWARD
     fun viewFocus() = with(binding) {
         playerView.clearFocus()

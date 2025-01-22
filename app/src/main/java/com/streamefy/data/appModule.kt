@@ -21,7 +21,6 @@ var appModule = module {
 
     single {  ErrorHandler(androidContext()) }
     single {  CircularProgressDialog(androidContext()) }
-//    single <AuthService> { AuthClient.retrofit(androidContext()).create(AuthService::class.java) }
     factory  <AuthService> { AuthClient.retrofit(androidContext()).create(AuthService::class.java) }
     single <ApiService> { RetrofitClient.retrofit(androidContext()).create(ApiService::class.java) }
     viewModel { LoginViewmodel(get()) }
@@ -30,10 +29,4 @@ var appModule = module {
     viewModel { HomeVm(get()) }
     viewModel { ProjectsVM(get()) }
     viewModel { VideoVM(get()) }
-
-
-//    factory { LoginViewmodel(get()) }
-//    factory { OTPVM(get()) }
-//    factory { PinVM(get()) }
-//    factory { HomeVm(get()) }
 }

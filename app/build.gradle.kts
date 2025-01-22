@@ -18,15 +18,15 @@ android {
 //        versionCode = 11
 //        versionName = "1.0.11"
         // cupcake for amazon
-//        versionCode = 9
-//        versionName = "1.0.9"
+        versionCode = 10
+        versionName = "1.0.10"
 
 //        fire stick streamefy
-//        versionCode = 19
-//        versionName = "1.0.20"
+//        versionCode = 21
+//        versionName = "1.0.22"
 //        streameyf google play store
-        versionCode = 15
-        versionName = "1.0.15"
+//        versionCode = 15
+//        versionName = "1.0.15"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -55,12 +55,16 @@ android {
             versionNameSuffix = "-streamefy"
             signingConfig = signingConfigs.getByName("streamefy")
             buildConfigField("String", "Admin_email", "\"appsdev096@gmail.com\"")
-            buildConfigField("String", "Password", "\"Appsdev096#\"")
+            buildConfigField("String", "Password", "\"Admin@123\"")
+//            buildConfigField("String", "Admin_email", "\"ekamjot-kaur@cssoftsolutions.com\"")
+//            buildConfigField("String", "Password", "\"Admin@123\"")
         }
         create("cupcake") {
             applicationId = "com.tech.cupcake"
             versionNameSuffix = "-cupcake"
             signingConfig = signingConfigs.getByName("cupcake")
+//            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
+//            buildConfigField("String", "Password", "\"Admin123#\"")
             buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
             buildConfigField("String", "Password", "\"Admin123#\"")
 //            for json name

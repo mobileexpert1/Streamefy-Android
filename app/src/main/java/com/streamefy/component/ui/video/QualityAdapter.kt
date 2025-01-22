@@ -130,4 +130,23 @@ class QualityAdapter(
         Log.e("sncksnc", "newList $newList")
         notifyDataSetChanged()
     }
+
+
+    fun currentResolution(newList: ArrayList<QualityModel>) {
+        list.clear()
+        list.addAll(newList)
+//        if (list.isEmpty()) {
+//            list.forEachIndexed { index, qualityModel ->
+//                if (index==newIndex){
+//                    qualityModel.isSelected=true
+//                }else{
+//                    qualityModel.isSelected=false
+//                }
+//            }
+//
+//        }
+        Log.e("sncksnc", " old list $list new list $newList")
+        notifyDataSetChanged()
+    }
+
 }

@@ -67,89 +67,73 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         app_background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         binding.ivbackground.loadUrl(app_background)
         otpFieldFocus()
-        binding.apply {
-            tvResetPin.invisible()
-                if (projectName.isNotEmpty()) {
-                    textView2.setText(projectName)
-                } else {
-                    textView2.setText("Welcome")
-                }
-
-            ivBack.setOnClickListener {
+        allClicks()
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
                     findNavController().navigateUp()
-            }
-            ivBack.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
-                    params.width =
-                        resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
-                    params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
-                    ivBack.layoutParams = params
-                } else {
-                    val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
-                    params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
-                    params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
-                    ivBack.layoutParams = params
-
                 }
-
-            }
-            tvProceed.setOnClickListener {
-
-                otp = otpView.text.toString()
-                otp.run {
-                    otp = this
-                    if (otp.isEmpty()) {
-                        ShowError.handleError.handleError(ErrorCodeManager.PIN_EMPTY)
-                    } else if (otp.length < 4) {
-                        ShowError.handleError.handleError(ErrorCodeManager.PIN_LENGTH)
-                    } else {
-
-                        viewModel.setPin(requireActivity(), otp, projectId.toInt())
-                        observe()
-                    }
-                }
-            }
-
-            otpView.requestFocus()
-            otpView.setOtpCompletionListener {
-                tvProceed.requestFocus()
-                requireActivity().hideKey()
-            }
-
-            otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
-
-            otpView.addTextChangedListener {
-                otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
-            }
-
-
-            requireActivity().onBackPressedDispatcher.addCallback(
-                viewLifecycleOwner,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                            findNavController().navigateUp()
-                    }
-                })
-
-            tvResetPin.setOnClickListener {
-                SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, true)
-
-                ConfirmPinDialog(requireContext()) {
-                    if (it) {
-                        viewModel.resetPin(
-                            requireContext(),
-                            ResetPinRequest(projectId.toInt(), phone)
-                        )
-                        resetObserve()
-                    }
-                }.show()
-            }
-
-        }
+            })
         resetColor()
     }
 
+//      Handle all clicks and project checks
+    fun allClicks(){
+    binding.apply {
+        tvResetPin.invisible()
+        if (projectName.isNotEmpty()) {
+            textView2.text = projectName
+        } else {
+            textView2.text = "Welcome"
+        }
+
+        ivBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        tvProceed.setOnClickListener {
+
+            otp = otpView.text.toString()
+            otp.run {
+                otp = this
+                if (otp.isEmpty()) {
+                    ShowError.handleError.handleError(ErrorCodeManager.PIN_EMPTY)
+                } else if (otp.length < 4) {
+                    ShowError.handleError.handleError(ErrorCodeManager.PIN_LENGTH)
+                } else {
+
+                    viewModel.setPin(requireActivity(), otp, projectId.toInt())
+                    observe()
+                }
+            }
+        }
+        otpView.requestFocus()
+        otpView.setOtpCompletionListener {
+            tvProceed.requestFocus()
+            requireActivity().hideKey()
+        }
+        otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
+        otpView.addTextChangedListener {
+            otpView.cursorColor = ContextCompat.getColor(requireContext(), R.color.black)
+        }
+        tvResetPin.setOnClickListener {
+            SharedPref.setBoolean(PrefConstent.ISCONFIRM_PIN, true)
+
+            ConfirmPinDialog(requireContext()) {
+                if (it) {
+                    viewModel.resetPin(
+                        requireContext(),
+                        ResetPinRequest(projectId.toInt(), phone)
+                    )
+                    resetObserve()
+                }
+            }.show()
+        }
+
+    }
+    }
+
+//    Handle themes functionality
     private fun resetColor()= with(binding) {
         val isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
         if (isDark) {
@@ -164,9 +148,8 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         }
     }
 
-
+//      Handle view focus and key movement
     private fun otpFieldFocus() = with(binding) {
-
         otpView.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 otpView.setItemBackground(
@@ -227,10 +210,26 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
                 else -> {}
             }
         }
+        ivBack.setOnFocusChangeListener { v, hasFocus ->
+        if (hasFocus) {
+            val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+            params.width =
+                resources.getDimensionPixelSize(R.dimen._17sdp) // Adjust to your desired size
+            params.height = resources.getDimensionPixelSize(R.dimen._17sdp)
+            ivBack.layoutParams = params
+        } else {
+            val params = ivBack.layoutParams as ConstraintLayout.LayoutParams
+            params.width = resources.getDimensionPixelSize(R.dimen._15sdp) // Original size
+            params.height = resources.getDimensionPixelSize(R.dimen._15sdp)
+            ivBack.layoutParams = params
 
+        }
 
     }
 
+    }
+
+//     get PIN response
     private fun observe() {
         viewModel.pinData.observe(viewLifecycleOwner) {
             when (it) {
@@ -258,6 +257,7 @@ class PinAuthenticationFragment : BaseFragment<FragmentPinAuthenticationBinding>
         }
     }
 
+//      get reset PIN response which is not in use
     private fun resetObserve() {
         viewModel.resetData.observe(viewLifecycleOwner) {
             when (it) {

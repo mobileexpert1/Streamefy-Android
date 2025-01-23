@@ -272,6 +272,9 @@ class PlayerHandler(
             .setMaxVideoSize(resolution.width, resolution.height)
             .build()
         trackSelector.setParameters(trackSelectionParameters)
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
+        val estimatedBandwidth = bandwidthMeter.getBitrateEstimate()
+        Log.e("bandwidth","starting $estimatedBandwidth")
     }
 
 
@@ -296,33 +299,27 @@ class PlayerHandler(
 //            else -> {
 //                Pair(1080, 1920)
 //            }
-
+Log.e("bandwidth","bandwidth $estimatedBandwidth")
         val resolution = when {
-            //  estimatedBandwidth >= 5000000 -> {
-            estimatedBandwidth >= 600000 -> {
-                // High bandwidth, select 1080p (landscape)
+
+            estimatedBandwidth <= 600000 -> {
                 Pair(352, 240)
             }
-            estimatedBandwidth >= 800000 -> {
-                // Medium bandwidth, select 720p
+            estimatedBandwidth <= 800000 && estimatedBandwidth>600000 -> {
                 Pair(640, 360)
             }
-            estimatedBandwidth >= 1400000 -> {
-                // Lower bandwidth, select 480p
+            estimatedBandwidth <= 1400000 && estimatedBandwidth>800000 -> {
                 Pair(842, 480)
             }
-            estimatedBandwidth >= 2800000 -> {
-                // Lower bandwidth, select 480p
+            estimatedBandwidth <= 2800000 && estimatedBandwidth>1400000  -> {
                 Pair(1280, 720)
             }
-            estimatedBandwidth >= 5000000 -> {
-                // Lower bandwidth, select 480p
+            estimatedBandwidth <= 5000000 && estimatedBandwidth>2800000-> {
                 Pair(1920, 1080)
             }
             else -> {
                 Pair(1080, 1920)
             }
-
 
         }
         val trackSelectionParameters = trackSelector.buildUponParameters()

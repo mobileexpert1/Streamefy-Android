@@ -44,12 +44,12 @@ class VolumeManager(private val context: Context) {
         }
 
 
-        Log.e("hdhhdhds", "newVolume $newVolume gdgrgr $currentVolume   volumePercentage " )
+       // Log.e("hdhhdhds", "newVolume $newVolume gdgrgr $currentVolume   volumePercentage " )
     }
 
     private fun onVolumeChanged(volumePercentage: Int) {
         // Call the listener with the new volume percentage
-        Log.e("VolumeControl", "$volumePercentage ")
+      //  Log.e("VolumeControl", "$volumePercentage ")
 
         volumeChangeListener?.invoke(volumePercentage)
     }
@@ -65,7 +65,7 @@ class VolumeManager(private val context: Context) {
         val clampedPercentage = percentage.coerceIn(0, 100)
         var maxvolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val volume = (clampedPercentage / 100f * maxvolume).toInt()
-        Log.e("hdhhdhds", "Percentage: $clampedPercentage, Volume: $volume, Max Volume: $maxVolume")
+       // Log.e("hdhhdhds", "Percentage: $clampedPercentage, Volume: $volume, Max Volume: $maxVolume")
 
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0)
 

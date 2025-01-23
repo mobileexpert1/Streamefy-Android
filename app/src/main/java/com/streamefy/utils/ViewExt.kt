@@ -109,8 +109,64 @@ fun View.remoteKey(keyBack: (StreamEnum) -> Unit) {
                     keyBack.invoke(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
                     return@OnKeyListener true
                 }
+//                KeyEvent.KEYCODE_DPAD_CENTER -> {
+//                    keyBack.invoke(StreamEnum.KEYCODE_DPAD_CENTER)
+//                    return@OnKeyListener true
+//                }
 
             }
+        }
+        false
+    })
+}
+fun View.videoSeekKey(keyBack: (StreamEnum) -> Unit) {
+
+    setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+        Log.e("mremote","kckdnc $keyCode event $event")
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    keyBack.invoke(StreamEnum.DOWN_DPAD_KEY)
+                    return@OnKeyListener true
+                }
+
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    keyBack.invoke(StreamEnum.UP_DPAD_KEY)
+                    return@OnKeyListener true
+                }
+
+                KeyEvent.KEYCODE_DPAD_LEFT -> {
+                    keyBack.invoke(StreamEnum.LEFT_DPAD_KEY)
+                    return@OnKeyListener true
+                }
+
+                KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                    keyBack.invoke(StreamEnum.RIGHT_DPAD_KEY)
+                    return@OnKeyListener true
+                }
+
+                KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                    return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_REWIND)
+                    return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
+                    return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_DPAD_CENTER -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_DPAD_CENTER)
+                    return@OnKeyListener true
+                }
+
+            }
+        }
+        else if (event.action==KeyEvent.ACTION_UP){
+            keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
+            return@OnKeyListener true
         }
         false
     })

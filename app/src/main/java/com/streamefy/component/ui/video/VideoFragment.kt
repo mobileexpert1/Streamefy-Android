@@ -12,6 +12,7 @@ import android.view.Surface
 import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -46,6 +47,7 @@ import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.remoteKey
 import com.streamefy.utils.showMessage
+import com.streamefy.utils.videoSeekKey
 import com.streamefy.utils.visible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -85,6 +87,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var videoCount = 0
     var isVolume = false
     var bufferCount = 0
+    var currentDuration = 0L
 
     companion object {
         lateinit var videoFragment: VideoFragment
@@ -303,7 +306,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 else -> {}
             }
         }
-        ivSkipForward.remoteKey {
+        ivSkipForward.videoSeekKey {
             mediaKey(it)
             visibilityCount = 0
             when (it) {
@@ -321,6 +324,21 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     sbVideoSeek.requestFocus()
+                }
+
+                StreamEnum.KEYCODE_DPAD_CENTER -> {
+                    // sbVideoSeek.requestFocus()
+                    Log.e("longpress", "long $currentDuration")
+                    val duration = playerHandler.getDuration()
+                    val count = currentDuration + 10000
+                    val progress = (count * 100 / duration.toDouble()).toInt()
+                    sbVideoSeek.progress = progress
+                    currentDuration = count
+                    playerHandler.pause()
+
+                }
+                StreamEnum.REMOVE_LONG_PRESS -> {
+//                    removed callbacke
                 }
 
                 else -> {}
@@ -589,11 +607,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivSkipForward.setOnClickListener {
             toShowBackButton()
-            val current = playerHandler.player?.currentPosition
-            val duration = playerHandler.player?.duration
-            val count = current!! + 10000
+            //  val current = playerHandler.player?.currentPosition
+//            val duration = playerHandler.player?.duration
+            val duration = playerHandler.getDuration()
+            val count = currentDuration + 10000
 
-            if (duration!! > count) {
+            val progress = (count * 100 / duration.toDouble()).toInt()
+            sbVideoSeek.progress = progress
+
+
+            if (duration > count) {
                 playerHandler.seekTo(count)
                 lifecycleScope.launch(Dispatchers.IO) {
                     seekThumb(count, true)
@@ -604,7 +627,23 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     seekThumb(duration, true)
                 }
             }
+            currentDuration = count
         }
+        ivSkipForward.setOnLongClickListener(object : OnLongClickListener {
+            override fun onLongClick(v: View?): Boolean {
+
+                Log.e("longpress", "long $currentDuration")
+                val duration = playerHandler.getDuration()
+                val count = currentDuration + 10000
+                val progress = (count * 100 / duration.toDouble()).toInt()
+                sbVideoSeek.progress = progress
+                currentDuration = count
+                playerHandler.pause()
+                return true
+            }
+
+        })
+
         ivSkipBack.setOnClickListener {
             toShowBackButton()
             playerHandler.seekBackward(10) {
@@ -678,7 +717,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 if (isEnded) {
                     playerHandler.player?.seekTo(0)
                 } else {
-                    playerHandler.play()
+                    playerHandler.player?.seekTo(currentDuration)
+
+//                    playerHandler.play()
                 }
                 if (ivPlay.isFocused) {
                     ivPlay.setImageResource(R.drawable.ic_selected_pause)
@@ -787,7 +828,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     ivPlay.setImageResource(R.drawable.ic_video_pause)
                     isEnded = false
                     updateProgressBar()
-                    //updateResulation()
+                    updateResulation()
                 } else if (playbackState == Player.STATE_ENDED) {
                     ivPlay.setImageResource(R.drawable.ic_video_play)
                     isEnded = true
@@ -1215,9 +1256,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     //    Handle video quality and setting button click
     private fun quality() = with(binding) {
         lifecycleScope.launch(Dispatchers.IO) {
-            launch(Dispatchers.Main) {
-                updateResulation()
-            }.join()
             withContext(Dispatchers.Main) {
                 ivSetting.setOnClickListener {
                     if (clSettingsMenu.isVisible) {
@@ -1270,50 +1308,40 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     private fun updateResulation() {
         if (playerHandler.player != null) {
-            if (playerHandler.player?.isPlaying!!) {
-                lifecycleScope.launch(Dispatchers.IO) {
-                    var height = 0
-                    //  var data = ArrayList<QualityModel>()
-                    launch(Dispatchers.Main) {
-                        playerHandler.player?.run {
-                            if (videoFormat != null) {
-                                videoFormat?.run {
-                                    height = this.width
-                                }
-
+            // if (playerHandler.player?.isPlaying) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                var width = 0
+                launch(Dispatchers.Main) {
+                    playerHandler.player?.run {
+                        if (videoFormat != null) {
+                            videoFormat?.run {
+                                width = this.width
                             }
-                        }
-                    }.join()
-
-                    launch(Dispatchers.IO) {
-                        if (height > 0) {
-                            // val data = qualityList.indexOfLast  { height == it.width }
-                            if (qualityList.isEmpty()) {
-                                qualityList.forEachIndexed { index, qualityModel ->
-                                    if (qualityModel.width == height) {
-                                        qualityModel.isSelected = true
-                                    } else {
-                                        qualityModel.isSelected = false
-                                    }
-                                }
-
-                            }
-
-//                            qualityAdapter.currentResolution(qualityList)
-//                            withContext(Dispatchers.Main){
-//                               binding.rvQuality.apply {
-//                                    adapter=qualityAdapter
-//                                }
-//                            }
-                            Log.d(
-                                "ExoPlayer",
-                                "Current resolution playing: detected $height \n ${qualityList}"
-                            )
                         }
                     }
+                }.join()
 
+                launch(Dispatchers.IO) {
+                    if (width > 0) {
+                        if (qualityList.isNotEmpty()) {
+                            qualityList.forEachIndexed { index, qualityModel ->
+                                if (qualityModel.width == width) {
+                                    qualityModel.isSelected = true
+                                } else {
+                                    qualityModel.isSelected = false
+                                }
+                            }
+                            Log.d(
+                                "ExoPlayer",
+                                "Current resolution playing: detected $width \n ${qualityList}"
+                            )
+                        }
 
+                    }
                 }
+
+
+                //  }
             }
         }
     }
@@ -1360,6 +1388,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         if (playerHandler.player != null) {
             val duration = playerHandler.getDuration()
             val currentPosition = playerHandler.getCurrentPosition()
+            currentDuration = currentPosition
             val progress = (currentPosition * 100 / duration.toDouble()).toInt()
             binding.sbVideoSeek.progress = progress
             binding.tvCurrentLenght.text = playerHandler.getcurrent().toString()
@@ -1377,6 +1406,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 binding.ivSeekThumb.invisible()
             }
             visibilityCount++
+            Log.e("updatevideo", "update $currentDuration")
 
             if (isNewVideoAvailable) {
                 val video_show_count = duration - currentPosition

@@ -422,7 +422,6 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
 
     fun getcurrent(): String {
         val durationMillis = player?.currentPosition ?: 0L
-
         val totalSeconds = durationMillis / 1000
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
@@ -430,7 +429,14 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
     }
+    fun currentDuration(currentDuration: Long): String {
+        val totalSeconds = currentDuration / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
+    }
     fun getDuration(): Long {
         return player?.duration ?: 0L
     }
@@ -446,6 +452,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         // Format hours, minutes, and seconds to always show two digits
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
+
      fun getRemainsDuration(): String {
 
         val durationMillis = player?.duration ?: 0L
@@ -455,10 +462,17 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
-
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
+    }
+    fun getRemainsDuration(currentDuration: Long): String {
 
-
+        val durationMillis = player?.duration ?: 0L
+        var remains=durationMillis-currentDuration
+        val totalSeconds = remains / 1000
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
     var handler = Handler()

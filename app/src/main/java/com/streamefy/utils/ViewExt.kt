@@ -116,6 +116,16 @@ fun View.remoteKey(keyBack: (StreamEnum) -> Unit) {
 
             }
         }
+        else if (event.action==KeyEvent.ACTION_UP){
+            when(keyCode){
+                KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                }
+                KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_REWIND)
+                }
+            }
+        }
         false
     })
 }
@@ -165,9 +175,12 @@ fun View.videoSeekKey(keyBack: (StreamEnum) -> Unit) {
             }
         }
         else if (event.action==KeyEvent.ACTION_UP){
-            keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
-            return@OnKeyListener true
-        }
+            when (keyCode) {
+                KeyEvent.KEYCODE_DPAD_CENTER -> {
+                    keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
+                    return@OnKeyListener true
+                }
+        }}
         false
     })
 }

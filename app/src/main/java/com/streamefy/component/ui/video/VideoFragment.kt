@@ -9,10 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Surface
-import android.view.SurfaceView
 import android.view.TextureView
 import android.view.View
-import android.view.View.OnLongClickListener
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -24,8 +22,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.C.TrackType
-import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
@@ -88,7 +84,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var isVolume = false
     var bufferCount = 0
     var currentDuration = 0L
-
+    var isSeeking=true
     companion object {
         lateinit var videoFragment: VideoFragment
     }
@@ -158,14 +154,30 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_DPAD_UP -> {
-                        forward()
+//                        forward()
+                        if (isSeeking){
+                            if (playerHandler.player!=null){
+                                currentDuration=playerHandler.getCurrentPosition()
+                                isSeeking=false
+                            }
+                        }
+                        val count = currentDuration + 30000
+                        fastBackward(count)
                         return@OnKeyListener true
                     }
 
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
-                        playerHandler.seekBackward(30) {
-                            seekThumb(it, false)
+//                        playerHandler.seekBackward(30) {
+//                            seekThumb(it, false)
+//                        }
+                        if (isSeeking){
+                            if (playerHandler.player!=null){
+                                currentDuration=playerHandler.getCurrentPosition()
+                                isSeeking=false
+                            }
                         }
+                        val count = currentDuration - 30000
+                        fastBackward(count)
                         return@OnKeyListener true
                     }
 
@@ -182,6 +194,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
                         mediaKey(StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE)
                         return@OnKeyListener true
+                    }
+                }
+            }
+            else if (event.action==KeyEvent.ACTION_UP){
+                when(keyCode){
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
+                    }
+                    KeyEvent.KEYCODE_DPAD_UP ->{
+                        fastFBshow()
+                    }
+                    KeyEvent.KEYCODE_DPAD_DOWN->{
+                        fastFBshow()
                     }
                 }
             }
@@ -252,33 +280,53 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
                 }
             }
+            else if (event.action==KeyEvent.ACTION_UP){
+                when(keyCode){
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
+                    }
+                }
+            }
             false
         })
-        ivSkipBack.remoteKey {
+        ivSkipBack.videoSeekKey {
             mediaKey(it)
             visibilityCount = 0
             when (it) {
                 StreamEnum.LEFT_DPAD_KEY -> {
                     ivRefresh.requestFocus()
-
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
                     ivBack.requestFocus()
-
                 }
 
                 StreamEnum.UP_DPAD_KEY -> {
                     ivBack.requestFocus()
-
                 }
 
                 StreamEnum.RIGHT_DPAD_KEY -> {
                     ivPlay.requestFocus()
-
                 }
 
-
+                StreamEnum.KEYCODE_DPAD_CENTER -> {
+                    Log.e("longpress", "backward $currentDuration")
+                    if (isSeeking){
+                        if (playerHandler.player!=null){
+                            currentDuration=playerHandler.getCurrentPosition()
+                            isSeeking=false
+                        }
+                    }
+                    val count = (currentDuration - 10000)
+                    fastBackward(count)
+                }
+                StreamEnum.REMOVE_LONG_PRESS -> {
+                    Log.e("longpress", "backward center removed $currentDuration")
+                    fastFBshow()
+                }
                 else -> {}
             }
         }
@@ -329,16 +377,34 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 StreamEnum.KEYCODE_DPAD_CENTER -> {
                     // sbVideoSeek.requestFocus()
                     Log.e("longpress", "long $currentDuration")
-                    val duration = playerHandler.getDuration()
+                    if (isSeeking){
+                        if (playerHandler.player!=null){
+                            currentDuration=playerHandler.getCurrentPosition()
+                            isSeeking=false
+                        }
+                    }
                     val count = currentDuration + 10000
-                    val progress = (count * 100 / duration.toDouble()).toInt()
-                    sbVideoSeek.progress = progress
-                    currentDuration = count
-                    playerHandler.pause()
+                    fastForward(count)
+//                    val duration = playerHandler.getDuration()
+//                    val count = currentDuration + 10000
+//                    val progress = (count * 100 / duration.toDouble()).toInt()
+//                    sbVideoSeek.progress = progress
+//                    currentDuration = count
+//                    playerHandler.pause()
+//                    binding.apply {
+//                        tvDuration.text = playerHandler.getRemainsDuration(currentDuration)
+//                        tvCurrentLenght.text = playerHandler.currentDuration(currentDuration).toString()
+//                        ivSeekThumb.gone()
+//                    }
 
                 }
                 StreamEnum.REMOVE_LONG_PRESS -> {
-//                    removed callbacke
+                    Log.e("longpress", "center removed $currentDuration")
+                    val duration = playerHandler.getDuration()
+                    if (duration <= currentDuration) {
+                        currentDuration=duration
+                    }
+                    fastFBshow()
                 }
 
                 else -> {}
@@ -472,6 +538,42 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     }
 
+    fun fastForward(count: Long) = with(binding){
+        Log.e("longpress", "long $currentDuration")
+        val duration = playerHandler.getDuration()
+        val progress = (count * 100 / duration.toDouble()).toInt()
+        sbVideoSeek.progress = progress
+        currentDuration = count
+        playerHandler.pause()
+        binding.apply {
+            tvDuration.text = playerHandler.getRemainsDuration(currentDuration)
+            tvCurrentLenght.text = playerHandler.currentDuration(currentDuration).toString()
+            ivSeekThumb.gone()
+        }
+    }
+    fun fastBackward(count: Long) = with(binding){
+        val duration = playerHandler.getDuration()
+        currentDuration = if (count>10000) {
+            count
+        }else{ 0 }
+        val progress = (count * 100 / duration.toDouble()).toInt()
+        sbVideoSeek.progress = progress
+        playerHandler.pause()
+        binding.apply {
+            tvDuration.text = playerHandler.getRemainsDuration(currentDuration)
+            tvCurrentLenght.text = playerHandler.currentDuration(currentDuration).toString()
+            ivSeekThumb.gone()
+        }
+
+    }
+
+    fun fastFBshow(){
+        isSeeking=true
+        playerHandler.seekTo(currentDuration)
+        lifecycleScope.launch(Dispatchers.IO) {
+            seekThumb(currentDuration, true)
+        }
+    }
     //    Handle video thumb transition and listener of video seekbar
     private fun videoSeekListener() = with(binding) {
         sbVideoSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -492,7 +594,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     private fun mediaKey(streamEnum: StreamEnum) = with(binding) {
         when (streamEnum) {
             StreamEnum.KEYCODE_MEDIA_FAST_FORWARD -> {
-                forward10()
+//                forward10()
+                if (isSeeking){
+                    if (playerHandler.player!=null){
+                        currentDuration=playerHandler.getCurrentPosition()
+                        isSeeking=false
+                    }
+                }
+                val count = currentDuration + 10000
+                fastForward(count)
                 ivMedia.setImageResource(R.drawable.ic_remote_forward)
                 ivMedia.visible()
                 ivMedia.alpha = 1f
@@ -506,9 +616,17 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             }
 
             StreamEnum.KEYCODE_MEDIA_REWIND -> {
-                playerHandler.seekBackward(10) {
-                    seekThumb(it, false)
+//                playerHandler.seekBackward(10) {
+//                    seekThumb(it, false)
+//                }
+                if (isSeeking){
+                    if (playerHandler.player!=null){
+                        currentDuration=playerHandler.getCurrentPosition()
+                        isSeeking=false
+                    }
                 }
+                val count = currentDuration - 10000
+                fastBackward(count)
                 ivMedia.setImageResource(R.drawable.ic_remote_backward)
                 ivMedia.visible()
                 ivMedia.alpha = 1f
@@ -524,6 +642,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE -> {
                 playPauseHandle()
 
+            }
+            StreamEnum.REMOVE_LONG_PRESS -> {
+                fastFBshow()
             }
 
             else -> {}
@@ -607,48 +728,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         ivSkipForward.setOnClickListener {
             toShowBackButton()
-            //  val current = playerHandler.player?.currentPosition
-//            val duration = playerHandler.player?.duration
-            val duration = playerHandler.getDuration()
-            val count = currentDuration + 10000
-
-            val progress = (count * 100 / duration.toDouble()).toInt()
-            sbVideoSeek.progress = progress
-
-
-            if (duration > count) {
-                playerHandler.seekTo(count)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    seekThumb(count, true)
-                }
-            } else {
-                playerHandler.seekTo(duration)
-                lifecycleScope.launch(Dispatchers.IO) {
-                    seekThumb(duration, true)
-                }
-            }
-            currentDuration = count
         }
-        ivSkipForward.setOnLongClickListener(object : OnLongClickListener {
-            override fun onLongClick(v: View?): Boolean {
 
-                Log.e("longpress", "long $currentDuration")
-                val duration = playerHandler.getDuration()
-                val count = currentDuration + 10000
-                val progress = (count * 100 / duration.toDouble()).toInt()
-                sbVideoSeek.progress = progress
-                currentDuration = count
-                playerHandler.pause()
-                return true
-            }
-
-        })
 
         ivSkipBack.setOnClickListener {
             toShowBackButton()
-            playerHandler.seekBackward(10) {
-                seekThumb(it, false)
-            }
         }
         ivRefresh.setOnClickListener {
             if (playerHandler.player != null) {
@@ -1388,10 +1472,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         if (playerHandler.player != null) {
             val duration = playerHandler.getDuration()
             val currentPosition = playerHandler.getCurrentPosition()
-            currentDuration = currentPosition
-            val progress = (currentPosition * 100 / duration.toDouble()).toInt()
-            binding.sbVideoSeek.progress = progress
-            binding.tvCurrentLenght.text = playerHandler.getcurrent().toString()
+            if (isSeeking) {
+                currentDuration = currentPosition
+                val progress = (currentPosition * 100 / duration.toDouble()).toInt()
+                binding.sbVideoSeek.progress = progress
+                binding.tvCurrentLenght.text = playerHandler.getcurrent().toString()
+            }
             if (playerHandler.isPlaying()!!) {
                 binding.tvDuration.text = playerHandler.getRemainsDuration()
                 playerHandler.handler.postDelayed({ updateProgressBar() }, 1000)
@@ -1406,7 +1492,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 binding.ivSeekThumb.invisible()
             }
             visibilityCount++
-            Log.e("updatevideo", "update $currentDuration")
+           // Log.e("updatevideo", "$isSeeking update $currentDuration")
 
             if (isNewVideoAvailable) {
                 val video_show_count = duration - currentPosition
@@ -1570,6 +1656,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         toShowBackButton()
                         viewFocus()
                         return@setOnKeyListener true
+                    }
+                }
+            }
+            else if (event.action==KeyEvent.ACTION_UP){
+                when(keyCode){
+                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
+                    }
+                    KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                        mediaKey(StreamEnum.REMOVE_LONG_PRESS)
                     }
                 }
             }

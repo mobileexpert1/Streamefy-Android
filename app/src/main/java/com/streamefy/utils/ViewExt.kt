@@ -119,10 +119,10 @@ fun View.remoteKey(keyBack: (StreamEnum) -> Unit) {
         else if (event.action==KeyEvent.ACTION_UP){
             when(keyCode){
                 KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
-                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+                    keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
                 }
                 KeyEvent.KEYCODE_MEDIA_REWIND -> {
-                    keyBack.invoke(StreamEnum.KEYCODE_MEDIA_REWIND)
+                    keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
                 }
             }
         }
@@ -179,6 +179,12 @@ fun View.videoSeekKey(keyBack: (StreamEnum) -> Unit) {
                 KeyEvent.KEYCODE_DPAD_CENTER -> {
                     keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
                     return@OnKeyListener true
+                }
+                KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+                    keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
+                }
+                KeyEvent.KEYCODE_MEDIA_REWIND -> {
+                    keyBack.invoke(StreamEnum.REMOVE_LONG_PRESS)
                 }
         }}
         false

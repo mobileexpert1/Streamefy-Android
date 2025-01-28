@@ -51,6 +51,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
+import java.util.StringTokenizer
 
 
 class VideoFragment : BaseFragment<FragmentVideoBinding>() {
@@ -592,9 +593,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     //    Handle remote forward, backward and play/pause key
     private fun mediaKey(streamEnum: StreamEnum) = with(binding) {
+        Log.e("mremote","closed by $streamEnum")
+
         when (streamEnum) {
             StreamEnum.KEYCODE_MEDIA_FAST_FORWARD -> {
 //                forward10()
+                toShowBackButton()
                 if (isSeeking){
                     if (playerHandler.player!=null){
                         currentDuration=playerHandler.getCurrentPosition()
@@ -603,14 +607,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
                 val count = currentDuration + 10000
                 fastForward(count)
-                ivMedia.setImageResource(R.drawable.ic_remote_forward)
-                ivMedia.visible()
-                ivMedia.alpha = 1f
-                lifecycleScope.launch {
-                    delay(2000)
-                    withContext(Dispatchers.Main) {
-                        ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
-                            .withEndAction { ivMedia.gone() }.start()
+                binding.apply {
+                    ivMedia.setImageResource(R.drawable.ic_remote_forward)
+                    ivMedia.visible()
+                    ivMedia.alpha = 1f
+                    lifecycleScope.launch {
+                        delay(2000)
+                        withContext(Dispatchers.Main) {
+                            ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                                .withEndAction { ivMedia.gone() }.start()
+                        }
                     }
                 }
             }
@@ -619,6 +625,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 //                playerHandler.seekBackward(10) {
 //                    seekThumb(it, false)
 //                }
+                toShowBackButton()
                 if (isSeeking){
                     if (playerHandler.player!=null){
                         currentDuration=playerHandler.getCurrentPosition()
@@ -627,21 +634,23 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
                 val count = currentDuration - 10000
                 fastBackward(count)
-                ivMedia.setImageResource(R.drawable.ic_remote_backward)
-                ivMedia.visible()
-                ivMedia.alpha = 1f
-                lifecycleScope.launch {
-                    delay(2000)
-                    withContext(Dispatchers.Main) {
-                        ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
-                            .withEndAction { ivMedia.gone() }.start()
+
+                binding.apply {
+                    ivMedia.setImageResource(R.drawable.ic_remote_backward)
+                    ivMedia.visible()
+                    ivMedia.alpha = 1f
+                    lifecycleScope.launch {
+                        delay(2000)
+                        withContext(Dispatchers.Main) {
+                            ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+                                .withEndAction { ivMedia.gone() }.start()
+                        }
                     }
                 }
             }
 
             StreamEnum.KEYCODE_MEDIA_PLAY_PAUSE -> {
                 playPauseHandle()
-
             }
             StreamEnum.REMOVE_LONG_PRESS -> {
                 fastFBshow()
@@ -1614,36 +1623,38 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     }
 
                     KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> {
-                        forward10()
-                        binding.apply {
-                            ivMedia.setImageResource(R.drawable.ic_remote_forward)
-                            ivMedia.visible()
-                            ivMedia.alpha = 1f
-                            lifecycleScope.launch {
-                                delay(2000)
-                                withContext(Dispatchers.Main) {
-                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
-                                        .withEndAction { ivMedia.gone() }.start()
-                                }
-                            }
-                        }
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_FAST_FORWARD)
+//                        forward10()
+//                        binding.apply {
+//                            ivMedia.setImageResource(R.drawable.ic_remote_forward)
+//                            ivMedia.visible()
+//                            ivMedia.alpha = 1f
+//                            lifecycleScope.launch {
+//                                delay(2000)
+//                                withContext(Dispatchers.Main) {
+//                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+//                                        .withEndAction { ivMedia.gone() }.start()
+//                                }
+//                            }
+//                        }
                         return@setOnKeyListener true
                     }
 
                     KeyEvent.KEYCODE_MEDIA_REWIND -> {
-                        playerHandler.seekBackward(10) {}
-                        binding.apply {
-                            ivMedia.setImageResource(R.drawable.ic_remote_backward)
-                            ivMedia.visible()
-                            ivMedia.alpha = 1f
-                            lifecycleScope.launch {
-                                delay(2000)
-                                withContext(Dispatchers.Main) {
-                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
-                                        .withEndAction { ivMedia.gone() }.start()
-                                }
-                            }
-                        }
+//                        playerHandler.seekBackward(10) {}
+                        mediaKey(StreamEnum.KEYCODE_MEDIA_REWIND)
+//                        binding.apply {
+//                            ivMedia.setImageResource(R.drawable.ic_remote_backward)
+//                            ivMedia.visible()
+//                            ivMedia.alpha = 1f
+//                            lifecycleScope.launch {
+//                                delay(2000)
+//                                withContext(Dispatchers.Main) {
+//                                    ivMedia.animate().alpha(0f).setStartDelay(10).setDuration(300)
+//                                        .withEndAction { ivMedia.gone() }.start()
+//                                }
+//                            }
+//                        }
                         return@setOnKeyListener true
                     }
 
@@ -1662,9 +1673,11 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             else if (event.action==KeyEvent.ACTION_UP){
                 when(keyCode){
                     KeyEvent.KEYCODE_MEDIA_FAST_FORWARD->{
+//                        fastFBshow()
                         mediaKey(StreamEnum.REMOVE_LONG_PRESS)
                     }
                     KeyEvent.KEYCODE_MEDIA_REWIND -> {
+//                        fastFBshow()
                         mediaKey(StreamEnum.REMOVE_LONG_PRESS)
                     }
                 }

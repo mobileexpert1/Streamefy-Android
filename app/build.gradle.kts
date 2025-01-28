@@ -18,12 +18,12 @@ android {
 //        versionCode = 11
 //        versionName = "1.0.11"
         // cupcake for amazon
-        versionCode = 10
-        versionName = "1.0.10"
+//        versionCode = 11
+//        versionName = "1.0.11"
 
-//        fire stick streamefy
-//        versionCode = 21
-//        versionName = "1.0.22"
+//       streamefy for amazon
+        versionCode = 22
+        versionName = "1.0.23"
 //        streameyf google play store
 //        versionCode = 15
 //        versionName = "1.0.15"

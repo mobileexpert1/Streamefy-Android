@@ -15,18 +15,18 @@ android {
         minSdk = 21
         targetSdk = 34
 //        cupcake google play store
-//        versionCode = 11
-//        versionName = "1.0.11"
+//        versionCode = 12
+//        versionName = "1.0.12"
         // cupcake for amazon
 //        versionCode = 11
 //        versionName = "1.0.11"
 
 //       streamefy for amazon
-        versionCode = 22
-        versionName = "1.0.23"
+//        versionCode = 22
+//        versionName = "1.0.23"
 //        streameyf google play store
-//        versionCode = 15
-//        versionName = "1.0.15"
+        versionCode = 16
+        versionName = "1.0.16"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -65,8 +65,10 @@ android {
             signingConfig = signingConfigs.getByName("cupcake")
 //            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
 //            buildConfigField("String", "Password", "\"Admin123#\"")
-            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
-            buildConfigField("String", "Password", "\"Admin123#\"")
+//            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
+//            buildConfigField("String", "Password", "\"Admin123#\"")
+            buildConfigField("String", "Admin_email", "\"geetsehgal@mailinator.com\"")
+            buildConfigField("String", "Password", "\"Test@12345\"")
 //            for json name
 //            "package_name": "com.streamefy.cupcake"
         }

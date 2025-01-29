@@ -10,6 +10,7 @@ import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.hbb20.CountryCodePicker
 import com.streamefy.BuildConfig
 import com.streamefy.MainActivity
@@ -21,6 +22,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentLoginBinding
 import com.streamefy.utils.LogMessage
+import com.streamefy.utils.hideKey
 import com.streamefy.utils.loadAny
 import com.streamefy.utils.loadUrl
 import com.streamefy.utils.phoneNumber
@@ -42,10 +44,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     var realnumer = ""
     var admin_email = ""
     var admin_password = ""
-    var isDark=false
-    var logo=""
-    var background=""
-
+    var isDark = false
+    var logo = ""
+    var background = ""
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,9 +54,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
-        isDark=   SharedPref.getBoolean(PrefConstent.IS_DARK)
-        logo=SharedPref.getString(PrefConstent.APP_LOGO).toString()
-        background= SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
+        isDark = SharedPref.getBoolean(PrefConstent.IS_DARK)
+        logo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
+        background = SharedPref.getString(PrefConstent.AUTH_BACKGROUND).toString()
         admin_email = BuildConfig.Admin_email
         admin_password = BuildConfig.Password
         resetColor()
@@ -69,12 +70,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
     }
-    private fun resetColor()= with(binding) {
+
+    private fun resetColor() = with(binding) {
 //        handle themes
         if (isDark) {
-            constraintLayout.isEnabled=true
+            constraintLayout.isEnabled = true
         } else {
-            constraintLayout.isEnabled=false
+            constraintLayout.isEnabled = false
         }
 
         if (logo.isNotEmpty()) {
@@ -82,6 +84,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
         ivbackground.loadUrl(background)
     }
+
     private fun initClickListeners() = with(binding) {
         tvGetOtp.setOnClickListener {
             val validate = phoneNumber(etPhoneNumber.text.toString())
@@ -126,11 +129,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
         }
         etPhoneNumber.setOnEditorActionListener { v, actionId, event ->
-            lifecycleScope.launch {
+            Log.e("numbers", "${ccCode.selectedCountryNameCode} setOnEditorActionListener ${etPhoneNumber.text}")
+            lifecycleScope.launch(Dispatchers.Main) {
                 delay(100)
                 if (etPhoneNumber.text.isNotEmpty()) {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
                     tvGetOtp.requestFocus()
+                    formatPhoneNumber(etPhoneNumber.text.toString(),ccCode.selectedCountryNameCode)
                 } else {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
                 }
@@ -198,25 +203,35 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         ccCode.setCountryForPhoneCode(countryCode)
 //        bind countr code view with phone number input field
         ccCode.registerCarrierNumberEditText(etPhoneNumber);
+        setMaxLength(20)
         ccCode.setOnCountryChangeListener {
+            Log.e("numbers", "onchange ${ccCode.formattedFullNumber} length ")
+            etPhoneNumber.setText("")
             ccCode.registerCarrierNumberEditText(etPhoneNumber);
-            setMaxLength(20)
+            // setMaxLength(20)
         }
-        ccCode.setPhoneNumberValidityChangeListener( {
+        ccCode.setPhoneNumberValidityChangeListener({
+            var length = ccCode.fullNumber.length
+            Log.e(
+                "numbers",
+                "$it setPhoneNumberValidityChangeListener ${ccCode.selectedCountryCode.toInt()} length ${ccCode.fullNumber.length} sub length $length"
+            )
             if (it) {
-                setMaxLength(ccCode.selectedCountryCode.toInt())
+                length = length + ccCode.selectedCountryCode.toString().replace("+", "").toInt()
+                setMaxLength(length)
             }
         })
 
         ccCode.isEnabled = true
         ccCode.setCcpClickable(true)
         ccCode.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    try {
+            lifecycleScope.launch(Dispatchers.Main) {
+                try {
 //                    launch country code dialog
                     ccCode.launchCountrySelectionDialog()
-                   } catch (e: Exception) { }
+                } catch (e: Exception) {
                 }
+            }
         }
 
 
@@ -225,6 +240,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 StreamEnum.UP_DPAD_KEY -> {
                     etPhoneNumber.requestFocus()
                 }
+
                 else -> {}
             }
         }
@@ -266,7 +282,24 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
 
+    }
 
+    fun formatPhoneNumber(number: String, countryCode: String): String {
+        val phoneNumberUtil = PhoneNumberUtil.getInstance()
+
+        try {
+            // Parse the phone number with country code
+            val parsedNumber = phoneNumberUtil.parse(countryCode + number, countryCode)
+            val results = phoneNumberUtil.format(
+                parsedNumber,
+                PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
+          var number=  phoneNumberUtil.getExampleNumber(countryCode).nationalNumber
+            Log.e("formatednum", "results ${results} number $number")
+            return results
+        } catch (e: Exception) {
+            Log.e("formatednum", "hello ${e.message}")
+            return "Invalid number"
+        }
     }
 
     private fun setMaxLength(length: Int) = with(binding) {
@@ -367,6 +400,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun onResume() {
         super.onResume()
         binding.apply {
+            ccCode.invalidate()
             etFullname.setText("")
             if (realnumer != null) {
                 if (realnumer.toString().isNotEmpty()) {
@@ -379,7 +413,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     }
 
 
-//    add dash for indian dialer code
+    //    add dash for indian dialer code
     private fun replaceSpaceFromLastIfMoreThanTwo(str: String): String {
         val spaceCount = str.count { it == ' ' }
         if (spaceCount >= 2) {

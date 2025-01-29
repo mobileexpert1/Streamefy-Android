@@ -132,7 +132,6 @@
                     android:imeOptions="actionDone"
                     android:inputType="number"
                     android:gravity="center_vertical"
-                    android:minEms="4"
                     android:maxLines="1"
                     android:maxLength="16"
                     android:paddingVertical="@dimen/_5sdp"

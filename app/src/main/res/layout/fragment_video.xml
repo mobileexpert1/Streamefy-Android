@@ -79,7 +79,7 @@
             android:src="@drawable/ic_video_back_selector"
             app:layout_constraintEnd_toEndOf="@+id/llTools"
             app:layout_constraintTop_toTopOf="parent"
-
+            android:visibility="gone"
             />
 
         <LinearLayout
@@ -88,7 +88,6 @@
             android:layout_height="@dimen/_33sdp"
             android:layout_marginHorizontal="@dimen/_20sdp"
             android:background="@drawable/video_bottom_border"
-
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center"
@@ -98,7 +97,9 @@
             android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            android:alpha="0"
+            >
 
 
             <ImageView
@@ -191,7 +192,6 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-
                 android:padding="@dimen/_1sdp"
                 android:src="@drawable/ic_video_volume" />
             <!--            android:src="@drawable/ic_video_volume"-->
@@ -375,6 +375,20 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <ImageView
+            android:id="@+id/ivLoader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/streamefy_logo_new_2"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

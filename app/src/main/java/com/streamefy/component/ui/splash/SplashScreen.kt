@@ -2,6 +2,9 @@ package com.streamefy.component.ui.splash
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
@@ -38,47 +41,16 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 
         admin_email = BuildConfig.Admin_email
         admin_password = BuildConfig.Password
-        binding.apply {
-//            get application details from server
-            viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
-            observe()
 
-//            add transition
+        observe()
+        viewmodel.login(requireActivity(), LoginRequest(admin_email, admin_password))
+
+        binding.apply {
             ObjectAnimator.ofFloat(splashLayout, "alpha", 0f, 1f).also {
                 it.duration = 2000
-                it.doOnEnd { lifecycleScope.launch {
-                    delay(1000)
-                    ObjectAnimator.ofFloat(splashLayout, "alpha", 1f, 0f).also { inner ->
-                        inner.duration = 1000
-                        inner.doOnEnd {
-                        }
-                        inner.start()
-                    }
-                }
-                }
                 it.start()
             }
-
-            ObjectAnimator.ofFloat(ivLauncher, "alpha", 0f, 1f).also {
-                it.duration = 2000
-                it.doOnEnd { lifecycleScope.launch {
-                    delay(1000)
-                    ObjectAnimator.ofFloat(ivLauncher, "alpha", 1f, 0f).also { inner ->
-                        inner.duration = 1000
-                        inner.doOnEnd {
-                        }
-                        inner.start()
-                    }
-                    delay(500)
-                    navigateToHome()
-
-                    }
-                }
-                it.start()
-            }
-
         }
-
     }
 
 
@@ -93,21 +65,40 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 
                         val data = it.data?.response
 
-                        SharedPref.setString(PrefConstent.TOKEN, "")
-                        data?.run {
-                            SharedPref.setString(PrefConstent.TOKEN, accessToken)
-                            SharedPref.setString(PrefConstent.REFRESH_TOKEN, refreshToken)
-                            SharedPref.setString(PrefConstent.APP_LOGO, data.logo)
+                   //     SharedPref.setString(PrefConstent.TOKEN, "")
+                    //    data?.run {
+                            SharedPref.setString(PrefConstent.TOKEN, data!!.accessToken)
+                            SharedPref.setString(PrefConstent.REFRESH_TOKEN, data!!.refreshToken)
+                            SharedPref.setString(PrefConstent.APP_LOGO, data!!.logo)
+                        Log.e("call","RESPONSEEE "+data!!.accessToken)
 //                            implement theme setting
-                            if (data.backgroundTheme=="LIGHT"){
+                            if (data!!.backgroundTheme=="LIGHT"){
                                 SharedPref.setBoolean(PrefConstent.IS_DARK, false)
                             }else{
                                 SharedPref.setBoolean(PrefConstent.IS_DARK, true)
                             }
-                            data.backgroundImage.run {
+                            data!!.backgroundImage.run {
                                 SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
                             }
-                        }
+                     //   }
+
+                        // Wait before fading out
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            ObjectAnimator.ofFloat(binding.splashLayout, "alpha", 1f, 0f).apply {
+                                duration = 1000 // 1 second fade out
+                                doOnEnd {
+                                    navigateToHome()
+                                }
+                                start()
+                            }
+                        }, 3000) // Wait 3 seconds before starting fade-out
+
+                        /*
+                           Handler(Looper.getMainLooper()).postDelayed({
+                            navigateToHome()
+                        }, 3000) // 3000 milliseconds = 3 seconds
+                         */
+
                     } catch (e: Exception) {
                         FirebaseCrashlytics.getInstance().recordException(e)
                         throw RuntimeException("login getotp")
@@ -123,6 +114,7 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     }
 
     private fun navigateToHome() {
+        Log.e("call","### IS LOGIN::: "+isLogin)
         if (isLogin) {
             val bundle = Bundle()
             bundle.putBoolean(PrefConstent.ISHOME, true)

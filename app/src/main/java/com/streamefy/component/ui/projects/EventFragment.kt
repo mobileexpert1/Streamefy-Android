@@ -1,7 +1,9 @@
 package com.streamefy.component.ui.projects
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +20,7 @@ import com.streamefy.component.ui.pin_authentication.dialog.ConfirmPinDialog
 import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ResponseItem
+import com.streamefy.component.ui.projects.model.remove.RemoveProjectRequest
 import com.streamefy.component.ui.projects.viewmodel.ProjectsVM
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
@@ -78,11 +81,14 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (!isHome) {
+                    /*
+                     if (!isHome) {
                         findNavController().navigate(R.id.loginFragment)
                     } else {
                         ExitDialog(requireActivity()).show()
                     }
+                     */
+                    ExitDialog(requireActivity()).show()
                 }
             })
     }
@@ -108,11 +114,11 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
 //                        navigate to the PIN screen if you want to add event
-                        SharedPref.setString(PrefConstent.PROJECT_NAME, "Add Event")
+                        SharedPref.setString(PrefConstent.PROJECT_NAME, "New Event")
                         val bundle = Bundle()
                         bundle.putInt(PrefConstent.PROJECT_ID, 0)
                         bundle.putString(PrefConstent.PHONE_NUMBER, phone)
-                        bundle.putString(PrefConstent.PROJECT_NAME, "Add Event")
+                        bundle.putString(PrefConstent.PROJECT_NAME, "New Event")
                         bundle.putBoolean(PrefConstent.ISHOME, false)
                         findNavController().navigate(
                             R.id.action_projectfragment_to_pinAuthenticationFragment,
@@ -132,6 +138,18 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                                 )
                                 resetObserve()
                             }
+                        }.show()
+                    }
+
+                    StreamEnum.REMOVE_PROJECT -> {
+                        selectedItem = index
+                        EventRemoveDialog(requireContext()) {
+                        //    Toast.makeText(context, "Removed Project..", Toast.LENGTH_SHORT).show()
+                            viewModel.removeProject(
+                                    requireContext(),
+                                    RemoveProjectRequest(data.id, phone)
+                            )
+                                removeProjectObserve()
                         }.show()
                     }
 
@@ -319,6 +337,37 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                     requireContext().showMessage(it.data?.response.toString())
                     list[selectedItem].isAuthorize = false
                     projectAdapter.updateAuth(selectedItem)
+                }
+
+                is MyResource.isError -> {
+                    dismissProgress()
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    // remove project observer
+    private fun removeProjectObserve() {
+//        Handle remove project functionality
+        viewModel.removeProjectData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MyResource.isLoading -> {
+                    showProgress()
+                }
+
+                is MyResource.isSuccess -> {
+                    dismissProgress()
+
+                    if (it.data!!.response!=null){
+                        Log.e("call",it.data!!.response)
+                        // project removed successfully
+                        list.removeAt(selectedItem)
+                        // Notify adapter about item removed
+                        projectAdapter.notifyItemRemoved(selectedItem)
+                    }
+
                 }
 
                 is MyResource.isError -> {

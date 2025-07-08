@@ -46,13 +46,18 @@ class DrawerAdapter(
                                 lpVideoProgres.progress = progress
 
                                 var remains = totalDuration - duration
-                                var left = getcurrent(remains.toInt().toString())
-                                if (left.isNotEmpty()) {
-                                    tvDuration.text = "$left "
-                                } else {
+
+                                if (duration >= totalDuration){
                                     tvDuration.text = context.getString(R.string.watch_again)
+                                }else {
+                                    var left = getcurrent(remains.toInt().toString())
+                                    if (left.isNotEmpty()) {
+                                        tvDuration.text = "$left "
+                                    } else {
+                                        tvDuration.text = context.getString(R.string.watch_again)
+                                    }
+                                    tvDuration.visible()
                                 }
-                                tvDuration.visible()
                             }
                         } else {
                             var totalDuration = convertToMillis(totalVideoDuration)

@@ -29,6 +29,7 @@ import com.streamefy.utils.loadUrl
 import com.streamefy.utils.visible
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 
 class ProjectsAdapter(
@@ -56,6 +57,7 @@ class ProjectsAdapter(
                 tvSubtitle.gone()
                 mview.gone()
                 tvResetPin.gone()
+                tvRemove.gone()
                // line.visible()
                 clEvent.setOnClickListener {
                     callBack.invoke(position, StreamEnum.LAST_EVENT)
@@ -68,9 +70,11 @@ class ProjectsAdapter(
                 tvSubtitle.visible()
                 mview.visible()
                 tvTitle.text = data.name
-//            tvSubtitle.text = data.createDate
+//              tvSubtitle.text = data.createDate
                 tvProjectCount.text = data.mediaCount.toString()
-                var date =updateDate(data.createDate)
+                Log.e("call","##DATE   "+data.createDate.toString())
+                Log.e("call","##DATE UPDATE   "+updateDate(data.createDate))
+                var date = updateDate(data.createDate)
                 tvSubtitle.text = date
 
                 if (data.thumbnail != null) {
@@ -292,6 +296,100 @@ class ProjectsAdapter(
 
                 }
             }
+
+
+            //  button remove
+
+            tvRemove.apply {
+
+                setOnClickListener {
+                    callBack.invoke(position, StreamEnum.REMOVE_PROJECT)
+                }
+                setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) {
+                        setBackgroundResource(R.drawable.ic_button_selector)
+                        eventFragment.binding.rvEvent.scrollToPosition(
+                            absoluteAdapterPosition
+                        )
+                        setTextColor(ContextCompat.getColor(context, R.color.white))
+                        val colorStateList = ColorStateList.valueOf(Color.WHITE)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            setCompoundDrawableTintList(colorStateList);
+                        }else{
+                            val drawables: Array<Drawable> = getCompoundDrawables()
+                            if (drawables[0] != null) {
+
+                                DrawableCompat.setTint(drawables[0], Color.WHITE)
+                                setCompoundDrawablesWithIntrinsicBounds(
+                                    drawables[0],
+                                    null,
+                                    null,
+                                    null
+                                );
+                            }
+                        }
+
+                    }
+                    else {
+                        setBackgroundResource(R.drawable.ic_reset_pin_background)
+
+                        if (isDark){
+
+                            setTextColor(ContextCompat.getColor(context, R.color.white))
+                            val colorStateList = ColorStateList.valueOf(Color.WHITE)
+                            Log.e("DrawableCheck", "build version ${Build.VERSION.SDK_INT}")
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                setCompoundDrawableTintList(colorStateList)
+                            }else{
+                                val drawables: Array<Drawable> = getCompoundDrawables()
+                                if (drawables[0] != null) {
+                                    val drawableLeft = DrawableCompat.wrap(drawables[0])
+                                    drawableLeft.setTint(Color.WHITE)
+
+                                    setCompoundDrawablesWithIntrinsicBounds(
+                                        drawableLeft,
+                                        null,
+                                        null,
+                                        null
+                                    );
+                                } else{
+                                    Log.e("DrawableCheck", "Drawable Left: ${drawables}")
+                                }
+                            }
+                        }
+                        else{
+                            setTextColor(ContextCompat.getColor(context, R.color.black))
+                            val colorStateList = ColorStateList.valueOf(Color.BLACK)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                setCompoundDrawableTintList(colorStateList);  // Apply the tint color to all compound drawables
+                            }else{
+                                val drawables: Array<Drawable> = getCompoundDrawables()
+                                if (drawables[0] != null) {
+//                                            DrawableCompat.setTint(drawables[0], Color.BLACK)
+                                    val drawableLeft = DrawableCompat.wrap(drawables[0])
+                                    drawableLeft.setTint(Color.BLACK)
+
+                                    setCompoundDrawablesWithIntrinsicBounds(
+                                        drawableLeft,
+                                        null,
+                                        null,
+                                        null
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }}
+
+
+            if (isDark){
+                tvRemove.setTextColor(ContextCompat.getColor(context, R.color.white))
+                tvResetPin.setTextColor(ContextCompat.getColor(context, R.color.white))
+            }else {
+                tvRemove.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvResetPin.setTextColor(ContextCompat.getColor(context, R.color.black))
+            }
+
 //            clEvent.remoteKey {
 //                Log.e("smfsfms", "sncd b $it focusedIndex $focusedIndex")
 //                when (it) {
@@ -346,7 +444,8 @@ class ProjectsAdapter(
 
     }
 
-    fun updateDate(inputDate: String): String {
+    /*
+     fun updateDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
         val outputFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale.getDefault())
 
@@ -361,6 +460,31 @@ class ProjectsAdapter(
             ""
         }
     }
+     */
+
+    fun updateDate(inputDate: String): String {
+        // Set the input format to parse the date in UTC (backend timestamp is in UTC)
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")  // Parse input as UTC
+
+        // Set the output format to display the date in the local time zone
+        val outputFormat = SimpleDateFormat("MMM dd, yyyy, hh:mm a", Locale.getDefault())
+        outputFormat.timeZone = TimeZone.getDefault()  // Use local time zone for output
+
+        return try {
+            // Parse the input date in UTC
+            val date = inputFormat.parse(inputDate)
+            // Format the date using the local time zone
+            val formattedDate = outputFormat.format(date)
+            formattedDate
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("sjcbnsjbc", "ncnvdj $e")
+            ""
+        }
+    }
+
+
 
     class ProjectView(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: AppCompatTextView = itemView.findViewById(R.id.tvTitle)
@@ -373,6 +497,7 @@ class ProjectsAdapter(
         val tvResetPin: TextView = itemView.findViewById(R.id.tvResetPin)
         val mview: View = itemView.findViewById(R.id.view)
         val line: View = itemView.findViewById(R.id.line)
+        val tvRemove: TextView = itemView.findViewById(R.id.tvRemove)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectView {
@@ -410,4 +535,12 @@ class ProjectsAdapter(
 //        return super.getItemId(position)
 //    }
     override fun getItemCount(): Int = eventList.size
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }

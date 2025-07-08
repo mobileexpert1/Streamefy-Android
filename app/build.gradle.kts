@@ -8,33 +8,37 @@ plugins {
 
 android {
     namespace = "com.streamefy"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.streamefy"
         minSdk = 21
-        targetSdk = 34
-//        cupcake google play store
-//        versionCode = 12
-//        versionName = "1.0.12"
+        targetSdk = 35
+//      cupcake for play store
+   //     versionCode = 26
+   //     versionName = "1.0.26"
         // cupcake for amazon
-//        versionCode = 11
-//        versionName = "1.0.11"
+//        versionCode = 16
+//        versionName = "1.0.16"
 
 //       streamefy for amazon
-//        versionCode = 22
-//        versionName = "1.0.23"
-//        streameyf google play store
-        versionCode = 16
-        versionName = "1.0.16"
+//        versionCode = 30
+//        versionName = "1.0.30"
+//        streameyf for play store
+        versionCode = 28
+        versionName = "1.0.28"
         vectorDrawables {
             useSupportLibrary = true
+        }
+
+        ndk {
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
     flavorDimensions += "default"
     signingConfigs {
         create("streamefy") {
-            storeFile = file("D:\\work splace\\Streamefy\\Streamefy_info\\streamefy.jks")
+            storeFile = file("D:\\KEY_STORE_CREDETIALS\\Streamefy_info\\streamefy.jks")
             storePassword = "android"
             keyAlias = "android"
             keyPassword = "android"
@@ -42,7 +46,7 @@ android {
 
         create("cupcake") {
 //            storeFile = file("D:\\work splace\\Streamefy\\cupcake_info\\cupcake.jks")
-            storeFile = file("D:\\work splace\\Streamefy\\Streamefy_info\\streamefy.jks")
+            storeFile = file("D:\\KEY_STORE_CREDETIALS\\Streamefy_info\\streamefy.jks")
             storePassword = "android"
             keyAlias = "android"
             keyPassword = "android"
@@ -54,23 +58,36 @@ android {
             applicationId = "com.streamefy"
             versionNameSuffix = "-streamefy"
             signingConfig = signingConfigs.getByName("streamefy")
-            buildConfigField("String", "Admin_email", "\"appsdev096@gmail.com\"")
-            buildConfigField("String", "Password", "\"Admin@123\"")
+//            buildConfigField("String", "Admin_email", "\"appsdev096@gmail.com\"")
+//            buildConfigField("String", "Password", "\"Admin@123\"")
 //            buildConfigField("String", "Admin_email", "\"ekamjot-kaur@cssoftsolutions.com\"")
 //            buildConfigField("String", "Password", "\"Admin@123\"")
+//            buildConfigField("String", "Admin_email", "\"gitikakhatri@cssoftsolutions.com\"")
+//            buildConfigField("String", "Password", "\"Test@12345\"")
+//            buildConfigField("String", "Admin_email", "\"bylafuwo@thetechnext.net\"")
+//            buildConfigField("String", "Password", "\"Admin@123\"")
+//            buildConfigField("String", "Admin_email", "\"kanishkbohra@gmail.com\"")
+//            buildConfigField("String", "Password", "\"Thebest1!\"")
+            buildConfigField("String", "Admin_email", "\"app-29@streamefy.com\"")
+            buildConfigField("String", "Password", "\"StreamefyTVCRED-29\"")
+            //DEV CREDS FOR NIKHIL ACCOUNT
+        //    buildConfigField("String", "Admin_email", "\"APP-84@Streamefy.com\"")
+        //    buildConfigField("String", "Password", "\"StreamefyTVCRED-84\"")
+        //    buildConfigField("String", "Admin_email", "\"app-98@streamefy.com\"")
+        //    buildConfigField("String", "Password", "\"StreamefyTVCRED-98\"")
         }
         create("cupcake") {
             applicationId = "com.tech.cupcake"
             versionNameSuffix = "-cupcake"
             signingConfig = signingConfigs.getByName("cupcake")
+            buildConfigField("String", "Admin_email", "\"app-56@streamefy.com\"")
+            buildConfigField("String", "Password", "\"StreamefyTVCRED-56\"")
 //            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
 //            buildConfigField("String", "Password", "\"Admin123#\"")
 //            buildConfigField("String", "Admin_email", "\"cupcakeproductions13@gmail.com\"")
 //            buildConfigField("String", "Password", "\"Admin123#\"")
-            buildConfigField("String", "Admin_email", "\"geetsehgal@mailinator.com\"")
-            buildConfigField("String", "Password", "\"Test@12345\"")
-//            for json name
-//            "package_name": "com.streamefy.cupcake"
+//            buildConfigField("String", "Admin_email", "\"geetsehgal@mailinator.com\"")
+//            buildConfigField("String", "Password", "\"Test@12345\"")
         }
     }
 
@@ -156,7 +173,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.hbb20:ccp:2.7.3")
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.40")
-
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

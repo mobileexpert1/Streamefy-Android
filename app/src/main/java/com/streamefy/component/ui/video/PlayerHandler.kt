@@ -12,10 +12,12 @@ import android.os.StrictMode
 import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.SeekParameters
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -25,10 +27,13 @@ import com.google.android.exoplayer2.upstream.DataSource.Factory
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.streamefy.component.base.MyApp
+import com.streamefy.component.ui.video.VideoFragment.Companion.resumeAfterRenderSeek
 import com.streamefy.component.ui.video.model.QualityModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder
@@ -59,18 +64,46 @@ class PlayerHandler(
     fun initializePlayer() {
         try {
 
-//            val renderersFactory = DefaultRenderersFactory(context)
-//                .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-            val renderersFactory = DefaultRenderersFactory(context)
-                .setEnableDecoderFallback(true)
+            val isSonyTVAndroid11 = Build.VERSION.SDK_INT == Build.VERSION_CODES.R && // Android 11
+                    Build.MANUFACTURER.equals("Sony", ignoreCase = true)
 
 
-
+            // implement check for if android version then 11
+            val sdkInt = android.os.Build.VERSION.SDK_INT
             val trackSelector = DefaultTrackSelector(context)
+
+            Log.e("call","## SDK:::: "+sdkInt)
+
+            if (isSonyTVAndroid11) {
+                Log.d("CheckDevice", "This is a Sony TV running Android 11")
+                val parametersBuilder = trackSelector.buildUponParameters()
+                parametersBuilder.setMaxVideoSize(1920, 1080)
+                trackSelector.parameters = parametersBuilder.build()
+            } else {
+                Log.d("CheckDevice", "This is not a Sony TV running Android 11")
+
+                if (sdkInt < 30) {
+                    // Restrict to 1080p max (1920x1080)
+
+                    val parametersBuilder = trackSelector.buildUponParameters()
+                    parametersBuilder.setMaxVideoSize(1920, 1080)
+                    trackSelector.parameters = parametersBuilder.build()
+
+                }else {
+                    trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+                        .setForceLowestBitrate(false)
+                        .setPreferredTextLanguage("en")
+                        .build()
+                }
+            }
+
+            /*
+             val trackSelector = DefaultTrackSelector(context)
             trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
                 .setForceLowestBitrate(false)
-                //.setMaxVideoSize(854, 480)
+                .setPreferredTextLanguage("en")
                 .build()
+             */
 
             val loadControl = DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
@@ -80,6 +113,7 @@ class PlayerHandler(
                     DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
                 )
                 .build()
+
 
             player = ExoPlayer.Builder(context)
                 .setRenderersFactory(
@@ -93,7 +127,9 @@ class PlayerHandler(
                 .build()
             playerView.player = player
 
-
+//            global initialization
+//            player= MyApp.player
+//            playerView.player = player
 //
 //            val trackSelector = DefaultTrackSelector(context)
 //            val renderersFactory = DefaultRenderersFactory(context).setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF)
@@ -120,78 +156,88 @@ class PlayerHandler(
     }
 
     fun getPLayer() = playerView.player
-    var  videoUrl=""
-    fun setMediaUri(uri: String, lastDuration: Long) {
-        videoUrl=uri
+    var videoUrl = ""
+
+    fun setMediaUri(uri: String, lastDuration: Long, isFromVideoFragment: Boolean) {
+        videoUrl = uri
         try {
             if (player != null && uri.isNotEmpty()) {
 
                 player?.let {
-                    if (player?.isPlaying!!) {
-                        release()
-                        initializePlayer()
-                    }
-                    Log.e("videourlssss", "$lastDuration player: $uri")
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val dataSourceFactory = DefaultHttpDataSource.Factory()
                         val mediaSource = HlsMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(MediaItem.fromUri(uri))
-
-//                        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-//                            .createMediaSource(MediaItem.fromUri(uri))
+                            .createMediaSource(MediaItem.fromUri(videoUrl))
 
                         withContext(Dispatchers.Main) {
                             player?.apply {
 
-                                stop()
-                                clearMediaItems()
-
-                                setMediaSource(mediaSource)
-                                prepare()
-                                seekTo(lastDuration)
-                                play()
+                                if (isFromVideoFragment){
+                                    setMediaSource(mediaSource)
+                                    prepare()
+                                    Log.e("call","lastDuration: "+lastDuration)
+                                    seekTo(1)
+                                    // Store resume position for later
+                                    resumeAfterRenderSeek = lastDuration
+                                }else {
+                                    withContext(Dispatchers.Main) {
+                                        player?.apply {
+                                            setMediaSource(mediaSource)
+                                            seekTo(lastDuration)
+                                            prepare()
+                                            play()
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-
-
-
                 }
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Log.e("skcmskc", "video playing error $e")
         }
         Log.e("sjkcnsakjbc", "akjcnkja play")
-
     }
 
-    var retriever:MediaMetadataRetriever?=null
-      fun initVideoFrame(videoUrl: String){
-          GlobalScope.launch(Dispatchers.IO){
-              try {
-                  if (player != null && retriever == null) {
-                      retriever = MediaMetadataRetriever()
-                      retriever?.setDataSource(videoUrl, HashMap())
+    // player mute
+    fun playerMute(){
+        player?.volume = 0f
+    }
 
-                  }
-              } catch (e: Exception) {
-                  e.printStackTrace()
-              }
+    // player unmute
+    fun playerUnMute(){
+        player?.volume = 1f  // Restore volume to default
+        player?.playWhenReady = true  // Ensure the player continues playing
+    }
 
-        }}
+    var retriever: MediaMetadataRetriever? = null
+    fun initVideoFrame(videoUrl: String) {
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                if (player != null && retriever == null) {
+                    retriever = MediaMetadataRetriever()
+                    retriever?.setDataSource(videoUrl, HashMap())
 
-     fun getFrame(callBack:(Bitmap?)->Unit){
-                 if ( player != null) {
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
-                     val currentPositionInMicroseconds = player?.currentPosition?.times(1000) ?: 0L
-                     GlobalScope.launch(Dispatchers.IO) {
-                         val retriever = MediaMetadataRetriever()
-                         retriever.setDataSource(videoUrl, HashMap())
-                         val frame = retriever.getFrameAtTime(currentPositionInMicroseconds)
-                         callBack.invoke(frame)
-                         retriever.release()
+        }
+    }
+
+    fun getFrame(callBack: (Bitmap?) -> Unit) {
+        if (player != null) {
+
+            val currentPositionInMicroseconds = player?.currentPosition?.times(1000) ?: 0L
+            GlobalScope.launch(Dispatchers.IO) {
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(videoUrl, HashMap())
+                val frame = retriever.getFrameAtTime(currentPositionInMicroseconds)
+                callBack.invoke(frame)
+                retriever.release()
 
 //                     if (player?.bufferedPosition!! >player?.currentPosition!!) {
 //                         val currentPositionInMicroseconds = player?.currentPosition!! * 1000
@@ -200,8 +246,8 @@ class PlayerHandler(
 //                     }else{
 //                         Log.e("sjbcjsbc","buffers is lower ${player?.bufferedPosition!!}")
 //                     }
-                     }
-                 }
+            }
+        }
     }
 
     fun seekWithInitialise(uri: String, currentDuration: Long) {
@@ -274,7 +320,7 @@ class PlayerHandler(
         trackSelector.setParameters(trackSelectionParameters)
         val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
         val estimatedBandwidth = bandwidthMeter.getBitrateEstimate()
-        Log.e("bandwidth","starting $estimatedBandwidth")
+        Log.e("bandwidth", "starting $estimatedBandwidth")
     }
 
 
@@ -299,24 +345,29 @@ class PlayerHandler(
 //            else -> {
 //                Pair(1080, 1920)
 //            }
-Log.e("bandwidth","bandwidth $estimatedBandwidth")
+        Log.e("bandwidth", "bandwidth $estimatedBandwidth")
         val resolution = when {
 
             estimatedBandwidth <= 600000 -> {
                 Pair(352, 240)
             }
-            estimatedBandwidth <= 800000 && estimatedBandwidth>600000 -> {
+
+            estimatedBandwidth <= 800000 && estimatedBandwidth > 600000 -> {
                 Pair(640, 360)
             }
-            estimatedBandwidth <= 1400000 && estimatedBandwidth>800000 -> {
+
+            estimatedBandwidth <= 1400000 && estimatedBandwidth > 800000 -> {
                 Pair(842, 480)
             }
-            estimatedBandwidth <= 2800000 && estimatedBandwidth>1400000  -> {
+
+            estimatedBandwidth <= 2800000 && estimatedBandwidth > 1400000 -> {
                 Pair(1280, 720)
             }
-            estimatedBandwidth <= 5000000 && estimatedBandwidth>2800000-> {
+
+            estimatedBandwidth <= 5000000 && estimatedBandwidth > 2800000 -> {
                 Pair(1920, 1080)
             }
+
             else -> {
                 Pair(1080, 1920)
             }
@@ -331,6 +382,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
     fun play() {
         player?.playWhenReady = true
     }
+
     fun refresh() {
         player?.let {
             player?.seekTo(0)
@@ -338,8 +390,9 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         }
 
     }
+
     fun pause() {
-        if (player!=null) {
+        if (player != null) {
             player?.playWhenReady = false
         }
     }
@@ -348,7 +401,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         player?.seekTo(positionMs)
     }
 
-    fun seekBackward(seconds: Long,callBack:(Long)->Unit) {
+    fun seekBackward(seconds: Long, callBack: (Long) -> Unit) {
         player?.let { exoPlayer ->
             val currentPosition = exoPlayer.currentPosition
             val newPosition = (currentPosition - seconds * 1000)
@@ -375,6 +428,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         player?.volume = volume
     }
 
+
     fun getVolume(): Float {
         return player?.volume ?: 1.0f
     }
@@ -385,7 +439,8 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
     }
 
     fun unmute() {
-        setVolume(0.001f)
+        setVolume(1f)
+        // setVolume(0.001f)
         //player?.volume = volume
         isMuted = false
     }
@@ -429,6 +484,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
     }
+
     fun currentDuration(currentDuration: Long): String {
         val totalSeconds = currentDuration / 1000
         val hours = totalSeconds / 3600
@@ -437,6 +493,7 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
     }
+
     fun getDuration(): Long {
         return player?.duration ?: 0L
     }
@@ -453,21 +510,22 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 
-     fun getRemainsDuration(): String {
+    fun getRemainsDuration(): String {
 
         val durationMillis = player?.duration ?: 0L
         val currentDur = player?.currentPosition ?: 0L
-        var remains=durationMillis-currentDur
+        var remains = durationMillis - currentDur
         val totalSeconds = remains / 1000
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60
         return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
+
     fun getRemainsDuration(currentDuration: Long): String {
 
         val durationMillis = player?.duration ?: 0L
-        var remains=durationMillis-currentDuration
+        var remains = durationMillis - currentDuration
         val totalSeconds = remains / 1000
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
@@ -487,4 +545,5 @@ Log.e("bandwidth","bandwidth $estimatedBandwidth")
         handler.removeMessages(0)
 
     }
+
 }

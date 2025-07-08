@@ -2,10 +2,14 @@ package com.streamefy.component.ui.video
 
 import VolumeManager
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
-
+import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Surface
@@ -25,6 +29,7 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Tracks
+import com.google.android.exoplayer2.util.MimeTypes
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.component.base.StreamEnum
@@ -38,6 +43,7 @@ import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
 import com.streamefy.databinding.FragmentVideoBinding
 import com.streamefy.network.MyResource
+import com.streamefy.utils.convertToMillis
 import com.streamefy.utils.gone
 import com.streamefy.utils.invisible
 import com.streamefy.utils.loadUrl
@@ -60,7 +66,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var getLengthOnce = true
     var isEnded = false
     var visibilityCount = 0
-    var volumeCount = 20
+    var volumeCount = 0
     var isOpenSettingFirst = false
     var playbackduration: Long = 0
     var thumbnailS3bucketId = ""
@@ -69,7 +75,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var qualityList = ArrayList<QualityModel>()
     var bunneyIdList = ArrayList<BunneyIds>()
 
-    var videoUrl = "https://ia601209.us.archive.org/17/items/ElephantsDream/ed_1024_512kb.mp4"
+    //  var videoUrl = "https://ia601209.us.archive.org/17/items/ElephantsDream/ed_1024_512kb.mp4"
+    var videoUrl = ""//"https://d1duu120s4nmka.cloudfront.net/file_library/videos/vod_non_drm_ios/4298024/1738759475_2166084548553151/SIDOKSANAFILMmp4.m3u8"
     var ifFirst = true
 
     var nextVideoId = ""
@@ -86,8 +93,44 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     var bufferCount = 0
     var currentDuration = 0L
     var isSeeking=true
+    var isScreenVisible = false
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var hideToolsRunnable: Runnable? = null
+
+    private fun showToolsAndAutoHide() {
+        // Cancel any previously posted hide runnable
+        hideToolsRunnable?.let { handler.removeCallbacks(it) }
+
+        // Animate llTools to visible
+        binding.llTools.animate()
+            .alpha(1f)
+            .setDuration(300)
+            .withStartAction {
+                binding.llTools.alpha = 0f
+                binding.llTools.visibility = View.VISIBLE
+                binding.ivBack.visible()
+            }
+            .withEndAction {
+                // Start auto-hide countdown
+                hideToolsRunnable = Runnable {
+                    binding.llTools.animate()
+                        .alpha(0f)
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.llTools.visibility = View.GONE
+                            binding.ivBack.visibility = View.GONE
+                            binding.clSettingsMenu.visibility = View.GONE
+                            binding.ivSeekThumb.visibility = View.GONE
+                        }
+                }
+                handler.postDelayed(hideToolsRunnable!!, 6000)
+            }
+    }
+
     companion object {
         lateinit var videoFragment: VideoFragment
+        var resumeAfterRenderSeek = 0L
     }
 
     private val viewModel: VideoVM by viewModel()
@@ -97,6 +140,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        resumeAfterRenderSeek = 0L
         videoFragment = this
         isVolume = true
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -118,7 +162,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         handleKey(binding.playerView)
         volumeManager = VolumeManager(requireActivity())
-        volumeManager.setVolumePercentage(5)
+        Log.e("call","#### VOLUME COUNT:::   "+getSavedSeekBarProgress())
 
         binding.apply {
             updatePlayer()
@@ -129,14 +173,133 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             keyMove()
             videoSeekListener()
             texture()
+
+            handleCenterButton()
         }
         volume()
         selectorFocus()
 
+        volumeCount = getSavedSeekBarProgress()
         binding.sbVolumeSeek.progress = volumeCount
 
+        if (volumeCount >= 1) {
+            val audioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val volumePercent = (currentVolume * 100) / maxVolume
+            volumeManager.setVolumePercentage(volumePercent)
+        }
 
+//        if (volumeCount == 0){
+//            binding.ivVolume.setImageResource(R.drawable.ic_mute)
+//        }
     }
+
+    fun handleCenterButton() {
+        binding.playerView.isFocusableInTouchMode = true
+        binding.playerView.requestFocus()
+        binding.playerView.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+                        if (binding.llTools.alpha == 1f) {
+                            togglePlayPause()
+                        } else {
+                            showToolsAndAutoHide()
+                        }
+                        true // Consume event
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_UP -> {
+                        // Handle DPAD UP key press
+                        Log.d("RemoteControl", "DPAD_UP key pressed")
+                        if (binding.llTools.alpha == 1f) {
+                            binding.ivSkipBack.requestFocus()
+                        }else {
+                            showToolsAndAutoHide()
+                        }
+                        // Add your logic here
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        // Handle DPAD UP key press
+                        Log.d("RemoteControl", "DPAD_KEY key pressed")
+                        if (binding.llTools.alpha == 1f) {
+                            binding.ivSkipBack.clearFocus()
+                            binding.ivSkipBack.requestFocus()
+                        }else {
+                            showToolsAndAutoHide()
+                        }
+                        // Add your logic here
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        // Handle DPAD UP key press
+                        Log.d("RemoteControl", "DPAD_LEFT key pressed")
+                        if (binding.llTools.alpha == 1f) {
+                            binding.sbVideoSeek.requestFocus()
+                        }else {
+                            showToolsAndAutoHide()
+                        }
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        // Handle DPAD UP key press
+                        Log.d("RemoteControl", "DPAD_RIGHT key pressed")
+                        if (binding.llTools.alpha == 1f) {
+                            binding.sbVideoSeek.requestFocus()
+                        }else {
+                            showToolsAndAutoHide()
+                        }
+                        // Add your logic here
+                        true
+                    }
+
+                    KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+                    KeyEvent.KEYCODE_MEDIA_PLAY,
+                    KeyEvent.KEYCODE_MEDIA_PAUSE -> {
+                        playerHandler.player?.let {
+                            if (it.isPlaying) {
+                                it.pause()
+                                updateProgressBar()
+                            } else {
+                                it.play()
+                                updateProgressBar()
+                            }
+                        }
+                        true // consume event
+                    }
+
+                    else -> false
+                }
+            } else {
+                false
+            }
+        }
+    }
+
+
+
+    private fun togglePlayPause() {
+        playerHandler.player?.let {
+            if (it.isPlaying) {
+                it.pause()
+                binding.ivPlay.requestFocus()
+                binding.ivPlay.setImageResource(R.drawable.ic_seleceted_play)
+                updateProgressBar()
+            } else {
+                it.play()
+                binding.ivPlay.requestFocus()
+                binding.ivPlay.setImageResource(R.drawable.ic_selected_pause)
+                updateProgressBar()
+            }
+        }
+    }
+
+
 
     //     Key movement for all buttons
     private fun keyMove() = with(binding) {
@@ -162,8 +325,22 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                 isSeeking=false
                             }
                         }
-                        val count = currentDuration + 30000
-                        fastBackward(count)
+
+                        //** previous code
+                        /*
+                          val count = currentDuration + 30000
+                          fastBackward(count)
+                         */
+
+                        var totalLength =  convertToMillis(playerHandler.getTotalLength())
+                        if (currentDuration < totalLength)  {
+                            val count = currentDuration + 30000
+                            fastBackward(count)
+                        }else {
+                            tvDuration.text = playerHandler.currentDuration(0L)
+                            tvCurrentLenght.text = playerHandler.getTotalLength()
+                            ivSeekThumb.gone()
+                        }
                         return@OnKeyListener true
                     }
 
@@ -217,8 +394,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
             false // Don't consume other events
         })
         sbVolumeSeek.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
-            binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
-            binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+            Log.e("call","### 111")
+//            binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
+//            binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+            showToolsAndAutoHide()
             visibilityCount = 0
             clSettingsMenu.gone()
 
@@ -238,7 +417,15 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     KeyEvent.KEYCODE_DPAD_UP -> {
                         isVolume = false
                         volumeUp()
-                        binding.sbVolumeSeek.progress = volumeCount
+
+                        // for firestick
+                        if (isAmazonFireTv() || isGoogleTv()){
+                            Log.e("call","### AmazonFirestick -- Google stick")
+                            binding.sbVolumeSeek.progress = volumeCount
+                            increaseSystemVolume()
+                        }else {
+                            // this case is for tv
+                        }
 
                         if (volumeCount <= 0) {
                             playerHandler.mute()
@@ -253,7 +440,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     KeyEvent.KEYCODE_DPAD_DOWN -> {
                         isVolume = false
                         volumeDown()
-                        binding.sbVolumeSeek.progress = volumeCount
+
+                        // for firestick
+                        if (isAmazonFireTv() || isGoogleTv()){
+                            Log.e("call","AmazonFireTv or isGoogleTv")
+                            binding.sbVolumeSeek.progress = volumeCount
+                            decreaseSystemVolume()
+                        }else {
+                            // this case is for tv
+                            Log.e("call","not AmazonFireTv not GoogleTv")
+                        }
 
                         if (volumeCount <= 0) {
                             playerHandler.mute()
@@ -384,8 +580,25 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             isSeeking=false
                         }
                     }
-                    val count = currentDuration + 10000
+
+                    //** previous code
+                    /*
+                     val count = currentDuration + 10000
                     fastForward(count)
+                     */
+
+                    var totalLength =  convertToMillis(playerHandler.getTotalLength())
+                    if (currentDuration < totalLength)  {
+                        val count = currentDuration + 10000
+                        fastBackward(count)
+                    }else {
+                        tvDuration.text = playerHandler.currentDuration(0L)
+                        tvCurrentLenght.text = playerHandler.getTotalLength()
+                        ivSeekThumb.gone()
+                    }
+
+
+
 //                    val duration = playerHandler.getDuration()
 //                    val count = currentDuration + 10000
 //                    val progress = (count * 100 / duration.toDouble()).toInt()
@@ -685,13 +898,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         mediaId = data.mediaId
                         oldVideoDuration = playbackduration
                         ifFirst = false
-                        playerHandler.setMediaUri(videoUrl, playbackduration)
+
+                        //playerHandler.setMediaUri(videoUrl, playbackduration,data.vttFileContent)
+                        playerHandler.setMediaUri(videoUrl, oldVideoDuration, true)
+//                        playerHandler.setMediaUri(videoUrl, 0)
                         if (data.nextVideo != null) {
                             isNewVideoAvailable = true
                             thumbnailS3bucketId = videoThumb
-                            videoThumb = data.nextVideo?.nextVideoThumbnail!!
+                            videoThumb = data.nextVideo.nextVideoThumbnail
                             oldBunnyId = nextVideoId
-                            nextVideoId = data.nextVideo?.nextVideoId.toString()
+                            nextVideoId = data.nextVideo.nextVideoId.toString()
                             binding.ivNextVideo.loadUrl(videoThumb)
                         } else {
                             isNewVideoAvailable = false
@@ -749,6 +965,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 getLengthOnce = true
                 timerLayout.invisible()
                 ivPlay.setImageResource(R.drawable.ic_video_pause)
+                binding.ivSeekThumb.visibility = View.GONE
             }
         }
         timerLayout.setOnClickListener {
@@ -765,6 +982,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     volumeCount = 1
                     ivVolume.setImageResource(R.drawable.ic_selected_volume)
                     sbVolumeSeek.progress = volumeCount
+                    volumeManager.setVolumePercentage(1)
                 } else {
                     playerHandler.mute()
                     ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
@@ -786,7 +1004,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }
                 launch { captureThumbnail() }.join()
                 withContext(Dispatchers.Main) {
-                    delay(100)
+                    //  delay(100)
                     binding.ivSeekThumb.visible()  // Ensure the ImageView is visible
                 }
             } else {
@@ -887,9 +1105,9 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         getLengthOnce = true
         isEnded = true
         timerLayout.invisible()
-        tvCurrentLenght.setText("")
+        tvCurrentLenght.text = ""
         tvCurrentLenght.invalidate()
-        tvDuration.setText("")
+        tvDuration.text = ""
         tvDuration.invalidate()
         sbVideoSeek.requestLayout()
         sbVideoSeek.invalidate()
@@ -900,40 +1118,116 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         binding.sbVideoSeek.progress = 0
     }
 
+
+    override fun onStart() {
+        super.onStart()
+
+        isScreenVisible = false
+    }
+
     //    Video listener
     private fun listener() = with(binding) {
         showProgress()
 
         playerHandler.player?.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
-                if (playbackState == Player.STATE_BUFFERING) {
-                    showProgress()
-                    bufferCount++
-                } else if (playbackState == Player.STATE_READY) {
-                    dismissProgress()
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> {
 
-                    playerHandler.player?.setVideoSurface(videoSurface)
-                    homeFragment.isLastPlay = true
-                    videoTranisition()
-                    binding.sbVideoSeek.max = 100
-                    tvDuration.text = playerHandler.getTotalLength()
-                    getLengthOnce = false
-                    ivPlay.setImageResource(R.drawable.ic_video_pause)
-                    isEnded = false
-                    updateProgressBar()
-                    updateResulation()
-                } else if (playbackState == Player.STATE_ENDED) {
-                    ivPlay.setImageResource(R.drawable.ic_video_play)
-                    isEnded = true
-                    playNextVideo()
-                    viewFocus()
+                        if (isScreenVisible == false){
+                            binding.textureView.visibility = View.INVISIBLE
+                            playerHandler.player?.playWhenReady = false
+                            isScreenVisible = true
+                        }
+
+                        playerHandler.playerMute()
+
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            // show loader on main thread
+                            showProgress()
+                        }
+
+                        bufferCount++
+                    }
+                    Player.STATE_READY -> {
+                        // Mute the audio by setting the volume to 0
+                        // playerHandler.player?.volume = 0f
+                        Log.e("call","### READYYY")
+
+                        playerHandler.player?.setVideoSurface(videoSurface)
+                        homeFragment.isLastPlay = true
+                        videoTranisition()
+                        sbVideoSeek.max = 100
+                        tvDuration.text = playerHandler.getTotalLength()
+                        getLengthOnce = false
+                        ivPlay.setImageResource(R.drawable.ic_video_pause)
+                        isEnded = false
+
+
+                        lifecycleScope.launch {
+                            Log.e("buffercnt","buffers $bufferCount")
+//                            if (bufferCount<=1){
+//                                delay(7000)
+//                            }
+                            // Show the video frame again when starting playback
+                            binding.textureView.visibility = View.VISIBLE
+                            playerHandler.player?.playWhenReady = true
+
+                            updateProgressBar()
+                            updateResulation()
+                            dismissProgress()
+                            playerHandler.playerUnMute()
+                        }
+
+                        if (playerHandler.player?.isPlaying!!){
+                            Log.e("buffercnt","videostatus ${playerHandler.player?.isPlaying}")
+                        }
+                    }
+                    Player.STATE_ENDED -> {
+                        ivPlay.setImageResource(R.drawable.ic_video_play)
+                        isEnded = true
+                        playNextVideo()
+                        viewFocus()
+                    }
+
+                    Player.STATE_IDLE -> {
+
+                    }
                 }
+            }
+
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                super.onIsPlayingChanged(isPlaying)
+                Log.e("buffercnt","isPlaying $isPlaying")
+//                lifecycleScope.launch {
+//                    Log.e("buffercnt","buffers $bufferCount")
+//                    if (bufferCount<=1){
+//                        delay(5000)
+//                    }
+//                    updateProgressBar()
+//                    updateResulation()
+//                    dismissProgress()
+//                }
             }
 
             override fun onRenderedFirstFrame() {
                 super.onRenderedFirstFrame()
-                captureThumbnail()
+              //  captureThumbnail()
+                lifecycleScope.launch {
+                    // Only seek if resume duration is valid
+                    if (resumeAfterRenderSeek > 0) {
+                        playerHandler.seekTo(resumeAfterRenderSeek)
+                       resumeAfterRenderSeek = 0L
+                    }
 
+                    //  Play now
+                    playerHandler.player?.playWhenReady = true
+                    playerHandler.playerUnMute()
+                    binding.textureView.visibility = View.VISIBLE
+                    updateProgressBar()
+                    updateResulation()
+//                    dismissProgress()
+                }
             }
 
             override fun onTracksChanged(tracks: Tracks) {
@@ -951,20 +1245,17 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             )
                         qualityList.add(data)
                         for (group in tracks.getGroups()) {
+                            Log.e("ExoPlayersu", "code : ${group.getType()}")
                             if (group.getType() == C.TRACK_TYPE_VIDEO) {
                                 // Log.d("ExoPlayer", "Current resolution playing: $group")
-
 
                                 val trackCount = group.length
                                 for (j in 0 until trackCount) {
                                     val format = group.getTrackFormat(j)
                                     val isSelected = group.isTrackSelected(j)
-                                    Log.d(
-                                        "ExoPlayer",
-                                        "All resolution playing: $isSelected \nformat $format\n"
-                                    )
-                                    // Check if the format is a video format using supported properties
 
+                                    Log.d("ExoPlayer", "All resolution playing: $isSelected \nformat $format\n")
+                                    // Check if the format is a video format using supported properties
                                     if (format.width > 0 && format.height > 0) {
                                         val mwidth = format.width
                                         val mheight = format.height
@@ -978,10 +1269,42 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                                             )
                                         )
 
+                                        val isSonyTVAndroid11 = Build.VERSION.SDK_INT == Build.VERSION_CODES.R && // Android 11
+                                                Build.MANUFACTURER.equals("Sony", ignoreCase = true)
+
+                                        // implement check for if android version then 11
+                                        val sdkInt = android.os.Build.VERSION.SDK_INT
+
+                                        if (isSonyTVAndroid11) {
+                                            // Remove qualities higher than 1080p for Android < 11
+                                            qualityList = qualityList.filter { it.height <= 1080 } as ArrayList<QualityModel>
+                                        }else {
+                                            if (sdkInt < 30) {
+                                                // Remove qualities higher than 1080p for Android < 11
+                                                qualityList = qualityList.filter { it.height <= 1080 } as ArrayList<QualityModel>
+                                            }  else {
+
+                                            }
+                                        }
                                     }
                                 }
                             }
 
+//                            if (group.getType() == C.TRACK_TYPE_TEXT) {
+//                                val trackCount = group.length
+//                                for (j in 0 until trackCount) {
+//                                    val format = group.getTrackFormat(j)
+//                                    val isSelected = group.isTrackSelected(j)
+//                                    Log.d(
+//                                        "ExoPlayersu",
+//                                        "Subtitle track found: $isSelected \nformat $format\n"
+//                                    )
+//                                    // Check if the subtitle format is VTT (or other text format like SRT)
+//                                    if (format.sampleMimeType == MimeTypes.TEXT_VTT) {
+//                                        Log.d("ExoPlayersu", "VTT Subtitle track found: ${format.language}")
+//                                    }
+//                                }
+//                            }
                         }
 
                         withContext(Dispatchers.Main) {
@@ -989,7 +1312,6 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                         }
                     }
                 }
-
             }
 
             override fun onPlayerError(error: PlaybackException) {
@@ -1036,7 +1358,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 "-vsync",
                 "1",                    // Ensures the frames are extracted in sync with the video
                 "-sws_flags", "fast_bilinear",     // Use faster scaling method
-                "-hwaccel", "cuda",  // Enable CUDA acceleration
+                "-hwaccel", "cuda",   // Enable CUDA acceleration
                 "-hwaccel_output_format", "cuda",
                 // "-strftime", "1", // Enable using strftime formatting in output filename
                 File(cacheDir, "frame_%03d.png").absolutePath           // Output path
@@ -1097,10 +1419,13 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                             textureView.getBitmap(bitmap)
                             binding.ivSeekThumb.apply {
                                 setImageBitmap(bitmap)
-                                delay(200)
+                                delay(2000)
                                 playerHandler.play()
                                 visibilityCount = 0
                                 playerHandler.stopHandler()
+//                                if (bufferCount<=1){
+//                                    delay(7000)
+//                                }
                                 updateProgressBar()
                             }
                         }
@@ -1177,27 +1502,76 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 .scaleX(1f)
                 .scaleY(1f)
                 .setInterpolator(DecelerateInterpolator())
-                .setDuration(5000)
+                .setDuration(1000)
                 .start()
         }
 
     }
 
+    private fun increaseSystemVolume() {
+        val audioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.adjustVolume(AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI)
+    }
+
+    private fun decreaseSystemVolume() {
+        val audioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.adjustVolume(AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI)
+    }
+
+    fun isAmazonFireTv(): Boolean {
+        val manufacturer = android.os.Build.MANUFACTURER.lowercase()
+        val model = android.os.Build.MODEL.lowercase()
+        return manufacturer.contains("amazon") || model.contains("fire")
+    }
+
+    fun isGoogleTv(): Boolean {
+        val manufacturer = android.os.Build.MANUFACTURER.lowercase()
+        val model = android.os.Build.MODEL.lowercase()
+        return manufacturer.contains("google") || model.contains("chromecast")
+    }
+
+
     //    Handle volume increase
     private fun volumeUp() {
+        playerHandler.unmute()
+        val audioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+
+
         if (volumeCount <= 99) {
             volumeCount += 1
-            playerHandler.setVolume(volumeCount / 100.0f)
-            volumeManager.setVolumePercentage(volumeCount)
+            Log.e("call","## volumeCount:::: "+volumeCount)
+            //    playerHandler.setVolume(volumeCount / 100.0f)
+            // Convert volumeCount (0–100) to system volume scale
+
+            val systemVolume = (volumeCount * maxVolume) / 100
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, systemVolume, AudioManager.FLAG_SHOW_UI)
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val volumePercent = (currentVolume * 100) / maxVolume
+            volumeManager.setVolumePercentage(volumePercent)
+            saveSeekBarProgress(volumeCount)
         }
     }
 
     //     Handle volume decrease
     private fun volumeDown() {
+
+        val audioManager = context?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+
         if (volumeCount >= 1) {
             volumeCount -= 1
-            playerHandler.setVolume(volumeCount / 100.0f)
-            volumeManager.setVolumePercentage(volumeCount)
+            //     playerHandler.setVolume(volumeCount / 100.0f)
+
+            val systemVolume = (volumeCount * maxVolume) / 100
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, systemVolume, AudioManager.FLAG_SHOW_UI)
+            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val volumePercent = (currentVolume * 100) / maxVolume
+
+            volumeManager.setVolumePercentage(volumePercent)
+            saveSeekBarProgress(volumeCount)
         }
     }
 
@@ -1236,9 +1610,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+
+
+
     //    Handle all view focus
     private fun selectorFocus() = with(binding) {
-        ivSkipBack.requestFocus()
+        //   ivSkipBack.requestFocus()
         ivSkipBack.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 toShowBackButton()
@@ -1383,20 +1760,34 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         rvQuality.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
+
             qualityAdapter = QualityAdapter(requireActivity(), qualityList) {
+
+                Log.e("call","###345 "+it)
 
                 clSettingsMenu.gone()
                 ivSetting.requestFocus()
 
+                val manufacturer = Build.MANUFACTURER
+                val model = Build.MODEL
+                val device = Build.DEVICE
+
                 if (qualityList[it].title == "Auto") {
                     playerHandler.setAutoResolutionBasedOnBandwidth()
                 } else {
-                    playerHandler.setQuality(qualityList[it])
+                    if (manufacturer.equals("Amazon") && model.equals("AFTSSS")){
+                        if (it == qualityList.size-1){
+                            playerHandler.setQuality(qualityList[it])
+                        }else{
+                            playerHandler.setAutoResolutionBasedOnBandwidth()
+                        }
+                    } else {
+                        playerHandler.setQuality(qualityList[it])
+                    }
                 }
             }
             adapter = qualityAdapter
         }
-
     }
 
     private fun updateResulation() {
@@ -1408,6 +1799,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                     playerHandler.player?.run {
                         if (videoFormat != null) {
                             videoFormat?.run {
+                                Log.e("call","WIDTH::: "+this.width)
                                 width = this.width
                             }
                         }
@@ -1415,6 +1807,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
                 }.join()
 
                 launch(Dispatchers.IO) {
+                    Log.e("call","###3456 qualityList::  "+qualityList.toString())
                     if (width > 0) {
                         if (qualityList.isNotEmpty()) {
                             qualityList.forEachIndexed { index, qualityModel ->
@@ -1439,37 +1832,103 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
         }
     }
 
+//    private fun updateResulation() {
+//        if (playerHandler.player != null) {
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                var width = 0
+//
+//                // Get current video width on Main thread
+//                withContext(Dispatchers.Main) {
+//                    playerHandler.player?.videoFormat?.let { format ->
+//                        Log.e("call", "WIDTH::: ${format.width}")
+//                        width = format.width
+//                    }
+//                }
+//
+//                // Update qualityList on IO thread
+//                if (width > 0 && qualityList.isNotEmpty()) {
+//                    // If video is playing in 4K but 4K was removed, fallback to 1080p
+//                    if (width >= 3840 && qualityList.none { it.width == width }) {
+//                        Log.e("call", "Detected 2160p but it's removed, falling back to 1080p")
+//                        qualityList.forEach { qualityModel ->
+//                            qualityModel.isSelected = (qualityModel.width == 1920)
+//                        }
+//                    } else {
+//                        qualityList.forEach { qualityModel ->
+//                            qualityModel.isSelected = (qualityModel.width == width)
+//                        }
+//                    }
+//
+//                    Log.d(
+//                        "ExoPlayer",
+//                        "Current resolution playing: detected $width \n $qualityList"
+//                    )
+//                }
+//            }
+//        }
+//    }
+
 
     //    Handle video volume functionality
     private fun volume() = with(binding) {
 
-        volumeManager.setOnVolumeChangeListener { volumePercentage ->
-            if (!isVolume) {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    volumeCount = volumePercentage
-                    sbVolumeSeek.progress = volumeCount
+        if (isAmazonFireTv() || isGoogleTv()){
+            // fire stick
+        }else {
+
+            volumeManager.setOnVolumeChangeListener { volumePercentage ->
+                if (!isVolume) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        volumeCount = volumePercentage
+                        saveSeekBarProgress(volumeCount)
+                        sbVolumeSeek.progress = volumeCount
+                    }
+                    if (ivVolume.isFocused) {
+                        if (volumePercentage <= 0) {
+                            playerHandler.mute()
+                            ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
+                        } else {
+                            //     playerHandler.setVolume(volumeCount / 100.0f)
+                            ivVolume.setImageResource(R.drawable.ic_selected_volume)
+                            Log.e("call","##Volume change focues   "+volumeCount )
+                            playerHandler.unmute()
+                        }
+                    } else {
+                        if (volumePercentage <= 0) {
+                            playerHandler.mute()
+                            ivVolume.setImageResource(R.drawable.ic_mute)
+                        } else {
+                            //    playerHandler.setVolume(volumeCount / 100.0f)
+                            Log.e("call","##Volume change   "+volumeCount )
+                            ivVolume.setImageResource(R.drawable.ic_video_volume)
+                            playerHandler.unmute()
+                        }
+                    }
                 }
-                if (ivVolume.isFocused) {
-                    if (volumePercentage <= 0) {
-                        playerHandler.mute()
-                        ivVolume.setImageResource(R.drawable.ic_volume_selected_muted)
-                    } else {
-                        playerHandler.setVolume(volumeCount / 100.0f)
-                        ivVolume.setImageResource(R.drawable.ic_selected_volume)
-                    }
+                isVolume = false
+            }
+            volumeManager.setOnAudioStatusListener { isPlaying ->
+                if (isPlaying) {
+                    Log.d("AudioStatus", "Audio is playing and producing sound.")
                 } else {
-                    if (volumePercentage <= 0) {
-                        playerHandler.mute()
-                        ivVolume.setImageResource(R.drawable.ic_mute)
-                    } else {
-                        playerHandler.setVolume(volumeCount / 100.0f)
-                        ivVolume.setImageResource(R.drawable.ic_video_volume)
-                    }
+                    Log.d("AudioStatus", "No audio is playing.")
                 }
             }
-            isVolume = false
+
+            volumeManager.startMonitoring()
         }
-        volumeManager.startMonitoring()
+
+
+
+    }
+
+    fun volume_Intilize_To_Start_OneCount(){
+//        if (volumeCount == 0){
+//            volumeCount = 1
+            binding.ivVolume.setImageResource(R.drawable.ic_selected_volume)
+            binding.sbVolumeSeek.progress = volumeCount
+            volumeManager.setVolumePercentage(volumeCount)
+       // }
     }
 
     //    Handle following functionality
@@ -1494,14 +1953,16 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
             if (visibilityCount == 5) {
                 visibilityCount = 0
-                binding.ivBack.animate().alpha(0f).setDuration(400).setStartDelay(10)
-                binding.llTools.animate().alpha(0f).setDuration(400).setStartDelay(10)
-                binding.playerView.requestFocus()
+                Log.e("call","### 222")
+//                binding.ivBack.animate().alpha(0f).setDuration(400).setStartDelay(10)
+//                binding.llTools.animate().alpha(0f).setDuration(400).setStartDelay(10)
+                //   showToolsAndAutoHide()
+                //    binding.playerView.requestFocus()
                 binding.clSettingsMenu.gone()
                 binding.ivSeekThumb.invisible()
             }
             visibilityCount++
-           // Log.e("updatevideo", "$isSeeking update $currentDuration")
+            // Log.e("updatevideo", "$isSeeking update $currentDuration")
 
             if (isNewVideoAvailable) {
                 val video_show_count = duration - currentPosition
@@ -1582,8 +2043,10 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     //    Show video tolls
     private fun toShowBackButton() = with(binding) {
-        binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
-        binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        Log.e("call","### 333")
+//      binding.ivBack.animate().alpha(1f).setDuration(50).setStartDelay(50)
+//      binding.llTools.animate().alpha(1f).setDuration(50).setStartDelay(50)
+        showToolsAndAutoHide()
         visibilityCount = 0
         clSettingsMenu.gone()
         binding.playerView.clearFocus()
@@ -1689,6 +2152,7 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
     override fun onPause() {
         super.onPause()
+        bufferCount++
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
@@ -1703,11 +2167,12 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     }
 
     override fun onStop() {
-
+        bufferCount=0
         super.onStop()
     }
 
     override fun onDestroy() {
+        Log.e("call","##### 678888888888 DESTROY")
         if (playerHandler.player != null) {
             if (!HomeFragment.isTrailer) {
                 playerHandler.player?.run {
@@ -1853,6 +2318,17 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
 
         }
 
+    }
+
+
+    private fun saveSeekBarProgress(progress: Int) {
+        val sharedPref = requireActivity().getSharedPreferences("VideoPrefs", MODE_PRIVATE)
+        sharedPref.edit().putInt("seek_progress", progress).apply()
+    }
+
+    private fun getSavedSeekBarProgress(): Int {
+        val sharedPref = requireActivity().getSharedPreferences("VideoPrefs", MODE_PRIVATE)
+        return sharedPref.getInt("seek_progress", 0) // 0 is default if nothing saved
     }
 
 

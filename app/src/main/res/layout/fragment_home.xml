@@ -46,33 +46,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
-<!--            <com.streamefy.component.ui.home.background.VideoRecyclerView-->
-<!--                android:id="@+id/rvBackgVideo"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:focusable="false"-->
-<!--                android:focusableInTouchMode="false"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-
-            <!--            <com.smarteist.autoimageslider.SliderView-->
-            <!--                android:id="@+id/imageSlider"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:sliderIndicatorGravity="end|center_vertical"-->
-            <!--                app:sliderIndicatorOrientation="vertical"-->
-            <!--                app:sliderIndicatorRadius="@dimen/_3sdp"-->
-            <!--                app:sliderIndicatorUnselectedColor="@color/primary"-->
-            <!--                app:sliderScrollTimeInSec="3"-->
-            <!--                app:sliderStartAutoCycle="true"-->
-            <!--                app:sliderIndicatorEnabled="false"-->
-            <!--                />-->
 
 
             <com.streamefy.component.ui.home.adapter.CustomIndicator
@@ -97,7 +70,7 @@
                 android:layout_width="@dimen/_400sdp"
                 android:layout_height="match_parent"
                 android:background="@drawable/horizontal_opecity"
-                app:layout_constraintBottom_toTopOf="@+id/clRv"
+                app:layout_constraintBottom_toTopOf="@+id/rvCategory"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -212,10 +185,12 @@
                 android:visibility="invisible"
                 android:textAllCaps="true"
                 android:textColor="@color/input_field_color_selector"
-                app:layout_constraintBottom_toTopOf="@+id/clRv"
-                app:layout_constraintStart_toStartOf="@+id/clRv"
+                app:layout_constraintBottom_toTopOf="@+id/rvCategory"
+                app:layout_constraintStart_toStartOf="@+id/rvCategory"
                 app:drawableTint="@color/play_icon_tint"
-                 />
+                 >
+                <requestFocus/>
+            </TextView>
 
             <ImageView
                 android:id="@+id/ivTrailer"
@@ -230,30 +205,41 @@
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPlay"
                 app:layout_constraintStart_toEndOf="@+id/tvPlay" />
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clRv"
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:id="@+id/clRv"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/vertical_opacity"-->
+<!--                android:paddingStart="@dimen/_25sdp"-->
+<!--                android:paddingBottom="@dimen/_7sdp"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/clTitle">-->
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:background="@android:color/transparent"-->
+<!--                    android:paddingStart="@dimen/_2sdp"-->
+<!--                    android:paddingRight="@dimen/_15sdp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/vertical_opacity"
-                android:paddingStart="@dimen/_25sdp"
+                android:background="@drawable/background_home_new"
+                android:paddingStart="@dimen/_27sdp"
                 android:paddingBottom="@dimen/_7sdp"
+                android:paddingRight="@dimen/_15sdp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/clTitle">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:paddingStart="@dimen/_2sdp"
-                    android:paddingRight="@dimen/_15sdp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+                app:layout_constraintStart_toStartOf="@+id/clTitle"
+                android:descendantFocusability="afterDescendants"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

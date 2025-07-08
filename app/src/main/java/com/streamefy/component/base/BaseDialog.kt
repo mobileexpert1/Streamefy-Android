@@ -16,7 +16,6 @@ abstract class BaseDialog<T : ViewDataBinding>(
     protected val binding: T by lazy {
         DataBindingUtil.inflate(LayoutInflater.from(context), layoutId, null, false)
     }
-
   //  lateinit var progressDialog:CircularProgressDialog
 
     init {

@@ -39,5 +39,7 @@
     <string name="try_again">Try Again</string>
     <string name="watch_again">Watch Again</string>
     <string name="reset_pin">Reset PIN</string>
+    <string name="my_library">My Library</string>
+    <string name="enter_4_digit_access_pin">Enter 4 digit access pin</string>
 
 </resources>

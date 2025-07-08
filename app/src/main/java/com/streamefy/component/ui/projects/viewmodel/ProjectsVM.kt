@@ -8,6 +8,8 @@ import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
 import com.streamefy.component.ui.pin_authentication.model.ResetPinResponse
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ProjectResponse
+import com.streamefy.component.ui.projects.model.remove.RemoveProjectRequest
+import com.streamefy.component.ui.projects.model.remove.RemoveProjectResponse
 import com.streamefy.data.SingleLiveEvent
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
@@ -70,6 +72,38 @@ class ProjectsVM(var repo: ApiService) : ViewModel() {
             } else {
                 ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
                 _resetData.value =
+                    MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
+
+            }
+        }
+    }
+
+    // remove project
+    var _removeProjectData = SingleLiveEvent<MyResource<RemoveProjectResponse>>()
+    var removeProjectData :LiveData<MyResource<RemoveProjectResponse>> =_removeProjectData
+    fun removeProject(
+        context: Context,
+        removeProjectRequest: RemoveProjectRequest
+    ) {
+        viewModelScope.launch {
+            if (context.isNetworkAvailable()) {
+                _removeProjectData.value = MyResource.isLoading()
+                try {
+                    var response = repo.removeProject(removeProjectRequest)
+                    if (response.body()?.isSuccess!!) {
+                        _removeProjectData.value = MyResource.isSuccess(response.body())
+                    } else {
+                        ShowError.handleError.message(response.body()?.error?.userMessage.toString())
+                        _removeProjectData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NOT_FOUND))
+                    }
+                } catch (e: Exception) {
+                    ShowError.handleError.handleError(ErrorCodeManager.UNKNOWN_ERROR)
+                    _removeProjectData.value = MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.UNKNOWN_ERROR))
+
+                }
+            } else {
+                ShowError.handleError.handleError(ErrorCodeManager.NETWORK_ISSUE)
+                _removeProjectData.value =
                     MyResource.isError(ErrorCodeManager.getErrorMessage(ErrorCodeManager.NETWORK_ISSUE))
 
             }

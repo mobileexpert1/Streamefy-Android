@@ -53,6 +53,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         if (SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().isNotEmpty()) {
             countryCode = SharedPref.getString(PrefConstent.COUNTRY_CODE).toString().toInt()
         }
+
         realnumer = SharedPref.getString(PrefConstent.REALNUMBER).toString()
         isDark = SharedPref.getBoolean(PrefConstent.IS_DARK)
         logo = SharedPref.getString(PrefConstent.APP_LOGO).toString()
@@ -80,6 +81,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
 
         if (logo.isNotEmpty()) {
+            Log.e("call","APP LOGO::: "+logo)
             ivApplogo.loadUrl(logo)
         }
         ivbackground.loadUrl(background)
@@ -135,7 +137,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 if (etPhoneNumber.text.isNotEmpty()) {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
                     tvGetOtp.requestFocus()
-                    formatPhoneNumber(etPhoneNumber.text.toString(),ccCode.selectedCountryNameCode)
+                   // formatPhoneNumber(etPhoneNumber.text.toString(),ccCode.selectedCountryNameCode)
                 } else {
                     etPhoneNumber.setSelection(etPhoneNumber.text.length)
                 }
@@ -206,7 +208,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         setMaxLength(20)
         ccCode.setOnCountryChangeListener {
             Log.e("numbers", "onchange ${ccCode.formattedFullNumber} length ")
-            etPhoneNumber.setText("")
+        //    etPhoneNumber.setText("")
             ccCode.registerCarrierNumberEditText(etPhoneNumber);
             // setMaxLength(20)
         }
@@ -284,117 +286,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     }
 
-    fun formatPhoneNumber(number: String, countryCode: String): String {
-        val phoneNumberUtil = PhoneNumberUtil.getInstance()
-
-        try {
-            // Parse the phone number with country code
-            val parsedNumber = phoneNumberUtil.parse(countryCode + number, countryCode)
-            val results = phoneNumberUtil.format(
-                parsedNumber,
-                PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL)
-          var number=  phoneNumberUtil.getExampleNumber(countryCode).nationalNumber
-            Log.e("formatednum", "results ${results} number $number")
-            return results
-        } catch (e: Exception) {
-            Log.e("formatednum", "hello ${e.message}")
-            return "Invalid number"
-        }
-    }
-
     private fun setMaxLength(length: Int) = with(binding) {
         val filterArray = arrayOf<InputFilter>(InputFilter.LengthFilter(length))
         etPhoneNumber.filters = filterArray
-    }
-
-    fun setMinMaxLength(minLength: Int, maxLength: Int) = with(binding) {
-        val maxLengthFilter = InputFilter.LengthFilter(maxLength)
-        val minLengthFilter = InputFilter { source, start, end, dest, dstart, dend ->
-            val newText = dest.toString().substring(0, dstart) + source.toString() + dest.toString()
-                .substring(dend)
-            if (newText.length < minLength) {
-                return@InputFilter ""
-            }
-            null
-        }
-
-        etPhoneNumber.filters = arrayOf(minLengthFilter, maxLengthFilter)
-    }
-
-    private fun readCountriesFromXml(): List<CountryCodeModel> {
-        val countries = mutableListOf<CountryCodeModel>()
-        val parser: XmlPullParser = Xml.newPullParser()
-
-        try {
-            // Open the raw resource
-            val inputStream: InputStream = resources.openRawResource(R.raw.code_template)
-
-            // Set the input stream to the parser
-            parser.setInput(inputStream, null)
-
-            var eventType = parser.eventType
-            var currentCountry: CountryCodeModel? = null
-
-            // Parse the XML
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                when (eventType) {
-                    XmlPullParser.START_TAG -> {
-                        val tagName = parser.name
-                        when (tagName) {
-                            "country" -> {
-                                // Initialize a new Country object when we start reading a country
-                                currentCountry = CountryCodeModel()
-                            }
-
-                            "name" -> {
-                                // Read country name
-                                currentCountry?.name = parser.nextText()
-                            }
-
-                            "english_name" -> {
-                                // Read english name
-                                currentCountry?.englishName = parser.nextText()
-                            }
-
-                            "name_code" -> {
-                                // Read name code
-                                currentCountry?.nameCode = parser.nextText()
-                            }
-
-                            "phone_code" -> {
-                                // Read phone code
-                                currentCountry?.phoneCode = parser.nextText()
-                            }
-
-                            "dialing_length" -> {
-                                // Read dialing length
-                                currentCountry?.dialingLength = parser.nextText()
-                            }
-
-                            "flag" -> {
-                                // Read flag (this would typically be a drawable resource reference)
-                                currentCountry?.flagResID = parser.nextText()
-                            }
-                        }
-                    }
-
-                    XmlPullParser.END_TAG -> {
-                        // When we finish reading a country, add it to the list
-                        if (parser.name == "country" && currentCountry != null) {
-                            countries.add(currentCountry)
-                            currentCountry = null
-                        }
-                    }
-                }
-                eventType = parser.next()
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("slcnslnc", "onResume $e")
-        }
-
-        return countries
     }
 
     override fun onResume() {
@@ -430,9 +324,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        progressDialog.dismiss()
+        dismissProgress()
     }
 
     override fun netStatus() {
     }
 }
+

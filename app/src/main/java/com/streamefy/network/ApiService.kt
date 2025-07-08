@@ -6,6 +6,8 @@ import com.streamefy.component.ui.pin_authentication.model.ResetPinRequest
 import com.streamefy.component.ui.pin_authentication.model.ResetPinResponse
 import com.streamefy.component.ui.projects.model.ProjectRequest
 import com.streamefy.component.ui.projects.model.ProjectResponse
+import com.streamefy.component.ui.projects.model.remove.RemoveProjectRequest
+import com.streamefy.component.ui.projects.model.remove.RemoveProjectResponse
 import com.streamefy.component.ui.video.model.PlayBackRequest
 import com.streamefy.component.ui.video.model.VideoPlaback
 import com.streamefy.component.ui.video.model.VideoResponse
@@ -37,8 +39,6 @@ interface ApiService {
     @Body playback: PlayBackRequest,
     ): Response<VideoPlaback>
 
-
-
     @POST(ServerUrls.GET_PROJECTS)
     suspend fun getProject(
         @Body request: ProjectRequest,
@@ -54,6 +54,11 @@ interface ApiService {
     suspend fun getVideo(
         @Query("videoId") videoId: String,
     ): Response<VideoResponse>
+
+    @POST(ServerUrls.REMOVE_PROJECT)
+    suspend fun removeProject(
+        @Body request: RemoveProjectRequest,
+    ): Response<RemoveProjectResponse>
 
 //
 //    @POST(ServerUrls.URL_USERNAME_EXISTS)

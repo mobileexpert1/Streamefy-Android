@@ -347,6 +347,8 @@ class OtpFragment : BaseFragment<FragmentOtpBinding>(), View.OnClickListener {
                                 bundle.putString(PrefConstent.PHONE_NUMBER, phone)
                                 bundle.putBoolean(PrefConstent.ISHOME, false)
                                 SharedPref.setBoolean(PrefConstent.ISAUTH, false)
+                                //** code updated
+                                SharedPref.setBoolean(PrefConstent.ISLOGIN, true)
                                 if (data.email != null) {
                                     SharedPref.setString(PrefConstent.USER_EMAIL, data.email)
                                 }

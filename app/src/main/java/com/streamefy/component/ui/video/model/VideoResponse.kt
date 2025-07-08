@@ -10,8 +10,9 @@ data class Response(@SerializedName("eventId")
                     @SerializedName("mediaId")
                     val mediaId: Int = 0,
                     @SerializedName("hlsUrl")
-                    val hlsUrl: String = "")
-
+                    val hlsUrl: String = "",
+                    @SerializedName("vttFileContent")
+                    val vttFileContent: String = "")
 
 data class VideoResponse(@SerializedName("response")
                          val response: Response,

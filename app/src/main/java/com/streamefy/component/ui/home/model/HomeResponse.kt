@@ -52,8 +52,9 @@ data class MediaItem(
     val format: String = "",
     @SerializedName("description")
     val description: String = "",
-    @SerializedName("bunnyId")
-    val bunnyId: String = "",
+    @SerializedName("videoId")
+//    val bunnyId: String = "",
+    val videoId: String = "",
     @SerializedName("thumbnailS3bucketId")
     val thumbnailS3bucketId: String = "",
     @SerializedName("isSmartRevision")

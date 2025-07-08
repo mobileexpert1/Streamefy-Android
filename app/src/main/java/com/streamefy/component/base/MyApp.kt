@@ -5,8 +5,13 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.util.Log
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.data.SharedPref
 import com.streamefy.data.appModule
 import com.streamefy.network.NetworkReceiver
@@ -20,7 +25,9 @@ class MyApp : Application(),NetworkReceiver.NetworkStatusListener {
 //    val startTime = System.currentTimeMillis()
 private lateinit var networkReceiver: NetworkReceiver
  var statusListener: NetworkStatusListener?=null
-
+    companion object {
+        lateinit var player: ExoPlayer
+    }
     override fun onCreate() {
 //        if (FirebaseApp.getApps(this).isEmpty()) {
 //            FirebaseApp.initializeApp(this)
@@ -39,6 +46,8 @@ private lateinit var networkReceiver: NetworkReceiver
         networkReceiver = NetworkReceiver(this)
         val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
         registerReceiver(networkReceiver, filter)
+
+
 
     }
 

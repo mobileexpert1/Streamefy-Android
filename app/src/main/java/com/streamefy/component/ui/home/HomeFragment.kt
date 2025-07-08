@@ -4,8 +4,11 @@ package com.streamefy.component.ui.home
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
@@ -103,13 +106,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         lateinit var homeFragment: HomeFragment
         var videoduraion: Long = 0
         var mediaId: Int = 0
-        var videoId: String = ""
+        var videoid: String = ""
         var eventVideoIndex = 0
         var mediaIndex = 0
         var isTrailer = false
     }
 
-    lateinit var progressDialog: CircularProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -119,7 +121,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progressDialog = CircularProgressDialog(requireContext())
+
+        val manufacturer = android.os.Build.MANUFACTURER.lowercase()
+        val model = android.os.Build.MODEL.lowercase()
+
+        Log.e("call","manufacturer  "+manufacturer+"   "+"model  "+model)
+
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
         isPrimaryuser = SharedPref.getBoolean(PrefConstent.ISPRIMARY_USER)
@@ -250,6 +257,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
+                    eventVideoIndex = 0
                     eventVideoFocus()
                 }
 
@@ -267,6 +275,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 }
 
                 StreamEnum.DOWN_DPAD_KEY -> {
+                    Log.e("call","### EVENT VIDEO INDEX::::  "+eventVideoIndex)
+                    eventVideoIndex = 0
                     eventVideoFocus()
                 }
 
@@ -297,11 +307,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
         ivHomeCross.setOnClickListener {
-            val bundle = Bundle().apply { putBoolean(PrefConstent.ISHOME, true) }
+            /*
+               val bundle = Bundle().apply { putBoolean(PrefConstent.ISHOME, true) }
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
                 .build()
                 findNavController().navigate(R.id.projectfragment, bundle, navOptions)
+             */
+            LogoutDialog(requireContext()) {
+                SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.homefragment, true)
+                    .build()
+                findNavController().navigate(R.id.loginFragment, null, navOptions)
+            }.show()
+
 
         }
         customIndicator.setOnFocusChangeListener { v, hasFocus ->
@@ -373,7 +393,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         toGotoVideo(
             lastVideoDuration,
             lastVideoThumb,
-            videoId,
+            mediaId.toString(),
             mediaId
         )
     }
@@ -475,7 +495,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 //    Get project details
     private fun getUserData() {
-        dismissProgress()
+        //dismissProgress()
         viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
@@ -485,6 +505,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         if (isDrawerOpen) {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
         } else {
+            /*
             LogoutDialog(requireContext()) {
                 SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
                 val navOptions = NavOptions.Builder()
@@ -492,6 +513,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     .build()
                 findNavController().navigate(R.id.loginFragment, null, navOptions)
             }.show()
+             */
+
+            val bundle = Bundle().apply { putBoolean(PrefConstent.ISHOME, true) }
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
+                .build()
+            findNavController().navigate(R.id.projectfragment, bundle, navOptions)
+
+
         }
     }
 
@@ -506,7 +536,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList as ArrayList<Any>) {
 
-//                Handle event item clicks and navigate to the Video Screen to play video
+//              Handle event item clicks and navigate to the Video Screen to play video
                 drawerItemFocus = it
                 mediaIndex = it
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -522,13 +552,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             }
 
                             mediaId = this.id
-                            videoId = this.bunnyId
+                            videoid = this.videoId
                             isPlayByPlayButton = false
                             withContext(Dispatchers.Main) {
                                 toGotoVideo(
                                     newDuration,
                                     thumbnailS3bucketId,
-                                    videoId,
+                                    mediaId.toString(),
                                     mediaId
                                 )
                             }
@@ -560,7 +590,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             toGotoVideo(
                                 "0",
                                 thumbnailS3bucketId,
-                                newvideoId,
+                                newmediaId.toString(),
                                 newmediaId
                             )
                         }
@@ -601,13 +631,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         }
                                         isPlayByPlayButton = false
                                         mediaId = this.id
-                                        videoId = this.bunnyId
+                                        videoid = this.videoId
                                         withContext(Dispatchers.Main) {
 //                                            findNavController().navigate(R.id.dynamicscreen)
                                             toGotoVideo(
                                                 newDuration,
                                                 thumbnailS3bucketId,
-                                                videoId,
+                                                mediaId.toString(),
                                                 mediaId
                                             )
                                         }
@@ -675,12 +705,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         observe()
     }
 
-//    Get project response from server
+//  Get project response from server
     private fun observe() {
         viewModel._homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-                    progressDialog.show()
+           //         showProgress()
                 }
 
                 is MyResource.isSuccess -> {
@@ -737,7 +767,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                 if (media.isLastPlayed) {
 
                                                     lastVideoThumb = media.thumbnailS3bucketId
-                                                    videoId = media.bunnyId
+                                                    videoid = media.videoId
                                                     lastVideoUrl = ""
                                                     mediaId = media.id
                                                     isLastPlay = true
@@ -774,17 +804,39 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                                 lastVideoDuration = "0"
                                                 lastVideoThumb = thumbnailS3bucketId
                                                 mediaId = id
-                                                videoId = this.bunnyId
+                                                videoid = this.videoId
                                                 lifecycleScope.launch(Dispatchers.Main) {
                                                     binding.tvPlay.text = "play"
                                                 }
                                             }
                                         }else{
-                                            withContext(Dispatchers.Main) { binding.tvPlay.text = "play"
-                                            binding.ivHomeCross.requestFocus()}
+                                            withContext(Dispatchers.Main) {
+                                                binding.tvPlay.text = "play"
+                                            //binding.ivHomeCross.requestFocus()
+
+                                                delay(200)
+                                                binding.tvPlay.visible() // Ensure it's visible
+                                                binding.ivHomeCross.clearFocus()
+                                                binding.tvPlay.isFocusable = true
+                                                binding.tvPlay.isFocusableInTouchMode = true
+                                                binding.tvPlay.post {
+                                                    binding.tvPlay.requestFocus()
+                                                }
+                                            }
                                         }
                                     } else {
-                                        withContext(Dispatchers.Main) { binding.tvPlay.text = "resume" }
+                                        withContext(Dispatchers.Main) {
+                                            binding.tvPlay.text = "resume"
+
+                                            delay(200)
+                                            binding.tvPlay.visible() // Ensure it's visible
+                                            binding.ivHomeCross.clearFocus()
+                                            binding.tvPlay.isFocusable = true
+                                            binding.tvPlay.isFocusableInTouchMode = true
+                                            binding.tvPlay.post {
+                                                binding.tvPlay.requestFocus()
+                                            }
+                                        }
                                     }
                                 }
                                 withContext(Dispatchers.Main){
@@ -834,12 +886,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                             }
                         }
                     }
-                    progressDialog.dismiss()
+
                     dismissProgress()
                 }
 
                 is MyResource.isError -> {
-                    progressDialog.dismiss()
                     dismissProgress()
                     binding.ivHomeCross.visible()
                     if (it.error == "Incorrect PIN") {
@@ -890,10 +941,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         isEnded: Boolean
     ) {
         Log.e("saveme","bunnid $bunneyId isEnded $isEnded duration $duration eventId $eventId mediaId $mediaId ")
-        showProgress()
+    //    showProgress()
         lifecycleScope.launch(Dispatchers.IO) {
             val newList = homeFragment.eventAdapter.getList()
-            videoId = bunneyId
+            videoid = bunneyId
             lastVideoThumb = thumb
             lastVideoDuration = if (isEnded) {
                 "0"
@@ -937,16 +988,31 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun netStatus() {
     }
 
-//      Handle focus on event video
+//  Handle focus on event video
+//    fun eventVideoFocus() = with(binding) {
+//        rvCategory.apply {
+//            post {
+//                getChildAt(eventVideoIndex)?.requestFocus()
+//            }
+//        }
+//    }
+
     fun eventVideoFocus() = with(binding) {
-        rvCategory.apply {
-            post {
-                getChildAt(eventVideoIndex)?.requestFocus()
+        rvCategory.layoutManager?.scrollToPosition(eventVideoIndex)
+
+        rvCategory.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                rvCategory.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                val viewHolder = rvCategory.findViewHolderForAdapterPosition(eventVideoIndex)
+                viewHolder?.itemView?.requestFocus()
             }
-        }
+        })
     }
 
-//      Handle focus on right drawer video
+
+
+    //   Handle focus on right drawer video
     private fun drawerVideoFocus() = with(binding) {
         rvDrawer.post {
             rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
@@ -1019,7 +1085,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     private fun play(videoUrl: String) {
         if (::playerHandler.isInitialized) {
             mediaUrl=videoUrl
-            playerHandler.setMediaUri(videoUrl, 0)
+            playerHandler.setMediaUri(videoUrl, 0, false)
         }
     }
 
@@ -1212,6 +1278,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onResume() {
         super.onResume()
+
+        eventVideoIndex = 0
+
         if (isNetworkAvailable) {
             binding.apply {
 
@@ -1222,24 +1291,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     tvPlay.setText("play")
                 }
                 showTools()
+                playerHandler = PlayerHandler(requireActivity(), binding.playerView)
+                playerHandler.mute()
                 if (playerHandler.player != null) {
                     if (::playerHandler.isInitialized){
-                    playerHandler.player?.run {
-                            playerHandler.setMediaUri(mediaUrl, this.currentPosition)
-
+                        //     playerHandler.player?.run {
+                        playerHandler.setMediaUri(mediaUrl, 0, false)
                         resumeCountdown()
-                    }
-                }}
-                viewFocus()
+                        //    }
+                    }}
+
             }
+            viewFocus()
         }
     }
+
 
     override fun onPause() {
         if (playerHandler.player != null) {
             playerHandler.player?.run {
                 playerHandler.pause()
                 pauseCountdown()
+
+                playerHandler.player?.stop()
+                playerHandler.player?.release()
             }
         }
 
@@ -1253,7 +1328,17 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             pauseCountdown()
             playerHandler.pause()
             playerHandler.release()
+
+            playerHandler.player?.stop()
+            playerHandler.player?.release()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        playerHandler.player?.stop()
+        playerHandler.player?.release()
     }
 
 }

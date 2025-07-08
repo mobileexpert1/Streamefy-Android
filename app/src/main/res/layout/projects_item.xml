@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/_140sdp"
@@ -9,6 +10,8 @@
     android:layout_marginVertical="@dimen/_2sdp"
     android:descendantFocusability="afterDescendants"
     android:focusable="true"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:focusableInTouchMode="true"
     android:padding="@dimen/_3sdp">
 
@@ -43,8 +46,7 @@
                     android:layout_height="0dp"
                     android:scaleType="centerCrop"
                     app:layout_constraintBottom_toTopOf="@+id/line"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@drawable/home_theme" />
+                    app:layout_constraintTop_toTopOf="parent" />
                 <View
                     android:id="@+id/line"
                     android:layout_width="match_parent"
@@ -105,7 +107,7 @@
                         android:layout_width="0dp"
                         android:fontFamily="@font/filsonpro_regular"
                         android:maxLines="1"
-                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingStart="@dimen/_4sdp"
                         android:paddingBottom="@dimen/_3sdp"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -129,25 +131,96 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
-    <TextView
-        android:id="@+id/tvResetPin"
-        style="@style/filson_regular_21_whiteTV"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:drawableLeft="@drawable/ic_reset_pin_svg"
-        app:drawableTint="@color/text_theme_color"
-        android:drawablePadding="@dimen/_2sdp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:fontFamily="@font/filsonpro_bold"
-        android:paddingHorizontal="@dimen/_6sdp"
-        android:paddingVertical="@dimen/_2sdp"
-        android:text="@string/reset_pin"
-        android:background="@drawable/ic_reset_pin_background"
-        android:textColor="@color/text_theme_color"
+<!--    <TextView-->
+<!--        android:id="@+id/tvResetPin"-->
+<!--        style="@style/filson_regular_21_whiteTV"-->
+<!--        android:drawableLeft="@drawable/ic_reset_pin_svg"-->
+<!--        app:drawableTint="@color/text_theme_color"-->
+<!--        android:drawablePadding="@dimen/_2sdp"-->
+<!--        android:focusable="true"-->
+<!--        android:focusableInTouchMode="true"-->
+<!--        android:fontFamily="@font/filsonpro_bold"-->
+<!--        android:paddingHorizontal="@dimen/_6sdp"-->
+<!--        android:paddingVertical="@dimen/_2sdp"-->
+<!--        android:text="@string/reset_pin"-->
+<!--        android:background="@drawable/ic_reset_pin_background"-->
+<!--        android:textColor="@color/text_theme_color"-->
+<!--        android:gravity="center"-->
+<!--        android:textSize="@dimen/_9sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/clThumb"-->
+<!--        android:layout_marginBottom="@dimen/_4sdp"-->
+<!--        />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/tvRemove"-->
+<!--        style="@style/filson_regular_21_whiteTV"-->
+<!--        app:drawableTint="@color/text_theme_color"-->
+<!--        android:drawablePadding="@dimen/_2sdp"-->
+<!--        android:focusable="true"-->
+<!--        android:focusableInTouchMode="true"-->
+<!--        android:fontFamily="@font/filsonpro_bold"-->
+<!--        android:paddingHorizontal="@dimen/_6sdp"-->
+<!--        android:paddingVertical="@dimen/_2sdp"-->
+<!--        android:text="Remove"-->
+<!--        android:background="@drawable/ic_reset_pin_background"-->
+<!--        android:textColor="@color/text_theme_color"-->
+<!--        android:gravity="center"-->
+<!--        android:textSize="@dimen/_9sdp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:visibility="visible"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/clThumb" />
+-->
+
+    <LinearLayout
+        android:id="@+id/llButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:textSize="@dimen/_9sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clThumb" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tvResetPin"
+            style="@style/filson_regular_21_whiteTV"
+            android:drawableLeft="@drawable/ic_reset_pin_svg"
+            app:drawableTint="@color/text_theme_color"
+            android:drawablePadding="@dimen/_2sdp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:fontFamily="@font/filsonpro_bold"
+            android:paddingHorizontal="@dimen/_6sdp"
+            android:paddingVertical="@dimen/_2sdp"
+            android:text="@string/reset_pin"
+            android:background="@drawable/ic_reset_pin_background"
+            android:textColor="@color/text_theme_color"
+            android:gravity="center"
+            android:textSize="@dimen/_9sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvRemove"
+            style="@style/filson_regular_21_whiteTV"
+            app:drawableTint="@color/text_theme_color"
+            android:drawablePadding="@dimen/_2sdp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:fontFamily="@font/filsonpro_bold"
+            android:paddingHorizontal="@dimen/_6sdp"
+            android:paddingVertical="@dimen/_2sdp"
+            android:text="Delete"
+            android:background="@drawable/ic_reset_pin_background"
+            android:textColor="@color/text_theme_color"
+            android:gravity="center"
+            android:textSize="@dimen/_9sdp"
+            android:visibility="visible" />
+    </LinearLayout>
+
+</LinearLayout>

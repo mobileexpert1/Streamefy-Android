@@ -35,21 +35,6 @@ class ExitDialog(context: Context) :
             tvContinue.isFocusableInTouchMode = true
             tvContinue.requestLayout()
             tvContinue.requestFocus()
-//            ivClose.setOnClickListener { dismiss() }
-//            ivClose.requestFocus()
-//            ivClose.remoteKey {
-//                when(it){
-//                    StreamEnum.DOWN_DPAD_KEY->{
-//                        tvContinue.requestFocus()
-//                    }
-//                    StreamEnum.UP_DPAD_KEY->{
-//                        tvContinue.requestFocus()
-//                    }
-//                    else->{
-//                    }
-//                }
-//            }
-
             tvExit.remoteKey {
                 when(it){
                     StreamEnum.RIGHT_DPAD_KEY->{

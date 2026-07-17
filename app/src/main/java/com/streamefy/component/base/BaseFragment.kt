@@ -19,7 +19,7 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+//import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.BuildConfig
 import com.streamefy.MainActivity
 import com.streamefy.R
@@ -46,8 +46,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
         return false
     }
 
-
-
     companion object{
         var isNetworkAvailable=false
         lateinit var progressDialog:CircularProgressDialog
@@ -61,7 +59,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
                 .penaltyLog()
                 .build())
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-//        setRetainInstance(true)
         (requireContext().applicationContext as MyApp).setNetworkStatusListener(this)
          dialog=NetDialog(requireActivity())
     }
@@ -70,7 +67,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
         progressDialog= CircularProgressDialog(requireContext())
         if (!::binding.isInitialized) {
             binding = DataBindingUtil.inflate(inflater, bindView(), container, false)
@@ -137,9 +133,7 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
 
     override fun onDestroyView() {
         super.onDestroyView()
-        //unregister listener here
-//        onBackPressedCallback.isEnabled = false
-//        onBackPressedCallback.remove()
+
     }
 
     fun throwerror(value:String){
@@ -148,8 +142,6 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
 
 
     fun logException(e: Exception) {
-        FirebaseCrashlytics.getInstance().recordException(e)
-        throw RuntimeException("Base class")
         Log.e("BaseFragment", "Handled exception: ${e.message}", e)
     }
 
@@ -183,5 +175,4 @@ abstract class BaseFragment<B : ViewBinding> : Fragment(), NetworkStatusListener
     }
 
     abstract fun netStatus()
-
 }

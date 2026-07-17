@@ -79,7 +79,23 @@ class ProjectsAdapter(
 
                 if (data.thumbnail != null) {
                     // Picasso.get().load(data.thumbnail).into(thumb)
+
+                    //** temporary comment 2 jan 2026
                     thumb.loadUrl(data.thumbnail)
+
+//                    if (position == 0){
+//                        thumb.loadAny(R.drawable.static_one_mb_image)
+//                    }else if (position == 1){
+//                        thumb.loadAny(R.drawable.static_two)
+//                    }else if (position == 2){
+//                        thumb.loadAny(R.drawable.static_three)
+//                    }else if (position == 3){
+//                        thumb.loadAny(R.drawable.static_four)
+//                    }else if (position == 4){
+//                        thumb.loadAny(R.drawable.static_five)
+//                    }else {
+//                        thumb.loadAny(R.drawable.static_one_mb_image)
+//                    }
                 }
                 clEvent.setOnClickListener {
                     callBack.invoke(position, StreamEnum.SINGLE)

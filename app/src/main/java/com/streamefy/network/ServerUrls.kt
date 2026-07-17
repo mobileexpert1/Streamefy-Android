@@ -7,8 +7,8 @@ object ServerUrls {
     const val BASE_AUTH_URL = "https://auth.streamefy.com"
 
 // dev server
-//       const val BASE_URL = "https://apidev.streamefy.com/"
-//       const val BASE_AUTH_URL = "https://authdev.streamefy.com"
+   // const val BASE_URL = "https://apidev.streamefy.com/"
+   // const val BASE_AUTH_URL = "https://authdev.streamefy.com"
 
     const val LOGIN = "api/User/Login"
     const val OTP = "api/OTP"

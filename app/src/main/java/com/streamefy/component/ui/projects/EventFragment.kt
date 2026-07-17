@@ -3,7 +3,6 @@ package com.streamefy.component.ui.projects
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
@@ -81,13 +80,6 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    /*
-                     if (!isHome) {
-                        findNavController().navigate(R.id.loginFragment)
-                    } else {
-                        ExitDialog(requireActivity()).show()
-                    }
-                     */
                     ExitDialog(requireActivity()).show()
                 }
             })
@@ -105,7 +97,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
 
     private var selectedItem = 0
     private fun rvInit() = with(binding) {
-//        Handle Event listing
+//  Handle Event listing
         rvEvent.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
@@ -113,7 +105,7 @@ class EventFragment : BaseFragment<FragmentEventBinding>() {
                 val data = list[index]
                 when (streamEnum) {
                     StreamEnum.LAST_EVENT -> {
-//                        navigate to the PIN screen if you want to add event
+//                      navigate to the PIN screen if you want to add event
                         SharedPref.setString(PrefConstent.PROJECT_NAME, "New Event")
                         val bundle = Bundle()
                         bundle.putInt(PrefConstent.PROJECT_ID, 0)

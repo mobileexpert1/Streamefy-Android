@@ -74,11 +74,8 @@ class VideoFragment : BaseFragment<FragmentVideoBinding>() {
     lateinit var qualityAdapter: QualityAdapter
     var qualityList = ArrayList<QualityModel>()
     var bunneyIdList = ArrayList<BunneyIds>()
-
-    //  var videoUrl = "https://ia601209.us.archive.org/17/items/ElephantsDream/ed_1024_512kb.mp4"
-    var videoUrl = ""//"https://d1duu120s4nmka.cloudfront.net/file_library/videos/vod_non_drm_ios/4298024/1738759475_2166084548553151/SIDOKSANAFILMmp4.m3u8"
+    var videoUrl = ""
     var ifFirst = true
-
     var nextVideoId = ""
     var mediaId = 0
     var eventId = 0

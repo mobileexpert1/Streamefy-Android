@@ -9,7 +9,7 @@ import android.view.View
 import androidx.core.animation.doOnEnd
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+//import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.BuildConfig
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
@@ -65,8 +65,6 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
 
                         val data = it.data?.response
 
-                   //     SharedPref.setString(PrefConstent.TOKEN, "")
-                    //    data?.run {
                             SharedPref.setString(PrefConstent.TOKEN, data!!.accessToken)
                             SharedPref.setString(PrefConstent.REFRESH_TOKEN, data!!.refreshToken)
                             SharedPref.setString(PrefConstent.APP_LOGO, data!!.logo)
@@ -80,7 +78,6 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
                             data!!.backgroundImage.run {
                                 SharedPref.setString(PrefConstent.AUTH_BACKGROUND, data.backgroundImage)
                             }
-                     //   }
 
                         // Wait before fading out
                         Handler(Looper.getMainLooper()).postDelayed({
@@ -93,14 +90,8 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
                             }
                         }, 3000) // Wait 3 seconds before starting fade-out
 
-                        /*
-                           Handler(Looper.getMainLooper()).postDelayed({
-                            navigateToHome()
-                        }, 3000) // 3000 milliseconds = 3 seconds
-                         */
-
                     } catch (e: Exception) {
-                        FirebaseCrashlytics.getInstance().recordException(e)
+                        //FirebaseCrashlytics.getInstance().recordException(e)
                         throw RuntimeException("login getotp")
                     }
                 }
@@ -125,13 +116,13 @@ class SplashScreen : BaseFragment<FragmentSplashScreenBinding>() {
     }
 
     fun logException() {
-        try {
-            navigateToHome()
-        } catch (e: Exception) {
-            val crashlytics = FirebaseCrashlytics.getInstance()
-            crashlytics.recordException(e) // Log the exception
-            throw RuntimeException("Splash screen navigation")
-        }
+//        try {
+//            navigateToHome()
+//        } catch (e: Exception) {
+//            val crashlytics = FirebaseCrashlytics.getInstance()
+//            crashlytics.recordException(e) // Log the exception
+//            throw RuntimeException("Splash screen navigation")
+//        }
     }
 
 

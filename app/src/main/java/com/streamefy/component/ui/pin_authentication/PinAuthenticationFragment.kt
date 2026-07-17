@@ -29,7 +29,6 @@ import com.streamefy.databinding.FragmentPinAuthenticationBinding
 import com.streamefy.error.ErrorCodeManager
 import com.streamefy.error.ShowError
 import com.streamefy.network.MyResource
-import com.streamefy.utils.capitalizeFirstLetter
 import com.streamefy.utils.gone
 import com.streamefy.utils.hideKey
 import com.streamefy.utils.imageLoadonLayout

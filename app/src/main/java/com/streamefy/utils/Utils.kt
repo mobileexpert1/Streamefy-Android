@@ -32,53 +32,6 @@ fun Context.showMessage(mesg: String) {
 }
 
 
-//fun Context.isNetworkAvailable(): Boolean {
-//    try {
-//        (getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager).apply {
-//            return getNetworkCapabilities(activeNetwork)?.run {
-//                when {
-//                    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-//                    hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-//                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-//                    else -> false
-//                }
-//            } ?: false
-//        }
-//    }catch (e:Exception){
-//        return false
-//    }
-//    catch (e: IOException) {
-//        return false
-//    }
-//}
-
-// new
-//fun Context.isNetworkAvailable(): Boolean {
-//    try {
-//        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//
-//        // Check API level for network capabilities
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            val activeNetwork = connectivityManager.activeNetwork ?: return false
-//            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-//
-//            return capabilities.run {
-//                hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-//                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
-//                        hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-//            }
-//        } else {
-//            // For devices below API 21
-//            val networkInfo = connectivityManager.activeNetworkInfo
-//            return networkInfo?.isConnected == true
-//        }
-//    } catch (e: Exception) {
-//        // Optionally log the exception
-//        return false
-//    }
-//
-//    return false
-//}
 fun Context.isNetworkAvailable(): Boolean {
     try {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -123,17 +76,9 @@ fun hideSoftKeyboard(activity: Activity, view: View) {
 
 fun View.viewAnimate(){
     this.visibility = View.VISIBLE
-    // this.animate().alpha(0.4f).setDuration(5000).startDelay = 1
-
 }
 fun View.goneAnimate(){
-//    this.visibility = View.GONE
     var image=this
-//    this.animate()
-//        .alpha(0.4f)
-//        .setDuration(50)
-//        .startDelay = 1
-
     this.postDelayed({ image.visibility = View.GONE },500L)
 
 
@@ -147,13 +92,9 @@ fun Activity.hideKey(){
 }
 
 fun Activity.showKeyboard(view: View) {
-//    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//    inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-
     view.requestFocus() // Ensure the view is focused
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-
 }
 
 fun CountDownTimer.customTimer(duration:Long,countDown:Long){
@@ -170,7 +111,6 @@ fun CountDownTimer.customTimer(duration:Long,countDown:Long){
     countDownTimer.start()
 }
 
-
 fun convertToMillis(duration: String): Long {
     val parts = duration.split(":")
     val hours = parts[0].toLong()
@@ -178,9 +118,6 @@ fun convertToMillis(duration: String): Long {
     val seconds = parts[2].toLong()
     return (hours * 3600 + minutes * 60 + seconds) * 1000 // Convert to milliseconds
 }
-
-
-
 
 fun View.transition(up:Float,down:Float){
     val anim = ObjectAnimator.ofFloat(this, "translationY", up, down)

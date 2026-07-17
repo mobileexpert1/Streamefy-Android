@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                     e.printStackTrace()
                 }
             } else {
-                Log.e("call", "STATUS: No Update Available")
+                Log.e("call", "STATUS: No Upda0te Available")
             }
         }.addOnFailureListener { exception ->
             Log.e("call", "STATUS: Failed to check for update", exception)

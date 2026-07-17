@@ -37,9 +37,6 @@ object AuthClient {
             .readTimeout(10, TimeUnit.MINUTES)
 
         val token = SharedPref.getString(PrefConstent.TOKEN).toString()
-//            if (!SharedPref.getBoolean(PrefConstent.ISLOGIN)) "" else SharedPref.getString(
-//            PrefConstent.TOKEN
-//        )
 
         Log.e("sjkdnskjnf", "sknbcksj$token")
 

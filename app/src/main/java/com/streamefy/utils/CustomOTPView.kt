@@ -24,8 +24,6 @@ class CustomOTPView @JvmOverloads constructor(
     private val otpFieldSize: Float
     private val otpFieldBackground: Int
 
-
-
     init {
         val typedArray: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.CustomOTPView)
         otpFieldSize = typedArray.getDimension(R.styleable.CustomOTPView_otpFieldSize, 40f)

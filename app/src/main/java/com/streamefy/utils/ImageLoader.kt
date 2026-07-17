@@ -12,7 +12,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.squareup.picasso.Picasso
 
 
-fun ImageView.loadUrl( url:String){
+fun ImageView.loadUrl(url:String){
     Glide.with(this.context).load(url).diskCacheStrategy(DiskCacheStrategy.ALL).into(this)
 
 }

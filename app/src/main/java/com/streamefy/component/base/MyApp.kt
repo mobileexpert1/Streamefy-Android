@@ -9,8 +9,8 @@ import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.firebase.FirebaseApp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+//import com.google.firebase.FirebaseApp
+//import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.streamefy.component.ui.video.PlayerHandler
 import com.streamefy.data.SharedPref
 import com.streamefy.data.appModule

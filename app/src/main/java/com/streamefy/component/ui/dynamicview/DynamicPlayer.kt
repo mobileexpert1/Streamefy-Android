@@ -2,25 +2,16 @@ package com.streamefy.component.ui.dynamicview
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.lifecycleScope
 import com.streamefy.R
 import com.streamefy.component.base.BaseFragment
 import com.streamefy.databinding.FragmentDynamicPlayerBinding
-import com.streamefy.utils.ExpirationUtil
-import com.streamefy.utils.HashUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class DynamicPlayer : BaseFragment<FragmentDynamicPlayerBinding>() {
     override fun bindView(): Int = R.layout.fragment_dynamic_player

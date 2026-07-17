@@ -62,7 +62,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun bindView(): Int = R.layout.fragment_home
     private val viewModel: HomeVm by viewModel()
     lateinit var playerHandler: PlayerHandler
-
     val images = ArrayList<BackgroundMediaItem>()
     val crewList = ArrayList<crewMembers>()
     var selectedTitle = ""
@@ -77,7 +76,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var proLogo = ""
     var projectId = "0"
     var videoPlayingIndex = 0
-
     private val eventList = ArrayList<EventsItem>()
     private val mediaList = ArrayList<MediaItem>()
     lateinit var eventAdapter: CategoryAdapter
@@ -89,9 +87,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     var isDrawerOpen = false
     var isFirstVideo = false
     var isEventPagination = false
-
     var focusView = StreamEnum.BOTTOM_EVENT_VIEW
-
     var isLastPlay = false
     var lastVideoUrl = ""
     var lastVideoDuration = "0"
@@ -112,6 +108,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         var isTrailer = false
     }
 
+    // onCreate method
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -121,11 +118,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val manufacturer = android.os.Build.MANUFACTURER.lowercase()
-        val model = android.os.Build.MODEL.lowercase()
-
-        Log.e("call","manufacturer  "+manufacturer+"   "+"model  "+model)
 
         auth_pin = SharedPref.getString(PrefConstent.AUTH_PIN).toString()
         phone = SharedPref.getString(PrefConstent.PHONE_NUMBER).toString()
@@ -141,20 +133,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             transitionValue3 = dpToPx(120f)
             transitionValue2 = dpToPx(85f)
             playerInitialization()
-
         }
 
         eventView()
         creatorView()
         focusView()
         keyMove()
+
         binding.apply {
 
             ivClose.setOnClickListener {
                 drawerLayout.closeDrawer(GravityCompat.END)
                 isMenuOpened = false
             }
-//            Handle right drawer listener functionality
+//           Handle right drawer listener functionality
             drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
                 }
@@ -179,7 +171,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             })
             ivTrailer.setImageResource(R.drawable.ic_unselect_trailer)
         }
-//           Handle remote back press functionality
+
+       //  Handle remote back press functionality
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -188,19 +181,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             })
 
         lifecycleScope.launch {
-//            launch {
-//                delay(300)
-//                Log.d("ThreadTest", "Current thread1: ${Thread.currentThread().name}")
-//            }
-//            launch(Dispatchers.IO) {
-//                delay(200)
-//                Log.d("ThreadTest", "Current thread2: ${Thread.currentThread().name}")
-//            }
-//            launch(Dispatchers.Default) {
-//                delay(100)
-//                Log.d("ThreadTest", "Current thread3: ${Thread.currentThread().name}")
-//            }
-
             var job1= async {  delay(500)
                 Log.d("ThreadTest", "Current thread1: ${Thread.currentThread().name} ")
                 return@async "job one"
@@ -210,18 +190,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 Log.d("ThreadTest", "Current thread3: ${Thread.currentThread().name} ")
                return@async 56
             }
-           /// var result1=job1.await()
 
-          //  var result2=  job2.await()
           launch(Dispatchers.IO) {
               channel.send("Hi, developer i am from channel")
           }
 
-//            withContext(Dispatchers.Main){
                 delay(50)
 
                 Log.d("ThreadTest", "Main thread ttt: ${Thread.currentThread().name}  from channel ${channel.receive()}")
-//            }
         }
 
     }
@@ -307,13 +283,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
         }
         ivHomeCross.setOnClickListener {
-            /*
-               val bundle = Bundle().apply { putBoolean(PrefConstent.ISHOME, true) }
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
-                .build()
-                findNavController().navigate(R.id.projectfragment, bundle, navOptions)
-             */
             LogoutDialog(requireContext()) {
                 SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
                 val navOptions = NavOptions.Builder()
@@ -324,6 +293,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
 
         }
+
         customIndicator.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 focusView = StreamEnum.INDECATOR_VIEW
@@ -337,6 +307,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 )
             }
         }
+
         // right drawer close
         ivClose.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -355,11 +326,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 ivClose.layoutParams = params
             }
         }
+
         tvPlay.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 focusView = StreamEnum.PLAY_RESUME
             }
         }
+
         tvPlay.setOnClickListener {
             focusView = StreamEnum.PLAY_RESUME
             if (tvPlay.text.toString().contains("play")) {
@@ -369,6 +342,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             }
 
         }
+
         ivTrailer.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 focusView = StreamEnum.TRAILER
@@ -379,6 +353,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                 ivTrailer.setImageResource(R.drawable.ic_unselect_trailer)
             }
         }
+
         ivTrailer.setOnClickListener {
             isTrailer = true
             drawerLayout.openDrawer(GravityCompat.END)
@@ -387,7 +362,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-//    Handle play event video
+//   Handle play event video
     private fun playEventVideo() {
         isPlayByPlayButton = true
         toGotoVideo(
@@ -398,7 +373,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         )
     }
 
-//    Crew member list initialization
+//  Crew member list initialization
     private fun creatorView() = with(binding) {
         rvCreators.apply {
             setHasFixedSize(true)
@@ -410,55 +385,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     var toolsCount: Long = 0
 
-//    Trailer video scrolling functionality which is not in use
-    fun sliderInit() = with(binding) {
-
-//        rvBackgVideo.apply {
-//            gone()
-//            alpha = 0f
-//            setHasFixedSize(true)
-//            layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
-//            setList(images)
-//            var backgadapter = BackgroundAdpater(requireActivity(), images) { index -> }
-//            adapter = backgadapter
-//
-//            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//                @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-//                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                    super.onScrollStateChanged(recyclerView, newState)
-//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                        var newPos =
-//                            (rvBackgVideo.recyclerview?.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-//                        Log.e(
-//                            "skncksnc",
-//                            "current ${rvBackgVideo.targetPosition} new index $newPos skcks ${mediaObjects.size} "
-//                        )
-//                    }
-//                }
-//            })
-//        }
-       // thumbShow()
-        //  customIndicator.setIndicatorCount(images.size, 0)
-//        if (images.size > 1) {
-//            binding.customIndicator.visible()
-//        }
-    }
-
-//    fun thumbShow() = with(binding) {
-////        rvBackgVideo.run {
-////            visible()
-////            animate()
-////                .alpha(1f)
-////                .scaleX(1f)
-////                .scaleY(1f)
-////                .setInterpolator(DecelerateInterpolator())
-////                .setDuration(5000)
-////                .start()
-////        }
-//
-//    }
-
-//    Show project desc and crew member list
+//   Show project desc and crew member list
     fun showTools() = with(binding) {
         clOpecity.visible()
         tvProjectDesc.visible()
@@ -472,16 +399,15 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
         tvProjectDesc.customAlfa(0f, 1f)
         rvCreators.customAlfa(0f, 1f)
-
     }
 
-//    Calculate the position of project desc and crew member to manage transition
+//**    Calculate the position of project desc and crew member to manage transition  **//
     private fun dpToPx(dp: Float): Float {
         val density = resources.displayMetrics.density
         return dp * density
     }
 
-//    Hide project desc and crew member list
+//**    Hide project desc and crew member list  **//
     fun hideTools() = with(binding) {
         if (rvCreators.isVisible) {
             tvProjectDesc.transition(0f, transitionValue4)
@@ -493,39 +419,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//    Get project details
+   //**  Get project details
     private fun getUserData() {
-        //dismissProgress()
         viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
 
-//    Show logout dialog and checks for right drawer
+  //**    Show logout dialog and checks for right drawer  **//
     private fun showCustomDialog() {
         if (isDrawerOpen) {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
         } else {
-            /*
-            LogoutDialog(requireContext()) {
-                SharedPref.setBoolean(PrefConstent.ISLOGIN, false)
-                val navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.homefragment, true)
-                    .build()
-                findNavController().navigate(R.id.loginFragment, null, navOptions)
-            }.show()
-             */
-
             val bundle = Bundle().apply { putBoolean(PrefConstent.ISHOME, true) }
             val navOptions = NavOptions.Builder()
                 .setPopUpTo(R.id.homefragment, true) // Set inclusive to true
                 .build()
             findNavController().navigate(R.id.projectfragment, bundle, navOptions)
-
-
         }
     }
 
-//    Initialize the event drawer video list
+//**    Initialize the event drawer video list  **//
     private fun drawerView() = with(binding) {
         tvTitle.text = selectedTitle
         isTrailer = false
@@ -536,7 +449,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), mediaList as ArrayList<Any>) {
 
-//              Handle event item clicks and navigate to the Video Screen to play video
+//**   Handle event item clicks and navigate to the Video Screen to play video
                 drawerItemFocus = it
                 mediaIndex = it
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -570,7 +483,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//    Initialize the trailer drawer video list
+//**    Initialize the trailer drawer video list  **//
     private fun trailerDrawer() = with(binding) {
         tvTitle.text = "Trailer"
         focusView = StreamEnum.DRAWER_VIEW
@@ -580,7 +493,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             layoutManager = LinearLayoutManager(requireActivity())
             mediaAdapter = DrawerAdapter(requireActivity(), images as ArrayList<Any>) {
 
- //                Handle trailer item clicks and navigate to the Video Screen to play video
+ //**       Handle trailer item clicks and navigate to the Video Screen to play video
                 lifecycleScope.launch(Dispatchers.IO) {
                     images[it].run {
                         val thumbnailS3bucketId = this.thumbnailSBucketId
@@ -602,20 +515,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//    Initialize the Event video list
+//**    Initialize the Event video list  **//
     private fun eventView() = with(binding) {
         rvCategory.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireActivity(), RecyclerView.HORIZONTAL, false)
             eventAdapter = CategoryAdapter(requireActivity(), eventList) { pos, type ->
-//                Handle trailer item clicks
+//**  Handle trailer item clicks
                 selectedTitle = eventList[pos].eventTitle
                 eventFocusPos = pos
                 eventVideoIndex = pos
                 mediaIndex = 0
                 when (type) {
                     StreamEnum.SINGLE -> {
-//                        Handle item clicks and navigate to play the video
+//**  Handle item clicks and navigate to play the video
                         lifecycleScope.launch(Dispatchers.IO) {
                             if (eventList[pos].media != null) {
                                 if (eventList[pos].media?.size!! >= 1) {
@@ -633,7 +546,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         mediaId = this.id
                                         videoid = this.videoId
                                         withContext(Dispatchers.Main) {
-//                                            findNavController().navigate(R.id.dynamicscreen)
                                             toGotoVideo(
                                                 newDuration,
                                                 thumbnailS3bucketId,
@@ -649,7 +561,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.MORE -> {
-//                        Open more event list to the right drawer
+//**  Open more event list to the right drawer
                         drawerLayout.openDrawer(GravityCompat.END)
                         eventList[pos].media?.run {
                             if (isNotEmpty()) {
@@ -662,7 +574,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.UP_DPAD_KEY -> {
-//                        Handle event item focus to play/resume button
+//**  Handle event item focus to play/resume button
                         tvPlay.isFocusable = true
                         tvPlay.isFocusableInTouchMode = true
                         tvPlay.post {
@@ -672,7 +584,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     }
 
                     StreamEnum.PAGINATION -> {
-//                        Handle pagination
+//**  Handle pagination
                         if (eventList.size >= 10) {
                             eventVideosMore()
                         }
@@ -689,7 +601,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//    Navigate to the video screen to play the video
+//**    Navigate to the video screen to play the video  **//
     private fun toGotoVideo(duration: String, thumb: String, bunneId: String, mediaId: Int) {
         val bundle = Bundle()
         bundle.putString(PrefConstent.PLAY_BACK_DURATION, duration)
@@ -699,18 +611,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         findNavController().navigate(R.id.videofragment, bundle)
     }
 
-//    Get more video from server
+//**   Get more video from server  **//
     private fun eventVideosMore() {
         viewModel.getUserVideos(requireActivity(), page, 10, auth_pin, projectId.toInt(), phone)
         observe()
     }
 
-//  Get project response from server
+//**  Get project response from server  **//
     private fun observe() {
         viewModel._homeLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is MyResource.isLoading -> {
-           //         showProgress()
+           //**     showProgress()
                 }
 
                 is MyResource.isSuccess -> {
@@ -719,7 +631,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                     it.data?.data?.run {
                         val data = this
                         if (isEventPagination) {
-//                            Handle pagination
+                        //**    Handle pagination
                             if (events != null && events.isNotEmpty()) {
                                 eventAdapter.pagination(events as ArrayList<EventsItem>)
                                 isEventPagination = true
@@ -812,7 +724,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                         }else{
                                             withContext(Dispatchers.Main) {
                                                 binding.tvPlay.text = "play"
-                                            //binding.ivHomeCross.requestFocus()
 
                                                 delay(200)
                                                 binding.tvPlay.visible() // Ensure it's visible
@@ -853,7 +764,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
                                             showTools()
                                         }
                                         proLogo = data.logo
-//                                        it.projectlogo.loadUrl(proLogo)
                                         it.projectlogo.gone()
                                     }
                                     eventAdapter.update(events as ArrayList<EventsItem>)
@@ -908,12 +818,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-//    save video played duration to the server
+//**  save video played duration to the server  **//
     fun saveDuration(request: PlayBackRequest) {
         viewModel.saveDuration(requireActivity(), request)
         durationObserve()
     }
-//     Get response, video is saved or not
+//**   Get response, video is saved or not  **//
     private fun durationObserve() {
         viewModel._videoduraion.observe(requireActivity()) {
             when (it) {
@@ -931,7 +841,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//    Save video played duration locally
+//**    Save video played duration locally  **//
     fun filterItem(
         eventId: Int,
         mediaId: Int,
@@ -988,15 +898,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override fun netStatus() {
     }
 
-//  Handle focus on event video
-//    fun eventVideoFocus() = with(binding) {
-//        rvCategory.apply {
-//            post {
-//                getChildAt(eventVideoIndex)?.requestFocus()
-//            }
-//        }
-//    }
 
+    //** event video focus  **//
     fun eventVideoFocus() = with(binding) {
         rvCategory.layoutManager?.scrollToPosition(eventVideoIndex)
 
@@ -1010,9 +913,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         })
     }
 
-
-
-    //   Handle focus on right drawer video
+    //**   Handle focus on right drawer video  **//
     private fun drawerVideoFocus() = with(binding) {
         rvDrawer.post {
             rvDrawer.getChildAt(drawerItemFocus)?.requestFocus()
@@ -1060,7 +961,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-//    handle video play state with video listener
+//**    handle video play state with video listener  **//
     fun playerInitialization()  {
        if (::playerHandler.isInitialized) {
            playerHandler.player?.addListener(object : Player.Listener {
@@ -1089,7 +990,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         }
     }
 
-//       Handle next trailer play functionality
+//**  Handle next trailer play functionality  **//
     fun playNextVideo() = with(binding) {
         if (playerHandler.player != null) {
             playerHandler.player?.run {
@@ -1121,50 +1022,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
 
     }
 
-//         Currenctly not in used
-    private fun updateDuration() {
-        if (playerHandler.player != null) {
-            playerHandler.player?.run {
-                // val position = player.currentPosition
-                homeFragment.currentVideoDuration = this.currentPosition
-                if (this.playWhenReady) {
-                    playerHandler.handler.postDelayed({ updateDuration() }, 500)
-                } else {
-                    playerHandler.stopHandler()
-                }
-
-                toolsCount += 500
-                Log.e("homevideotest", "videoPlayingIndex $videoPlayingIndex toolsCount $toolsCount currentPosition ${this.currentPosition} total duration ${this.duration} playWhenReady ${this.playWhenReady}")
-                if (toolsCount == 5000L) {
-                    hideTools()
-                }
-                if (this.currentPosition >= 30000) {
-                    playerHandler.stopHandler()
-                    playNextVideo()
-                    playerHandler = PlayerHandler(requireActivity(), binding.playerView)
-                    if (images.isNotEmpty()) {
-                        if (videoPlayingIndex < images.size) {
-                            if (videoPlayingIndex == images.size - 1) {
-                                videoPlayingIndex = 0
-                            } else {
-                                videoPlayingIndex++
-                            }
-                            if (images[videoPlayingIndex].hlsPlaylistUrl.isNotEmpty()) {
-                                lifecycleScope.launch {
-                                    delay(500)
-                                    withContext(Dispatchers.Main){
-                                        play(images[videoPlayingIndex].hlsPlaylistUrl)
-                                    }
-                                }
-
-                            }
-                        }
-
-                    }
-                }
-            }
-        }
-    }
 
     lateinit var countDownTimer: CountDownTimer
     private var millisRemaining: Long = 30000

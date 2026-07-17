@@ -7,7 +7,6 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.streamefy.component.base.MyApp
 import com.streamefy.data.PrefConstent
 import com.streamefy.data.SharedPref
-import com.streamefy.network.Constants.dummy_token
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

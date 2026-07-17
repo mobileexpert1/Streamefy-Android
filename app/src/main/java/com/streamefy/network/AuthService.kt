@@ -11,18 +11,15 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface AuthService {
-    //@Header("authorization": "Basic YWRtaW46cGFzc3dvcmQ=")
     @POST(ServerUrls.LOGIN)
     suspend fun login(
         @Body login: LoginRequest
     ): Response<LoginResponse>
 
-
     @POST(ServerUrls.OTP)
     suspend fun otp(
         @Body request: OTPRequest
     ): Response<OTPResponse>
-
 
     @POST(ServerUrls.OTP_VERIFY)
     suspend fun verify(
